@@ -14,6 +14,7 @@ import { renderNeuralLead } from "./neural.js";
 import { renderOpl } from "./opl.js";
 import { SampleCache, SampleLibrary, type Soundfont } from "../sound/sampler.js";
 import { renderSynthStems } from "../sound/synth.js";
+import { randomSeed } from "../theory/seed.js";
 import { renderSampleStems } from "./samples.js";
 import { LEADS, type LeadId, type Score, TAIL_SECONDS, buildScore } from "./score.js";
 
@@ -101,7 +102,7 @@ async function main(): Promise<void> {
   // Default: the corpus instrument, so every track plays as written.
   leadSel.value = params.get("lead") ?? "";
   $("dice").addEventListener("click", () => {
-    $<HTMLInputElement>("seed").value = Math.random().toString(36).slice(2, 8);
+    $<HTMLInputElement>("seed").value = randomSeed();
   });
 
   // --- Variant rows ---------------------------------------------------------

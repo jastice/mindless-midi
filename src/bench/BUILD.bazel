@@ -27,6 +27,7 @@ ts_lib(
         "//src/corpus",
         "//src/engine",
         "//src/sound",
+        "//src/theory",
     ],
 )
 

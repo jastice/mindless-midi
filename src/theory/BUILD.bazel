@@ -4,6 +4,7 @@ ts_lib(
     name = "theory",
     srcs = [
         "rng.ts",
+        "seed.ts",
         "theory.ts",
     ],
     visibility = ["//visibility:public"],

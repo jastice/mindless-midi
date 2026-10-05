@@ -5,6 +5,7 @@
  */
 import wasmUrl from "libadlmidi-js/dist/libadlmidi.nuked.browser.wasm";
 import type { StyleBundle } from "../corpus/schema.js";
+import { randomSeed } from "../theory/seed.js";
 import { chordName } from "../theory/theory.js";
 import { type Engine, Player, type TimedBar } from "./player.js";
 
@@ -34,12 +35,6 @@ const store = {
     }
   },
 };
-
-function randomSeed(): string {
-  const a = new Uint32Array(2);
-  crypto.getRandomValues(a);
-  return Array.from(a, (x) => x.toString(36)).join("").slice(0, 10);
-}
 
 function toast(text: string): void {
   const el = document.createElement("div");

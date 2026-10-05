@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Rng } from "./rng.js";
+import { randomSeed } from "./seed.js";
 import {
   chordName,
   chordPitchClasses,
@@ -114,4 +115,10 @@ test("key labels are human readable", () => {
   assert.equal(keyLabel(0, "harmonicMinor"), "C harmonic minor");
   assert.equal(keyLabel(6, "phrygianDominant"), "F# phrygian dominant");
   assert.equal(keyLabel(14, "dorian"), "D dorian");
+});
+
+test("generated seeds are three hyphenated music words", () => {
+  assert.match(randomSeed(), /^[a-z]+-[a-z]+-[a-z]+$/);
+  assert.equal(randomSeed(() => 0), randomSeed(() => 0));
+  assert.notEqual(randomSeed(() => 0), randomSeed(() => 0.99));
 });
