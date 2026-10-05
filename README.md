@@ -140,6 +140,20 @@ The workflow in `.github/workflows/pages.yml` runs `bazel test //...` and
 `main`. One-time setup after pushing the repo: **Settings → Pages → Source:
 GitHub Actions**.
 
+`.github/workflows/cloudflare.yml` is an alternative target: it builds `//site`
+and deploys to Cloudflare Pages (production from `main`, a preview URL per
+same-repo PR). It does nothing until you set it up once:
+
+1. Create the project: `npx wrangler pages project create <name>
+   --production-branch main` (or Workers & Pages → Create → Pages → Direct
+   Upload in the dashboard).
+2. Create an API token with the **Cloudflare Pages: Edit** permission, and note
+   your account ID.
+3. In the GitHub repo, add secrets `CLOUDFLARE_API_TOKEN` and
+   `CLOUDFLARE_ACCOUNT_ID`, and the variable `CLOUDFLARE_PAGES_PROJECT=<name>`.
+4. Optional: enable Web Analytics for the project in the Cloudflare dashboard
+   (cookieless, no consent banner needed).
+
 To publish by hand to a `gh-pages` branch instead:
 
 ```bash

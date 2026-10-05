@@ -1,0 +1,57 @@
+# Alternative deploy target: publish //site to Cloudflare Pages. Pull requests
+# from this repo get a preview URL; main goes to production. Tests run in
+# pages.yml, so this only builds. Inactive until the repo variable
+# CLOUDFLARE_PAGES_PROJECT is set (see README, "Deploying").
+name: Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: cloudflare-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    # Forks get no secrets, so skip their PRs.
+    if: >-
+      vars.CLOUDFLARE_PAGES_PROJECT != '' &&
+      (github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Build site
+        run: bazel build //site
+
+      - name: Collect site
+        run: |
+          site="$(bazel info execution_root)/$(bazel cquery --output=files //site 2>/dev/null)"
+          mkdir -p _site
+          cp -RL "$site"/. _site/
+          chmod -R u+w _site
+          ls -la _site
+
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy _site
+            --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+            --branch=${{ github.head_ref || github.ref_name }}
+            --commit-hash=${{ github.sha }}
