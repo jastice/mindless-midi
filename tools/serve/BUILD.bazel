@@ -4,5 +4,5 @@ ts_lib(
     name = "serve_lib",
     srcs = ["serve.ts"],
     node = True,
-    visibility = ["//site:__pkg__"],
+    visibility = ["//site:__pkg__", "//src/bench:__pkg__"],
 )

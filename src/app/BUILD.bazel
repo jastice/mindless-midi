@@ -54,5 +54,5 @@ exports_files(
         "styles.css",
         "favicon.svg",
     ],
-    visibility = ["//site:__pkg__"],
+    visibility = ["//site:__pkg__", "//src/bench:__pkg__"],
 )

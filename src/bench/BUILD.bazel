@@ -1,0 +1,90 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//bazel:ts.bzl", "ts_lib")
+
+# Experimental synthesis comparison bench (not part of the shipped site).
+ts_lib(
+    name = "bench",
+    srcs = [
+        "analysis.ts",
+        "assets.d.ts",
+        "bench.ts",
+        "dsp.ts",
+        "loudness.ts",
+        "mix.ts",
+        "neural.ts",
+        "opl.ts",
+        "sampler.ts",
+        "score.ts",
+        "synth.ts",
+    ],
+    deps = [
+        "//:node_modules/@tensorflow/tfjs-backend-webgl",
+        "//:node_modules/@tensorflow/tfjs-converter",
+        "//:node_modules/@tensorflow/tfjs-core",
+        "//:node_modules/libadlmidi-js",
+        "//src/audio:events",
+        "//src/audio:processor",
+        "//src/corpus",
+        "//src/engine",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    config = {
+        "assetNames": "[name]-[hash]",
+        "entryNames": "[name]",
+        "loader": {".wasm": "file"},
+        "legalComments": "linked",
+        "platform": "browser",
+    },
+    entry_points = [":bench.js"],
+    # TF.js and seedrandom only require these under Node (guarded).
+    external = [
+        "crypto",
+        "util",
+    ],
+    format = "esm",
+    minify = True,
+    output_dir = True,
+    sourcemap = "linked",
+    target = "es2022",
+    deps = [
+        ":bench",
+        "//:node_modules/@tensorflow/tfjs-backend-webgl",
+        "//:node_modules/@tensorflow/tfjs-converter",
+        "//:node_modules/@tensorflow/tfjs-core",
+        "//:node_modules/libadlmidi-js",
+    ],
+)
+
+copy_to_directory(
+    name = "site",
+    srcs = [
+        "bench.css",
+        "index.html",
+        ":bundle",
+        "//src/app:favicon.svg",
+        "//styles",
+    ],
+    root_paths = [
+        "src/bench/bundle",
+        "src/bench",
+        "src/app",
+        "styles",
+    ],
+)
+
+# bazel run //src/bench:serve  ->  http://localhost:8090
+js_binary(
+    name = "serve",
+    args = ["src/bench/site"],
+    data = [
+        ":site",
+        "//tools/serve:serve_lib",
+    ],
+    entry_point = "//tools/serve:serve.js",
+    env = {"PORT": "8090"},
+)

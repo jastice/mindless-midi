@@ -6,6 +6,12 @@
       "runtimeExecutable": "bazel",
       "runtimeArgs": ["run", "//site:serve"],
       "port": 8080
+    },
+    {
+      "name": "bench",
+      "runtimeExecutable": "bazel",
+      "runtimeArgs": ["run", "//src/bench:serve"],
+      "port": 8090
     }
   ]
 }

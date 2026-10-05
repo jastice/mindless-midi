@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Synthesis Bench</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="bench.css" />
+    <script type="module" src="bench.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Synthesis bench</h1>
+        <p class="lede">The same score, rendered five ways and loudness-matched to −18 LUFS. Switch between them at the same playhead with <kbd>1</kbd>–<kbd>5</kbd>.</p>
+      </header>
+
+      <section class="controls" aria-label="Score">
+        <label>Style <select id="style"></select></label>
+        <label>Seed <span class="seed"><input id="seed" size="10" /><button id="dice" type="button" class="btn ghost" title="Random seed">🎲</button></span></label>
+        <label>Length
+          <select id="seconds">
+            <option value="20">20 s</option>
+            <option value="40">40 s</option>
+            <option value="60">60 s</option>
+          </select>
+        </label>
+        <label>Lead <select id="lead"></select></label>
+        <label>GM fallback
+          <select id="font">
+            <option value="MusyngKite">MusyngKite</option>
+            <option value="FluidR3_GM">FluidR3</option>
+          </select>
+        </label>
+        <button id="render" type="button" class="btn primary">Render</button>
+      </section>
+
+      <p id="summary" class="summary">Pick a style and press Render.</p>
+
+      <section class="transport" aria-label="Transport">
+        <button id="play" type="button" class="btn">▶ Play</button>
+        <canvas id="wave" aria-label="Waveform of the selected variant; click to seek"></canvas>
+        <span id="time" class="time">0:00 / 0:00</span>
+        <select id="solo" aria-label="Listen to"><option value="">Full mix</option></select>
+        <select id="view" aria-label="View">
+          <option value="wave">Waveform</option>
+          <option value="spec">Spectrogram</option>
+        </select>
+        <label class="blind"><input id="blind" type="checkbox" /> Blind</label>
+      </section>
+
+      <section id="variants" class="variants" aria-label="Variants"></section>
+
+      <section class="board" aria-label="Ratings">
+        <h2>Your ratings</h2>
+        <div id="board"></div>
+      </section>
+
+      <details class="notes">
+        <summary>How this works and where the sounds come from</summary>
+        <ul>
+          <li>All variants play the identical note list from the engine (seeded). Choosing a lead swaps the melody to a monophonic instrument on every variant, so the neural lead can be compared fairly.</li>
+          <li>Every variant except "OPL3 FM (today)" goes through the same per-style mix bus: stem level matching, high-pass cleanup, kick-driven ducking, chorus, synced delay, generated reverb, tape/vinyl for lo-fi, glue compression.</li>
+          <li>Samples: Splendid Grand Piano (public domain), VCSL vibraphone/marimba/tenor sax (CC0), Smolken double bass (CC0), jRhodes3 (CC BY-NC, bench only), MusyngKite (CC BY-SA 3.0) or FluidR3 (MIT) GM soundfonts, LinnDrum / TR-808 / Sonic Pi kits; served by danigb/samples and gleitz/midi-js-soundfonts.</li>
+          <li>Neural: Magenta DDSP checkpoints (Apache 2.0) on TensorFlow.js WebGL. Pitch and loudness curves are synthesized from the score, not analysed from audio.</li>
+          <li>Render time is wall-clock on this machine, single-threaded on the page; "× realtime" above 1 means it could keep up live.</li>
+        </ul>
+      </details>
+    </div>
+  </body>
+</html>
