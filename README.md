@@ -16,9 +16,14 @@ page.
   tempo and form for each piece, binds material to sections, develops lead
   motifs (sequence, inversion, mutation, cadences), voice-leads the chords,
   swings and humanizes, and rotates between your selected styles.
-- **Played on an FM chip.** Notes go to [libADLMIDI](https://github.com/Wohlstand/libADLMIDI)
+- **Played on an FM chip, or not.** By default notes go to [libADLMIDI](https://github.com/Wohlstand/libADLMIDI)
   (Nuked OPL3 emulation, WebAssembly) in an AudioWorklet, with sample-accurate
-  timing. Each style uses a classic DOS-era FM patch bank.
+  timing. Each style uses a classic DOS-era FM patch bank. The **Sound** chips
+  switch to three other engines that render per-instrument stems in a worker
+  and mix them through a per-style studio bus (reverb, echo, ducking, tape):
+  *FM + studio* (the same chip, one stem per instrument), *Synth* (modelled
+  instruments, nothing to download) and *Samples* (recorded instruments,
+  streamed on demand).
 - **Bazel all the way.** Corpus validation, loudness calibration, bundling, the
   static site, the dev server and deployment are all Bazel targets.
 
@@ -47,7 +52,20 @@ bazel run //tools/render -- --styles lofi,jazz_trio --seconds 120 --out /tmp/mix
 
 In the page: <kbd>Space</kbd> plays/pauses, <kbd>N</kbd> or <kbd>→</kbd> skips
 to a new piece, and **⤓ MIDI** downloads the last 10 minutes as a `.mid`. The URL
-carries the seed and style selection, so a link reproduces the same music.
+carries the seed, style selection and sound engine, so a link reproduces the same music.
+
+### Synthesis bench
+
+```bash
+bazel run //src/bench:serve
+```
+
+A separate app (http://localhost:8090) that renders one score through every
+engine offline (FM as shipped, FM through the bus, synths, samples, and an
+experimental Magenta DDSP neural lead), loudness-matches them and lets you A/B
+them at the same playhead, blind if you like, with per-instrument solos and a
+spectrogram. `bazel run //src/bench:deploy` publishes it to its own
+`bench-pages` branch, independent of the app.
 Media keys work through the Media Session API.
 
 ## How it fits together
@@ -69,6 +87,11 @@ Media keys work through the Media Session API.
   style gain, slow ±6 dB auto-gain, soft limiter) and the AudioWorklet
   processor. Scheduling is driven by ticks from the audio thread rather than
   timers, so playback keeps going in background tabs.
+- `src/sound`: the other engines. DSP voices (modal piano, FM e-piano,
+  Karplus-Strong, PolyBLEP subtractive, analog kit), the sampler (SFZ and GM
+  soundfont instruments, per-style drum kits), the schedulable mix bus, the
+  render worker and the stem worklet.
+- `src/bench`: the synthesis bench.
 - `src/app`: the page.
 - `tools/generate`: regenerates corpora with Claude.
 - `tools/stylec`: the build-time style compiler used by the rules.
@@ -161,4 +184,11 @@ localhost) for AudioWorklet.
 - Licensing: this project is [MIT](LICENSE). The bundled synth is not:
   libadlmidi-js is LGPL-3.0, and upstream libADLMIDI mixes GPL and LGPL by
   component (only the Nuked OPL3 profile is bundled here).
+- The Samples engine streams from [danigb/samples](https://github.com/danigb/samples)
+  and [gleitz/midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts)
+  at runtime (nothing is bundled): Splendid Grand Piano (public domain), VCSL
+  (CC0), D. Smolken double bass (CC0), Greg Sullivan's Wurlitzer (CC BY 3.0),
+  MusyngKite (CC BY-SA 3.0), plus drum-machine and Sonic Pi kits. The page
+  credits whatever it has played. The bench additionally loads the Magenta
+  DDSP checkpoints (Apache 2.0).
 - Dev console: `mindlessMidi.player` and `mindlessMidi.styles` are exposed for tinkering.

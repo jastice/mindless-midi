@@ -1,10 +1,15 @@
-/** Small, allocation-free DSP building blocks for the bench's synth backend. */
+/** Small, allocation-free DSP building blocks shared by the sound engines. */
 
 export type Samples = Float32Array<ArrayBuffer>;
 
 export interface Stereo {
   l: Samples;
   r: Samples;
+  /**
+   * Absolute frame of index 0. Voices write at `round(t * sr) - base`, so the
+   * same code renders a whole clip (base 0) or into a sliding window.
+   */
+  base?: number;
 }
 
 export function stereo(frames: number): Stereo {
@@ -161,3 +166,36 @@ export function activeRms(s: Stereo, sampleRate: number, top = 0.25): number {
 
 /** Let the UI breathe during long synchronous renders. */
 export const yieldToUi = () => new Promise<void>((r) => setTimeout(r, 0));
+
+/**
+ * A per-role sliding window of future audio. Voices add whole notes into it
+ * (they may ring for seconds past the current bar); `take` hands out the
+ * finished frames and slides the window forward.
+ */
+export class StemWindow implements Stereo {
+  l: Samples;
+  r: Samples;
+  base: number;
+  constructor(base: number, private readonly capacity: number) {
+    this.base = base;
+    this.l = new Float32Array(capacity);
+    this.r = new Float32Array(capacity);
+  }
+  /** Copy out [base, base + frames) and advance. */
+  take(frames: number): Stereo {
+    const n = Math.min(frames, this.capacity);
+    const out = { l: this.l.slice(0, n), r: this.r.slice(0, n) };
+    this.l.copyWithin(0, n);
+    this.r.copyWithin(0, n);
+    this.l.fill(0, this.capacity - n);
+    this.r.fill(0, this.capacity - n);
+    this.base += n;
+    return out;
+  }
+  /** Drop everything from `frame` on (a skip or an engine switch). */
+  clearFrom(frame: number): void {
+    const i = Math.max(0, frame - this.base);
+    this.l.fill(0, i);
+    this.r.fill(0, i);
+  }
+}

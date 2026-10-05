@@ -1,0 +1,68 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//bazel:ts.bzl", "ts_lib")
+
+# Sound engines beyond the OPL3 path: DSP synth voices, sampled instruments,
+# the mix bus, and the protocol between player, render worker and stem worklet.
+ts_lib(
+    name = "sound",
+    srcs = [
+        "bus.ts",
+        "dsp.ts",
+        "leveler.ts",
+        "protocol.ts",
+        "sampler.ts",
+        "synth.ts",
+        "types.ts",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src/corpus",
+        "//src/engine",
+    ],
+)
+
+ts_lib(
+    name = "worker",
+    srcs = [
+        "stem_worklet.ts",
+        "worker.ts",
+    ],
+    deps = [
+        ":sound",
+        "//:node_modules/libadlmidi-js",
+        "//src/audio:events",
+        "//src/audio:processor",
+        "//src/corpus",
+    ],
+)
+
+# Renders stems for the bus engines (module worker).
+esbuild(
+    name = "render_worker",
+    config = {
+        "banner": {"js": "if (typeof URL === 'undefined') { globalThis.URL = class URL { constructor(u) { this.href = String(u); } }; }"},
+        "legalComments": "linked",
+    },
+    entry_point = ":worker.js",
+    format = "esm",
+    minify = True,
+    output = "render-worker.js",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+    ],
+)
+
+# Plays the streamed stems, one output per role.
+esbuild(
+    name = "stem_worklet",
+    entry_point = ":stem_worklet.js",
+    format = "esm",
+    minify = True,
+    output = "stem-worklet.js",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [":worker"],
+)

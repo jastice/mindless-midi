@@ -7,14 +7,15 @@ import wasmUrl from "libadlmidi-js/dist/libadlmidi.nuked.browser.wasm";
 import type { Role } from "../corpus/constants.js";
 import type { StyleBundle } from "../corpus/schema.js";
 import { spectrogram } from "./analysis.js";
-import { type Stereo, yieldToUi } from "./dsp.js";
+import { type Stereo, yieldToUi } from "../sound/dsp.js";
 import { matchLoudness, wav } from "./loudness.js";
-import { mixStems } from "./mix.js";
+import { mixStems } from "../sound/bus.js";
 import { renderNeuralLead } from "./neural.js";
 import { renderOpl } from "./opl.js";
-import { SampleCache, type Soundfont, renderSampleStems } from "./sampler.js";
-import { LEADS, type LeadId, type Score, buildScore } from "./score.js";
-import { renderSynthStems } from "./synth.js";
+import { SampleCache, SampleLibrary, type Soundfont } from "../sound/sampler.js";
+import { renderSynthStems } from "../sound/synth.js";
+import { renderSampleStems } from "./samples.js";
+import { LEADS, type LeadId, type Score, TAIL_SECONDS, buildScore } from "./score.js";
 
 type VariantId = "opl" | "opl_bus" | "synth" | "samples" | "neural";
 
@@ -44,7 +45,7 @@ const VARIANTS: Variant[] = [
   { id: "opl", name: "OPL3 FM (today)", desc: "The shipping path: libADLMIDI / Nuked OPL3 and the app's output stage, no mix bus." },
   { id: "opl_bus", name: "OPL3 + mix bus", desc: "The same FM, one stem per role, through the new mix bus. Separates production from instrument sound." },
   { id: "synth", name: "① DSP synths", desc: "Modal piano, FM e-piano, modal mallets, Karplus-Strong, PolyBLEP subtractive voices, analog kit. Zero downloads." },
-  { id: "samples", name: "② Samples", desc: "Splendid Grand, jRhodes, VCSL mallets & sax, Smolken upright, GM soundfont fallback, drum-machine kits." },
+  { id: "samples", name: "② Samples", desc: "Splendid Grand, Wurlitzer, VCSL mallets & sax, Smolken upright, GM soundfont fallback, drum-machine kits." },
   { id: "neural", name: "③ Samples + neural lead", desc: "Magenta DDSP lead (performed pitch & loudness curves, WebGL) over the sampled bed." },
 ].map((v) => ({ ...v, status: "idle", progress: 0, note: "", solos: new Map() }) as Variant);
 
@@ -77,6 +78,13 @@ async function main(): Promise<void> {
   const ctx = new AudioContext({ latencyHint: "playback" });
   const sr = ctx.sampleRate;
   const cache = new SampleCache(ctx);
+  const libraries = new Map<Soundfont, SampleLibrary>();
+  const library = (font: Soundfont) => {
+    let lib = libraries.get(font);
+    if (!lib) libraries.set(font, (lib = new SampleLibrary(cache, font)));
+    return lib;
+  };
+  const mixOf = (stems: Map<Role, Stereo>, s: Score) => mixStems(stems, sr, { id: s.style.id, bpm: s.bpm, kicks: s.kicks, instruments: s.instruments });
   const wasmBytes = fetch(new URL(wasmUrl, import.meta.url)).then((r) => r.arrayBuffer()).then((b) => b.byteLength);
 
   // --- Controls -----------------------------------------------------------
@@ -318,7 +326,7 @@ async function main(): Promise<void> {
         // Today's path has no bus: its solo is the dry FM stem.
         const raw = v.id === "opl" ? VARIANTS.find((x) => x.id === "opl_bus")?.stems?.get(role) : v.stems?.get(role);
         if (!raw) return;
-        const mix = v.id === "opl" ? { l: raw.l.slice(), r: raw.r.slice() } : await mixStems(new Map([[role, raw]]), score, sr);
+        const mix = v.id === "opl" ? { l: raw.l.slice(), r: raw.r.slice() } : await mixOf(new Map([[role, raw]]), score);
         matchLoudness(mix, sr);
         hit = { mix, buffer: toBuffer(mix) };
         v.solos.set(role, hit);
@@ -430,16 +438,16 @@ async function main(): Promise<void> {
         stems.set(role, await renderOpl(s, sr, new URL(wasmUrl, import.meta.url).href, { role }));
         p((i + 1) / (roles.length + 1));
       }
-      return { mix: await mixStems(stems, s, sr), bytes: await wasmBytes, stems };
+      return { mix: await mixOf(stems, s), bytes: await wasmBytes, stems };
     });
     await run("synth", async (p) => {
-      const stems = await renderSynthStems(s, sr, p);
-      return { mix: await mixStems(stems, s, sr), bytes: 0, stems };
+      const stems = await renderSynthStems(s.notes, Math.ceil((s.seconds + TAIL_SECONDS) * sr), s.style.id, sr, p);
+      return { mix: await mixOf(stems, s), bytes: 0, stems };
     });
     await run("samples", async (p) => {
-      const { stems, report } = await renderSampleStems(s, sr, cache, font, [], p);
+      const { stems, report } = await renderSampleStems(s, sr, library(font), [], p);
       sampleStems = stems;
-      return { mix: await mixStems(stems, s, sr), bytes: report.bytes, stems, note: `${report.files} files: ${report.instruments.join(", ")}` };
+      return { mix: await mixOf(stems, s), bytes: report.bytes, stems, note: `${report.files} files: ${report.instruments.join(", ")}` };
     });
     await run("neural", async (p) => {
       if (!s.lead) return null;
@@ -455,7 +463,7 @@ async function main(): Promise<void> {
       };
       const stems = new Map(sampleStems);
       stems.set("lead", { l: fit(stem.l), r: fit(stem.r) });
-      const mix = await mixStems(stems, s, sr);
+      const mix = await mixOf(stems, s);
       const ms = performance.now() - t0;
       return { mix, bytes: report.bytes, ms, stems, note: `DDSP ${LEADS[s.lead].label}: ${fmtMs(report.inferMs)} inference` };
     });

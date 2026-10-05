@@ -57,3 +57,22 @@ test("clear forgets sounding notes so the next piece starts clean", () => {
   q.run(10, 100, sink, () => {});
   assert.equal(sink.sounding, 0);
 });
+
+test("clearFrom keeps what plays before the frame and silences everything at it", () => {
+  // Switching engines mid-stream: notes before frame 100 still play; later ones are dropped.
+  const q = new EventQueue();
+  const sink = new VoiceCounter();
+  let resets = 0;
+  sink.reset = () => {
+    resets++;
+    sink.voices.clear();
+  };
+  q.push([ev(0, EV_ON, 1), ev(50, EV_ON, 2, 62), ev(150, EV_OFF, 1), ev(200, EV_ON, 3, 64), ev(250, EV_OFF, 3, 64)]);
+  q.clearFrom(100);
+  q.run(0, 99, sink, () => {});
+  assert.equal(sink.sounding, 2);
+  q.run(99, 300, sink, () => {});
+  assert.equal(resets, 1);
+  assert.equal(sink.sounding, 0);
+  assert.equal(q.pending, 0);
+});

@@ -15,6 +15,7 @@ ts_lib(
         "//src/audio:events",
         "//src/corpus",
         "//src/engine",
+        "//src/sound",
         "//src/theory",
     ],
 )

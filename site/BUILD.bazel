@@ -11,6 +11,8 @@ copy_to_directory(
         "//src/app:index_html",
         "//src/app:styles.css",
         "//src/audio:worklet",
+        "//src/sound:render_worker",
+        "//src/sound:stem_worklet",
         "//styles",
     ],
     root_paths = [
@@ -18,6 +20,7 @@ copy_to_directory(
         "src/app/stamped",
         "src/app",
         "src/audio",
+        "src/sound",
         "styles",
     ],
     visibility = ["//visibility:public"],

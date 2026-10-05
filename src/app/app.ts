@@ -6,7 +6,14 @@
 import wasmUrl from "libadlmidi-js/dist/libadlmidi.nuked.browser.wasm";
 import type { StyleBundle } from "../corpus/schema.js";
 import { chordName } from "../theory/theory.js";
-import { Player, type TimedBar } from "./player.js";
+import { type Engine, Player, type TimedBar } from "./player.js";
+
+const ENGINES: { id: Engine; label: string; desc: string }[] = [
+  { id: "fm", label: "FM chip", desc: "An emulated OPL3 FM chip with classic DOS-era patch banks. The original beepy-boopy sound." },
+  { id: "fm_bus", label: "FM + studio", desc: "The same chip, one track per instrument, mixed with reverb, echo, ducking and tape." },
+  { id: "synth", label: "Synth", desc: "Modelled instruments (struck strings, plucks, analog voices), mixed in the studio. Nothing to download." },
+  { id: "samples", label: "Samples", desc: "Recorded instruments, downloaded as the music needs them (a few MB per style), mixed in the studio." },
+];
 import { Roll } from "./roll.js";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -52,10 +59,19 @@ async function main(): Promise<void> {
   const wanted = (params.get("styles") ?? store.get("styles") ?? "").split(",").filter((id) => byId.has(id));
   const selected = new Set(wanted.length ? wanted : styles.map((s) => s.id));
   const volume = Number(store.get("volume") ?? "0.8");
+  const wantedEngine = params.get("sound") ?? store.get("sound") ?? "fm";
+  const engine: Engine = ENGINES.some((e) => e.id === wantedEngine) ? (wantedEngine as Engine) : "fm";
 
   const player = new Player(
     styles.filter((s) => selected.has(s.id)),
-    { seed, processorUrl: new URL("worklet.js", import.meta.url).href, wasmUrl: new URL(wasmUrl, import.meta.url).href },
+    {
+      seed,
+      engine,
+      processorUrl: new URL("worklet.js", import.meta.url).href,
+      wasmUrl: new URL(wasmUrl, import.meta.url).href,
+      stemWorkletUrl: new URL("stem-worklet.js", import.meta.url).href,
+      workerUrl: new URL("render-worker.js", import.meta.url).href,
+    },
   );
   player.setVolume(volume);
   // Handle for curious listeners in the dev console.
@@ -90,16 +106,59 @@ async function main(): Promise<void> {
     grid.append(card);
   }
 
+  // --- Sound engine -------------------------------------------------------
+  const chips = $("engines");
+  const chipFor = new Map<Engine, HTMLButtonElement>();
+  for (const e of ENGINES) {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip";
+    chip.setAttribute("role", "radio");
+    chip.textContent = e.label;
+    chip.title = e.desc;
+    chip.addEventListener("click", () => {
+      void player.setEngine(e.id);
+      persist();
+    });
+    chipFor.set(e.id, chip);
+    chips.append(chip);
+  }
+  function renderEngine(): void {
+    for (const [id, chip] of chipFor) {
+      chip.setAttribute("aria-checked", String(id === player.engine));
+      chip.tabIndex = id === player.engine ? 0 : -1;
+    }
+    const e = ENGINES.find((x) => x.id === player.engine)!;
+    $("engine-desc").textContent = player.loading ? "Loading samples…" : e.desc;
+    const credits = player.sampleCredits;
+    const el = $("credits");
+    el.hidden = !credits.length;
+    if (credits.length) {
+      el.textContent = `Sampled instruments (streamed from danigb/samples and gleitz/midi-js-soundfonts): ${credits.join(", ")}.`;
+    }
+  }
+  chips.addEventListener("keydown", (ev) => {
+    if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") return;
+    ev.preventDefault();
+    const i = ENGINES.findIndex((x) => x.id === player.engine);
+    const next = ENGINES[(i + (ev.key === "ArrowRight" ? 1 : ENGINES.length - 1)) % ENGINES.length]!;
+    void player.setEngine(next.id);
+    chipFor.get(next.id)?.focus();
+    persist();
+  });
+
   function shareUrl(): string {
     const u = new URL(location.href);
     u.search = "";
     u.searchParams.set("seed", seed);
     if (selected.size !== styles.length) u.searchParams.set("styles", [...selected].join(","));
+    if (player.engine !== "fm") u.searchParams.set("sound", player.engine);
     return u.href;
   }
 
   function persist(): void {
     store.set("styles", [...selected].join(","));
+    store.set("sound", player.engine);
     history.replaceState(null, "", shareUrl());
   }
   persist();
@@ -221,6 +280,8 @@ async function main(): Promise<void> {
     describe(player.current());
   }
   player.onChange(render);
+  player.onChange(renderEngine);
+  renderEngine();
   // Cheap enough to poll; keeps the display in step with what is audible.
   setInterval(() => describe(player.current()), 200);
   render();

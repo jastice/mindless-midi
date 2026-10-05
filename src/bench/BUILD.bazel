@@ -1,6 +1,7 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//bazel:deploy.bzl", "gh_pages_deploy")
 load("//bazel:ts.bzl", "ts_lib")
 
 # Experimental synthesis comparison bench (not part of the shipped site).
@@ -10,14 +11,11 @@ ts_lib(
         "analysis.ts",
         "assets.d.ts",
         "bench.ts",
-        "dsp.ts",
         "loudness.ts",
-        "mix.ts",
         "neural.ts",
         "opl.ts",
-        "sampler.ts",
+        "samples.ts",
         "score.ts",
-        "synth.ts",
     ],
     deps = [
         "//:node_modules/@tensorflow/tfjs-backend-webgl",
@@ -28,6 +26,7 @@ ts_lib(
         "//src/audio:processor",
         "//src/corpus",
         "//src/engine",
+        "//src/sound",
     ],
 )
 
@@ -87,4 +86,14 @@ js_binary(
     ],
     entry_point = "//tools/serve:serve.js",
     env = {"PORT": "8090"},
+)
+
+# bazel run //src/bench:deploy [-- --dry-run]
+# Publishes the bench on its own branch, independent of the app's deploy;
+# point any static host (a second Pages project, Cloudflare Pages) at it.
+gh_pages_deploy(
+    name = "deploy",
+    branch = "bench-pages",
+    message = "Deploy synthesis bench",
+    site = ":site",
 )

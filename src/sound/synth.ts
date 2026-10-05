@@ -3,30 +3,37 @@
  * maps to a small physical or subtractive model: modal piano, FM electric
  * piano, modal mallets, Karplus-Strong plucks, PolyBLEP subtractive voices
  * (strings, pads, brass, reeds, leads, synth bass) and an analog-style kit.
+ *
+ * Voices render a whole note at once into a Stereo (offset by its `base`),
+ * so the same code fills an offline clip or a streaming StemWindow.
  */
 import type { Role } from "../corpus/constants.js";
-import { LEADS, type Score, type ScoreNote } from "./score.js";
+import type { ScoreNote } from "./types.js";
 import { Noise, OnePole, Osc, type Stereo, Svf, adsr, mtof, stereo, yieldToUi } from "./dsp.js";
 
-export const TAIL_SECONDS = 3;
+/** Longest a synth note can ring past its onset, seconds (window sizing). */
+export const MAX_VOICE_SECONDS = 9;
 
 type Voice = (out: Stereo, n: ScoreNote, sr: number, prev: ScoreNote | undefined) => void;
 
-export async function renderSynthStems(score: Score, sr: number, onProgress?: (f: number) => void): Promise<Map<Role, Stereo>> {
-  const frames = Math.ceil((score.seconds + TAIL_SECONDS) * sr);
+/** Render one note (drums included) into `out`. `prev` is the previous note of the same role. */
+export function renderSynthNote(out: Stereo, n: ScoreNote, sr: number, styleId: string, prev?: ScoreNote): void {
+  if (n.role === "drums") drum(out, n, sr, KITS[styleId] ?? KITS.default!);
+  else voiceFor(n.program)(out, n, sr, prev);
+}
+
+/** Offline: every note of a clip, one stem per role. */
+export async function renderSynthStems(notes: ScoreNote[], frames: number, styleId: string, sr: number, onProgress?: (f: number) => void): Promise<Map<Role, Stereo>> {
   const stems = new Map<Role, Stereo>();
-  const kit = KITS[score.style.id] ?? KITS.default!;
-  const total = score.notes.length;
   const prevByRole = new Map<Role, ScoreNote>();
   let done = 0;
-  for (const n of score.notes) {
+  for (const n of notes) {
     let out = stems.get(n.role);
     if (!out) stems.set(n.role, (out = stereo(frames)));
-    if (n.role === "drums") drum(out, n, sr, kit);
-    else voiceFor(n.program)(out, n, sr, prevByRole.get(n.role));
+    renderSynthNote(out, n, sr, styleId, prevByRole.get(n.role));
     prevByRole.set(n.role, n);
     if (++done % 64 === 0) {
-      onProgress?.(done / total);
+      onProgress?.(done / notes.length);
       await yieldToUi();
     }
   }
@@ -71,8 +78,8 @@ const piano: Voice = (out, n, sr) => {
   const t60 = Math.min(14, Math.max(0.6, 12 * Math.pow(2, -(n.key - 21) / 16)));
   const K = Math.max(1, Math.min(12, Math.floor(9000 / f)));
   const damped = n.key < 89;
-  const len = Math.ceil(Math.min(n.dur + (damped ? 0.35 : 1.5), t60) * sr);
-  const start = Math.round(n.t * sr);
+  const len = Math.ceil(Math.min(n.dur + (damped ? 0.35 : 1.5), t60, MAX_VOICE_SECONDS) * sr);
+  const start = Math.round(n.t * sr) - (out.base ?? 0);
   const offFrame = Math.round(n.dur * sr);
   const damp = Math.exp(-6.9 / (0.16 * sr));
   // Per partial: two rotating phasors (detuned strings), two-stage decay.
@@ -141,7 +148,7 @@ const epiano: Voice = (out, n, sr) => {
   const v = n.vel / 127;
   const t60 = Math.min(6, Math.max(0.8, 4 * Math.pow(2, -(n.key - 60) / 24)));
   const len = Math.ceil(Math.min(n.dur + 0.2, t60) * sr);
-  const start = Math.round(n.t * sr);
+  const start = Math.round(n.t * sr) - (out.base ?? 0);
   const off = n.dur;
   const dt = 1 / sr;
   const gain = 0.2 * Math.pow(v, 1.1);
@@ -181,7 +188,7 @@ function mallet(program: number): Voice {
     const reg = Math.pow(2, -(n.key - 60) / 24);
     const maxT = spec.t60[0]! * reg;
     const len = Math.ceil((spec.damp ? Math.min(n.dur + 0.3, maxT) : maxT) * sr);
-    const start = Math.round(n.t * sr);
+    const start = Math.round(n.t * sr) - (out.base ?? 0);
     const noise = new Noise(n.key * 31 + 7);
     const click = new Svf(sr);
     click.set(Math.min(8000, f * 6), 1.2);
@@ -209,7 +216,7 @@ const organ: Voice = (out, n, sr) => {
   const f = mtof(n.key);
   const draw = [1, 0.8, 0.5, 0.35, 0, 0.2, 0, 0.15];
   const len = Math.ceil((n.dur + 0.06) * sr);
-  const start = Math.round(n.t * sr);
+  const start = Math.round(n.t * sr) - (out.base ?? 0);
   const gain = 0.12 * (n.vel / 127);
   for (let i = 0; i < len && start + i < out.l.length; i++) {
     const t = i / sr;
@@ -252,7 +259,7 @@ function pluck(spec: PluckSpec): Voice {
     for (let i = 0; i < N; i++) raw[i] = exc.tick(noise.next());
     for (let i = 0; i < N; i++) buf[i] = raw[i]! - 0.9 * (raw[i - pickAt] ?? 0);
     const len = Math.ceil(Math.min(n.dur + 0.15, spec.t60 * 1.2) * sr);
-    const start = Math.round(n.t * sr);
+    const start = Math.round(n.t * sr) - (out.base ?? 0);
     const offFrame = Math.round(n.dur * sr);
     const gain = 0.5 * Math.pow(v, 1.1);
     let idx = 0;
@@ -326,8 +333,6 @@ const OBOE: SubSpec = { ...CLARINET, pw: 0.3, formants: [[1100, 5, 1.2], [2800, 
 const FLUTE: SubSpec = { wave: "tri", voices: 1, detune: 0, cutoff: 2500, keytrack: 1, envAmt: 0, fA: 0.05, fD: 0.1, fS: 1, q: 0.7, a: 0.06, d: 0.2, s: 0.9, r: 0.12, vib: [5, 10, 0.2], breath: 0.12, glide: 0.04, level: 0.5 };
 const VIOLIN: SubSpec = { wave: "saw", voices: 1, detune: 0, cutoff: 2500, keytrack: 2, envAmt: 0, fA: 0.1, fD: 0.1, fS: 1, q: 0.7, a: 0.08, d: 0.2, s: 0.9, r: 0.15, vib: [5.8, 22, 0.15], breath: 0.02, formants: [[280, 2, 0.6], [450, 3, 0.5], [2800, 2, 0.5]], glide: 0.05, level: 0.4 };
 
-/** Exported so the neural backend can fall back to these for its lead. */
-export const LEAD_FALLBACK: Record<keyof typeof LEADS, SubSpec> = { violin: VIOLIN, flute: FLUTE, tenor_saxophone: SAX, trumpet: BRASS };
 
 function sub(spec: SubSpec): Voice {
   return (out, n, sr, prev) => {
@@ -335,7 +340,7 @@ function sub(spec: SubSpec): Voice {
     const f = mtof(n.key);
     const fromKey = spec.glide && prev?.legato && Math.abs(prev.t + prev.dur - n.t) < 0.03 ? prev.key : n.key;
     const len = Math.ceil((n.dur + spec.r) * sr);
-    const start = Math.round(n.t * sr);
+    const start = Math.round(n.t * sr) - (out.base ?? 0);
     const oscs = Array.from({ length: spec.voices }, (_, i) => new Osc((i * 0.37 + n.key * 0.01) % 1));
     const subOsc = new Osc();
     const filt = new Svf(sr);
@@ -422,7 +427,7 @@ const HAT_FREQS = [205.3, 304.4, 369.6, 522.7, 540, 800];
 
 function drum(out: Stereo, n: ScoreNote, sr: number, kit: Kit): void {
   const v = Math.pow(n.vel / 127, 1.4);
-  const start = Math.round(n.t * sr);
+  const start = Math.round(n.t * sr) - (out.base ?? 0);
   const noise = new Noise(n.key * 2654435761 + Math.round(n.t * 1000));
   const write = (len: number, pan: number, fn: (t: number, i: number) => number) => {
     const gl = Math.cos(((pan + 1) * Math.PI) / 4) * Math.SQRT2;

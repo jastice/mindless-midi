@@ -7,12 +7,11 @@
 // @ts-expect-error: untyped Emscripten ES module from libadlmidi-js
 import createADLMIDIUntyped from "libadlmidi-js/dist/libadlmidi.nuked.browser.js";
 import type { AdlModule, CreateAdlModule } from "../audio/adlmidi_wasm.js";
-import { EV_ON, EventQueue, type SynthSink, barEvents, barFrames } from "../audio/events.js";
+import { EV_CC, EV_ON, EventQueue, type SynthSink, barEvents, barFrames } from "../audio/events.js";
 import { Leveler } from "../audio/leveler.js";
 import type { Role } from "../corpus/constants.js";
-import type { Score } from "./score.js";
-import { TAIL_SECONDS } from "./synth.js";
-import { type Stereo, stereo, yieldToUi } from "./dsp.js";
+import { type Stereo, stereo, yieldToUi } from "../sound/dsp.js";
+import { type Score, TAIL_SECONDS } from "./score.js";
 
 const createADLMIDI = createADLMIDIUntyped as CreateAdlModule;
 const EMULATOR_NUKED_FAST = 1;
@@ -85,7 +84,8 @@ export async function renderOpl(score: Score, sr: number, wasmUrl: string, opts:
   let frame = 0;
   for (const bar of score.bars) {
     const b = opts.role ? { ...bar, notes: bar.notes.filter((n) => n.role === opts.role) } : bar;
-    queue.push(barEvents(b, frame, sr).filter((e) => e.type !== EV_ON || e.frame < cutoff));
+    // Stems are panned by the bus (as in the app), so keep the chip centred.
+    queue.push(barEvents(b, frame, sr).filter((e) => (e.type !== EV_ON || e.frame < cutoff) && !(opts.role && e.type === EV_CC && e.a === 10)));
     frame += barFrames(bar, sr);
   }
   const total = Math.ceil((score.seconds + TAIL_SECONDS) * sr);

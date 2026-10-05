@@ -2,7 +2,7 @@
  * Fair listening: every variant is brought to the same integrated loudness
  * (ITU-R BS.1770, gated) and peak-limited, so "louder" never wins an A/B.
  */
-import type { Stereo } from "./dsp.js";
+import type { Stereo } from "../sound/dsp.js";
 
 export const TARGET_LUFS = -18;
 const CEILING = Math.pow(10, -1 / 20);

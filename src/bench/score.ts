@@ -7,20 +7,12 @@ import type { Role } from "../corpus/constants.js";
 import type { Instrument, StyleBundle } from "../corpus/schema.js";
 import { Conductor } from "../engine/conductor.js";
 import { type Bar, barSeconds } from "../engine/types.js";
+import type { ScoreNote } from "../sound/types.js";
 
-export interface ScoreNote {
-  /** Onset and duration, seconds. */
-  t: number;
-  dur: number;
-  key: number;
-  vel: number;
-  ch: number;
-  role: Role;
-  /** GM program sounding on this channel at the onset. */
-  program: number;
-  /** The next note of a monophonic line starts right where this one ends. */
-  legato?: boolean;
-}
+export type { ScoreNote };
+
+/** Rendered past the clip so releases and reverb ring out. */
+export const TAIL_SECONDS = 3;
 
 /** Monophonic lead instruments the neural models (and the other backends) can swap in. */
 export const LEADS = {

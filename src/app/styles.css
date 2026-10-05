@@ -143,6 +143,31 @@ code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em;
 .volume { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
 .volume input { width: 120px; accent-color: var(--accent); }
 
+.sound {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 0 20px 18px;
+}
+.sound-label { color: var(--muted); font-size: 13px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.chip:hover { border-color: var(--muted); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chip[aria-checked="true"] { background: var(--accent); border-color: var(--accent); color: #1a1408; font-weight: 600; }
+.sound-desc { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 13px; min-height: 1.4em; }
+
 .styles { margin-top: 28px; }
 .styles h2 { margin: 0; font-size: 18px; }
 .hint { margin: 2px 0 12px; color: var(--muted); font-size: 14px; }

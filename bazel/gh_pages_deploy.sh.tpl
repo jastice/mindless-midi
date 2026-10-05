@@ -31,7 +31,7 @@ else
   git -C "$work" checkout --quiet --orphan "$branch"
 fi
 
-git -C "$work" rm -rq --ignore-unmatch . >/dev/null
+git -C "$work" rm -rqf --ignore-unmatch . >/dev/null
 cp -RL "$site"/. "$work"/
 chmod -R u+w "$work"
 touch "$work/.nojekyll"

@@ -22,6 +22,7 @@ declare class AudioWorkletProcessor {
 }
 
 const BLOCK = 128;
+const IDLE_AFTER = 4;
 /** Emulator ids from libADLMIDI: 1 = Nuked OPL3 (fast, bit-exact). */
 const EMULATOR_NUKED_FAST = 1;
 
@@ -68,6 +69,8 @@ class MindlessProcessor extends AudioWorkletProcessor {
   private readonly leveler = new Leveler(sampleRate);
   private blocks = 0;
   private early: SynthEvent[][] = [];
+  /** Last frame with queued events; after a few silent seconds the chip idles (another engine may be playing). */
+  private busyUntil = 0;
 
   constructor(options: { processorOptions: { wasm: ArrayBuffer; chips: number } }) {
     super();
@@ -103,6 +106,7 @@ class MindlessProcessor extends AudioWorkletProcessor {
   private onMessage(msg: ToWorklet): void {
     switch (msg.type) {
       case "events":
+        this.busyUntil = Math.max(this.busyUntil, (msg.events[msg.events.length - 1]?.frame ?? 0) + IDLE_AFTER * sampleRate);
         if (this.sink) this.queue.push(msg.events);
         else this.early.push(msg.events);
         break;
@@ -111,12 +115,17 @@ class MindlessProcessor extends AudioWorkletProcessor {
         this.early = [];
         this.sink?.reset();
         break;
+      case "clearFrom":
+        this.queue.clearFrom(msg.frame);
+        break;
+
     }
   }
 
   process(_inputs: Float32Array[][], outputs: Float32Array[][]): boolean {
     const out = outputs[0];
     if (!out || !this.m || !this.sink) return true;
+    if (!this.queue.pending && currentFrame > this.busyUntil) return true;
     const left = out[0]!;
     const right = out[1] ?? left;
     const m = this.m;

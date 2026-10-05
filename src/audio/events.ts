@@ -114,6 +114,14 @@ export class EventQueue {
     return n;
   }
 
+  /** Drop events at or after `frame` and silence every voice there. */
+  clearFrom(frame: number): void {
+    const keep = this.q.slice(this.head).filter((e) => e.frame < frame);
+    this.q = keep;
+    this.head = 0;
+    this.push([{ frame, type: EV_RESET, ch: 0, a: 0, b: 0, id: 0 }]);
+  }
+
   get pending(): number {
     return this.q.length - this.head;
   }

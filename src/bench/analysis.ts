@@ -1,5 +1,5 @@
 /** Spectrogram rendering for the bench's waveform panel. */
-import type { Stereo } from "./dsp.js";
+import type { Stereo } from "../sound/dsp.js";
 
 function fft(re: Float32Array, im: Float32Array): void {
   const n = re.length;

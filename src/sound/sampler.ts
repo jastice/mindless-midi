@@ -1,27 +1,34 @@
 /**
- * Approach 2: multi-sampled instruments. Piano, Rhodes, mallets, upright bass
- * and tenor sax come from free SFZ libraries (velocity layers, round robins,
- * crossfades); everything else falls back to a General MIDI soundfont with a
- * sample per semitone. Notes are scheduled into an OfflineAudioContext, one
- * stem per role.
+ * Approach 2: multi-sampled instruments. Piano, electric piano, mallets,
+ * upright bass and tenor sax come from free SFZ libraries (velocity layers,
+ * round robins, crossfades); everything else falls back to a General MIDI
+ * soundfont with a sample per semitone; drums use per-style kits.
+ *
+ * Split in two so playback can run in a worker: `SampleLibrary` (main thread:
+ * resolves notes to sample zones, downloads and decodes them) and
+ * `renderSampleNote` (pure: mixes decoded sample data into a Stereo).
  */
-import type { Role } from "../corpus/constants.js";
-import type { Score, ScoreNote } from "./score.js";
-import { TAIL_SECONDS } from "./synth.js";
-import { type Stereo, yieldToUi } from "./dsp.js";
+import type { ScoreNote } from "./types.js";
+import type { Samples, Stereo } from "./dsp.js";
 
 const DANIGB = "https://danigb.github.io/samples/";
 const GLEITZ = "https://gleitz.github.io/midi-js-soundfonts/";
 
 export type Soundfont = "MusyngKite" | "FluidR3_GM";
 
-/** Downloads and decodes sample files once per page; tracks bytes for the report. */
+/** Decoded audio, transferable to a worker. */
+export interface SampleData {
+  channels: Samples[];
+  sampleRate: number;
+}
+
+/** Downloads and decodes sample files once per page; tracks bytes for reports. */
 export class SampleCache {
-  private readonly buffers = new Map<string, Promise<{ buffer: AudioBuffer; bytes: number }>>();
+  private readonly buffers = new Map<string, Promise<{ data: SampleData; bytes: number }>>();
   private readonly json = new Map<string, Promise<unknown>>();
   constructor(private readonly ctx: BaseAudioContext) {}
 
-  audio(url: string): Promise<{ buffer: AudioBuffer; bytes: number }> {
+  audio(url: string): Promise<{ data: SampleData; bytes: number }> {
     let p = this.buffers.get(url);
     if (!p) {
       p = fetch(url)
@@ -29,7 +36,12 @@ export class SampleCache {
           if (!r.ok) throw new Error(`${r.status} ${url}`);
           return r.arrayBuffer();
         })
-        .then(async (data) => ({ bytes: data.byteLength, buffer: await this.ctx.decodeAudioData(data) }));
+        .then(async (raw) => {
+          const bytes = raw.byteLength; // decodeAudioData detaches `raw`
+          const b = await this.ctx.decodeAudioData(raw);
+          const channels = Array.from({ length: b.numberOfChannels }, (_, c) => b.getChannelData(c).slice());
+          return { bytes, data: { channels, sampleRate: b.sampleRate } };
+        });
       this.buffers.set(url, p);
     }
     return p;
@@ -49,18 +61,29 @@ export class SampleCache {
 }
 
 /** One sample to play for a note. */
-interface Zone {
+export interface Zone {
   url: string;
   /** Playback rate (repitching). */
   rate: number;
   gain: number;
+  /** Start offset, frames of the decoded sample. */
   offset: number;
+}
+
+/** Everything the renderer needs for one note. */
+export interface PlannedNote {
+  zones: Zone[];
+  release: number;
+  /** Loop the sample when the note outlasts it. */
+  sustain: boolean;
+  drum: boolean;
+  /** Drums: stop at this time (open hi-hat choked by a closed one), seconds. */
+  cut?: number;
 }
 
 interface Instrument {
   label: string;
   release: number;
-  /** Sustained sounds loop when a note outlasts its sample. */
   sustain: boolean;
   zones(key: number, vel: number): Promise<Zone[]>;
 }
@@ -105,7 +128,7 @@ function playable(o: Opcodes): boolean {
   return true;
 }
 
-async function loadSfz(cache: SampleCache, url: string): Promise<{ base: string; regions: SfzRegion[] }> {
+async function loadSfz(cache: SampleCache, url: string, samplePath = ""): Promise<{ base: string; regions: SfzRegion[] }> {
   const doc = await cache.getJson<{ meta: { baseUrl?: string }; global?: Opcodes; groups: (Opcodes & { regions: Opcodes[]; control?: Opcodes })[] }>(url);
   const regions: SfzRegion[] = [];
   // A <control> header applies to every group after it, not just its own.
@@ -133,15 +156,15 @@ async function loadSfz(cache: SampleCache, url: string): Promise<{ base: string;
         xfout: pair(o.xfout_lovel, o.xfout_hivel),
         seqLength: Number(o.seq_length ?? 1),
         seqPosition: Number(o.seq_position ?? 1),
-        prefix,
+        prefix: samplePath + prefix,
       });
     }
   }
   return { base: doc.meta.baseUrl ?? url.slice(0, url.lastIndexOf("/") + 1), regions };
 }
 
-function sfzInstrument(cache: SampleCache, label: string, url: string, release: number, sustain = false): Instrument {
-  const loaded = loadSfz(cache, url);
+function sfzInstrument(cache: SampleCache, label: string, url: string, release: number, sustain = false, samplePath = ""): Instrument {
+  const loaded = loadSfz(cache, url, samplePath);
   const rr = new Map<number, number>();
   return {
     label,
@@ -183,7 +206,7 @@ const FLAT_NAMES = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", 
 function gmInstrument(cache: SampleCache, font: Soundfont, program: number, sustain: boolean, release: number): Instrument {
   const names = cache.getJson<string[]>(`${GLEITZ}${font}/names.json`);
   return {
-    label: `${font} #${program}`,
+    label: font === "MusyngKite" ? "MusyngKite GM soundfont (CC BY-SA 3.0)" : "FluidR3 GM soundfont (MIT)",
     release,
     sustain,
     async zones(key) {
@@ -244,7 +267,7 @@ function drumKit(styleId: string): Instrument {
   const kit = KITS[styleId] ?? KITS.synthwave!;
   const alias: Record<number, number> = { 35: 36, 40: 38, 44: 42, 57: 49, 59: 51, 47: 45, 48: 50 };
   return {
-    label: `${styleId} kit`,
+    label: "drum machine & Sonic Pi kits",
     release: 0.05,
     sustain: false,
     async zones(key) {
@@ -258,125 +281,162 @@ function drumKit(styleId: string): Instrument {
 
 const SUSTAINED = (p: number) => (p >= 16 && p <= 23) || (p >= 40 && p <= 95 && p !== 45 && p !== 46 && p !== 47);
 
-function instrumentFor(cache: SampleCache, font: Soundfont, n: ScoreNote): Instrument {
-  const p = n.program;
-  if (p <= 2) return sfzInstrument(cache, "Splendid Grand (PD)", `${DANIGB}splendid-grand-piano/websfz.json`, 0.35);
-  if (p === 4 || p === 5) return sfzInstrument(cache, "jRhodes3 (CC BY-NC)", `${DANIGB}jlearman/rhodes-mki/jrhodes3dst.websfz.json`, 0.25);
+function instrumentFor(cache: SampleCache, font: Soundfont, program: number): Instrument {
+  const p = program;
+  if (p <= 2) return sfzInstrument(cache, "Splendid Grand Piano (public domain)", `${DANIGB}splendid-grand-piano/websfz.json`, 0.35);
+  if (p === 4 || p === 5) return sfzInstrument(cache, "Greg Sullivan Wurlitzer EP200 (CC BY 3.0)", `${DANIGB}gs-e-pianos/Wurlitzer EP200/wurlitzer-ep200.websfz.json`, 0.25, false, "Samples/");
   if (p === 11) return sfzInstrument(cache, "VCSL vibraphone (CC0)", `${DANIGB}vcsl/Struck Idiophones/vibraphone-soft-mallets.websfz.json`, 0.6);
   if (p === 12) return sfzInstrument(cache, "VCSL marimba (CC0)", `${DANIGB}vcsl/Struck Idiophones/marimba.websfz.json`, 0.4);
-  if (p === 32) return sfzInstrument(cache, "Smolken double bass (CC0)", `${DANIGB}dsmolken/double-bass/dsmolkenrubnerbasspizz.websfz.json`, 0.15);
+  if (p === 32) return sfzInstrument(cache, "D. Smolken double bass (CC0)", `${DANIGB}dsmolken/double-bass/dsmolkenrubnerbasspizz.websfz.json`, 0.15);
   if (p === 66) return sfzInstrument(cache, "VCSL tenor sax (CC0)", `${DANIGB}vcsl/Reed Aerophones/tenor-saxophone-vibrato.websfz.json`, 0.12, true);
   return gmInstrument(cache, font, p, SUSTAINED(p), SUSTAINED(p) ? 0.4 : 0.2);
 }
 
-export interface SamplerReport {
-  bytes: number;
-  files: number;
-  instruments: string[];
-}
+/** Resolves notes to zones and makes sure their samples are downloaded. */
+export class SampleLibrary {
+  private readonly instruments = new Map<string, Instrument>();
+  private readonly loaded = new Map<string, SampleData>();
+  private readonly failed = new Set<string>();
+  /** Download size per sample URL. */
+  readonly sizes = new Map<string, number>();
+  bytes = 0;
 
-/**
- * Render one stem per role. `skip` leaves roles out (the neural backend
- * replaces the lead).
- */
-export async function renderSampleStems(
-  score: Score,
-  sr: number,
-  cache: SampleCache,
-  font: Soundfont,
-  skip: Role[] = [],
-  onProgress?: (f: number) => void,
-): Promise<{ stems: Map<Role, Stereo>; report: SamplerReport }> {
-  const frames = Math.ceil((score.seconds + TAIL_SECONDS) * sr);
-  const instruments = new Map<string, Instrument>();
-  const pick = (n: ScoreNote) => {
-    const id = n.role === "drums" ? "drums" : `${n.program}`;
-    let inst = instruments.get(id);
-    if (!inst) instruments.set(id, (inst = n.role === "drums" ? drumKit(score.style.id) : instrumentFor(cache, font, n)));
+  constructor(
+    readonly cache: SampleCache,
+    private readonly font: Soundfont = "MusyngKite",
+  ) {}
+
+  private instrument(n: ScoreNote, styleId: string): Instrument {
+    const id = n.role === "drums" ? `kit:${styleId}` : `${n.program}`;
+    let inst = this.instruments.get(id);
+    if (!inst) this.instruments.set(id, (inst = n.role === "drums" ? drumKit(styleId) : instrumentFor(this.cache, this.font, n.program)));
     return inst;
-  };
-
-  // Resolve zones and fetch every sample up front.
-  const notes = score.notes.filter((n) => !skip.includes(n.role));
-  const planned: { n: ScoreNote; inst: Instrument; zones: Zone[] }[] = [];
-  for (const n of notes) {
-    const inst = pick(n);
-    planned.push({ n, inst, zones: await inst.zones(n.key, n.vel) });
   }
-  const urls = [...new Set(planned.flatMap((p) => p.zones.map((z) => z.url)))];
-  let loaded = 0;
-  const buffers = new Map<string, { buffer: AudioBuffer; bytes: number }>();
-  const queue = [...urls];
-  const worker = async () => {
-    for (let url = queue.shift(); url; url = queue.shift()) {
-      try {
-        buffers.set(url, await cache.audio(url));
-      } catch (err) {
-        console.warn("sample failed", url, err);
-      }
-      onProgress?.((0.8 * ++loaded) / urls.length);
-    }
-  };
-  await Promise.all(Array.from({ length: 8 }, worker));
 
-  const stems = new Map<Role, Stereo>();
-  const roles = [...new Set(notes.map((n) => n.role))];
-  for (const [ri, role] of roles.entries()) {
-    const ctx = new OfflineAudioContext(2, frames, sr);
-    let openHat: GainNode | null = null;
-    for (const { n, inst, zones } of planned) {
-      if (n.role !== role) continue;
-      const vgain = Math.pow(n.vel / 127, 1.8);
-      if (role === "drums" && (n.key === 42 || n.key === 44) && openHat) {
-        openHat.gain.setTargetAtTime(0, n.t, 0.01);
-        openHat = null;
-      }
-      for (const z of zones) {
-        const b = buffers.get(z.url);
-        if (!b) continue;
-        const src = ctx.createBufferSource();
-        src.buffer = b.buffer;
-        src.playbackRate.value = z.rate;
-        const offset = z.offset / b.buffer.sampleRate;
-        const natural = (b.buffer.duration - offset) / z.rate;
-        if (inst.sustain && n.dur + inst.release > natural * 0.9) {
-          const [ls, le] = loopPoints(b.buffer);
-          src.loop = true;
-          src.loopStart = ls;
-          src.loopEnd = le;
+  /** Labels of every instrument used so far (for credits and reports). */
+  get labels(): string[] {
+    return [...new Set([...this.instruments.values()].map((i) => i.label))];
+  }
+
+  sample(url: string): SampleData | undefined {
+    return this.loaded.get(url);
+  }
+
+  /**
+   * Plan notes (in order: round robins advance) and download what they need.
+   * Resolves with the plans and the samples that were new to this call.
+   */
+  async prepare(notes: ScoreNote[], styleId: string, concurrency = 8): Promise<{ plans: PlannedNote[]; fresh: Map<string, SampleData> }> {
+    const plans: PlannedNote[] = [];
+    for (const n of notes) {
+      const inst = this.instrument(n, styleId);
+      plans.push({ zones: await inst.zones(n.key, n.vel), release: inst.release, sustain: inst.sustain, drum: n.role === "drums" });
+    }
+    const cuts = chokes(notes);
+    plans.forEach((p, i) => (p.cut = cuts[i]));
+    const queue = [...new Set(plans.flatMap((p) => p.zones.map((z) => z.url)))].filter((u) => !this.loaded.has(u) && !this.failed.has(u));
+    const fresh = new Map<string, SampleData>();
+    const worker = async () => {
+      for (let url = queue.shift(); url; url = queue.shift()) {
+        try {
+          const { data, bytes } = await this.cache.audio(url);
+          // A concurrent prepare() may have claimed it while we waited.
+          if (this.loaded.has(url)) continue;
+          this.loaded.set(url, data);
+          fresh.set(url, data);
+          this.bytes += bytes;
+          this.sizes.set(url, bytes);
+        } catch (err) {
+          this.failed.add(url);
+          console.warn("sample failed", url, err);
         }
-        const g = ctx.createGain();
-        g.gain.setValueAtTime(z.gain * vgain, n.t);
-        if (role !== "drums") g.gain.setTargetAtTime(0, n.t + n.dur, inst.release / 4);
-        src.connect(g).connect(ctx.destination);
-        src.start(n.t, offset);
-        if (role !== "drums") src.stop(n.t + n.dur + inst.release * 2);
-        if (role === "drums" && n.key === 46) openHat = g;
       }
-    }
-    const rendered = await ctx.startRendering();
-    stems.set(role, { l: rendered.getChannelData(0), r: rendered.getChannelData(1) });
-    onProgress?.(0.8 + (0.2 * (ri + 1)) / roles.length);
-    await yieldToUi();
+    };
+    await Promise.all(Array.from({ length: concurrency }, worker));
+    return { plans, fresh };
   }
-  const bytes = urls.reduce((a, u) => a + (buffers.get(u)?.bytes ?? 0), 0);
-  return { stems, report: { bytes, files: buffers.size, instruments: [...new Set([...instruments.values()].map((i) => i.label))] } };
 }
 
-const loopCache = new WeakMap<AudioBuffer, [number, number]>();
+/** An open hi-hat stops at the next closed hi-hat among the same notes. */
+function chokes(notes: ScoreNote[]): (number | undefined)[] {
+  const out: (number | undefined)[] = new Array(notes.length);
+  let open = -1;
+  notes.forEach((n, i) => {
+    if (n.role !== "drums") return;
+    if (n.key === 46) open = i;
+    else if ((n.key === 42 || n.key === 44) && open >= 0) {
+      out[open] = n.t;
+      open = -1;
+    }
+  });
+  return out;
+}
 
-/** A loop in the stable middle of a sample, snapped to rising zero crossings. */
-function loopPoints(b: AudioBuffer): [number, number] {
-  const hit = loopCache.get(b);
+// --- Rendering ------------------------------------------------------------
+
+/** Longest a sampled note can ring past its onset, seconds (window sizing). */
+export const MAX_SAMPLE_SECONDS = 12;
+
+const loops = new WeakMap<SampleData, [number, number]>();
+
+/** A loop in the stable middle of a sample, snapped to rising zero crossings (frames). */
+function loopPoints(d: SampleData): [number, number] {
+  const hit = loops.get(d);
   if (hit) return hit;
-  const d = b.getChannelData(0);
+  const c = d.channels[0]!;
   const snap = (i: number) => {
-    for (let j = i; j < d.length - 1; j++) if (d[j]! <= 0 && d[j + 1]! > 0) return j;
+    for (let j = i; j < c.length - 1; j++) if (c[j]! <= 0 && c[j + 1]! > 0) return j;
     return i;
   };
-  const s = snap(Math.floor(d.length * 0.45));
-  const e = snap(Math.floor(d.length * 0.85));
-  const pts: [number, number] = e > s + 64 ? [s / b.sampleRate, e / b.sampleRate] : [0, b.duration];
-  loopCache.set(b, pts);
+  const s = snap(Math.floor(c.length * 0.45));
+  const e = snap(Math.floor(c.length * 0.85));
+  const pts: [number, number] = e > s + 64 ? [s, e] : [0, c.length - 1];
+  loops.set(d, pts);
   return pts;
+}
+
+/** Cubic (Catmull-Rom) read at fractional position. */
+function read(c: Samples, pos: number): number {
+  const i = Math.floor(pos);
+  const f = pos - i;
+  const y0 = c[i - 1] ?? 0;
+  const y1 = c[i] ?? 0;
+  const y2 = c[i + 1] ?? 0;
+  const y3 = c[i + 2] ?? 0;
+  return y1 + 0.5 * f * (y2 - y0 + f * (2 * y0 - 5 * y1 + 4 * y2 - y3 + f * (3 * (y1 - y2) + y3 - y0)));
+}
+
+/** Mix one planned note into `out` (offset by its `base`). */
+export function renderSampleNote(out: Stereo, n: ScoreNote, plan: PlannedNote, sample: (url: string) => SampleData | undefined, sr: number): void {
+  const start = Math.round(n.t * sr) - (out.base ?? 0);
+  const vgain = Math.pow(n.vel / 127, 1.8);
+  const offFrame = Math.round(n.dur * sr);
+  const cutFrame = plan.cut !== undefined ? Math.round((plan.cut - n.t) * sr) : Infinity;
+  const relCoef = Math.exp(-1 / ((plan.release / 4) * sr));
+  const chokeCoef = Math.exp(-1 / (0.01 * sr));
+  const maxFrames = Math.min(out.l.length - start, Math.round(MAX_SAMPLE_SECONDS * sr));
+  for (const z of plan.zones) {
+    const d = sample(z.url);
+    if (!d) continue;
+    const L = d.channels[0]!;
+    const R = d.channels[1] ?? L;
+    const step = (z.rate * d.sampleRate) / sr;
+    const loop = plan.sustain && (n.dur + plan.release) * sr * step > (L.length - z.offset) * 0.9 ? loopPoints(d) : null;
+    const g = z.gain * vgain;
+    const stopAt = plan.drum ? Infinity : offFrame + Math.round(plan.release * 2 * sr);
+    let pos = z.offset;
+    let env = 1;
+    for (let i = 0; i < maxFrames && i < stopAt; i++) {
+      if (loop && pos >= loop[1]) pos -= loop[1] - loop[0];
+      if (pos >= L.length - 1) break;
+      if (plan.drum ? i >= cutFrame : i >= offFrame) env *= plan.drum ? chokeCoef : relCoef;
+      if (env < 1e-4) break;
+      const k = start + i;
+      if (k >= 0) {
+        out.l[k]! += read(L, pos) * g * env;
+        out.r[k]! += read(R, pos) * g * env;
+      }
+      pos += step;
+    }
+  }
 }

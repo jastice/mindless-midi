@@ -9,7 +9,7 @@ import * as tf from "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-backend-webgl";
 import { type GraphModel, loadGraphModel, registerOp } from "@tensorflow/tfjs-converter";
 import type { LeadId, ScoreNote } from "./score.js";
-import { Noise, type Stereo } from "./dsp.js";
+import { Noise, type Stereo } from "../sound/dsp.js";
 
 const CHECKPOINTS = "https://storage.googleapis.com/magentadata/js/checkpoints/ddsp/";
 const FPS = 250;
