@@ -35,6 +35,8 @@ git -C "$work" rm -rq --ignore-unmatch . >/dev/null
 cp -RL "$site"/. "$work"/
 chmod -R u+w "$work"
 touch "$work/.nojekyll"
+repo="$(git remote get-url "$remote" | sed -E 's#.*github\.com[:/]##; s#\.git$##')"
+tools/stamp-site.sh "$work" "$(git rev-parse HEAD)" "$repo"
 git -C "$work" add -A
 if git -C "$work" diff --cached --quiet; then
   echo "site unchanged; nothing to deploy"

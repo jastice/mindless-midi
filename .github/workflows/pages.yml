@@ -39,6 +39,7 @@ jobs:
           mkdir -p _site
           cp -RL "$site"/. _site/
           chmod -R u+w _site
+          tools/stamp-site.sh _site "${{ github.event.pull_request.head.sha || github.sha }}" "${{ github.repository }}"
           ls -la _site
 
       - uses: actions/upload-pages-artifact@v5
