@@ -4,6 +4,10 @@ build --nolegacy_external_runfiles
 # rules_ts: tsc both type-checks and emits; skip checking .d.ts from node_modules.
 common --@aspect_rules_ts//ts:skipLibCheck=always
 common --@aspect_rules_ts//ts:default_to_tsc_transpiler
+# Release builds: bake the commit hash into the site footer.
+build:stamp --stamp
+build:stamp --workspace_status_command=tools/workspace_status.sh
+
 # Show test output on failure.
 test --test_output=errors
 

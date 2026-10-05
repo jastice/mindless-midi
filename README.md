@@ -84,6 +84,7 @@ Custom rules live in `bazel/`:
 | `music_style` | `bazel/music.bzl` | Validates a corpus (an invalid corpus fails the build), binds the FM bank and UI colour, and calibrates per-instrument CC7 levels plus a style gain by rendering through the synth. `--output_groups=+calibration` emits a report. |
 | `style_pack` | `bazel/music.bzl` | Merges styles into the `styles.json` the app fetches. |
 | `gh_pages_deploy` | `bazel/deploy.bzl` | `bazel run` target that commits the built site to a branch and pushes it. |
+| `stamp_build_info` | `bazel/stamp.bzl` | Fills the footer's build line (commit hash linked to GitHub) from workspace status. Needs `--config=stamp`. |
 | `ts_lib`, `ts_test`, `ts_binary` | `bazel/ts.bzl` | Repo conventions over rules_ts/rules_js (browser vs Node tsconfig, `node:test` tests). |
 
 Third-party rules: `aspect_rules_js`, `aspect_rules_ts`, `aspect_rules_esbuild`,
@@ -123,7 +124,7 @@ them with API-generated ones.
 ## Deploying
 
 The workflow in `.github/workflows/pages.yml` runs `bazel test //...` and
-`bazel build //site` on every push and PR, and publishes to GitHub Pages from
+`bazel build --config=stamp //site` on every push and PR, and publishes to GitHub Pages from
 `main`. One-time setup after pushing the repo: **Settings → Pages → Source:
 GitHub Actions**.
 
@@ -144,10 +145,11 @@ same-repo PR). It does nothing until you set it up once:
 To publish by hand to a `gh-pages` branch instead:
 
 ```bash
-bazel run //site:deploy -- --dry-run
+bazel run --config=stamp //site:deploy -- --dry-run
 ```
 
-Drop `--dry-run` to push. The site is fully static and uses relative URLs, so
+`--config=stamp` bakes the commit hash into the footer; without it the build
+line is left out. Drop `--dry-run` to push. The site is fully static and uses relative URLs, so
 it works from any sub-path or static host. It needs a secure context (HTTPS or
 localhost) for AudioWorklet.
 

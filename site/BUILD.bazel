@@ -8,13 +8,14 @@ copy_to_directory(
     srcs = [
         "//src/app:bundle",
         "//src/app:favicon.svg",
-        "//src/app:index.html",
+        "//src/app:index_html",
         "//src/app:styles.css",
         "//src/audio:worklet",
         "//styles",
     ],
     root_paths = [
         "src/app/bundle",
+        "src/app/stamped",
         "src/app",
         "src/audio",
         "styles",

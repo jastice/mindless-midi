@@ -1,4 +1,5 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//bazel:stamp.bzl", "stamp_build_info")
 load("//bazel:ts.bzl", "ts_lib")
 
 ts_lib(
@@ -40,9 +41,16 @@ esbuild(
     ],
 )
 
+# index.html with the footer build line filled in (see --config=stamp).
+stamp_build_info(
+    name = "index_html",
+    src = "index.html",
+    out = "stamped/index.html",
+    visibility = ["//site:__pkg__"],
+)
+
 exports_files(
     [
-        "index.html",
         "styles.css",
         "favicon.svg",
     ],

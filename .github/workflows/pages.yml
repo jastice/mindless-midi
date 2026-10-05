@@ -31,15 +31,17 @@ jobs:
         run: bazel test //...
 
       - name: Build site
-        run: bazel build //site
+        env:
+          # HEAD on pull_request runs is a synthetic merge commit.
+          STAMP_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bazel build --config=stamp //site
 
       - name: Collect site
         run: |
-          site="$(bazel info execution_root)/$(bazel cquery --output=files //site 2>/dev/null)"
+          site="$(bazel info execution_root)/$(bazel cquery --config=stamp --output=files //site 2>/dev/null)"
           mkdir -p _site
           cp -RL "$site"/. _site/
           chmod -R u+w _site
-          tools/stamp-site.sh _site "${{ github.event.pull_request.head.sha || github.sha }}" "${{ github.repository }}"
           ls -la _site
 
       - uses: actions/upload-pages-artifact@v5
