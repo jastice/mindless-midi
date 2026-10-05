@@ -8,6 +8,7 @@ copy_to_directory(
     srcs = [
         "//src/app:bundle",
         "//src/app:favicon.svg",
+        "//src/app:fonts",
         "//src/app:index_html",
         "//src/app:styles.css",
         "//src/audio:worklet",

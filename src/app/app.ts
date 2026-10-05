@@ -9,11 +9,12 @@ import { randomSeed } from "../theory/seed.js";
 import { chordName } from "../theory/theory.js";
 import { type Engine, Player, type TimedBar } from "./player.js";
 
-const ENGINES: { id: Engine; label: string; desc: string }[] = [
-  { id: "fm", label: "FM chip", desc: "An emulated OPL3 FM chip with classic DOS-era patch banks. The original beepy-boopy sound." },
-  { id: "fm_bus", label: "FM + studio", desc: "The same chip, one track per instrument, mixed with reverb, echo, ducking and tape." },
-  { id: "synth", label: "Synth", desc: "Modelled instruments (struck strings, plucks, analog voices), mixed in the studio. Nothing to download." },
-  { id: "samples", label: "Samples", desc: "Recorded instruments, downloaded as the music needs them (a few MB per style), mixed in the studio." },
+/** Each engine is also an "edition" of the page: its look is in styles.css, keyed on `data-engine`. */
+const ENGINES: { id: Engine; label: string; tag: string; edition: string; desc: string }[] = [
+  { id: "fm", label: "FM chip", tag: "OPL3 sound card", edition: "Edition I · FM", desc: "An emulated OPL3 FM chip with classic DOS-era patch banks. The original beepy-boopy sound." },
+  { id: "fm_bus", label: "FM + studio", tag: "studio-mixed chip", edition: "Edition II · Studio", desc: "The same chip, one track per instrument, mixed with reverb, echo, ducking and tape." },
+  { id: "synth", label: "Synth", tag: "modelled instruments", edition: "Edition III · Schematic", desc: "Modelled instruments (struck strings, plucks, analog voices), mixed in the studio. Nothing to download." },
+  { id: "samples", label: "Samples", tag: "recorded instruments", edition: "Edition IV · Field notes", desc: "Recorded instruments, downloaded as the music needs them (a few MB per style), mixed in the studio." },
 ];
 import { Roll } from "./roll.js";
 
@@ -77,15 +78,16 @@ async function main(): Promise<void> {
   // --- Styles -------------------------------------------------------------
   const grid = $("styles");
   const cards = new Map<string, HTMLButtonElement>();
-  for (const s of styles) {
+  for (const [n, s] of styles.entries()) {
     const card = document.createElement("button");
     card.type = "button";
-    card.className = "style-card";
+    card.className = "style";
     card.style.setProperty("--swatch", s.color);
     card.setAttribute("aria-pressed", String(selected.has(s.id)));
-    card.innerHTML = `<span class="check" aria-hidden="true"></span><span><span class="title"></span><span class="desc"></span></span>`;
-    card.querySelector(".title")!.textContent = s.corpus.title;
-    card.querySelector(".desc")!.textContent = s.corpus.description;
+    card.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="no" aria-hidden="true"></span><span class="nm"><span class="t"></span><span class="badge">Now playing</span></span><span class="ds"></span>`;
+    card.querySelector(".no")!.textContent = String(n + 1).padStart(2, "0");
+    card.querySelector(".t")!.textContent = s.corpus.title;
+    card.querySelector(".ds")!.textContent = s.corpus.description;
     card.addEventListener("click", () => {
       if (selected.has(s.id)) {
         if (selected.size === 1) return toast("Keep at least one style");
@@ -104,12 +106,15 @@ async function main(): Promise<void> {
   // --- Sound engine -------------------------------------------------------
   const chips = $("engines");
   const chipFor = new Map<Engine, HTMLButtonElement>();
-  for (const e of ENGINES) {
+  for (const [n, e] of ENGINES.entries()) {
     const chip = document.createElement("button");
     chip.type = "button";
-    chip.className = "chip";
+    chip.className = "opt";
     chip.setAttribute("role", "radio");
-    chip.textContent = e.label;
+    chip.innerHTML = `<span class="top"><span class="dot" aria-hidden="true"></span><span class="ltr" aria-hidden="true"></span></span><span class="nm"><span></span></span><span class="tag"></span>`;
+    chip.querySelector(".ltr")!.textContent = String.fromCharCode(65 + n);
+    chip.querySelector(".nm > span")!.textContent = e.label;
+    chip.querySelector(".tag")!.textContent = e.tag;
     chip.title = e.desc;
     chip.addEventListener("click", () => {
       void player.setEngine(e.id);
@@ -123,7 +128,7 @@ async function main(): Promise<void> {
     const pending = player.pendingEngine;
     const shown = player.audibleEngine;
     const progress = player.loadProgress;
-    // The chip that is loading fills up like a progress bar.
+    // The rule above the option that is loading fills up like a progress bar.
     const loadingChip = pending ?? (progress !== null ? shown : null);
     for (const [id, chip] of chipFor) {
       chip.setAttribute("aria-checked", String(id === shown));
@@ -131,11 +136,18 @@ async function main(): Promise<void> {
       const filling = id === loadingChip && progress !== null;
       chip.classList.toggle("filling", filling);
       chip.style.setProperty("--progress", filling ? String(progress) : "0");
-      if (filling) chip.setAttribute("aria-label", `${chip.textContent}, loading ${Math.round(progress * 100)}%`);
+      if (filling) chip.setAttribute("aria-label", `${ENGINES.find((x) => x.id === id)!.label}, loading ${Math.round(progress * 100)}%`);
       else chip.removeAttribute("aria-label");
       chip.tabIndex = id === shown ? 0 : -1;
     }
     const e = ENGINES.find((x) => x.id === shown)!;
+    // The page re-dresses itself for the engine that is actually audible.
+    if (document.documentElement.dataset.engine !== shown) {
+      document.documentElement.dataset.engine = shown;
+      roll.readTheme();
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--paper").trim());
+    }
+    $("edition").textContent = e.edition;
     let desc = player.loading ? "Loading samples…" : e.desc;
     if (pending) {
       const { bytes, rate } = player.downloads;
@@ -248,14 +260,17 @@ async function main(): Promise<void> {
     if (key === lastKey) return;
     lastKey = key;
     nowStyle.textContent = i.styleTitle;
-    nowStyle.style.color = byId.get(i.styleId)?.color ?? "";
+    nowStyle.style.setProperty("--swatch", byId.get(i.styleId)?.color ?? "");
     meta.textContent = i.gap
       ? "next piece coming up"
-      : `${i.area ? `${i.area} · ` : ""}${i.keyName} · ${tb.bar.bpm} bpm · ${i.section} · bar ${i.barInPiece + 1}/${i.pieceBars}${player.playing ? "" : " · paused"}`;
+      : `${i.area ? `${i.area} · ` : ""}${i.keyName} · ${tb.bar.bpm} bpm${player.playing ? "" : " · paused"}`;
+    $("prog-piece").textContent = `Piece ${i.pieceIndex + 1}`;
+    $("prog-where").textContent = i.gap ? "" : `${i.section} · bar ${i.barInPiece + 1} of ${i.pieceBars}`;
     const tonic = i.tonic;
     chord.replaceChildren(
       ...i.chords.flatMap((sym, k) => {
         const name = document.createElement("span");
+        name.className = "name";
         name.textContent = chordName(tonic, sym);
         const roman = document.createElement("span");
         roman.className = "roman";
@@ -270,7 +285,7 @@ async function main(): Promise<void> {
         return parts;
       }),
     );
-    $("progress").style.width = `${((i.barInPiece + 1) / i.pieceBars) * 100}%`;
+    $("progress").style.setProperty("--p", String((i.barInPiece + 1) / i.pieceBars));
     for (const [id, card] of cards) card.classList.toggle("playing", id === i.styleId);
     document.title = `${player.playing ? "▶" : "❚❚"} ${i.styleTitle} · Mindless Midi`;
     if ("mediaSession" in navigator && i.barInPiece === 0) updateMediaSession(i.styleTitle, i.keyName, i.pieceIndex);
@@ -290,7 +305,8 @@ async function main(): Promise<void> {
   }
 
   function render(): void {
-    playBtn.textContent = player.playing ? "❚❚ Pause" : "▶ Play";
+    $("play-glyph").textContent = player.playing ? "❚❚" : "▶";
+    $("play-word").textContent = player.playing ? "Pause" : "Play";
     playBtn.setAttribute("aria-label", player.playing ? "Pause" : "Play");
     if ("mediaSession" in navigator) navigator.mediaSession.playbackState = player.playing ? "playing" : "paused";
     lastKey = "";
@@ -313,5 +329,5 @@ async function main(): Promise<void> {
 
 main().catch((err: unknown) => {
   console.error(err);
-  document.body.insertAdjacentHTML("afterbegin", `<p style="padding:16px;color:#fc8181">Failed to start: ${String(err)}</p>`);
+  document.body.insertAdjacentHTML("afterbegin", `<p style="padding:16px;color:#d93a18">Failed to start: ${String(err)}</p>`);
 });

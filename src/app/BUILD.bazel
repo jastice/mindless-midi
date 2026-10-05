@@ -50,6 +50,12 @@ stamp_build_info(
     visibility = ["//site:__pkg__"],
 )
 
+filegroup(
+    name = "fonts",
+    srcs = glob(["fonts/*.woff2", "fonts/OFL-*.txt"]),
+    visibility = ["//site:__pkg__"],
+)
+
 exports_files(
     [
         "styles.css",
