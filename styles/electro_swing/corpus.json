@@ -1,0 +1,1167 @@
+{
+  "title": "Electro Swing",
+  "description": "A 1930s speakeasy with a four-on-the-floor kick: swinging clarinet, muted trumpet and brass stabs over gypsy-jazz minor changes.",
+  "tempo": {
+    "min": 118,
+    "max": 128
+  },
+  "beatsPerBar": 4,
+  "swing": 0.62,
+  "swingUnit": "8th",
+  "humanize": 0.15,
+  "keys": [
+    {
+      "tonic": "A",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "D",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "G",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "E",
+      "mode": "aeolian"
+    },
+    {
+      "tonic": "C",
+      "mode": "aeolian"
+    },
+    {
+      "tonic": "F",
+      "mode": "dorian"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Clarinet",
+      "program": 71,
+      "octave": 5,
+      "volume": 0.55,
+      "pan": 0.15
+    },
+    {
+      "role": "counter",
+      "name": "Muted trumpet",
+      "program": 59,
+      "octave": 4,
+      "volume": 0.45,
+      "pan": -0.3
+    },
+    {
+      "role": "comp",
+      "name": "Manouche guitar",
+      "program": 25,
+      "octave": 4,
+      "volume": 0.42,
+      "pan": -0.15
+    },
+    {
+      "role": "pad",
+      "name": "Brass stabs",
+      "program": 61,
+      "octave": 4,
+      "volume": 0.45,
+      "pan": 0.2
+    },
+    {
+      "role": "arp",
+      "name": "Honky-tonk piano",
+      "program": 3,
+      "octave": 4,
+      "volume": 0.38,
+      "pan": 0.3
+    },
+    {
+      "role": "bass",
+      "name": "Upright bass",
+      "program": 32,
+      "octave": 2,
+      "volume": 0.75,
+      "pan": 0
+    },
+    {
+      "role": "drums",
+      "name": "Club kit",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.65,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "minor-swing",
+      "mood": "cigarette smoke",
+      "chords": [
+        {
+          "symbol": "i6",
+          "beats": 4
+        },
+        {
+          "symbol": "i6",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        },
+        {
+          "symbol": "i6",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "two-step",
+      "mood": "heels on the floor",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "dark-turn",
+      "mood": "a deal gone wrong",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "iv",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI7",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "velvet",
+      "mood": "after hours",
+      "chords": [
+        {
+          "symbol": "iv6",
+          "beats": 4
+        },
+        {
+          "symbol": "i6",
+          "beats": 4
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "stomp",
+      "mood": "the band kicks in",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 8
+        },
+        {
+          "symbol": "V7",
+          "beats": 8
+        }
+      ]
+    },
+    {
+      "id": "charleston",
+      "mood": "flappers",
+      "chords": [
+        {
+          "symbol": "I6",
+          "beats": 2
+        },
+        {
+          "symbol": "vi7",
+          "beats": 2
+        },
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "I6",
+          "beats": 2
+        },
+        {
+          "symbol": "vi7",
+          "beats": 2
+        },
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        }
+      ],
+      "palette": "ballroom"
+    },
+    {
+      "id": "ragtime-circle",
+      "mood": "player piano",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 4
+        },
+        {
+          "symbol": "VI7",
+          "beats": 4
+        },
+        {
+          "symbol": "II7",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ],
+      "palette": "ballroom"
+    }
+  ],
+  "motifs": [
+    {
+      "id": "charleston-hook",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.65
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "clarinet-run",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.65
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.65
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 2.5,
+          "deg": 8,
+          "v": 0.75
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 7,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "sly-riff",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.65
+        },
+        {
+          "t": 1.5,
+          "d": 1,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "wink",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "trumpet-answer",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 6.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 4,
+          "v": 0.6
+        }
+      ]
+    },
+    {
+      "id": "wah-wah",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 1,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 1,
+          "deg": 6,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "piano-stride-up",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.65
+        },
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 9,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.65
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "piano-ticks",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.25,
+          "deg": 11,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "two-beat",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 2,
+          "d": 0.9,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.6,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "walking",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 1,
+          "d": 0.9,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 0.9,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 3,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.65,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "octave-bounce",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.75
+        }
+      ]
+    }
+  ],
+  "comping": [
+    {
+      "id": "la-pompe",
+      "role": "comp",
+      "voicing": "close",
+      "lengthBeats": 4,
+      "strum": 0.015,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.2,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.3,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 0.2,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 0.3,
+          "v": 0.65
+        }
+      ]
+    },
+    {
+      "id": "offbeat-chops",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "v": 0.5
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.25,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "brass-stabs",
+      "role": "pad",
+      "voicing": "close",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.4,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "v": 0.6
+        },
+        {
+          "t": 3.5,
+          "d": 0.4,
+          "v": 0.65
+        }
+      ]
+    },
+    {
+      "id": "brass-swell",
+      "role": "pad",
+      "voicing": "open",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 3.5,
+          "v": 0.55
+        },
+        {
+          "t": 6,
+          "d": 1,
+          "v": 0.65
+        },
+        {
+          "t": 7,
+          "d": 0.5,
+          "v": 0.6
+        }
+      ]
+    },
+    {
+      "id": "hit-on-four",
+      "role": "pad",
+      "voicing": "close",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 3,
+          "d": 0.5,
+          "v": 0.7
+        }
+      ]
+    }
+  ],
+  "drums": [
+    {
+      "id": "swing-ride",
+      "kind": "groove",
+      "intensity": 0.35,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.......",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "....x.......x...",
+        "openHat": "",
+        "ride": "X.x.x.x.X.x.x.x.",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "four-floor",
+      "kind": "groove",
+      "intensity": 0.6,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "",
+        "rim": "",
+        "clap": "....x.......x...",
+        "closedHat": "x...x...x...x...",
+        "openHat": "..x...x...x...x.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "club-drive",
+      "kind": "groove",
+      "intensity": 0.85,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "....X.......X...",
+        "rim": "",
+        "clap": "....x.......x...",
+        "closedHat": "",
+        "openHat": "..x...x...x...x.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "xoxoxoxoxoxoxoxo"
+      }
+    },
+    {
+      "id": "breakdown",
+      "kind": "groove",
+      "intensity": 0.2,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "....x.......x...",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "x.x.x.x.x.x.x.x.",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "drum-roll",
+      "kind": "fill",
+      "intensity": 0.7,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...............",
+        "snare": "....x.x.xxxxXXXX",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "brush-kick-fill",
+      "kind": "fill",
+      "intensity": 0.5,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X.X.",
+        "snare": "........x.x.x.x.",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "X...............",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    }
+  ],
+  "forms": [
+    {
+      "id": "club",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.5,
+          "roles": [
+            "drums",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.65,
+          "roles": [
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "break",
+          "bars": 4,
+          "intensity": 0.25,
+          "roles": [
+            "comp",
+            "lead"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.8,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "speakeasy",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.3,
+          "roles": [
+            "comp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "counter",
+            "pad",
+            "bass",
+            "drums",
+            "comp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ballroom",
+      "sections": [
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ],
+          "progression": "charleston"
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.65,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums"
+          ],
+          "progression": "charleston"
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "counter",
+            "pad",
+            "comp",
+            "bass",
+            "drums"
+          ],
+          "progression": "ragtime-circle"
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "lead",
+            "pad",
+            "comp",
+            "bass",
+            "drums"
+          ],
+          "progression": "charleston"
+        }
+      ],
+      "palette": "ballroom",
+      "keys": [
+        {
+          "tonic": "Bb",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "F",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "C",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "Eb",
+          "mode": "ionian"
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.6,
+    "low": 64,
+    "high": 88,
+    "phraseBars": 4,
+    "stepwise": 0.65,
+    "restProbability": 0.1,
+    "ornament": 0.25
+  }
+}

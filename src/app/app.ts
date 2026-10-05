@@ -175,7 +175,7 @@ async function main(): Promise<void> {
     nowStyle.style.color = byId.get(i.styleId)?.color ?? "";
     meta.textContent = i.gap
       ? "next piece coming up"
-      : `${i.keyName} · ${tb.bar.bpm} bpm · ${i.section} · bar ${i.barInPiece + 1}/${i.pieceBars}${player.playing ? "" : " · paused"}`;
+      : `${i.area ? `${i.area} · ` : ""}${i.keyName} · ${tb.bar.bpm} bpm · ${i.section} · bar ${i.barInPiece + 1}/${i.pieceBars}${player.playing ? "" : " · paused"}`;
     const tonic = i.tonic;
     chord.replaceChildren(
       ...i.chords.flatMap((sym, k) => {

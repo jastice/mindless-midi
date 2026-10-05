@@ -14,6 +14,11 @@ export { DRUM_LANES, ROLES, type DrumLane, type Role };
 
 const unit = z.number().min(0).max(1);
 
+const palette = z
+  .string()
+  .optional()
+  .describe("Optional area tag. Forms with the same palette prefer this material; untagged forms use untagged material.");
+
 export const Instrument = z
   .object({
     role: z.enum(ROLES),
@@ -45,6 +50,7 @@ export const Progression = z.object({
   id: z.string(),
   mood: z.string().describe("A few words, e.g. 'brooding loop' or 'turnaround'."),
   chords: z.array(ChordSlot).min(1).describe("Loops for as long as the section lasts. Total length should be a whole number of bars."),
+  palette,
 });
 export type Progression = z.infer<typeof Progression>;
 
@@ -73,6 +79,7 @@ export const Motif = z.object({
     .describe("'chord' follows the harmony (best for arps and bass, also good for leads); 'key' keeps a fixed melodic contour (memorable hooks)."),
   lengthBeats: z.number().positive().describe("Pattern length in beats; one or two bars."),
   notes: z.array(PatternNote).min(1),
+  palette,
 });
 export type Motif = z.infer<typeof Motif>;
 
@@ -89,6 +96,7 @@ export const CompPattern = z.object({
   lengthBeats: z.number().positive(),
   strum: z.number().min(0).max(0.5).describe("Beats between successive chord notes within a hit; 0 = block chord, 0.02-0.06 = gentle roll, 0.25 = arpeggiated."),
   hits: z.array(CompHit).min(1).describe("Rhythm of chord attacks. Hits crossing a chord change are re-voiced automatically."),
+  palette,
 });
 export type CompPattern = z.infer<typeof CompPattern>;
 
@@ -104,6 +112,7 @@ export const DrumPattern = z.object({
   lanes: z
     .object(Object.fromEntries(DRUM_LANES.map((l) => [l, lane])) as Record<DrumLane, typeof lane>)
     .describe("Every non-empty lane must be exactly beatsPerBar * stepsPerBeat characters (one bar)."),
+  palette,
 });
 export type DrumPattern = z.infer<typeof DrumPattern>;
 
@@ -118,9 +127,24 @@ export const Section = z.object({
     .describe("Optional progression id to bind to this label (e.g. a 12-bar blues). Otherwise the arranger picks one."),
 });
 
+export const Key = z.object({ tonic: z.enum(TONIC_NAMES), mode: z.enum(MODE_NAMES as [string, ...string[]]) });
+
 export const Form = z.object({
   id: z.string(),
   sections: z.array(Section).min(1),
+  palette: z
+    .string()
+    .optional()
+    .describe("Area tag (e.g. 'lava caverns'): this form prefers material with the same palette. Shown to listeners."),
+  tempo: z
+    .object({ min: z.number().min(40).max(220), max: z.number().min(40).max(220) })
+    .optional()
+    .describe("Overrides the style's BPM range for this form."),
+  keys: z.array(Key).optional().describe("Overrides the style's candidate keys for this form."),
+  instruments: z
+    .array(Instrument)
+    .optional()
+    .describe("Per-role instrument overrides for this form (e.g. a choir pad in a haunted area)."),
 });
 export type Form = z.infer<typeof Form>;
 
@@ -144,7 +168,7 @@ export const StyleCorpus = z.object({
   swingUnit: z.enum(["8th", "16th"]),
   humanize: unit.describe("Timing/velocity looseness. Chip music ~0.05, live trio ~0.5."),
   keys: z
-    .array(z.object({ tonic: z.enum(TONIC_NAMES), mode: z.enum(MODE_NAMES as [string, ...string[]]) }))
+    .array(Key)
     .min(1)
     .describe(`Candidate keys. mode is one of: ${MODE_NAMES.join(", ")}.`),
   instruments: z.array(Instrument).min(1),
@@ -171,6 +195,8 @@ export interface StyleBundle extends StyleMeta {
   corpus: StyleCorpus;
   /** CC7 per role, from build-time loudness calibration (else derived from volume). */
   mixer?: Partial<Record<Role, number>>;
+  /** CC7 for roles whose instrument a form overrides, by form id. */
+  formMixers?: Record<string, Partial<Record<Role, number>>>;
   /** Linear output gain that brings the style to the common loudness target. */
   gain?: number;
 }

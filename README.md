@@ -1,9 +1,12 @@
 # Mindless Midi
 
 Endless background music in a browser tab. Pick one or more styles (Metroid
-Vibes, Retro Games, Lo-fi Hip Hop, Jazz Piano Trio, Minimalist Piano) and it
-plays forever, never repeating, without streaming anything: every note is
-arranged and synthesized live in the page.
+Vibes, Retro Games, Lo-fi Hip Hop, Jazz Piano Trio, Minimalist Piano, Monkey
+Island Vibes, Electro Swing, Synthwave) and it plays forever, never repeating,
+without streaming anything: every note is arranged and synthesized live in the
+page.
+
+**Live:** https://jastice.github.io/mindless-midi/
 
 - **LLM-seeded.** At build time Claude writes each style's *corpus*: chord
   progressions, motifs, bass and arpeggio ostinatos, comping rhythms, drum
@@ -67,7 +70,10 @@ styles/<id>/brief.md ──(bazel run //styles:regen, Claude API)──▶ style
 - `src/theory`: seeded RNG, modes, roman-numeral chord parsing, chord-scales,
   voice-leading.
 - `src/corpus`: the corpus schema (zod). Its field descriptions double as the
-  generation instructions sent to Claude. Also the validator.
+  generation instructions sent to Claude. Also the validator. Forms can be
+  *areas* (e.g. Metroid's Crateria, Brinstar, Norfair, Maridia, Wrecked Ship)
+  with their own tempo, keys and instrument swaps, using material tagged with
+  the same palette.
 - `src/engine`: `Conductor` strings pieces together forever; `Piece` plans one
   piece (key, tempo, form, repeats, orchestration changes) and renders it bar by
   bar; `parts.ts` writes drums, ostinatos, chords and developed melodies. It is
@@ -120,8 +126,11 @@ them with API-generated ones.
 1. Create `styles/<id>/brief.md` describing the music.
 2. Run `bazel run //styles:regen -- styles/<id>`.
 3. Add `styles/<id>/BUILD.bazel` (copy another style's) and pick an FM `bank`
-   (libADLMIDI embedded bank number; e.g. 14 = Doom's Bobby Prince set,
-   58 = The Fat Man, 68 = Nguyen/Wohlstand 4-op GM, 72 = DMXOPL3) and a `color`.
+   (libADLMIDI embedded bank number; e.g. 1 = Bisqwit, 14 = Doom's Bobby
+   Prince set, 58 = The Fat Man, 68 = Nguyen/Wohlstand 4-op GM, 72 = DMXOPL3)
+   and a `color`. Check the calibration report
+   (`bazel build //styles/<id>:style --output_groups=+calibration`): an
+   instrument stuck at CC7 127 is too quiet in that bank.
 4. Add the id to `STYLES` in `styles/BUILD.bazel`.
 
 ## Deploying

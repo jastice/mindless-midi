@@ -6,6 +6,9 @@ STYLES = [
     "lofi",
     "jazz_trio",
     "minimalist",
+    "monkey_island",
+    "electro_swing",
+    "synthwave",
 ]
 
 style_pack(

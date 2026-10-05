@@ -1,6 +1,6 @@
 {
   "title": "Metroid Vibes",
-  "description": "Lonely caverns, alien ruins and distant machinery. Slow pulses, cold arpeggios and a melody that echoes off the rock.",
+  "description": "Lonely caverns, alien ruins and distant machinery: rain on a dead planet's surface, overgrown jungle, lava caverns, a sunken sea and a haunted wreck. Slow pulses, cold arpeggios and melodies that echo off the rock.",
   "tempo": {
     "min": 72,
     "max": 104
@@ -241,6 +241,323 @@
           "beats": 8
         }
       ]
+    },
+    {
+      "id": "storm-pedal",
+      "mood": "rain on dead stone",
+      "chords": [
+        {
+          "symbol": "i5",
+          "beats": 8
+        },
+        {
+          "symbol": "bII",
+          "beats": 8
+        }
+      ],
+      "palette": "crateria surface"
+    },
+    {
+      "id": "surface-ruins",
+      "mood": "something was here once",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        }
+      ],
+      "palette": "crateria surface"
+    },
+    {
+      "id": "rain-sus",
+      "mood": "grey sky",
+      "chords": [
+        {
+          "symbol": "isus2",
+          "beats": 8
+        },
+        {
+          "symbol": "ivsus2",
+          "beats": 8
+        }
+      ],
+      "palette": "crateria surface"
+    },
+    {
+      "id": "jungle-vamp",
+      "mood": "thick undergrowth",
+      "chords": [
+        {
+          "symbol": "i7",
+          "beats": 4
+        },
+        {
+          "symbol": "IV",
+          "beats": 4
+        },
+        {
+          "symbol": "i7",
+          "beats": 4
+        },
+        {
+          "symbol": "IV",
+          "beats": 4
+        }
+      ],
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "canopy",
+      "mood": "light through leaves",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        }
+      ],
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "spore-bloom",
+      "mood": "humid and alive",
+      "chords": [
+        {
+          "symbol": "i9",
+          "beats": 8
+        },
+        {
+          "symbol": "bIIImaj7",
+          "beats": 8
+        }
+      ],
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "magma",
+      "mood": "heat rising",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 8
+        },
+        {
+          "symbol": "bII",
+          "beats": 8
+        }
+      ],
+      "palette": "norfair lava"
+    },
+    {
+      "id": "forge",
+      "mood": "molten stone",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "iv",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 8
+        }
+      ],
+      "palette": "norfair lava"
+    },
+    {
+      "id": "eruption",
+      "mood": "everything shakes",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "#ivo",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "#ivo",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        }
+      ],
+      "palette": "norfair lava"
+    },
+    {
+      "id": "tidal-vamp",
+      "mood": "slow current",
+      "chords": [
+        {
+          "symbol": "i7",
+          "beats": 4
+        },
+        {
+          "symbol": "IV7",
+          "beats": 4
+        },
+        {
+          "symbol": "i7",
+          "beats": 4
+        },
+        {
+          "symbol": "IV7",
+          "beats": 4
+        }
+      ],
+      "palette": "maridia depths"
+    },
+    {
+      "id": "trench",
+      "mood": "far below the light",
+      "chords": [
+        {
+          "symbol": "i9",
+          "beats": 8
+        },
+        {
+          "symbol": "bVIImaj7",
+          "beats": 8
+        }
+      ],
+      "palette": "maridia depths"
+    },
+    {
+      "id": "reef",
+      "mood": "glittering sand",
+      "chords": [
+        {
+          "symbol": "i7",
+          "beats": 4
+        },
+        {
+          "symbol": "bIIImaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "IV",
+          "beats": 4
+        }
+      ],
+      "palette": "maridia depths"
+    },
+    {
+      "id": "hull",
+      "mood": "rusted silence",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "#ivo",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bII",
+          "beats": 4
+        }
+      ],
+      "palette": "wrecked ship"
+    },
+    {
+      "id": "tritone-ghost",
+      "mood": "something moves below deck",
+      "chords": [
+        {
+          "symbol": "i5",
+          "beats": 8
+        },
+        {
+          "symbol": "bv5",
+          "beats": 8
+        }
+      ],
+      "palette": "wrecked ship"
+    },
+    {
+      "id": "power-out",
+      "mood": "dead machinery",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 8
+        },
+        {
+          "symbol": "bvi",
+          "beats": 8
+        }
+      ],
+      "palette": "wrecked ship"
     }
   ],
   "motifs": [
@@ -836,6 +1153,1166 @@
           "v": 0.45
         }
       ]
+    },
+    {
+      "id": "timpani-pulse",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": -3,
+          "v": 0.7
+        }
+      ],
+      "palette": "crateria surface"
+    },
+    {
+      "id": "raindrops",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 11,
+          "v": 0.4
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 14,
+          "v": 0.35
+        },
+        {
+          "t": 3,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 3.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.4
+        }
+      ],
+      "palette": "crateria surface"
+    },
+    {
+      "id": "arrival-call",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 4,
+          "d": 3,
+          "deg": 1,
+          "v": 0.65
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 0,
+          "v": 0.5
+        }
+      ],
+      "palette": "crateria surface"
+    },
+    {
+      "id": "lookout",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 1,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 5,
+          "d": 3,
+          "deg": 4,
+          "v": 0.6
+        }
+      ],
+      "palette": "crateria surface"
+    },
+    {
+      "id": "distant-thunder",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": -3,
+          "v": 0.45
+        }
+      ],
+      "palette": "crateria surface"
+    },
+    {
+      "id": "jungle-bass",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.7,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.65
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.6
+        }
+      ],
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "vine-sixteenths",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.65
+        },
+        {
+          "t": 0.25,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 0.5,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 0.75,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.225,
+          "deg": 9,
+          "v": 0.65
+        },
+        {
+          "t": 1.25,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 1.75,
+          "d": 0.225,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.65
+        },
+        {
+          "t": 2.25,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 2.5,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 2.75,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 0.225,
+          "deg": 8,
+          "v": 0.65
+        },
+        {
+          "t": 3.25,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 3.75,
+          "d": 0.225,
+          "deg": 2,
+          "v": 0.5
+        }
+      ],
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "creature-hop",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.65
+        }
+      ],
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "canopy-song",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 7,
+          "v": 0.65
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 5,
+          "v": 0.65
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 3,
+          "deg": 4,
+          "v": 0.6
+        }
+      ],
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "insect-chirps",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.125,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 0.75,
+          "d": 0.125,
+          "deg": 9,
+          "v": 0.35
+        },
+        {
+          "t": 2.5,
+          "d": 0.125,
+          "deg": 11,
+          "v": 0.45
+        },
+        {
+          "t": 2.75,
+          "d": 0.125,
+          "deg": 11,
+          "v": 0.35
+        }
+      ],
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "magma-ostinato",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.95
+        },
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.95
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.8
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 1,
+          "v": 0.8
+        }
+      ],
+      "palette": "norfair lava"
+    },
+    {
+      "id": "lava-gallop",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 0.5,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 0.75,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 1,
+          "v": 0.75
+        },
+        {
+          "t": 1.5,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 1.75,
+          "d": 0.2,
+          "deg": -1,
+          "v": 0.6
+        }
+      ],
+      "palette": "norfair lava"
+    },
+    {
+      "id": "heat-shimmer",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.65
+        },
+        {
+          "t": 0.25,
+          "d": 0.225,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 0.5,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 0.75,
+          "d": 0.225,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.65
+        },
+        {
+          "t": 1.25,
+          "d": 0.225,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 1.75,
+          "d": 0.225,
+          "deg": 2,
+          "v": 0.5
+        }
+      ],
+      "palette": "norfair lava"
+    },
+    {
+      "id": "rising-danger",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.65
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 1,
+          "v": 0.65
+        }
+      ],
+      "palette": "norfair lava"
+    },
+    {
+      "id": "flare",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.65
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 5,
+          "d": 3,
+          "deg": 4,
+          "v": 0.7
+        }
+      ],
+      "palette": "norfair lava"
+    },
+    {
+      "id": "ember-stabs",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        }
+      ],
+      "palette": "norfair lava"
+    },
+    {
+      "id": "tidal-funk",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 1.75,
+          "d": 0.6,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 3,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.65
+        }
+      ],
+      "palette": "maridia depths"
+    },
+    {
+      "id": "undertow",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2.9,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 4,
+          "d": 2.9,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 7,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 7.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.6,
+          "approach": true
+        }
+      ],
+      "palette": "maridia depths"
+    },
+    {
+      "id": "bubbles",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 11,
+          "v": 0.4
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 14,
+          "v": 0.4
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.45
+        }
+      ],
+      "palette": "maridia depths"
+    },
+    {
+      "id": "sea-song",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 3,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 4,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 7,
+          "v": 0.6
+        }
+      ],
+      "palette": "maridia depths"
+    },
+    {
+      "id": "current-line",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 0.75,
+          "d": 0.75,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 1,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        }
+      ],
+      "palette": "maridia depths"
+    },
+    {
+      "id": "hull-groan",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 3.9,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 2.9,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 7,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.55,
+          "approach": true
+        }
+      ],
+      "palette": "wrecked ship"
+    },
+    {
+      "id": "dead-console",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 1,
+          "v": 0.45
+        }
+      ],
+      "palette": "wrecked ship"
+    },
+    {
+      "id": "phantom",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 3,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 5,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 2,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 6,
+          "d": 1,
+          "deg": 3,
+          "v": 0.45
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 1,
+          "v": 0.45
+        }
+      ],
+      "palette": "wrecked ship"
+    },
+    {
+      "id": "lament-below",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 1,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 3,
+          "deg": 1,
+          "v": 0.45
+        }
+      ],
+      "palette": "wrecked ship"
+    },
+    {
+      "id": "music-box",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 11,
+          "v": 0.4
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 14,
+          "v": 0.4
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 7,
+          "v": 0.4
+        }
+      ],
+      "palette": "wrecked ship"
     }
   ],
   "comping": [
@@ -885,6 +2362,91 @@
           "v": 0.35
         }
       ]
+    },
+    {
+      "id": "storm-front",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 8,
+          "v": 0.55
+        }
+      ],
+      "palette": "crateria surface"
+    },
+    {
+      "id": "humid-air",
+      "role": "pad",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0.02,
+      "hits": [
+        {
+          "t": 0,
+          "d": 2,
+          "v": 0.45
+        },
+        {
+          "t": 2.5,
+          "d": 1.5,
+          "v": 0.4
+        }
+      ],
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "heat-pulse",
+      "role": "pad",
+      "voicing": "power",
+      "lengthBeats": 2,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.75,
+          "v": 0.5
+        }
+      ],
+      "palette": "norfair lava"
+    },
+    {
+      "id": "deep-water",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0.05,
+      "hits": [
+        {
+          "t": 0,
+          "d": 8,
+          "v": 0.5
+        }
+      ],
+      "palette": "maridia depths"
+    },
+    {
+      "id": "ghost-chorus",
+      "role": "pad",
+      "voicing": "close",
+      "lengthBeats": 8,
+      "strum": 0.1,
+      "hits": [
+        {
+          "t": 0,
+          "d": 8,
+          "v": 0.5
+        }
+      ],
+      "palette": "wrecked ship"
     }
   ],
   "drums": [
@@ -1001,6 +2563,266 @@
         "tomHigh": "",
         "shaker": ""
       }
+    },
+    {
+      "id": "thunder",
+      "kind": "groove",
+      "intensity": 0.2,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X...............",
+        "tomHigh": "",
+        "shaker": "o.o.o.o.o.o.o.o."
+      },
+      "palette": "crateria surface"
+    },
+    {
+      "id": "surface-march",
+      "kind": "groove",
+      "intensity": 0.5,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X.......x.......",
+        "tomHigh": "....x.......x...",
+        "shaker": "o.o.o.o.o.o.o.o."
+      },
+      "palette": "crateria surface"
+    },
+    {
+      "id": "lightning",
+      "kind": "fill",
+      "intensity": 0.6,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "X...............",
+        "tomLow": "X.....x.x.x.XXXX",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "crateria surface"
+    },
+    {
+      "id": "undergrowth",
+      "kind": "groove",
+      "intensity": 0.55,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X..x..X...X..x..",
+        "snare": "",
+        "rim": "..x...x...x.x...",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "...........x..x.",
+        "shaker": "xoxxxoxxxoxxxoxx"
+      },
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "stampede",
+      "kind": "groove",
+      "intensity": 0.75,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X..x..X...X..x..",
+        "snare": "....x.......x...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "...x.......x....",
+        "tomHigh": "..x...x..x..x...",
+        "shaker": "xoxoxoxoxoxoxoxo"
+      },
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "vines",
+      "kind": "fill",
+      "intensity": 0.6,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "..........x.xXX.",
+        "tomHigh": "....x.xxx.x.....",
+        "shaker": ""
+      },
+      "palette": "brinstar jungle"
+    },
+    {
+      "id": "molten-drive",
+      "kind": "groove",
+      "intensity": 0.8,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.x.X.x.X.x.X.x.",
+        "snare": "....X.......X...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.x.x.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "norfair lava"
+    },
+    {
+      "id": "magma-pulse",
+      "kind": "groove",
+      "intensity": 0.6,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "",
+        "rim": "....x.......x...",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "..x...x...x...x.",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "norfair lava"
+    },
+    {
+      "id": "eruption-fill",
+      "kind": "fill",
+      "intensity": 0.85,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.......",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "......xx..xxXXXX",
+        "tomHigh": "....xx..xx......",
+        "shaker": ""
+      },
+      "palette": "norfair lava"
+    },
+    {
+      "id": "current",
+      "kind": "groove",
+      "intensity": 0.45,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X......x..X.....",
+        "snare": "",
+        "rim": "....x.......x...",
+        "clap": "",
+        "closedHat": "..o...o...o...o.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "x.x.x.x.x.x.x.x."
+      },
+      "palette": "maridia depths"
+    },
+    {
+      "id": "trench",
+      "kind": "groove",
+      "intensity": 0.2,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.........x.....",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "..o...o...o...o."
+      },
+      "palette": "maridia depths"
+    },
+    {
+      "id": "creaks",
+      "kind": "groove",
+      "intensity": 0.15,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "......o.........",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X...............",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "wrecked ship"
+    },
+    {
+      "id": "engine-room",
+      "kind": "groove",
+      "intensity": 0.4,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.......",
+        "snare": "",
+        "rim": "....o.......o...",
+        "clap": "",
+        "closedHat": "..x...x...x...x.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "wrecked ship"
     }
   ],
   "forms": [
@@ -1206,6 +3028,503 @@
             "arp",
             "bass"
           ]
+        }
+      ]
+    },
+    {
+      "id": "crateria",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.15,
+          "roles": [
+            "pad",
+            "arp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.35,
+          "roles": [
+            "pad",
+            "bass",
+            "arp",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "pad",
+            "bass",
+            "lead",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.4,
+          "roles": [
+            "pad",
+            "bass",
+            "arp",
+            "lead",
+            "counter"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.15,
+          "roles": [
+            "pad",
+            "arp"
+          ]
+        }
+      ],
+      "palette": "crateria surface",
+      "tempo": {
+        "min": 60,
+        "max": 76
+      },
+      "keys": [
+        {
+          "tonic": "E",
+          "mode": "phrygian"
+        },
+        {
+          "tonic": "C#",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "D",
+          "mode": "phrygian"
+        },
+        {
+          "tonic": "G#",
+          "mode": "phrygian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "pad",
+          "name": "Storm choir",
+          "program": 91,
+          "octave": 3,
+          "volume": 0.55,
+          "pan": -0.1
+        },
+        {
+          "role": "lead",
+          "name": "Distant horn",
+          "program": 60,
+          "octave": 4,
+          "volume": 0.5,
+          "pan": 0.15
+        }
+      ]
+    },
+    {
+      "id": "brinstar",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.45,
+          "roles": [
+            "drums",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "bass",
+            "arp",
+            "drums",
+            "lead"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.65,
+          "roles": [
+            "bass",
+            "arp",
+            "drums",
+            "counter",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "bass",
+            "arp",
+            "drums",
+            "lead",
+            "pad"
+          ]
+        },
+        {
+          "label": "break",
+          "bars": 4,
+          "intensity": 0.3,
+          "roles": [
+            "pad",
+            "arp"
+          ]
+        }
+      ],
+      "palette": "brinstar jungle",
+      "tempo": {
+        "min": 100,
+        "max": 118
+      },
+      "keys": [
+        {
+          "tonic": "A",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "D",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "B",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "F#",
+          "mode": "aeolian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "arp",
+          "name": "Jungle vibes",
+          "program": 11,
+          "octave": 4,
+          "volume": 0.4,
+          "pan": 0.35
+        },
+        {
+          "role": "lead",
+          "name": "Ocarina",
+          "program": 79,
+          "octave": 5,
+          "volume": 0.5,
+          "pan": 0.1
+        }
+      ]
+    },
+    {
+      "id": "norfair",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.6,
+          "roles": [
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.8,
+          "roles": [
+            "bass",
+            "arp",
+            "drums",
+            "lead"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "bass",
+            "pad",
+            "drums",
+            "counter"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.85,
+          "roles": [
+            "bass",
+            "arp",
+            "drums",
+            "lead",
+            "pad"
+          ]
+        },
+        {
+          "label": "depths",
+          "bars": 4,
+          "intensity": 0.4,
+          "roles": [
+            "pad",
+            "bass"
+          ]
+        }
+      ],
+      "palette": "norfair lava",
+      "tempo": {
+        "min": 120,
+        "max": 140
+      },
+      "keys": [
+        {
+          "tonic": "E",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "A",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "D",
+          "mode": "phrygianDominant"
+        },
+        {
+          "tonic": "C",
+          "mode": "harmonicMinor"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Synth brass",
+          "program": 62,
+          "octave": 4,
+          "volume": 0.55,
+          "pan": 0.1
+        },
+        {
+          "role": "bass",
+          "name": "Molten bass",
+          "program": 39,
+          "octave": 2,
+          "volume": 0.8,
+          "pan": 0
+        }
+      ]
+    },
+    {
+      "id": "maridia",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.2,
+          "roles": [
+            "pad",
+            "counter"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.4,
+          "roles": [
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "bass",
+            "drums",
+            "lead",
+            "counter"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "bass",
+            "drums",
+            "lead",
+            "pad"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.2,
+          "roles": [
+            "pad",
+            "bass"
+          ]
+        }
+      ],
+      "palette": "maridia depths",
+      "tempo": {
+        "min": 80,
+        "max": 96
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "G",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "E",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "C",
+          "mode": "dorian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "bass",
+          "name": "Fretless bass",
+          "program": 35,
+          "octave": 2,
+          "volume": 0.8,
+          "pan": 0
+        },
+        {
+          "role": "counter",
+          "name": "Bubble vibes",
+          "program": 11,
+          "octave": 5,
+          "volume": 0.4,
+          "pan": -0.35
+        },
+        {
+          "role": "lead",
+          "name": "Sea ocarina",
+          "program": 79,
+          "octave": 5,
+          "volume": 0.5,
+          "pan": 0.15
+        }
+      ]
+    },
+    {
+      "id": "wrecked-ship",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.1,
+          "roles": [
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.25,
+          "roles": [
+            "pad",
+            "counter",
+            "bass"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.35,
+          "roles": [
+            "pad",
+            "lead",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.3,
+          "roles": [
+            "pad",
+            "counter",
+            "bass",
+            "arp"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.1,
+          "roles": [
+            "pad"
+          ]
+        }
+      ],
+      "palette": "wrecked ship",
+      "tempo": {
+        "min": 66,
+        "max": 84
+      },
+      "keys": [
+        {
+          "tonic": "C#",
+          "mode": "locrian"
+        },
+        {
+          "tonic": "B",
+          "mode": "phrygian"
+        },
+        {
+          "tonic": "F",
+          "mode": "harmonicMinor"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "pad",
+          "name": "Ghostly choir",
+          "program": 91,
+          "octave": 3,
+          "volume": 0.55,
+          "pan": 0
+        },
+        {
+          "role": "lead",
+          "name": "Ghost whistle",
+          "program": 78,
+          "octave": 5,
+          "volume": 0.45,
+          "pan": 0.2
+        },
+        {
+          "role": "counter",
+          "name": "Crystal music box",
+          "program": 98,
+          "octave": 5,
+          "volume": 0.4,
+          "pan": -0.3
         }
       ]
     }

@@ -50,6 +50,7 @@ async function bundle(opts: Record<string, string>): Promise<void> {
   };
   const cal = await calibrate(out);
   out.mixer = cal.mixer;
+  if (Object.keys(cal.formMixers).length) out.formMixers = cal.formMixers;
   out.gain = cal.gain;
   writeFileSync(p(need(opts, "out")), JSON.stringify(out));
   if (opts.report) writeFileSync(p(opts.report), cal.report.join("\n") + "\n");

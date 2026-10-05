@@ -1,0 +1,18 @@
+load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//bazel:music.bzl", "music_style")
+
+music_style(
+    name = "style",
+    bank = 68,
+    brief = "brief.md",
+    color = "#ed64a6",
+    corpus = "corpus.json",
+    visibility = ["//visibility:public"],
+)
+
+# For JS tests that read the raw corpus from runfiles.
+copy_to_bin(
+    name = "corpus",
+    srcs = ["corpus.json"],
+    visibility = ["//visibility:public"],
+)

@@ -20,7 +20,8 @@ for (const style of styles) {
     let inKey = 0;
     const roles = new Set<string>();
     for (const bar of bars) {
-      assert.ok(bar.bpm >= style.corpus.tempo.min && bar.bpm <= style.corpus.tempo.max);
+      const ranges = [style.corpus.tempo, ...style.corpus.forms.flatMap((f) => (f.tempo ? [f.tempo] : []))];
+      assert.ok(ranges.some((r) => bar.bpm >= r.min && bar.bpm <= r.max), `${bar.bpm} bpm outside every tempo range`);
       const { tonic, mode } = bar.info;
       assert.doesNotMatch(bar.info.keyName, /[A-Z][a-z]+[A-Z]/, "display name has no camelCase");
       const allowed = new Set(MODES[mode].map((i) => mod(tonic + i, 12)));
@@ -108,4 +109,66 @@ test("MIDI export is a valid format-0 file", () => {
   let found = 0;
   for (let i = 22; i < bytes.length - 2; i++) if ((bytes[i]! & 0xf0) === 0x90 && bytes[i + 2]! > 0) found++;
   assert.ok(found >= noteOns * 0.95, `${found} note-on-like bytes for ${noteOns} notes`);
+});
+
+test("area forms use their own tempo, keys, instruments and material", () => {
+  const metroid = styles.find((s) => s.id === "metroid")!;
+  const forms = new Map(metroid.corpus.forms.map((f) => [f.id, f]));
+  const c = new Conductor([metroid], "areas", { minSeconds: 20, maxSeconds: 30 });
+  const seen = new Set<string>();
+  let pieceProgressions = new Set<string>();
+  let area: (typeof metroid.corpus.forms)[number] | undefined;
+  const checkPalette = () => {
+    if (!area?.palette) return;
+    const allowed = new Set(
+      metroid.corpus.progressions.filter((p) => p.palette === area!.palette).flatMap((p) => p.chords.map((ch) => ch.symbol)),
+    );
+    for (const sym of pieceProgressions) assert.ok(allowed.has(sym), `${area.id}: chord ${sym} is not from its palette`);
+  };
+  for (let i = 0; i < 6000 && seen.size < 5; i++) {
+    const bar = c.nextBar();
+    if (bar.info.barInPiece === 0) {
+      checkPalette();
+      pieceProgressions = new Set();
+      area = metroid.corpus.forms.find((f) => f.palette !== undefined && f.palette === bar.info.area);
+      if (area) {
+        seen.add(area.id);
+        if (area.tempo) assert.ok(bar.bpm >= area.tempo.min && bar.bpm <= area.tempo.max, `${area.id}: ${bar.bpm} bpm`);
+        if (area.keys) {
+          assert.ok(
+            area.keys.some((k) => bar.info.mode === k.mode && bar.info.keyName.startsWith(k.tonic + " ")),
+            `${area.id}: key ${bar.info.keyName}`,
+          );
+        }
+        for (const inst of area.instruments ?? []) {
+          if (inst.role === "drums") continue;
+          const ch = { lead: 0, counter: 1, arp: 2, pad: 3, comp: 4, bass: 5 }[inst.role];
+          assert.ok(
+            bar.controls.some((x) => x.kind === "program" && x.ch === ch && x.value === inst.program),
+            `${area.id}: ${inst.role} should switch to program ${inst.program}`,
+          );
+        }
+      }
+    }
+    if (area && !bar.info.gap && bar.info.section !== "ending") for (const sym of bar.info.chords) pieceProgressions.add(sym);
+  }
+  assert.ok(forms.size > 5);
+  assert.equal(seen.size, 5, `areas heard: ${[...seen].join(", ")}`);
+});
+
+test("a style never plays the same form twice in a row", () => {
+  for (const style of styles) {
+    if (style.corpus.forms.length < 2) continue;
+    const c = new Conductor([style], `forms-${style.id}`, { minSeconds: 20, maxSeconds: 30 });
+    let last = "";
+    let pieces = 0;
+    for (let i = 0; i < 3000 && pieces < 15; i++) {
+      const bar = c.nextBar();
+      if (bar.info.barInPiece !== 0) continue;
+      const form = c.currentPiece!.formId;
+      assert.notEqual(form, last, `${style.id} repeated form ${form}`);
+      last = form;
+      pieces++;
+    }
+  }
 });

@@ -1,0 +1,1514 @@
+{
+  "title": "Synthwave",
+  "description": "Night drives down neon-lit highways: pulsing octave bass, sixteenth-note saw arpeggios, gated snares and wide analog pads.",
+  "tempo": {
+    "min": 96,
+    "max": 108
+  },
+  "beatsPerBar": 4,
+  "swing": 0,
+  "swingUnit": "16th",
+  "humanize": 0.03,
+  "keys": [
+    {
+      "tonic": "A",
+      "mode": "aeolian"
+    },
+    {
+      "tonic": "E",
+      "mode": "aeolian"
+    },
+    {
+      "tonic": "F#",
+      "mode": "aeolian"
+    },
+    {
+      "tonic": "C",
+      "mode": "dorian"
+    },
+    {
+      "tonic": "D",
+      "mode": "aeolian"
+    },
+    {
+      "tonic": "B",
+      "mode": "aeolian"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Saw lead",
+      "program": 81,
+      "octave": 5,
+      "volume": 0.5,
+      "pan": 0
+    },
+    {
+      "role": "counter",
+      "name": "Square echo",
+      "program": 80,
+      "octave": 5,
+      "volume": 0.35,
+      "pan": -0.35
+    },
+    {
+      "role": "arp",
+      "name": "Arpeggiator",
+      "program": 81,
+      "octave": 4,
+      "volume": 0.42,
+      "pan": 0.3
+    },
+    {
+      "role": "pad",
+      "name": "Warm analog pad",
+      "program": 89,
+      "octave": 4,
+      "volume": 0.4,
+      "pan": -0.1
+    },
+    {
+      "role": "comp",
+      "name": "Poly stabs",
+      "program": 90,
+      "octave": 4,
+      "volume": 0.35,
+      "pan": 0.15
+    },
+    {
+      "role": "bass",
+      "name": "Pulse bass",
+      "program": 38,
+      "octave": 2,
+      "volume": 0.8,
+      "pan": 0
+    },
+    {
+      "role": "drums",
+      "name": "Drum machine",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.65,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "highway",
+      "mood": "endless asphalt",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "bIII",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "neon",
+      "mood": "city lights",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "horizon",
+      "mood": "almost dawn",
+      "chords": [
+        {
+          "symbol": "bVImaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 8
+        }
+      ]
+    },
+    {
+      "id": "pulse",
+      "mood": "heartbeat",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 8
+        },
+        {
+          "symbol": "iv",
+          "beats": 8
+        }
+      ]
+    },
+    {
+      "id": "tension",
+      "mood": "rear-view mirror",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "iv",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "arcade",
+      "mood": "high score",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "palm-shadows",
+      "mood": "warm wind",
+      "chords": [
+        {
+          "symbol": "Imaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "IVmaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "vi7",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        }
+      ],
+      "palette": "sunset"
+    },
+    {
+      "id": "lydian-glow",
+      "mood": "pink sky",
+      "chords": [
+        {
+          "symbol": "Imaj7",
+          "beats": 8
+        },
+        {
+          "symbol": "II",
+          "beats": 8
+        }
+      ],
+      "palette": "sunset"
+    },
+    {
+      "id": "pursuit",
+      "mood": "sirens",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        }
+      ],
+      "palette": "neon chase"
+    },
+    {
+      "id": "full-throttle",
+      "mood": "no brakes",
+      "chords": [
+        {
+          "symbol": "i5",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI5",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII5",
+          "beats": 4
+        },
+        {
+          "symbol": "i5",
+          "beats": 4
+        }
+      ],
+      "palette": "neon chase"
+    }
+  ],
+  "motifs": [
+    {
+      "id": "pulse-arp",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.25,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 0.75,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 1.25,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1.75,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 0.225,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 2.25,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2.75,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 3.25,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 3.75,
+          "d": 0.225,
+          "deg": 9,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "broken-chord",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.25,
+          "d": 0.225,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 0.75,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.225,
+          "deg": 9,
+          "v": 0.7
+        },
+        {
+          "t": 1.25,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1.75,
+          "d": 0.225,
+          "deg": 2,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "octave-flicker",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.65
+        },
+        {
+          "t": 0.25,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 0.5,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 0.75,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.225,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 1.25,
+          "d": 0.225,
+          "deg": 9,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.225,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 1.75,
+          "d": 0.225,
+          "deg": 9,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "octave-pulse",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.95
+        },
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.95
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.95
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.95
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.8
+        }
+      ]
+    },
+    {
+      "id": "driving-sixteenths",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 0.25,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.75,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 1.25,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.225,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 1.75,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 2.25,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 2.75,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 3.25,
+          "d": 0.225,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 3.5,
+          "d": 0.225,
+          "deg": 6,
+          "v": 0.7
+        },
+        {
+          "t": 3.75,
+          "d": 0.225,
+          "deg": 4,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "long-root",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.9,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.7,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "soaring",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 3,
+          "deg": 6,
+          "v": 0.7
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 4,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "neon-sign",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 5,
+          "v": 0.65
+        }
+      ]
+    },
+    {
+      "id": "chrome",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 0.75,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 4.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 5,
+          "d": 3,
+          "deg": 7,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "echo-answer",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 4,
+          "d": 1,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 9,
+          "v": 0.5
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 7,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "glints",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 11,
+          "v": 0.45
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 9,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "sunset-line",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 3,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 3,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 2,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 4,
+          "v": 0.55
+        }
+      ],
+      "palette": "sunset"
+    },
+    {
+      "id": "slow-shimmer",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 11,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.45
+        }
+      ],
+      "palette": "sunset"
+    },
+    {
+      "id": "chase-riff",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 4,
+          "v": 0.7
+        }
+      ],
+      "palette": "neon chase"
+    }
+  ],
+  "comping": [
+    {
+      "id": "wide-pad",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 8,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "bar-pad",
+      "role": "pad",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 4,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "gated-eighths",
+      "role": "comp",
+      "voicing": "close",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.3,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.3,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.3,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.3,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.3,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 0.3,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 0.3,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.3,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "power-push",
+      "role": "comp",
+      "voicing": "power",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "v": 0.5
+        }
+      ]
+    }
+  ],
+  "drums": [
+    {
+      "id": "minimal",
+      "kind": "groove",
+      "intensity": 0.25,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.......",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.x.x.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "nightdrive",
+      "kind": "groove",
+      "intensity": 0.45,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.x.....",
+        "snare": "....X.......X...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "..x...x...x...x.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "outrun",
+      "kind": "groove",
+      "intensity": 0.65,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "....X.......X...",
+        "rim": "",
+        "clap": "....x.......x...",
+        "closedHat": "x.x.x.x.x.x.x.x.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "full-beam",
+      "kind": "groove",
+      "intensity": 0.85,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "....X.......X...",
+        "rim": "",
+        "clap": "....x.......x...",
+        "closedHat": "xxXxxxXxxxXxxxXx",
+        "openHat": "..............x.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "tom-sweep",
+      "kind": "fill",
+      "intensity": 0.6,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...............",
+        "snare": "....X...........",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "............xXXX",
+        "tomHigh": "........xx.x....",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "snare-build",
+      "kind": "fill",
+      "intensity": 0.8,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "..x...x.x.xxXXXX",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "X...............",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    }
+  ],
+  "forms": [
+    {
+      "id": "night-drive",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.3,
+          "roles": [
+            "pad",
+            "arp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "arp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "arp",
+            "bass",
+            "drums",
+            "lead",
+            "comp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.65,
+          "roles": [
+            "arp",
+            "bass",
+            "drums",
+            "lead",
+            "pad"
+          ]
+        },
+        {
+          "label": "break",
+          "bars": 4,
+          "intensity": 0.25,
+          "roles": [
+            "pad",
+            "arp"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.75,
+          "roles": [
+            "arp",
+            "bass",
+            "drums",
+            "lead",
+            "counter",
+            "comp"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.3,
+          "roles": [
+            "pad",
+            "arp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sunset",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.2,
+          "roles": [
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.4,
+          "roles": [
+            "pad",
+            "bass",
+            "lead",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "arp",
+            "pad",
+            "bass",
+            "counter",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "pad",
+            "bass",
+            "lead",
+            "arp",
+            "drums"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.2,
+          "roles": [
+            "pad"
+          ]
+        }
+      ],
+      "palette": "sunset",
+      "tempo": {
+        "min": 84,
+        "max": 94
+      },
+      "keys": [
+        {
+          "tonic": "F",
+          "mode": "lydian"
+        },
+        {
+          "tonic": "D",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "E",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "Ab",
+          "mode": "ionian"
+        }
+      ]
+    },
+    {
+      "id": "neon-chase",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.6,
+          "roles": [
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.8,
+          "roles": [
+            "bass",
+            "arp",
+            "drums",
+            "comp",
+            "lead"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.75,
+          "roles": [
+            "bass",
+            "arp",
+            "drums",
+            "counter",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.85,
+          "roles": [
+            "bass",
+            "arp",
+            "drums",
+            "comp",
+            "lead",
+            "pad"
+          ]
+        }
+      ],
+      "palette": "neon chase",
+      "tempo": {
+        "min": 112,
+        "max": 120
+      }
+    }
+  ],
+  "melody": {
+    "density": 0.45,
+    "low": 64,
+    "high": 88,
+    "phraseBars": 4,
+    "stepwise": 0.7,
+    "restProbability": 0.15,
+    "ornament": 0.05
+  }
+}

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { test } from "node:test";
 import type Anthropic from "@anthropic-ai/sdk";
 import { type CorpusClient, formatCorpus, generateCorpus } from "./generate_lib.js";
@@ -75,7 +75,9 @@ test("refusals surface as errors", async () => {
 });
 
 test("checked-in corpora are formatted canonically", () => {
-  for (const id of ["metroid", "retro", "lofi", "jazz_trio", "minimalist"]) {
+  const ids = readdirSync("styles").filter((d) => existsSync(`styles/${d}/corpus.json`));
+  assert.ok(ids.length >= 8, `found ${ids.join(", ")}`);
+  for (const id of ids) {
     const text = readFileSync(`styles/${id}/corpus.json`, "utf8");
     assert.equal(formatCorpus(JSON.parse(text)), text, `${id}: run the formatter`);
   }

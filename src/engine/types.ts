@@ -38,6 +38,8 @@ export interface BarInfo {
   pieceSeed: string;
   styleId: string;
   styleTitle: string;
+  /** Area of the current form (its palette), if it has one. */
+  area: string | undefined;
   /** Display name of the current key, e.g. "C harmonic minor". */
   keyName: string;
   /** Current tonic pitch class (including any modulation) and mode. */

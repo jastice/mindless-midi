@@ -35,6 +35,7 @@ How your material is used:
 - Comping patterns give the rhythm of chord attacks; voicing names the chord shape.
 - Drum patterns are one bar on a step grid. Provide grooves across the intensity range plus at least one fill if the style has drums.
 - Forms are section lists; sections sharing a label share material, so repeat labels (A A B A). Labels starting with intro/outro frame the piece; the body between them is repeated to reach a few minutes. Vary which roles play per section to build and release energy.
+- A form can be an "area" (when the brief asks for distinct places or moods): give it a palette name plus optional tempo, keys and instrument overrides, and tag the progressions, motifs, comping and drums written for it with the same palette. Untagged forms only use untagged material.
 - Only use roles you defined instruments for, and give every role used in a form some material.
 
 Aim for: at least 6 progressions, 3+ lead motifs, 2+ counter motifs, 2-4 arp and 3-4 bass motifs (where those roles exist), 2-4 comping patterns, 4-6 drum patterns, and 2-4 forms. Be specific to the brief; avoid generic filler.`;

@@ -99,18 +99,35 @@ export function validateCorpus(input: unknown): ValidationResult {
     drums: () => c.drums.some((p) => p.kind === "groove"),
   };
   const used = new Set<Role>();
+  const palettes = new Set(
+    [...c.progressions, ...c.motifs, ...c.comping, ...c.drums].map((m) => m.palette).filter((p) => p !== undefined),
+  );
   c.forms.forEach((f, i) => {
     uniq("form", f.id);
+    if (f.tempo && f.tempo.min > f.tempo.max) errors.push(`forms[${i}] "${f.id}": tempo min ${f.tempo.min} > max ${f.tempo.max}`);
+    if (f.palette !== undefined && !palettes.has(f.palette)) {
+      warnings.push(`forms[${i}] "${f.id}": no material is tagged with palette "${f.palette}"`);
+    }
+    const formRoles = new Set(roles.keys());
+    const overridden = new Set<Role>();
+    (f.instruments ?? []).forEach((inst, k) => {
+      if (overridden.has(inst.role)) errors.push(`forms[${i}].instruments[${k}]: duplicate role "${inst.role}"`);
+      overridden.add(inst.role);
+      formRoles.add(inst.role);
+    });
     f.sections.forEach((s, j) => {
       if (s.progression !== undefined && !c.progressions.some((p) => p.id === s.progression)) {
         errors.push(`forms[${i}].sections[${j}]: unknown progression "${s.progression}"`);
       }
       for (const r of s.roles) {
         used.add(r);
-        if (!roles.has(r)) errors.push(`forms[${i}].sections[${j}]: role "${r}" has no instrument`);
+        if (!formRoles.has(r)) errors.push(`forms[${i}].sections[${j}]: role "${r}" has no instrument`);
       }
     });
   });
+  for (const p of palettes) {
+    if (!c.forms.some((f) => f.palette === p)) warnings.push(`palette "${p}" is never used by a form`);
+  }
   for (const r of used) {
     if (!needs[r]()) errors.push(`role "${r}" is used in a form but has no material (motifs/comping/drums)`);
   }

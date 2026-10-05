@@ -62,13 +62,23 @@ export class Piece {
   /** Section bars + ending bar + gap bar. */
   readonly totalBars: number;
   readonly formId: string;
+  /** The form's area tag, if any (e.g. "lava caverns"). */
+  readonly palette: string | undefined;
 
   private readonly rng: Rng;
   private readonly instruments = new Map<Role, Instrument>();
+  private readonly overridden = new Set<Role>();
   private readonly memory: PartMemory = newMemory();
   private readonly bodyBars: number;
 
-  constructor(style: StyleBundle, seed: string, index: number, opts: PieceOptions = DEFAULT_PIECE_OPTIONS) {
+  constructor(
+    style: StyleBundle,
+    seed: string,
+    index: number,
+    opts: PieceOptions = DEFAULT_PIECE_OPTIONS,
+    /** The form this style used last time, to avoid back-to-back repeats. */
+    previousForm?: string,
+  ) {
     this.style = style;
     this.corpus = style.corpus;
     this.seed = seed;
@@ -78,12 +88,23 @@ export class Piece {
     for (const inst of c.instruments) this.instruments.set(inst.role, inst);
 
     const plan = this.rng.fork("plan");
-    const key = plan.pick(c.keys);
+    const styleKey = plan.pick(c.keys);
+    const styleBpm = plan.float(c.tempo.min, c.tempo.max);
+    const fresh = c.forms.filter((f) => f.id !== previousForm);
+    const form = plan.pick(fresh.length ? fresh : c.forms);
+    this.formId = form.id;
+    this.palette = form.palette;
+    // Forms can define an "area" with its own keys, tempo and instruments.
+    // (A separate stream, so pieces from forms without overrides keep their seeds.)
+    const area = this.rng.fork("area");
+    const key = form.keys?.length ? area.pick(form.keys) : styleKey;
     this.tonic = pitchClass(key.tonic);
     this.mode = key.mode as ModeName;
-    this.bpm = Math.round(plan.float(c.tempo.min, c.tempo.max));
-    const form = plan.pick(c.forms);
-    this.formId = form.id;
+    this.bpm = Math.round(form.tempo ? area.float(form.tempo.min, form.tempo.max) : styleBpm);
+    for (const inst of form.instruments ?? []) {
+      this.instruments.set(inst.role, inst);
+      this.overridden.add(inst.role);
+    }
 
     // How many passes through the body to hit the target duration.
     const barSec = (c.beatsPerBar * 60) / this.bpm;
@@ -123,9 +144,9 @@ export class Piece {
       const material = materialFor(s.label, s.progression);
       const harmony = new Harmony(material.progression, s.bars * c.beatsPerBar);
       const grooveRng = vary.fork("groove");
-      const grooves = c.drums.filter((d) => d.kind === "groove");
+      const grooves = this.inPalette(c.drums.filter((d) => d.kind === "groove"));
       const byFit = grooveRng.shuffle(grooves).sort((a, b) => Math.abs(a.intensity - intensity) - Math.abs(b.intensity - intensity));
-      const fills = c.drums.filter((d) => d.kind === "fill");
+      const fills = this.inPalette(c.drums.filter((d) => d.kind === "fill"));
       sections.push({
         index: sections.length,
         label: s.label,
@@ -164,17 +185,21 @@ export class Piece {
 
   private pickMaterial(rng: Rng, used: Set<string>, progressionId: string | undefined): Material {
     const c = this.corpus;
-    const fresh = c.progressions.filter((p) => !used.has(p.id));
+    const progressions = this.inPalette(c.progressions);
+    const fresh = progressions.filter((p) => !used.has(p.id));
     const bound = c.progressions.find((p) => p.id === progressionId);
-    const progression = bound ?? rng.pick(fresh.length ? fresh : c.progressions);
+    const progression = bound ?? rng.pick(fresh.length ? fresh : progressions);
     used.add(progression.id);
-    const motifsFor = (role: Motif["role"], n: number) => rng.shuffle(c.motifs.filter((m) => m.role === role)).slice(0, n);
+    const motifsFor = (role: Motif["role"], n: number) =>
+      rng.shuffle(this.inPalette(c.motifs.filter((m) => m.role === role))).slice(0, n);
     let counter = motifsFor("counter", 2);
     const lead = motifsFor("lead", 2);
-    if (!counter.length) counter = rng.shuffle(c.motifs.filter((m) => m.role === "lead" && !lead.includes(m))).slice(0, 2);
+    if (!counter.length) {
+      counter = rng.shuffle(this.inPalette(c.motifs.filter((m) => m.role === "lead")).filter((m) => !lead.includes(m))).slice(0, 2);
+    }
     if (!counter.length) counter = lead.slice().reverse();
     const pickComp = (role: CompPattern["role"]) => {
-      const options = c.comping.filter((p) => p.role === role);
+      const options = this.inPalette(c.comping.filter((p) => p.role === role));
       return options.length ? rng.pick(options) : undefined;
     };
     return {
@@ -182,6 +207,19 @@ export class Piece {
       motifs: { lead, counter, arp: motifsFor("arp", 2), bass: motifsFor("bass", 2) },
       comping: { pad: pickComp("pad") ?? pickComp("comp"), comp: pickComp("comp") ?? pickComp("pad") },
     };
+  }
+
+  /**
+   * Material for this piece's area: items tagged with the form's palette if
+   * there are any, else untagged items, else anything.
+   */
+  private inPalette<T extends { palette?: string | undefined }>(items: T[]): T[] {
+    if (this.palette !== undefined) {
+      const tagged = items.filter((x) => x.palette === this.palette);
+      if (tagged.length) return tagged;
+    }
+    const untagged = items.filter((x) => x.palette === undefined);
+    return untagged.length ? untagged : items;
   }
 
   /** Small orchestration changes on repeats so passes don't sound identical. */
@@ -230,6 +268,7 @@ export class Piece {
       pieceSeed: this.seed,
       styleId: this.style.id,
       styleTitle: c.title,
+      area: this.palette,
       keyName: keyLabel(this.tonic + (section ?? last).transpose, this.mode),
       tonic: mod(this.tonic + (section ?? last).transpose, 12),
       mode: this.mode,
@@ -394,7 +433,10 @@ export class Piece {
     for (const inst of this.instruments.values()) {
       const ch = CHANNELS[inst.role];
       if (inst.role !== "drums") out.push({ beat: 0, kind: "program", ch, value: inst.program });
-      const level = this.style.mixer?.[inst.role] ?? Math.round(Math.max(0, Math.min(1, inst.volume)) * 110);
+      const calibrated = this.overridden.has(inst.role)
+        ? this.style.formMixers?.[this.formId]?.[inst.role]
+        : this.style.mixer?.[inst.role];
+      const level = calibrated ?? Math.round(Math.max(0, Math.min(1, inst.volume)) * 110);
       out.push({ beat: 0, kind: "cc", ch, cc: 7, value: level });
       out.push({ beat: 0, kind: "cc", ch, cc: 10, value: Math.round(64 + Math.max(-1, Math.min(1, inst.pan)) * 63) });
       out.push({ beat: 0, kind: "cc", ch, cc: 11, value: 127 });

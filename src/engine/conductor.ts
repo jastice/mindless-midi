@@ -17,6 +17,7 @@ export class Conductor {
   private barIndex = 0;
   private pieceIndex = 0;
   private lastStyleId: string | null = null;
+  private readonly lastForm = new Map<string, string>();
 
   constructor(styles: StyleBundle[], seed: string, opts: PieceOptions = DEFAULT_PIECE_OPTIONS) {
     if (!styles.length) throw new Error("Conductor needs at least one style");
@@ -52,8 +53,15 @@ export class Conductor {
     const rng = new Rng(`${this.seed}/choose/${this.pieceIndex}`);
     const pool = this.styles.length > 1 ? this.styles.filter((s) => s.id !== this.lastStyleId) : this.styles;
     const style = rng.pick(pool);
-    this.piece = new Piece(style, `${this.seed}/piece/${this.pieceIndex}/${style.id}`, this.pieceIndex, this.opts);
+    this.piece = new Piece(
+      style,
+      `${this.seed}/piece/${this.pieceIndex}/${style.id}`,
+      this.pieceIndex,
+      this.opts,
+      this.lastForm.get(style.id),
+    );
     this.lastStyleId = style.id;
+    this.lastForm.set(style.id, this.piece.formId);
     this.pieceIndex++;
     this.barInPiece = 0;
   }

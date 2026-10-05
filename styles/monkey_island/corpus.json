@@ -1,0 +1,1513 @@
+{
+  "title": "Monkey Island Vibes",
+  "description": "Sunny Caribbean harbours, grog-soaked taverns and the occasional ghost ship: calypso steel drums and marimba from the golden age of point-and-click adventures.",
+  "tempo": {
+    "min": 100,
+    "max": 126
+  },
+  "beatsPerBar": 4,
+  "swing": 0.2,
+  "swingUnit": "16th",
+  "humanize": 0.2,
+  "keys": [
+    {
+      "tonic": "C",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "F",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "G",
+      "mode": "mixolydian"
+    },
+    {
+      "tonic": "D",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "Bb",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "A",
+      "mode": "mixolydian"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Steel drums",
+      "program": 114,
+      "octave": 5,
+      "volume": 0.55,
+      "pan": 0.1
+    },
+    {
+      "role": "counter",
+      "name": "Wooden flute",
+      "program": 73,
+      "octave": 5,
+      "volume": 0.42,
+      "pan": -0.3
+    },
+    {
+      "role": "arp",
+      "name": "Marimba",
+      "program": 12,
+      "octave": 4,
+      "volume": 0.45,
+      "pan": 0.35
+    },
+    {
+      "role": "comp",
+      "name": "Island guitar",
+      "program": 25,
+      "octave": 4,
+      "volume": 0.4,
+      "pan": -0.2
+    },
+    {
+      "role": "pad",
+      "name": "Tavern organ",
+      "program": 20,
+      "octave": 4,
+      "volume": 0.25,
+      "pan": 0
+    },
+    {
+      "role": "bass",
+      "name": "Calypso bass",
+      "program": 32,
+      "octave": 2,
+      "volume": 0.75,
+      "pan": 0
+    },
+    {
+      "role": "drums",
+      "name": "Hand percussion",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.55,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "harbour",
+      "mood": "sun on the docks",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "swagger",
+      "mood": "a mighty pirate",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 4
+        },
+        {
+          "symbol": "vi",
+          "beats": 4
+        },
+        {
+          "symbol": "ii",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "long-vamp",
+      "mood": "hammock time",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 8
+        },
+        {
+          "symbol": "IV",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "back-home",
+      "mood": "coming about",
+      "chords": [
+        {
+          "symbol": "ii",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        },
+        {
+          "symbol": "I",
+          "beats": 8
+        }
+      ]
+    },
+    {
+      "id": "plaza",
+      "mood": "market chatter",
+      "chords": [
+        {
+          "symbol": "IV",
+          "beats": 4
+        },
+        {
+          "symbol": "I",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        },
+        {
+          "symbol": "I",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "lagoon",
+      "mood": "lazy afternoon",
+      "chords": [
+        {
+          "symbol": "Imaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "IVmaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "iii7",
+          "beats": 4
+        },
+        {
+          "symbol": "vi7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "treasure",
+      "mood": "x marks the spot",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "swordfight",
+      "mood": "insults at dawn",
+      "chords": [
+        {
+          "symbol": "vi",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        },
+        {
+          "symbol": "vi",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "cursed",
+      "mood": "something undead aboard",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        }
+      ],
+      "palette": "ghost ship"
+    },
+    {
+      "id": "fog",
+      "mood": "lanterns in the mist",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "iv",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 8
+        }
+      ],
+      "palette": "ghost ship"
+    },
+    {
+      "id": "bony-dance",
+      "mood": "skeletons in the rigging",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ],
+      "palette": "ghost ship"
+    }
+  ],
+  "motifs": [
+    {
+      "id": "harbour-hook",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 1,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.65
+        }
+      ]
+    },
+    {
+      "id": "grog-tune",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 2,
+          "d": 0.75,
+          "deg": 6,
+          "v": 0.65
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 4,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "swashbuckle",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 1.5,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.65
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 4,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "parrot-chatter",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 1.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 3,
+          "d": 0.75,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 3.75,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "thirds-below",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 1.5,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "seagulls",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.5
+        },
+        {
+          "t": 5.5,
+          "d": 1,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 4,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "marimba-roll",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 9,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "marimba-skip",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 9,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "calypso-bounce",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 0.9,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.6,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "island-walk",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 1,
+          "d": 0.9,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 0.9,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.9,
+          "deg": 5,
+          "v": 0.6
+        }
+      ]
+    },
+    {
+      "id": "root-fifth-sway",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.4,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 1.4,
+          "deg": -3,
+          "v": 0.75
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": -3,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "ghostly-call",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 5,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 4,
+          "d": 3,
+          "deg": 1,
+          "v": 0.6
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 0,
+          "v": 0.5
+        }
+      ],
+      "palette": "ghost ship"
+    },
+    {
+      "id": "bones-rattle",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.65
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 7,
+          "v": 0.65
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        }
+      ],
+      "palette": "ghost ship"
+    },
+    {
+      "id": "creeping-steps",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.5
+        }
+      ],
+      "palette": "ghost ship"
+    },
+    {
+      "id": "ghost-bass",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.9,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 2,
+          "d": 1.4,
+          "deg": -3,
+          "v": 0.65
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.55,
+          "approach": true
+        }
+      ],
+      "palette": "ghost ship"
+    },
+    {
+      "id": "wailing",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 6,
+          "v": 0.4
+        }
+      ],
+      "palette": "ghost ship"
+    }
+  ],
+  "comping": [
+    {
+      "id": "skank",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0.5,
+          "d": 0.3,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.3,
+          "v": 0.5
+        },
+        {
+          "t": 2.5,
+          "d": 0.3,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.3,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "calypso-strum",
+      "role": "comp",
+      "voicing": "close",
+      "lengthBeats": 4,
+      "strum": 0.03,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "v": 0.6
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "v": 0.45
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "organ-hold",
+      "role": "pad",
+      "voicing": "close",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 3.9,
+          "v": 0.4
+        }
+      ]
+    },
+    {
+      "id": "organ-dread",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0.05,
+      "hits": [
+        {
+          "t": 0,
+          "d": 8,
+          "v": 0.5
+        }
+      ],
+      "palette": "ghost ship"
+    },
+    {
+      "id": "ghost-stabs",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "v": 0.5
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "v": 0.45
+        }
+      ],
+      "palette": "ghost ship"
+    }
+  ],
+  "drums": [
+    {
+      "id": "beach",
+      "kind": "groove",
+      "intensity": 0.35,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.....X...X.....",
+        "snare": "",
+        "rim": "...x......x..x..",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "..x...x...x.x...",
+        "shaker": "xoxoxoxoxoxoxoxo"
+      }
+    },
+    {
+      "id": "carnival",
+      "kind": "groove",
+      "intensity": 0.7,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X..X..X.X..X..X.",
+        "snare": "....x.......x...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "...x.......x....",
+        "tomHigh": "x.xx.x..x.xx.x..",
+        "shaker": "xoxoxoxoxoxoxoxo"
+      }
+    },
+    {
+      "id": "tavern-thump",
+      "kind": "groove",
+      "intensity": 0.5,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.......",
+        "snare": "",
+        "rim": "....x.......x...",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "..x..x....x..x..",
+        "shaker": "x.x.x.x.x.x.x.x."
+      }
+    },
+    {
+      "id": "bongo-run",
+      "kind": "fill",
+      "intensity": 0.6,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...............",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "........x...XX..",
+        "tomHigh": "....xxxx.xxx....",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "rigging-creak",
+      "kind": "groove",
+      "intensity": 0.3,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "....o.......o...",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X.......o.......",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "ghost ship"
+    },
+    {
+      "id": "skeleton-jig",
+      "kind": "groove",
+      "intensity": 0.55,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.......",
+        "snare": "",
+        "rim": "..x...x...x...x.",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "....x.......x...",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "ghost ship"
+    }
+  ],
+  "forms": [
+    {
+      "id": "harbour",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.45,
+          "roles": [
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.65,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "counter",
+            "arp",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "lead",
+            "arp",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tavern",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.3,
+          "roles": [
+            "pad",
+            "comp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "lead",
+            "pad",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "counter",
+            "arp",
+            "bass",
+            "comp",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "lead",
+            "arp",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ghost-ship",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.2,
+          "roles": [
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.4,
+          "roles": [
+            "pad",
+            "bass",
+            "lead",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "pad",
+            "arp",
+            "bass",
+            "counter",
+            "comp",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "pad",
+            "bass",
+            "lead",
+            "arp",
+            "drums"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 2,
+          "intensity": 0.2,
+          "roles": [
+            "pad"
+          ]
+        }
+      ],
+      "palette": "ghost ship",
+      "tempo": {
+        "min": 84,
+        "max": 100
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "A",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "E",
+          "mode": "phrygianDominant"
+        },
+        {
+          "tonic": "G",
+          "mode": "harmonicMinor"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "pad",
+          "name": "Ghost organ",
+          "program": 19,
+          "octave": 3,
+          "volume": 0.45,
+          "pan": 0
+        },
+        {
+          "role": "lead",
+          "name": "Spectral clarinet",
+          "program": 71,
+          "octave": 5,
+          "volume": 0.5,
+          "pan": 0.1
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.6,
+    "low": 65,
+    "high": 89,
+    "phraseBars": 4,
+    "stepwise": 0.6,
+    "restProbability": 0.12,
+    "ornament": 0.2
+  }
+}
