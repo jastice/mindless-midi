@@ -16,13 +16,6 @@ import { SampleCache, type Soundfont, renderSampleStems } from "./sampler.js";
 import { LEADS, type LeadId, type Score, buildScore } from "./score.js";
 import { renderSynthStems } from "./synth.js";
 
-const BENCH_STYLES: Record<string, LeadId> = {
-  minimalist: "violin",
-  lofi: "flute",
-  synthwave: "tenor_saxophone",
-  electro_swing: "trumpet",
-};
-
 type VariantId = "opl" | "opl_bus" | "synth" | "samples" | "neural";
 
 interface Variant {
@@ -88,11 +81,7 @@ async function main(): Promise<void> {
 
   // --- Controls -----------------------------------------------------------
   const styleSel = $<HTMLSelectElement>("style");
-  for (const id of Object.keys(BENCH_STYLES)) {
-    const s = byId.get(id);
-    if (!s) continue;
-    styleSel.append(new Option(s.corpus.title, id));
-  }
+  for (const s of styles) styleSel.append(new Option(s.corpus.title, s.id));
   const leadSel = $<HTMLSelectElement>("lead");
   leadSel.append(new Option("Corpus instrument", ""));
   for (const [id, l] of Object.entries(LEADS)) leadSel.append(new Option(l.label, id));
@@ -101,10 +90,8 @@ async function main(): Promise<void> {
   $<HTMLInputElement>("seed").value = params.get("seed") ?? store.get("seed", "bench-1");
   $<HTMLSelectElement>("seconds").value = params.get("seconds") ?? store.get("seconds", "40");
   $<HTMLSelectElement>("font").value = store.get("font", "MusyngKite");
-  const syncLead = () => (leadSel.value = BENCH_STYLES[styleSel.value] ?? "");
-  syncLead();
-  if (params.get("lead") !== null) leadSel.value = params.get("lead")!;
-  styleSel.addEventListener("change", syncLead);
+  // Default: the corpus instrument, so every track plays as written.
+  leadSel.value = params.get("lead") ?? "";
   $("dice").addEventListener("click", () => {
     $<HTMLInputElement>("seed").value = Math.random().toString(36).slice(2, 8);
   });
@@ -409,6 +396,7 @@ async function main(): Promise<void> {
         if (my !== token) return;
         if (!out) {
           v.status = "n/a";
+          v.note = "pick a Lead instrument to try the DDSP model";
         } else {
           v.renderMs = out.ms ?? performance.now() - t0;
           v.bytes = out.bytes;

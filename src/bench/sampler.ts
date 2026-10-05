@@ -108,9 +108,11 @@ function playable(o: Opcodes): boolean {
 async function loadSfz(cache: SampleCache, url: string): Promise<{ base: string; regions: SfzRegion[] }> {
   const doc = await cache.getJson<{ meta: { baseUrl?: string }; global?: Opcodes; groups: (Opcodes & { regions: Opcodes[]; control?: Opcodes })[] }>(url);
   const regions: SfzRegion[] = [];
+  // A <control> header applies to every group after it, not just its own.
+  let prefix = "";
   for (const g of doc.groups) {
     const { regions: rs, control, ...groupOps } = g;
-    const prefix = String(control?.prefix_sfz_path ?? "");
+    if (control?.prefix_sfz_path !== undefined) prefix = String(control.prefix_sfz_path);
     for (const r of rs) {
       const o: Opcodes = { ...(doc.global ?? {}), ...groupOps, ...r };
       if (!playable(o) || typeof o.sample !== "string") continue;
@@ -131,7 +133,7 @@ async function loadSfz(cache: SampleCache, url: string): Promise<{ base: string;
         xfout: pair(o.xfout_lovel, o.xfout_hivel),
         seqLength: Number(o.seq_length ?? 1),
         seqPosition: Number(o.seq_position ?? 1),
-        prefix: String(control?.prefix_sfz_path ?? prefix),
+        prefix,
       });
     }
   }
@@ -198,6 +200,7 @@ function gmInstrument(cache: SampleCache, font: Soundfont, program: number, sust
 const SP = `${DANIGB}sample-pi/drums/one-shots/`;
 const LM2 = `${DANIGB}drum-machines/LM-2/`;
 const TR808 = `${DANIGB}drum-machines/TR-808/`;
+const RZ1 = `${DANIGB}drum-machines/Casio-RZ1/`;
 
 const KITS: Record<string, Record<number, string>> = {
   lofi: {
@@ -214,6 +217,26 @@ const KITS: Record<string, Record<number, string>> = {
     36: `${SP}kick/bd_haus.m4a`, 38: `${SP}snare/sn_generic.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${LM2}clap.m4a`,
     42: `${TR808}hihat-close/ch.m4a`, 46: `${TR808}hihat-open/oh25.m4a`, 51: `${LM2}ride.m4a`, 49: `${LM2}crash.m4a`,
     45: `${LM2}tom-l.m4a`, 50: `${LM2}tom-h.m4a`, 70: `${LM2}tambourine.m4a`,
+  },
+  jazz_trio: {
+    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${SP}percussion/perc_snap.m4a`,
+    42: `${SP}cymbal/drum_cymbal_pedal.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
+    49: `${SP}other/drum_splash_hard.m4a`, 45: `${SP}tom/drum_tom_lo_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`,
+  },
+  retro: {
+    36: `${RZ1}kick.m4a`, 38: `${RZ1}snare.m4a`, 37: `${RZ1}clave.m4a`, 39: `${RZ1}clap.m4a`, 42: `${RZ1}hihat-closed.m4a`,
+    46: `${RZ1}hihat-open.m4a`, 51: `${RZ1}ride.m4a`, 49: `${RZ1}crash.m4a`, 45: `${RZ1}tom-3.m4a`, 50: `${RZ1}tom-1.m4a`,
+    70: `${LM2}cabasa.m4a`,
+  },
+  metroid: {
+    36: `${TR808}kick/bd2525.m4a`, 38: `${TR808}snare/sd2525.m4a`, 37: `${TR808}rimshot/rs.m4a`, 39: `${TR808}clap/cp.m4a`,
+    42: `${TR808}hihat-close/ch.m4a`, 46: `${TR808}hihat-open/oh25.m4a`, 51: `${TR808}cymbal/cy2525.m4a`,
+    49: `${TR808}cymbal/cy2525.m4a`, 45: `${TR808}tom-low/lt25.m4a`, 50: `${TR808}tom-hi/ht25.m4a`, 70: `${TR808}maraca/ma.m4a`,
+  },
+  monkey_island: {
+    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${TR808}conga-hi/hc25.m4a`, 37: `${TR808}clave/cl.m4a`,
+    70: `${TR808}maraca/ma.m4a`, 45: `${TR808}conga-low/lc25.m4a`, 50: `${TR808}conga-mid/mc25.m4a`,
+    42: `${LM2}cabasa.m4a`, 49: `${LM2}crash.m4a`,
   },
 };
 

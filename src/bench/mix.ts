@@ -48,6 +48,28 @@ export const PRESETS: Record<string, MixPreset> = {
   },
 };
 
+Object.assign(PRESETS, {
+  jazz_trio: {
+    reverb: { seconds: 1.4, predelay: 0.012, bright: 0.4, send: { lead: 0.18, comp: 0.18, bass: 0.06, drums: 0.12 } },
+    highpass: { lead: 70, comp: 70 },
+  },
+  retro: {
+    reverb: { seconds: 0.9, predelay: 0.01, bright: 0.5, send: { lead: 0.12, counter: 0.12, arp: 0.1, comp: 0.1 } },
+    delay: { beats: 0.5, feedback: 0.25, send: { counter: 0.12, arp: 0.1 } },
+    highpass: { lead: 120, counter: 150, arp: 150, comp: 150 },
+  },
+  metroid: {
+    reverb: { seconds: 3.6, predelay: 0.04, bright: 0.35, send: { lead: 0.35, counter: 0.4, arp: 0.3, pad: 0.5, drums: 0.15 } },
+    delay: { beats: 0.75, feedback: 0.42, send: { lead: 0.2, counter: 0.25, arp: 0.12 } },
+    duck: { depth: { pad: 0.2 }, release: 0.3 },
+    highpass: { lead: 120, counter: 150, arp: 150, pad: 120 },
+  },
+  monkey_island: {
+    reverb: { seconds: 1.2, predelay: 0.015, bright: 0.45, send: { lead: 0.18, counter: 0.2, arp: 0.15, comp: 0.12, pad: 0.2, drums: 0.08 } },
+    highpass: { lead: 120, counter: 150, arp: 120, comp: 150, pad: 150 },
+  },
+} satisfies Record<string, MixPreset>);
+
 const DEFAULT_PRESET: MixPreset = { reverb: { seconds: 1.8, predelay: 0.02, bright: 0.5, send: { lead: 0.2, pad: 0.3 } }, highpass: {} };
 
 /** Common level for a role whose corpus volume is 1. */

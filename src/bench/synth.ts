@@ -56,6 +56,9 @@ function voiceFor(program: number): Voice {
   if (program <= 87) return sub(SAW_LEAD);
   if (program === 90) return sub(POLY);
   if (program === 91) return sub(CHOIR);
+  if (program === 98 || program === 112) return mallet(program);
+  if (program >= 104 && program <= 107) return pluck({ bright: 0.7, t60: 2, pick: 0.15 });
+  if (program >= 113 && program <= 119) return mallet(program);
   return sub(PAD);
 }
 
@@ -167,6 +170,10 @@ function mallet(program: number): Voice {
         ? { ratios: [1, 3.99, 9.4], t60: [3.2, 0.9, 0.25], amps: [1, 0.22, 0.08], trem: 5.6, damp: true }
         : program === 13
           ? { ratios: [1, 3.0, 6.3], t60: [0.5, 0.18, 0.08], amps: [1, 0.4, 0.2], trem: 0, damp: false }
+          : program === 114
+            ? { ratios: [1, 2, 3.01, 4.02], t60: [1.1, 0.6, 0.3, 0.15], amps: [1, 0.55, 0.3, 0.12], trem: 0, damp: false }
+            : program >= 115
+              ? { ratios: [1, 1.6, 2.3], t60: [0.25, 0.1, 0.05], amps: [1, 0.5, 0.3], trem: 0, damp: false }
           : { ratios: [1, 2.76, 5.4, 8.93], t60: [2.0, 0.8, 0.4, 0.2], amps: [1, 0.4, 0.2, 0.1], trem: 0, damp: false };
   return (out, n, sr) => {
     const f = mtof(n.key);
@@ -395,6 +402,8 @@ interface Kit {
   snare: { tone: number; toneDecay: number; noiseDecay: number; noiseHp: number; mix: number };
   hatScale: number;
   hatDecay: number;
+  /** Low / high tom pitch (congas for hand percussion). */
+  toms?: [number, number];
 }
 
 const KITS: Record<string, Kit> = {
@@ -402,6 +411,11 @@ const KITS: Record<string, Kit> = {
   lofi: { kick: { f0: 120, f1: 48, sweep: 0.05, decay: 0.3, drive: 1.2, click: 0.15 }, snare: { tone: 180, toneDecay: 0.06, noiseDecay: 0.14, noiseHp: 900, mix: 0.55 }, hatScale: 0.8, hatDecay: 0.035 },
   synthwave: { kick: { f0: 180, f1: 46, sweep: 0.03, decay: 0.45, drive: 2, click: 0.4 }, snare: { tone: 200, toneDecay: 0.1, noiseDecay: 0.28, noiseHp: 1500, mix: 0.7 }, hatScale: 1.1, hatDecay: 0.05 },
   electro_swing: { kick: { f0: 200, f1: 52, sweep: 0.025, decay: 0.32, drive: 2.5, click: 0.5 }, snare: { tone: 210, toneDecay: 0.06, noiseDecay: 0.16, noiseHp: 1800, mix: 0.65 }, hatScale: 1.2, hatDecay: 0.04 },
+  // Brushes: little tone, a long soft swish.
+  jazz_trio: { kick: { f0: 95, f1: 52, sweep: 0.04, decay: 0.25, drive: 1, click: 0.05 }, snare: { tone: 190, toneDecay: 0.04, noiseDecay: 0.3, noiseHp: 2500, mix: 0.85 }, hatScale: 0.9, hatDecay: 0.06 },
+  retro: { kick: { f0: 300, f1: 50, sweep: 0.02, decay: 0.15, drive: 3, click: 0.6 }, snare: { tone: 240, toneDecay: 0.04, noiseDecay: 0.1, noiseHp: 800, mix: 0.9 }, hatScale: 1.4, hatDecay: 0.03 },
+  metroid: { kick: { f0: 150, f1: 42, sweep: 0.05, decay: 0.5, drive: 1.8, click: 0.2 }, snare: { tone: 170, toneDecay: 0.1, noiseDecay: 0.25, noiseHp: 1000, mix: 0.7 }, hatScale: 0.9, hatDecay: 0.05 },
+  monkey_island: { kick: { f0: 110, f1: 60, sweep: 0.03, decay: 0.2, drive: 1, click: 0.1 }, snare: { tone: 330, toneDecay: 0.05, noiseDecay: 0.06, noiseHp: 2000, mix: 0.35 }, hatScale: 1, hatDecay: 0.03, toms: [210, 320] },
 };
 
 const HAT_FREQS = [205.3, 304.4, 369.6, 522.7, 540, 800];
@@ -500,7 +514,7 @@ function drum(out: Stereo, n: ScoreNote, sr: number, kit: Kit): void {
     case 47:
     case 48:
     case 50: {
-      const f0 = n.key >= 48 ? 190 : 120;
+      const f0 = n.key >= 48 ? (kit.toms?.[1] ?? 190) : (kit.toms?.[0] ?? 120);
       let ph = 0;
       write(0.8, n.key >= 48 ? 0.25 : -0.25, (t) => {
         ph += (f0 * (1 + 0.5 * Math.exp(-t / 0.03))) / sr;
