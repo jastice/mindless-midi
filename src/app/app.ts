@@ -5,7 +5,7 @@
  */
 import wasmUrl from "libadlmidi-js/dist/libadlmidi.nuked.browser.wasm";
 import type { StyleBundle } from "../corpus/schema.js";
-import { chordName, pitchClass } from "../theory/theory.js";
+import { chordName } from "../theory/theory.js";
 import { Player, type TimedBar } from "./player.js";
 import { Roll } from "./roll.js";
 
@@ -176,7 +176,7 @@ async function main(): Promise<void> {
     meta.textContent = i.gap
       ? "next piece coming up"
       : `${i.keyName} · ${tb.bar.bpm} bpm · ${i.section} · bar ${i.barInPiece + 1}/${i.pieceBars}${player.playing ? "" : " · paused"}`;
-    const tonic = pitchClass(i.keyName.split(" ")[0]!);
+    const tonic = i.tonic;
     chord.replaceChildren(
       ...i.chords.flatMap((sym, k) => {
         const name = document.createElement("span");

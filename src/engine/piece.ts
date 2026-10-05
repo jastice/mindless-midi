@@ -4,7 +4,7 @@
  */
 import type { CompPattern, DrumPattern, Instrument, Motif, Progression, Role, StyleBundle, StyleCorpus } from "../corpus/schema.js";
 import { Rng } from "../theory/rng.js";
-import { MODES, type ModeName, NOTE_NAMES, mod, parseRoman, pitchClass } from "../theory/theory.js";
+import { MODES, type ModeName, keyLabel, mod, parseRoman, pitchClass } from "../theory/theory.js";
 import { Harmony } from "./harmony.js";
 import {
   type BarContext,
@@ -155,7 +155,7 @@ export class Piece {
   }
 
   get keyName(): string {
-    return `${NOTE_NAMES[this.tonic]} ${this.mode}`;
+    return keyLabel(this.tonic, this.mode);
   }
 
   get seconds(): number {
@@ -230,7 +230,9 @@ export class Piece {
       pieceSeed: this.seed,
       styleId: this.style.id,
       styleTitle: c.title,
-      keyName: `${NOTE_NAMES[mod(this.tonic + (section ?? last).transpose, 12)]} ${this.mode}`,
+      keyName: keyLabel(this.tonic + (section ?? last).transpose, this.mode),
+      tonic: mod(this.tonic + (section ?? last).transpose, 12),
+      mode: this.mode,
       section: section?.label ?? (barInPiece === this.bodyBars ? "ending" : ""),
       sectionIndex: section?.index ?? this.sections.length,
       sectionCount: this.sections.length,

@@ -49,6 +49,16 @@ export const MODES = {
 export type ModeName = keyof typeof MODES;
 export const MODE_NAMES = Object.keys(MODES) as ModeName[];
 
+/** Display names, e.g. "harmonic minor" for harmonicMinor. */
+export function modeLabel(mode: ModeName): string {
+  return mode.replace(/[A-Z]/g, (c) => " " + c.toLowerCase());
+}
+
+/** Display name of a key, e.g. "C harmonic minor". */
+export function keyLabel(tonic: number, mode: ModeName): string {
+  return `${NOTE_NAMES[mod(tonic, 12)]} ${modeLabel(mode)}`;
+}
+
 // ---------------------------------------------------------------------------
 // Roman numeral chords
 // ---------------------------------------------------------------------------

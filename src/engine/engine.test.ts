@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import type { StyleBundle } from "../corpus/schema.js";
-import { MODES, type ModeName, chordPitchClasses, mod, parseRoman, pitchClass } from "../theory/theory.js";
+import { MODES, chordPitchClasses, mod, parseRoman } from "../theory/theory.js";
 import { Conductor } from "./conductor.js";
 import { barsToMidi } from "./midi_file.js";
 import type { Bar } from "./types.js";
@@ -21,8 +21,8 @@ for (const style of styles) {
     const roles = new Set<string>();
     for (const bar of bars) {
       assert.ok(bar.bpm >= style.corpus.tempo.min && bar.bpm <= style.corpus.tempo.max);
-      const [tonicName, mode] = bar.info.keyName.split(" ") as [string, ModeName];
-      const tonic = pitchClass(tonicName);
+      const { tonic, mode } = bar.info;
+      assert.doesNotMatch(bar.info.keyName, /[A-Z][a-z]+[A-Z]/, "display name has no camelCase");
       const allowed = new Set(MODES[mode].map((i) => mod(tonic + i, 12)));
       for (const sym of bar.info.chords) for (const pc of chordPitchClasses(tonic, parseRoman(sym))) allowed.add(pc);
       for (const n of bar.notes) {

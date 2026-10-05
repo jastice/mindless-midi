@@ -1,4 +1,5 @@
 import type { Role } from "../corpus/schema.js";
+import type { ModeName } from "../theory/theory.js";
 
 /** MIDI channel per role. Channel 9 (0-based) is GM percussion. */
 export const CHANNELS: Record<Role, number> = {
@@ -37,7 +38,11 @@ export interface BarInfo {
   pieceSeed: string;
   styleId: string;
   styleTitle: string;
+  /** Display name of the current key, e.g. "C harmonic minor". */
   keyName: string;
+  /** Current tonic pitch class (including any modulation) and mode. */
+  tonic: number;
+  mode: ModeName;
   section: string;
   sectionIndex: number;
   sectionCount: number;

@@ -7,6 +7,7 @@ import {
   chordScale,
   degreeToMidi,
   foldIntoRange,
+  keyLabel,
   parseRoman,
   pitchClass,
   snapToPitchClasses,
@@ -107,4 +108,10 @@ test("stable melody tones avoid half-step clashes", () => {
   assert.deepEqual(stableMelodyPitchClasses(0, parseRoman("Imaj7")), [4, 7, 11]);
   assert.deepEqual(stableMelodyPitchClasses(0, parseRoman("V7")), [7, 11, 2, 5]);
   assert.deepEqual(stableMelodyPitchClasses(0, parseRoman("ii9")), [2, 9, 0]);
+});
+
+test("key labels are human readable", () => {
+  assert.equal(keyLabel(0, "harmonicMinor"), "C harmonic minor");
+  assert.equal(keyLabel(6, "phrygianDominant"), "F# phrygian dominant");
+  assert.equal(keyLabel(14, "dorian"), "D dorian");
 });

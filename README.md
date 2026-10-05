@@ -146,7 +146,7 @@ localhost) for AudioWorklet.
 - Synthesis uses 4 emulated OPL3 chips (72 two-operator voices) with Nuked OPL3,
   at roughly 4% of one CPU core. Offline it renders about 25x faster than
   realtime.
-- Licensing: libadlmidi-js is LGPL-3.0; upstream libADLMIDI mixes GPL and LGPL
-  by component (only the Nuked OPL3 profile is bundled here). Check both before
-  publishing. This repository has no license file yet.
+- Licensing: this project is [MIT](LICENSE). The bundled synth is not:
+  libadlmidi-js is LGPL-3.0, and upstream libADLMIDI mixes GPL and LGPL by
+  component (only the Nuked OPL3 profile is bundled here).
 - Dev console: `mindlessMidi.player` and `mindlessMidi.styles` are exposed for tinkering.

@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "description": "Endless LLM-seeded, algorithmically arranged MIDI music in a browser tab.",
+  "license": "MIT",
   "packageManager": "pnpm@10.34.6",
   "dependencies": {
     "libadlmidi-js": "2.2.0"
