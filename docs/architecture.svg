@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 610" width="960" height="610" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title>Mindless Midi architecture</title>
+  <desc>From style briefs, via Claude and the Bazel rules, to the engine, the audio worklet and offline rendering.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#57606a"/>
+    </marker>
+    <style>
+      .bg { fill: #ffffff; stroke: #d0d7de; }
+      .box { fill: #f6f8fa; stroke: #8c959f; stroke-width: 1.2; }
+      .build { fill: #ddf4ff; stroke: #54aeff; stroke-width: 1.2; }
+      .runtime { fill: #fff1e5; stroke: #fb8f44; stroke-width: 1.2; }
+      .audio { fill: #fbefff; stroke: #c297ff; stroke-width: 1.2; }
+      .data { fill: #dafbe1; stroke: #4ac26b; stroke-width: 1.2; }
+      .t { fill: #1f2328; font-size: 15px; font-weight: 600; }
+      .m { fill: #1f2328; font-size: 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; }
+      .s { fill: #57606a; font-size: 12.5px; }
+      .l { fill: #57606a; font-size: 12px; font-style: italic; }
+      .h { fill: #57606a; font-size: 11.5px; font-weight: 700; letter-spacing: 1.2px; }
+      .a { stroke: #57606a; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0.5" y="0.5" width="959" height="609" rx="10"/>
+
+  <!-- Section labels -->
+  <text class="h" x="40" y="34">BUILD TIME</text>
+  <text class="h" x="40" y="352">RUNTIME</text>
+  <line x1="40" y1="334" x2="920" y2="334" stroke="#d0d7de" stroke-dasharray="4 4"/>
+
+  <!-- Row 1: brief -> corpus -->
+  <rect class="data" x="40" y="50" width="260" height="56" rx="8"/>
+  <text class="m" x="170" y="74" text-anchor="middle">styles/&lt;id&gt;/brief.md</text>
+  <text class="s" x="170" y="93" text-anchor="middle">written by hand</text>
+
+  <rect class="data" x="620" y="50" width="300" height="56" rx="8"/>
+  <text class="m" x="770" y="74" text-anchor="middle">styles/&lt;id&gt;/corpus.json</text>
+  <text class="s" x="770" y="93" text-anchor="middle">checked in</text>
+
+  <path class="a" d="M300,78 H620"/>
+  <text class="l" x="460" y="68" text-anchor="middle">bazel run //styles:regen</text>
+  <text class="l" x="460" y="98" text-anchor="middle">Claude API · structured output</text>
+
+  <!-- Row 2: music_style -->
+  <path class="a" d="M770,106 V140"/>
+  <rect class="build" x="560" y="140" width="360" height="88" rx="8"/>
+  <text class="t" x="740" y="165" text-anchor="middle">music_style rule</text>
+  <text class="s" x="740" y="186" text-anchor="middle">validate (schema + music checks)</text>
+  <text class="s" x="740" y="204" text-anchor="middle">calibrate loudness: render each instrument</text>
+  <text class="s" x="740" y="220" text-anchor="middle">through the OPL3 synth</text>
+
+  <!-- Row 3: style_pack -> styles.json -->
+  <path class="a" d="M740,228 V262"/>
+  <rect class="build" x="620" y="262" width="300" height="48" rx="8"/>
+  <text class="t" x="770" y="292" text-anchor="middle">style_pack rule</text>
+
+  <path class="a" d="M620,286 H540"/>
+  <rect class="data" x="340" y="262" width="200" height="48" rx="8"/>
+  <text class="m" x="440" y="292" text-anchor="middle">styles.json</text>
+
+  <!-- Row 4: theory -> engine -> app -->
+  <rect class="runtime" x="40" y="372" width="170" height="62" rx="8"/>
+  <text class="m" x="125" y="398" text-anchor="middle">src/theory</text>
+  <text class="s" x="125" y="418" text-anchor="middle">RNG · modes · voice-leading</text>
+
+  <path class="a" d="M210,403 H270"/>
+  <rect class="runtime" x="270" y="372" width="270" height="62" rx="8"/>
+  <text class="m" x="405" y="398" text-anchor="middle">src/engine</text>
+  <text class="s" x="405" y="418" text-anchor="middle">Conductor ▶ Piece ▶ parts</text>
+
+  <path class="a" d="M440,310 V372" />
+
+  <path class="a" d="M540,403 H620"/>
+  <rect class="runtime" x="620" y="372" width="300" height="62" rx="8"/>
+  <text class="m" x="770" y="398" text-anchor="middle">src/app</text>
+  <text class="s" x="770" y="418" text-anchor="middle">Player · UI · piano roll</text>
+
+  <!-- Row 5: events -> processor / render -->
+  <path class="a" d="M405,434 V512"/>
+  <text class="l" x="415" y="468">timestamped events,</text>
+  <text class="l" x="415" y="484">~3 s ahead</text>
+  <path class="a" d="M770,434 V512"/>
+
+  <rect class="audio" x="270" y="512" width="270" height="62" rx="8"/>
+  <text class="m" x="405" y="538" text-anchor="middle">src/audio/events.ts</text>
+  <text class="s" x="405" y="558" text-anchor="middle">sample-accurate event queue</text>
+
+  <path class="a" d="M540,543 H620"/>
+  <rect class="audio" x="620" y="512" width="300" height="62" rx="8"/>
+  <text class="m" x="770" y="538" text-anchor="middle">src/audio/processor.ts</text>
+  <text class="s" x="770" y="558" text-anchor="middle">AudioWorklet + libADLMIDI WASM</text>
+
+  <path class="a" d="M270,543 H210"/>
+  <rect class="box" x="40" y="512" width="170" height="62" rx="8"/>
+  <text class="m" x="125" y="538" text-anchor="middle">tools/render</text>
+  <text class="s" x="125" y="558" text-anchor="middle">offline WAV / MIDI</text>
+  <text class="l" x="125" y="594" text-anchor="middle">same code, identical playback</text>
+</svg>

@@ -52,20 +52,7 @@ Media keys work through the Media Session API.
 
 ## How it fits together
 
-```
-styles/<id>/brief.md ──(bazel run //styles:regen, Claude API)──▶ styles/<id>/corpus.json   (checked in)
-                                                                         │
-           music_style rule: validate (schema + music checks) ◀──────────┘
-                             calibrate loudness by rendering each instrument through the OPL3 synth
-                                                                         │
-           style_pack rule ──▶ styles.json ──┐                           │
-                                             ▼                           │
- src/theory  ─▶ src/engine (Conductor ▶ Piece ▶ parts) ─▶ src/app (Player, UI, piano roll)
-                                     │                         │  timestamped events, ~3 s ahead
-                                     ▼                         ▼
-                              src/audio/events.ts ──▶ src/audio/processor.ts (AudioWorklet + libADLMIDI WASM)
-                              (shared with tools/render for offline, identical playback)
-```
+![Architecture: style briefs are turned into corpora by Claude, validated and calibrated by Bazel rules, then played by the engine through an AudioWorklet or rendered offline](docs/architecture.svg)
 
 - `src/theory`: seeded RNG, modes, roman-numeral chord parsing, chord-scales,
   voice-leading.
