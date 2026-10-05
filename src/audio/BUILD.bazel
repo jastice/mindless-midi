@@ -50,3 +50,9 @@ ts_test(
     src = "leveler.test.ts",
     deps = [":events"],
 )
+
+ts_test(
+    name = "events_test",
+    src = "events.test.ts",
+    deps = [":events"],
+)

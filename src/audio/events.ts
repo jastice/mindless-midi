@@ -86,7 +86,12 @@ export function barFrames(bar: Pick<Bar, "beats" | "bpm">, sampleRate: number): 
 export class EventQueue {
   private q: SynthEvent[] = [];
   private head = 0;
-  /** Latest note id per channel/key: a stale note-off must not cut a re-struck note. */
+  /**
+   * Latest note id per channel/key, 0 when silent. A stale note-off must not
+   * cut a re-struck note, and a re-strike must release the sounding one first:
+   * libADLMIDI stacks a second voice on a key that is already on, and one
+   * note-off frees only one of them, leaving the other stuck.
+   */
   private readonly owner = new Int32Array(16 * 128);
 
   push(events: readonly SynthEvent[]): void {
@@ -105,6 +110,7 @@ export class EventQueue {
     const n = this.q.length - this.head;
     this.q = [];
     this.head = 0;
+    this.owner.fill(0);
     return n;
   }
 
@@ -144,6 +150,7 @@ export class EventQueue {
     const slot = ev.ch * 128 + ev.a;
     switch (ev.type) {
       case EV_ON:
+        if (this.owner[slot]) sink.noteOff(ev.ch, ev.a);
         this.owner[slot] = ev.id;
         sink.noteOn(ev.ch, ev.a, ev.b);
         break;
