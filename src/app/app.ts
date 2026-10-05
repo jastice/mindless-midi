@@ -123,13 +123,35 @@ async function main(): Promise<void> {
     chipFor.set(e.id, chip);
     chips.append(chip);
   }
+  const mb = (b: number) => `${(b / 1e6).toFixed(1)} MB`;
   function renderEngine(): void {
+    const pending = player.pendingEngine;
+    const shown = player.audibleEngine;
+    const progress = player.loadProgress;
+    // The chip that is loading fills up like a progress bar.
+    const loadingChip = pending ?? (progress !== null ? shown : null);
     for (const [id, chip] of chipFor) {
-      chip.setAttribute("aria-checked", String(id === player.engine));
-      chip.tabIndex = id === player.engine ? 0 : -1;
+      chip.setAttribute("aria-checked", String(id === shown));
+      chip.classList.toggle("pending", id === pending);
+      const filling = id === loadingChip && progress !== null;
+      chip.classList.toggle("filling", filling);
+      chip.style.setProperty("--progress", filling ? String(progress) : "0");
+      if (filling) chip.setAttribute("aria-label", `${chip.textContent}, loading ${Math.round(progress * 100)}%`);
+      else chip.removeAttribute("aria-label");
+      chip.tabIndex = id === shown ? 0 : -1;
     }
-    const e = ENGINES.find((x) => x.id === player.engine)!;
-    $("engine-desc").textContent = player.loading ? "Loading samples…" : e.desc;
+    const e = ENGINES.find((x) => x.id === shown)!;
+    let desc = player.loading ? "Loading samples…" : e.desc;
+    if (pending) {
+      const { bytes, rate } = player.downloads;
+      const speed = rate ? ` at ${mb(rate)}/s` : "";
+      const when = player.switchIn;
+      desc =
+        when === null
+          ? `Getting ${ENGINES.find((x) => x.id === pending)!.label} ready: ${mb(bytes)} downloaded${speed}. Switching at the next phrase once enough is in.`
+          : `${ENGINES.find((x) => x.id === pending)!.label} ready: switching in ${Math.ceil(when)} s.`;
+    }
+    $("engine-desc").textContent = desc;
     const credits = player.sampleCredits;
     const el = $("credits");
     el.hidden = !credits.length;
@@ -282,6 +304,13 @@ async function main(): Promise<void> {
   player.onChange(render);
   player.onChange(renderEngine);
   renderEngine();
+  // Count down a queued switch.
+  let wasBusy = false;
+  setInterval(() => {
+    const busy = player.pendingEngine !== null || player.loadProgress !== null;
+    if (busy || wasBusy) renderEngine();
+    wasBusy = busy;
+  }, 200);
   // Cheap enough to poll; keeps the display in step with what is audible.
   setInterval(() => describe(player.current()), 200);
   render();

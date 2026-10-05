@@ -166,6 +166,19 @@ code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em;
 .chip:hover { border-color: var(--muted); }
 .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .chip[aria-checked="true"] { background: var(--accent); border-color: var(--accent); color: #1a1408; font-weight: 600; }
+.chip { position: relative; isolation: isolate; overflow: hidden; }
+.chip.pending { border-color: var(--accent); border-style: dashed; }
+/* A loading chip is its own progress bar. */
+.chip.filling::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: calc(var(--progress, 0) * 100%);
+  background: color-mix(in srgb, var(--accent) 38%, transparent);
+  transition: width 0.25s linear;
+}
+@media (prefers-reduced-motion: reduce) { .chip.filling::before { transition: none; } }
 .sound-desc { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 13px; min-height: 1.4em; }
 
 .styles { margin-top: 28px; }

@@ -300,6 +300,9 @@ export class SampleLibrary {
   /** Download size per sample URL. */
   readonly sizes = new Map<string, number>();
   bytes = 0;
+  /** Files asked for vs finished in the current burst of downloads (for progress bars). */
+  private queued = 0;
+  private finished = 0;
 
   constructor(
     readonly cache: SampleCache,
@@ -316,6 +319,11 @@ export class SampleLibrary {
   /** Labels of every instrument used so far (for credits and reports). */
   get labels(): string[] {
     return [...new Set([...this.instruments.values()].map((i) => i.label))];
+  }
+
+  /** Fraction of the current burst of downloads that has finished (1 when idle). */
+  get downloadProgress(): number {
+    return this.queued ? this.finished / this.queued : 1;
   }
 
   sample(url: string): SampleData | undefined {
@@ -336,6 +344,8 @@ export class SampleLibrary {
     plans.forEach((p, i) => (p.cut = cuts[i]));
     const queue = [...new Set(plans.flatMap((p) => p.zones.map((z) => z.url)))].filter((u) => !this.loaded.has(u) && !this.failed.has(u));
     const fresh = new Map<string, SampleData>();
+    if (this.queued === this.finished) this.queued = this.finished = 0;
+    this.queued += queue.length;
     const worker = async () => {
       for (let url = queue.shift(); url; url = queue.shift()) {
         try {
@@ -349,6 +359,8 @@ export class SampleLibrary {
         } catch (err) {
           this.failed.add(url);
           console.warn("sample failed", url, err);
+        } finally {
+          this.finished++;
         }
       }
     };
