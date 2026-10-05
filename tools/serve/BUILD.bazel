@@ -1,0 +1,8 @@
+load("//bazel:ts.bzl", "ts_lib")
+
+ts_lib(
+    name = "serve_lib",
+    srcs = ["serve.ts"],
+    node = True,
+    visibility = ["//site:__pkg__"],
+)

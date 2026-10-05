@@ -1,0 +1,40 @@
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("//bazel:deploy.bzl", "gh_pages_deploy")
+
+# The complete static site: everything GitHub Pages (or any host) serves.
+copy_to_directory(
+    name = "site",
+    srcs = [
+        "//src/app:bundle",
+        "//src/app:favicon.svg",
+        "//src/app:index.html",
+        "//src/app:styles.css",
+        "//src/audio:worklet",
+        "//styles",
+    ],
+    root_paths = [
+        "src/app/bundle",
+        "src/app",
+        "src/audio",
+        "styles",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# bazel run //site:serve  ->  http://localhost:8080
+js_binary(
+    name = "serve",
+    args = ["site/site"],
+    data = [
+        ":site",
+        "//tools/serve:serve_lib",
+    ],
+    entry_point = "//tools/serve:serve.js",
+)
+
+# bazel run //site:deploy [-- --dry-run]
+gh_pages_deploy(
+    name = "deploy",
+    site = ":site",
+)

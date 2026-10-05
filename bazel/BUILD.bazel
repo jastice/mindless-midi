@@ -1,0 +1,1 @@
+exports_files(["gh_pages_deploy.sh.tpl"])

@@ -1,0 +1,52 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//bazel:ts.bzl", "ts_lib", "ts_test")
+
+ts_lib(
+    name = "events",
+    srcs = [
+        "events.ts",
+        "leveler.ts",
+        "protocol.ts",
+    ],
+    visibility = ["//visibility:public"],
+    deps = ["//src/engine"],
+)
+
+ts_lib(
+    name = "processor",
+    srcs = [
+        "adlmidi_wasm.d.ts",
+        "processor.ts",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":events",
+        "//:node_modules/libadlmidi-js",
+    ],
+)
+
+# The AudioWorklet module. Worklet scopes lack `URL`, which the Emscripten
+# loader touches even when we hand it the wasm bytes.
+esbuild(
+    name = "worklet",
+    config = {
+        "banner": {"js": "if (typeof URL === 'undefined') { globalThis.URL = class URL { constructor(u) { this.href = String(u); } }; }"},
+        "legalComments": "linked",
+    },
+    entry_point = ":processor.js",
+    format = "esm",
+    minify = True,
+    output = "worklet.js",
+    target = "es2022",
+    visibility = ["//site:__pkg__"],
+    deps = [
+        ":processor",
+        "//:node_modules/libadlmidi-js",
+    ],
+)
+
+ts_test(
+    name = "leveler_test",
+    src = "leveler.test.ts",
+    deps = [":events"],
+)

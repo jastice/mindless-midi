@@ -1,0 +1,27 @@
+load("//bazel:music.bzl", "style_pack")
+
+STYLES = [
+    "metroid",
+    "retro",
+    "lofi",
+    "jazz_trio",
+    "minimalist",
+]
+
+style_pack(
+    name = "styles",
+    styles = ["//styles/%s:style" % s for s in STYLES],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "corpora",
+    srcs = ["//styles/%s:corpus" % s for s in STYLES],
+    visibility = ["//visibility:public"],
+)
+
+# bazel run //styles:regen -- styles/metroid   (needs Claude API credentials)
+alias(
+    name = "regen",
+    actual = "//tools/generate",
+)

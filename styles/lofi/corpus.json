@@ -1,0 +1,935 @@
+{
+  "title": "Lo-fi Hip Hop",
+  "description": "Dusty boom-bap, warm Rhodes and a wistful vibraphone. Beats to study, read or stare out of the window to.",
+  "tempo": {
+    "min": 70,
+    "max": 88
+  },
+  "beatsPerBar": 4,
+  "swing": 0.55,
+  "swingUnit": "16th",
+  "humanize": 0.4,
+  "keys": [
+    {
+      "tonic": "F",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "D",
+      "mode": "dorian"
+    },
+    {
+      "tonic": "Bb",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "A",
+      "mode": "aeolian"
+    },
+    {
+      "tonic": "Eb",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "C",
+      "mode": "dorian"
+    },
+    {
+      "tonic": "G",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "E",
+      "mode": "dorian"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Vibraphone",
+      "program": 11,
+      "octave": 5,
+      "volume": 0.45,
+      "pan": 0.25
+    },
+    {
+      "role": "counter",
+      "name": "Nylon guitar",
+      "program": 24,
+      "octave": 4,
+      "volume": 0.42,
+      "pan": -0.35
+    },
+    {
+      "role": "comp",
+      "name": "Dusty Rhodes",
+      "program": 4,
+      "octave": 4,
+      "volume": 0.5,
+      "pan": -0.1
+    },
+    {
+      "role": "pad",
+      "name": "Warm pad",
+      "program": 89,
+      "octave": 3,
+      "volume": 0.24,
+      "pan": 0
+    },
+    {
+      "role": "bass",
+      "name": "Finger bass",
+      "program": 33,
+      "octave": 2,
+      "volume": 0.7,
+      "pan": 0
+    },
+    {
+      "role": "drums",
+      "name": "Boom-bap kit",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.62,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "study",
+      "mood": "quiet focus",
+      "chords": [
+        {
+          "symbol": "IVmaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "iii7",
+          "beats": 4
+        },
+        {
+          "symbol": "ii7",
+          "beats": 4
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "two-five",
+      "mood": "home at last",
+      "chords": [
+        {
+          "symbol": "ii9",
+          "beats": 4
+        },
+        {
+          "symbol": "V13",
+          "beats": 4
+        },
+        {
+          "symbol": "Imaj9",
+          "beats": 8
+        }
+      ]
+    },
+    {
+      "id": "rainy",
+      "mood": "rain on the window",
+      "chords": [
+        {
+          "symbol": "Imaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "vi9",
+          "beats": 4
+        },
+        {
+          "symbol": "ii9",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "dorian-two",
+      "mood": "slow nod",
+      "chords": [
+        {
+          "symbol": "i9",
+          "beats": 8
+        },
+        {
+          "symbol": "IV9",
+          "beats": 8
+        }
+      ]
+    },
+    {
+      "id": "nostalgia",
+      "mood": "old photographs",
+      "chords": [
+        {
+          "symbol": "vi9",
+          "beats": 4
+        },
+        {
+          "symbol": "IVmaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "late-night",
+      "mood": "2am kitchen",
+      "chords": [
+        {
+          "symbol": "iiø7",
+          "beats": 4
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 4
+        },
+        {
+          "symbol": "i9",
+          "beats": 8
+        }
+      ]
+    },
+    {
+      "id": "float",
+      "mood": "drifting",
+      "chords": [
+        {
+          "symbol": "Imaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "IVmaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "iii7",
+          "beats": 4
+        },
+        {
+          "symbol": "vi9",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "soul",
+      "mood": "a little hope",
+      "chords": [
+        {
+          "symbol": "IVmaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "III7",
+          "beats": 4
+        },
+        {
+          "symbol": "vi9",
+          "beats": 8
+        }
+      ]
+    }
+  ],
+  "motifs": [
+    {
+      "id": "sigh",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 1,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 2.5,
+          "deg": 1,
+          "v": 0.55
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.5
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 2,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "window",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 0.75,
+          "d": 0.75,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 1,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 3,
+          "deg": 5,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "drip",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 1.75,
+          "d": 0.75,
+          "deg": 0,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "hum",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.45
+        },
+        {
+          "t": 5.5,
+          "d": 2.5,
+          "deg": 4,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "pluck-arp",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "answer-lick",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.45
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 2,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "boom-bap-bass",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 2.25,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": -1,
+          "v": 0.6
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.6,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "lazy-root",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2.5,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 4,
+          "d": 2.5,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 7,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 7.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.6,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "walk-lofi",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 6,
+          "v": 0.6
+        }
+      ]
+    }
+  ],
+  "comping": [
+    {
+      "id": "lazy-rhodes",
+      "role": "comp",
+      "voicing": "rootless",
+      "lengthBeats": 4,
+      "strum": 0.03,
+      "hits": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "v": 0.55
+        },
+        {
+          "t": 1.75,
+          "d": 0.75,
+          "v": 0.45
+        },
+        {
+          "t": 2.5,
+          "d": 1.5,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "held-rhodes",
+      "role": "comp",
+      "voicing": "close",
+      "lengthBeats": 4,
+      "strum": 0.05,
+      "hits": [
+        {
+          "t": 0,
+          "d": 3.9,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "chop",
+      "role": "comp",
+      "voicing": "close",
+      "lengthBeats": 8,
+      "strum": 0.02,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "v": 0.45
+        },
+        {
+          "t": 3.75,
+          "d": 0.25,
+          "v": 0.4
+        },
+        {
+          "t": 4,
+          "d": 2,
+          "v": 0.5
+        },
+        {
+          "t": 6.5,
+          "d": 0.5,
+          "v": 0.45
+        },
+        {
+          "t": 7.5,
+          "d": 0.5,
+          "v": 0.4
+        }
+      ]
+    },
+    {
+      "id": "pad-wash",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 8,
+          "v": 0.4
+        }
+      ]
+    }
+  ],
+  "drums": [
+    {
+      "id": "sparse",
+      "kind": "groove",
+      "intensity": 0.2,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.........x.....",
+        "snare": "",
+        "rim": "............x...",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "..x...x...x...x."
+      }
+    },
+    {
+      "id": "dusty",
+      "kind": "groove",
+      "intensity": 0.4,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.........X..x..",
+        "snare": "",
+        "rim": "....x.......x...",
+        "clap": "",
+        "closedHat": "x.o.x.o.x.o.x.o.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "boom-bap",
+      "kind": "groove",
+      "intensity": 0.55,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X......x..X.....",
+        "snare": "....X.......X...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.x.xo",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "head-nod",
+      "kind": "groove",
+      "intensity": 0.7,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X..x....X.xx....",
+        "snare": "....X..o....X...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "xoxoxoxoxoxoxo.o",
+        "openHat": "..............x.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "skip",
+      "kind": "fill",
+      "intensity": 0.5,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X......x..X.....",
+        "snare": "....X.......X.oo",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.....",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    }
+  ],
+  "forms": [
+    {
+      "id": "loop",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.3,
+          "roles": [
+            "comp",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "comp",
+            "bass",
+            "drums",
+            "lead"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "comp",
+            "bass",
+            "drums",
+            "counter"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "comp",
+            "bass",
+            "drums",
+            "lead",
+            "counter"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.3,
+          "roles": [
+            "comp",
+            "pad"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tape",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.2,
+          "roles": [
+            "comp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.5,
+          "roles": [
+            "comp",
+            "bass",
+            "drums",
+            "lead"
+          ]
+        },
+        {
+          "label": "break",
+          "bars": 4,
+          "intensity": 0.25,
+          "roles": [
+            "comp",
+            "pad",
+            "counter"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.55,
+          "roles": [
+            "comp",
+            "bass",
+            "drums",
+            "lead",
+            "counter"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.3,
+          "roles": [
+            "comp",
+            "bass"
+          ]
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.35,
+    "low": 65,
+    "high": 86,
+    "phraseBars": 4,
+    "stepwise": 0.75,
+    "restProbability": 0.3,
+    "ornament": 0.2
+  }
+}

@@ -1,0 +1,6 @@
+bazel-*
+node_modules/
+.DS_Store
+*.wav
+.bazel/
+user.bazelrc

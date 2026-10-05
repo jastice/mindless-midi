@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mindless Midi</title>
+    <meta name="description" content="Endless, LLM-seeded, algorithmically arranged MIDI music for the background. Generated live in your browser and played on an emulated OPL3 FM chip." />
+    <meta name="theme-color" content="#0d0f14" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <h1 class="logo"><span class="logo-mark" aria-hidden="true">♪</span> mindless midi</h1>
+        <p class="tagline">Endless background music, composed live in this tab.</p>
+      </header>
+
+      <main>
+        <section class="stage" aria-label="Player">
+          <canvas id="roll" aria-hidden="true"></canvas>
+          <div class="splash" id="splash">
+            <button class="big-play" id="splash-play" type="button" aria-label="Start music">▶</button>
+            <p>Press play. Nothing is streamed: every note is generated and synthesized right here.</p>
+          </div>
+          <div class="now" aria-live="polite">
+            <div class="now-style" id="now-style">—</div>
+            <div class="now-meta" id="now-meta">pick some styles and press play</div>
+            <div class="now-chord" id="now-chord"></div>
+            <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress"></div></div>
+          </div>
+          <div class="controls">
+            <button id="play" type="button" class="btn primary" aria-label="Play">▶ Play</button>
+            <button id="skip" type="button" class="btn" title="Next piece (N)">⏭ Next</button>
+            <label class="volume">
+              <span aria-hidden="true">🔈</span>
+              <input id="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume" />
+            </label>
+            <button id="midi" type="button" class="btn ghost" title="Download the last 10 minutes as a MIDI file">⤓ MIDI</button>
+          </div>
+        </section>
+
+        <section class="styles" aria-labelledby="styles-h">
+          <h2 id="styles-h">Styles</h2>
+          <p class="hint">Pick one or more; pieces rotate between them.</p>
+          <div class="style-grid" id="styles"></div>
+        </section>
+      </main>
+
+      <footer class="foot">
+        <p>
+          Seed <code id="seed"></code> · <a href="#" id="share">copy link to this session</a>
+        </p>
+        <p class="about">
+          Musical material written by Claude at build time; arranged forever by a seeded algorithm in your browser;
+          played through <a href="https://github.com/Wohlstand/libADLMIDI">libADLMIDI</a>'s OPL3 emulation
+          (<a href="https://github.com/libadlmidi-js/libadlmidi-js">libadlmidi-js</a>, LGPL-3.0).
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

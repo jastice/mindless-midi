@@ -1,0 +1,29 @@
+load("//bazel:ts.bzl", "ts_lib", "ts_test")
+
+ts_lib(
+    name = "engine",
+    srcs = [
+        "conductor.ts",
+        "harmony.ts",
+        "midi_file.ts",
+        "parts.ts",
+        "piece.ts",
+        "types.ts",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src/corpus",
+        "//src/theory",
+    ],
+)
+
+ts_test(
+    name = "engine_test",
+    src = "engine.test.ts",
+    data = ["//styles"],
+    deps = [
+        ":engine",
+        "//src/corpus",
+        "//src/theory",
+    ],
+)

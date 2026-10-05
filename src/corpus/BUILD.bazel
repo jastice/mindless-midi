@@ -1,0 +1,22 @@
+load("//bazel:ts.bzl", "ts_lib", "ts_test")
+
+ts_lib(
+    name = "corpus",
+    srcs = [
+        "constants.ts",
+        "schema.ts",
+        "validate.ts",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:node_modules/zod",
+        "//src/theory",
+    ],
+)
+
+ts_test(
+    name = "validate_test",
+    src = "validate.test.ts",
+    data = ["//styles:corpora"],
+    deps = [":corpus"],
+)

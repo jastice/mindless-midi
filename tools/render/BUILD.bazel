@@ -1,0 +1,36 @@
+load("//bazel:ts.bzl", "ts_binary", "ts_lib", "ts_test")
+
+ts_lib(
+    name = "lib",
+    srcs = [
+        "calibrate_lib.ts",
+        "render_lib.ts",
+    ],
+    node = True,
+    visibility = ["//tools:__subpackages__"],
+    deps = [
+        "//:node_modules/libadlmidi-js",
+        "//src/audio:events",
+        "//src/corpus",
+        "//src/engine",
+    ],
+)
+
+# bazel run //tools/render -- --styles lofi --seconds 60 --out /tmp/lofi.wav
+ts_binary(
+    name = "render",
+    src = "render.ts",
+    data = ["//styles"],
+    deps = [
+        ":lib",
+        "//src/engine",
+    ],
+)
+
+ts_test(
+    name = "render_test",
+    size = "medium",
+    src = "render.test.ts",
+    data = ["//styles"],
+    deps = [":lib"],
+)

@@ -1,0 +1,11 @@
+load("//bazel:ts.bzl", "ts_binary")
+
+ts_binary(
+    name = "stylec",
+    src = "stylec.ts",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src/corpus",
+        "//tools/render:lib",
+    ],
+)

@@ -1,0 +1,19 @@
+{
+  "name": "mindless-midi",
+  "private": true,
+  "type": "module",
+  "description": "Endless LLM-seeded, algorithmically arranged MIDI music in a browser tab.",
+  "packageManager": "pnpm@10.34.6",
+  "dependencies": {
+    "libadlmidi-js": "2.2.0"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "0.131.0",
+    "@types/node": "24.19.1",
+    "typescript": "6.0.3",
+    "zod": "4.6.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": []
+  }
+}

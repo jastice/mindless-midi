@@ -1,0 +1,32 @@
+load("//bazel:ts.bzl", "ts_binary", "ts_lib", "ts_test")
+
+ts_lib(
+    name = "lib",
+    srcs = ["generate_lib.ts"],
+    node = True,
+    deps = [
+        "//:node_modules/@anthropic-ai/sdk",
+        "//src/corpus",
+    ],
+)
+
+# bazel run //tools/generate -- styles/<id> [...]
+ts_binary(
+    name = "generate",
+    src = "generate.ts",
+    visibility = ["//styles:__pkg__"],
+    deps = [
+        ":lib",
+        "//:node_modules/@anthropic-ai/sdk",
+    ],
+)
+
+ts_test(
+    name = "generate_test",
+    src = "generate.test.ts",
+    data = ["//styles:corpora"],
+    deps = [
+        ":lib",
+        "//:node_modules/@anthropic-ai/sdk",
+    ],
+)

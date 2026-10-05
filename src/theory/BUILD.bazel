@@ -1,0 +1,16 @@
+load("//bazel:ts.bzl", "ts_lib", "ts_test")
+
+ts_lib(
+    name = "theory",
+    srcs = [
+        "rng.ts",
+        "theory.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+ts_test(
+    name = "theory_test",
+    src = "theory.test.ts",
+    deps = [":theory"],
+)

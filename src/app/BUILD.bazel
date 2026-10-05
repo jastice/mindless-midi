@@ -1,0 +1,50 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//bazel:ts.bzl", "ts_lib")
+
+ts_lib(
+    name = "app",
+    srcs = [
+        "app.ts",
+        "assets.d.ts",
+        "player.ts",
+        "roll.ts",
+    ],
+    deps = [
+        "//:node_modules/libadlmidi-js",
+        "//src/audio:events",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)
+
+# app.js plus the content-hashed synth .wasm it references.
+esbuild(
+    name = "bundle",
+    config = {
+        "assetNames": "[name]-[hash]",
+        "entryNames": "[name]",
+        "loader": {".wasm": "file"},
+        "legalComments": "linked",
+    },
+    entry_points = [":app.js"],
+    format = "esm",
+    minify = True,
+    output_dir = True,
+    sourcemap = "linked",
+    target = "es2022",
+    visibility = ["//site:__pkg__"],
+    deps = [
+        ":app",
+        "//:node_modules/libadlmidi-js",
+    ],
+)
+
+exports_files(
+    [
+        "index.html",
+        "styles.css",
+        "favicon.svg",
+    ],
+    visibility = ["//site:__pkg__"],
+)
