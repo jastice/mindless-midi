@@ -50,6 +50,9 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # package.json pins pnpm, which the runner doesn't have; wrangler
+          # itself needs no project install.
+          packageManager: npm
           command: >-
             pages deploy _site
             --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
