@@ -61,3 +61,53 @@ jobs:
             --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
             --branch=${{ github.head_ref || github.ref_name }}
             --commit-hash=${{ github.sha }}
+
+  # The synthesis bench (//src/bench:site) as its own Pages project,
+  # <project>-bench, created on first run.
+  bench:
+    if: >-
+      vars.CLOUDFLARE_PAGES_PROJECT != '' &&
+      (github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    env:
+      PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}-bench
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}-bench
+          repository-cache: true
+
+      - name: Build bench
+        run: bazel build //src/bench:site
+
+      - name: Collect bench
+        run: |
+          site="$(bazel info execution_root)/$(bazel cquery --output=files //src/bench:site 2>/dev/null)"
+          mkdir -p _bench
+          cp -RL "$site"/. _bench/
+          chmod -R u+w _bench
+          ls -la _bench
+
+      - name: Create the Pages project if missing
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          packageManager: npm
+          command: pages project create ${{ env.PROJECT }} --production-branch main
+
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          packageManager: npm
+          command: >-
+            pages deploy _bench
+            --project-name=${{ env.PROJECT }}
+            --branch=${{ github.head_ref || github.ref_name }}
+            --commit-hash=${{ github.sha }}

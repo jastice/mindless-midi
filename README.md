@@ -64,8 +64,9 @@ A separate app (http://localhost:8090) that renders one score through every
 engine offline (FM as shipped, FM through the bus, synths, samples, and an
 experimental Magenta DDSP neural lead), loudness-matches them and lets you A/B
 them at the same playhead, blind if you like, with per-instrument solos and a
-spectrogram. `bazel run //src/bench:deploy` publishes it to its own
-`bench-pages` branch, independent of the app.
+spectrogram. CI deploys it to its own Cloudflare Pages project (see
+Deploying); `bazel run //src/bench:deploy` publishes it to a `bench-pages`
+branch by hand instead.
 Media keys work through the Media Session API.
 
 ## How it fits together
@@ -164,6 +165,9 @@ same-repo PR). It does nothing until you set it up once:
    `CLOUDFLARE_ACCOUNT_ID`, and the variable `CLOUDFLARE_PAGES_PROJECT=<name>`.
 4. Optional: enable Web Analytics for the project in the Cloudflare dashboard
    (cookieless, no consent banner needed).
+
+The same workflow deploys the synthesis bench (`//src/bench:site`) as a
+separate Pages project, `<project>-bench`, which it creates on first run.
 
 To publish by hand to a `gh-pages` branch instead:
 
