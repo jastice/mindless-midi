@@ -1,5 +1,6 @@
-# Build and test with Bazel on every push/PR; publish //site to GitHub Pages
-# from main. One-time setup: repo Settings -> Pages -> Source: "GitHub Actions".
+# Build and test with Bazel on every push/PR. The real site lives on Cloudflare
+# Pages (cloudflare.yml); from main this publishes only a redirect to it on
+# GitHub Pages. One-time setup: repo Settings -> Pages -> Source: "GitHub Actions".
 name: Pages
 
 on:
@@ -36,28 +37,31 @@ jobs:
           STAMP_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
         run: bazel build --config=stamp //site
 
-      - name: Collect site
-        run: |
-          site="$(bazel info execution_root)/$(bazel cquery --config=stamp --output=files //site 2>/dev/null)"
-          mkdir -p _site
-          cp -RL "$site"/. _site/
-          chmod -R u+w _site
-          ls -la _site
-
-      - uses: actions/upload-pages-artifact@v5
-        with:
-          path: _site
-
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v7
+
+      # Old links keep working: index.html and 404.html both forward to
+      # Cloudflare with the path, query and hash intact.
+      - name: Collect redirect
+        run: |
+          mkdir _site
+          cp .github/pages-redirect/index.html _site/index.html
+          cp .github/pages-redirect/index.html _site/404.html
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
       - id: deployment
         uses: actions/deploy-pages@v5

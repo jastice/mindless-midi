@@ -8,7 +8,7 @@ Western, Celtic Tavern, Café Musette, Liquid Drum & Bass, Castlevania Vibes,
 without streaming anything: every note is arranged and synthesized live in the
 page.
 
-**Live:** https://jastice.github.io/mindless-midi/
+**Live:** https://mindless-midi.pages.dev/ (the old GitHub Pages address redirects here)
 
 - **LLM-seeded.** At build time Claude writes each style's *corpus*: chord
   progressions, motifs, bass and arpeggio ostinatos, comping rhythms, drum
@@ -174,12 +174,13 @@ them with API-generated ones.
 ## Deploying
 
 The workflow in `.github/workflows/pages.yml` runs `bazel test //...` and
-`bazel build --config=stamp //site` on every push and PR, and publishes to GitHub Pages from
-`main`. One-time setup after pushing the repo: **Settings → Pages → Source:
-GitHub Actions**.
+`bazel build --config=stamp //site` on every push and PR. From `main` it
+publishes only a small redirect (`.github/pages-redirect/`) to GitHub Pages,
+which forwards old links, with their path and session query, to Cloudflare.
+This needs **Settings → Pages → Source: GitHub Actions**.
 
-`.github/workflows/cloudflare.yml` is an alternative target: it builds `//site`
-and deploys to Cloudflare Pages (production from `main`, a preview URL per
+`.github/workflows/cloudflare.yml` deploys the real site: it builds `//site`
+and publishes to Cloudflare Pages (production from `main`, a preview URL per
 same-repo PR). It does nothing until you set it up once:
 
 1. Create the project: `npx wrangler pages project create <name>
