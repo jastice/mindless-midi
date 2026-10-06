@@ -9,6 +9,7 @@ import { Harmony } from "./harmony.js";
 import {
   type BarContext,
   composePhrase,
+  hasCymbals,
   holdChord,
   newMemory,
   type PartMemory,
@@ -323,7 +324,7 @@ export class Piece {
         if (!pattern) return [];
         if (isLastBar && section.fill && section.bars > 1 && ctx.rng.chance(0.75)) pattern = section.fill;
         else if (section.grooves[1] && ctx.barInSection % 4 === 3 && ctx.rng.chance(0.35)) pattern = section.grooves[1];
-        const crash = ctx.barInSection === 0 && section.index > 0 && section.intensity > 0.35;
+        const crash = ctx.barInSection === 0 && section.index > 0 && section.intensity > 0.35 && hasCymbals(pattern);
         const out = writeDrums(ctx, pattern, { crash });
         if (pattern.stepsPerBeat % 2 !== 0) for (const n of out) n.straight = true;
         return out;
@@ -418,8 +419,13 @@ export class Piece {
       out.push({ beat: 0, dur, ch: CHANNELS.bass, key: root > 50 ? root - 12 : root, vel: 70, role: "bass" });
     }
     if (last.roles.includes("drums")) {
-      out.push({ beat: 0, dur: 1, ch: CHANNELS.drums, key: 49, vel: 60, role: "drums" });
-      out.push({ beat: 0, dur: 1, ch: CHANNELS.drums, key: 36, vel: 70, role: "drums" });
+      if (!last.grooves[0] || hasCymbals(last.grooves[0])) {
+        out.push({ beat: 0, dur: 1, ch: CHANNELS.drums, key: 49, vel: 60, role: "drums" });
+        out.push({ beat: 0, dur: 1, ch: CHANNELS.drums, key: 36, vel: 70, role: "drums" });
+      } else {
+        // Hand percussion ends on its low drum instead of a kit's crash.
+        out.push({ beat: 0, dur: 1, ch: CHANNELS.drums, key: 45, vel: 75, role: "drums" });
+      }
     }
     return out;
   }

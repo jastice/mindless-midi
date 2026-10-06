@@ -77,6 +77,11 @@ function registerCenter(inst: Instrument): number {
 
 const DRUM_VEL: Record<string, number> = { X: 1, x: 0.78, o: 0.42 };
 
+/** Whether a pattern plays a kit with cymbals (not, say, a bodhrán or congas). */
+export function hasCymbals(pattern: DrumPattern): boolean {
+  return (["closedHat", "openHat", "ride", "crash"] as const).some((l) => pattern.lanes[l].length > 0);
+}
+
 export function writeDrums(ctx: BarContext, pattern: DrumPattern, opts: { crash: boolean }): NoteEvent[] {
   const out: NoteEvent[] = [];
   const step = 1 / pattern.stepsPerBeat;
@@ -165,18 +170,21 @@ export function writeChords(ctx: BarContext, pattern: CompPattern, memory: PartM
   const role = pattern.role;
   const center = registerCenter(ctx.instrument) + 4;
   const barEnd = ctx.barStart + ctx.beatsPerBar;
-  const firstRep = Math.floor(ctx.barStart / pattern.lengthBeats);
+  // Hits from earlier bars can still be sounding (an 8-beat pad, say).
+  const reach = Math.max(...pattern.hits.map((h) => h.t + h.d));
+  const firstRep = Math.max(0, Math.floor((ctx.barStart - reach) / pattern.lengthBeats));
   for (let rep = firstRep; rep * pattern.lengthBeats < barEnd; rep++) {
     const repStart = rep * pattern.lengthBeats;
     for (const hit of pattern.hits) {
       const t0 = repStart + hit.t;
-      if (t0 < ctx.barStart - 1e-9 || t0 >= barEnd - 1e-9) continue;
-      // A hit that crosses a chord change is split and re-voiced, but never
-      // past the end of this bar (the next bar re-articulates if needed).
-      const end = Math.min(t0 + hit.d, barEnd + (role === "pad" ? 0 : 0.5));
+      const end = t0 + hit.d;
+      if (t0 >= barEnd - 1e-9 || end <= ctx.barStart + 1e-9) continue;
+      // A hit that crosses a chord change is split and re-voiced. Each piece
+      // is written by the bar it starts in and rings for its full length.
       for (const span of ctx.harmony.between(t0, end)) {
         const segStart = Math.max(t0, span.start);
         const segEnd = Math.min(end, span.end);
+        if (segStart < ctx.barStart - 1e-9 || segStart >= barEnd - 1e-9) continue;
         if (segEnd - segStart < 0.1) continue;
         const prev = memory.voicing.get(role) ?? null;
         const notes = voiceChord(ctx.tonic, span.chord, pattern.voicing, center, prev);
