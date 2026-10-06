@@ -1,0 +1,1835 @@
+{
+  "title": "Café Musette",
+  "description": "Accordion waltzes in a Paris bal-musette: a swirling valse in harmonic minor, gypsy-guitar pompe on two and three, a sighing clarinet and an upright bass on the one, then a cheeky java and a rainy valse lente.",
+  "tempo": {
+    "min": 150,
+    "max": 184
+  },
+  "beatsPerBar": 3,
+  "swing": 0.35,
+  "swingUnit": "8th",
+  "humanize": 0.3,
+  "keys": [
+    {
+      "tonic": "A",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "D",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "E",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "G",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "C",
+      "mode": "harmonicMinor"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Musette accordion",
+      "program": 21,
+      "octave": 5,
+      "volume": 0.55,
+      "pan": 0.1
+    },
+    {
+      "role": "counter",
+      "name": "Clarinet",
+      "program": 71,
+      "octave": 5,
+      "volume": 0.42,
+      "pan": -0.25
+    },
+    {
+      "role": "arp",
+      "name": "Banjo",
+      "program": 105,
+      "octave": 4,
+      "volume": 0.36,
+      "pan": 0.3
+    },
+    {
+      "role": "comp",
+      "name": "Pompe guitar",
+      "program": 25,
+      "octave": 3,
+      "volume": 0.45,
+      "pan": -0.15
+    },
+    {
+      "role": "pad",
+      "name": "Bandoneon",
+      "program": 23,
+      "octave": 4,
+      "volume": 0.25,
+      "pan": 0
+    },
+    {
+      "role": "bass",
+      "name": "Upright bass",
+      "program": 32,
+      "octave": 2,
+      "volume": 0.7,
+      "pan": 0
+    },
+    {
+      "role": "drums",
+      "name": "Brushes",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.4,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "valse",
+      "mood": "first turn on the floor",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 6
+        },
+        {
+          "symbol": "iv",
+          "beats": 6
+        },
+        {
+          "symbol": "V7",
+          "beats": 6
+        },
+        {
+          "symbol": "i",
+          "beats": 6
+        }
+      ]
+    },
+    {
+      "id": "musette",
+      "mood": "bal-musette",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 6
+        },
+        {
+          "symbol": "V7",
+          "beats": 6
+        },
+        {
+          "symbol": "V7",
+          "beats": 6
+        },
+        {
+          "symbol": "i",
+          "beats": 3
+        },
+        {
+          "symbol": "I7",
+          "beats": 3
+        },
+        {
+          "symbol": "iv",
+          "beats": 6
+        },
+        {
+          "symbol": "i",
+          "beats": 6
+        },
+        {
+          "symbol": "V7",
+          "beats": 6
+        },
+        {
+          "symbol": "i",
+          "beats": 6
+        }
+      ]
+    },
+    {
+      "id": "relative",
+      "mood": "the major side",
+      "chords": [
+        {
+          "symbol": "bVII7",
+          "beats": 6
+        },
+        {
+          "symbol": "bIII",
+          "beats": 6
+        },
+        {
+          "symbol": "bVII7",
+          "beats": 6
+        },
+        {
+          "symbol": "bIII",
+          "beats": 3
+        },
+        {
+          "symbol": "V7",
+          "beats": 3
+        }
+      ]
+    },
+    {
+      "id": "diminished",
+      "mood": "a wink",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 3
+        },
+        {
+          "symbol": "viio7",
+          "beats": 3
+        },
+        {
+          "symbol": "i",
+          "beats": 6
+        }
+      ]
+    },
+    {
+      "id": "gypsy-turn",
+      "mood": "gypsy turnaround",
+      "chords": [
+        {
+          "symbol": "iv6",
+          "beats": 3
+        },
+        {
+          "symbol": "V7",
+          "beats": 3
+        },
+        {
+          "symbol": "i6",
+          "beats": 6
+        }
+      ]
+    },
+    {
+      "id": "neapolitan",
+      "mood": "accordion sigh",
+      "chords": [
+        {
+          "symbol": "iv",
+          "beats": 6
+        },
+        {
+          "symbol": "bVI7",
+          "beats": 3
+        },
+        {
+          "symbol": "V7",
+          "beats": 3
+        },
+        {
+          "symbol": "i",
+          "beats": 6
+        }
+      ]
+    },
+    {
+      "id": "chromatic",
+      "mood": "slide home",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 3
+        },
+        {
+          "symbol": "bVI7",
+          "beats": 3
+        },
+        {
+          "symbol": "V7",
+          "beats": 6
+        }
+      ]
+    },
+    {
+      "id": "java",
+      "mood": "the java",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 6
+        },
+        {
+          "symbol": "V7",
+          "beats": 6
+        },
+        {
+          "symbol": "V7",
+          "beats": 6
+        },
+        {
+          "symbol": "I",
+          "beats": 6
+        }
+      ],
+      "palette": "java"
+    },
+    {
+      "id": "java-turn",
+      "mood": "round and round",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 3
+        },
+        {
+          "symbol": "vi",
+          "beats": 3
+        },
+        {
+          "symbol": "ii",
+          "beats": 3
+        },
+        {
+          "symbol": "V7",
+          "beats": 3
+        }
+      ],
+      "palette": "java"
+    },
+    {
+      "id": "java-dim",
+      "mood": "cheeky walk",
+      "chords": [
+        {
+          "symbol": "IV",
+          "beats": 3
+        },
+        {
+          "symbol": "#ivo7",
+          "beats": 3
+        },
+        {
+          "symbol": "I",
+          "beats": 3
+        },
+        {
+          "symbol": "VI7",
+          "beats": 3
+        },
+        {
+          "symbol": "ii7",
+          "beats": 3
+        },
+        {
+          "symbol": "V7",
+          "beats": 3
+        },
+        {
+          "symbol": "I",
+          "beats": 6
+        }
+      ],
+      "palette": "java"
+    },
+    {
+      "id": "java-minor-iv",
+      "mood": "a sigh in major",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 6
+        },
+        {
+          "symbol": "I7",
+          "beats": 6
+        },
+        {
+          "symbol": "IV",
+          "beats": 6
+        },
+        {
+          "symbol": "iv6",
+          "beats": 6
+        }
+      ],
+      "palette": "java"
+    },
+    {
+      "id": "comptine",
+      "mood": "rain on the window",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 3
+        },
+        {
+          "symbol": "bIII",
+          "beats": 3
+        },
+        {
+          "symbol": "v",
+          "beats": 3
+        },
+        {
+          "symbol": "bVII",
+          "beats": 3
+        }
+      ],
+      "palette": "rainy Montmartre"
+    },
+    {
+      "id": "rain",
+      "mood": "puddles",
+      "chords": [
+        {
+          "symbol": "bVI",
+          "beats": 3
+        },
+        {
+          "symbol": "bIII",
+          "beats": 3
+        },
+        {
+          "symbol": "bVII",
+          "beats": 3
+        },
+        {
+          "symbol": "i",
+          "beats": 3
+        }
+      ],
+      "palette": "rainy Montmartre"
+    },
+    {
+      "id": "longue",
+      "mood": "long evening",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 6
+        },
+        {
+          "symbol": "bVI",
+          "beats": 6
+        },
+        {
+          "symbol": "bIII",
+          "beats": 6
+        },
+        {
+          "symbol": "bVII",
+          "beats": 6
+        }
+      ],
+      "palette": "rainy Montmartre"
+    }
+  ],
+  "motifs": [
+    {
+      "id": "tourbillon",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.78
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.65
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 2,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "soupir",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 2,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.62
+        }
+      ]
+    },
+    {
+      "id": "arpege",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 3,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.72
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 6,
+          "v": 0.68
+        }
+      ]
+    },
+    {
+      "id": "valse-hook",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 6,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 3,
+          "d": 1.5,
+          "deg": 5,
+          "v": 0.7
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 3,
+          "v": 0.65
+        }
+      ]
+    },
+    {
+      "id": "run",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 3,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.62
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.62
+        }
+      ]
+    },
+    {
+      "id": "ritournelle",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.62
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.72
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.62
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 0,
+          "v": 0.68
+        }
+      ]
+    },
+    {
+      "id": "clarinet-sigh",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 2,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": -1,
+          "v": 0.45
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "clarinet-answer",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 3,
+      "notes": [
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "banjo-run",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 3,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.4
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.4
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.4
+        }
+      ]
+    },
+    {
+      "id": "banjo-chime",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.4
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.4
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 7,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "oom",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 3,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.85
+        }
+      ]
+    },
+    {
+      "id": "oom-alt",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 3,
+          "d": 0.9,
+          "deg": -3,
+          "v": 0.78
+        }
+      ]
+    },
+    {
+      "id": "oom-walk",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": -1,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.9,
+          "deg": -3,
+          "v": 0.78
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": -2,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "java-tune",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 5,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 2,
+          "v": 0.65
+        }
+      ],
+      "palette": "java"
+    },
+    {
+      "id": "java-skip",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 3,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 7,
+          "v": 0.7
+        }
+      ],
+      "palette": "java"
+    },
+    {
+      "id": "comptine-tune",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.52
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.52
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 2,
+          "v": 0.55
+        }
+      ],
+      "palette": "rainy Montmartre"
+    },
+    {
+      "id": "lente-sigh",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 2,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 2,
+          "v": 0.5
+        }
+      ],
+      "palette": "rainy Montmartre"
+    },
+    {
+      "id": "comptine-piano",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 3,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.48
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.45
+        }
+      ],
+      "palette": "rainy Montmartre"
+    },
+    {
+      "id": "music-box",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 6,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.4
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.35
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 11,
+          "v": 0.4
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.35
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.35
+        },
+        {
+          "t": 4,
+          "d": 2,
+          "deg": 4,
+          "v": 0.4
+        }
+      ],
+      "palette": "rainy Montmartre"
+    },
+    {
+      "id": "lente-bass",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 3,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2.8,
+          "deg": 0,
+          "v": 0.65
+        }
+      ],
+      "palette": "rainy Montmartre"
+    }
+  ],
+  "comping": [
+    {
+      "id": "pompe",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 3,
+      "strum": 0.01,
+      "hits": [
+        {
+          "t": 1,
+          "d": 0.35,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.35,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "pompe-swing",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 3,
+      "strum": 0.01,
+      "hits": [
+        {
+          "t": 1,
+          "d": 0.3,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.2,
+          "v": 0.4
+        },
+        {
+          "t": 2,
+          "d": 0.3,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "pompe-hemiola",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 6,
+      "strum": 0.01,
+      "hits": [
+        {
+          "t": 1,
+          "d": 0.35,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.35,
+          "v": 0.55
+        },
+        {
+          "t": 4,
+          "d": 0.35,
+          "v": 0.6
+        },
+        {
+          "t": 5,
+          "d": 0.3,
+          "v": 0.55
+        },
+        {
+          "t": 5.5,
+          "d": 0.2,
+          "v": 0.4
+        }
+      ]
+    },
+    {
+      "id": "bandoneon",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 3,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 3,
+          "v": 0.35
+        }
+      ]
+    },
+    {
+      "id": "bandoneon-breath",
+      "role": "pad",
+      "voicing": "close",
+      "lengthBeats": 6,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 2.5,
+          "v": 0.35
+        },
+        {
+          "t": 3,
+          "d": 3,
+          "v": 0.3
+        }
+      ]
+    },
+    {
+      "id": "lente-strings",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 6,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 6,
+          "v": 0.35
+        }
+      ],
+      "palette": "rainy Montmartre"
+    },
+    {
+      "id": "lente-guitar",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 3,
+      "strum": 0.05,
+      "hits": [
+        {
+          "t": 1,
+          "d": 0.8,
+          "v": 0.4
+        },
+        {
+          "t": 2,
+          "d": 0.8,
+          "v": 0.35
+        }
+      ],
+      "palette": "rainy Montmartre"
+    }
+  ],
+  "drums": [
+    {
+      "id": "brush-waltz",
+      "kind": "groove",
+      "intensity": 0.4,
+      "stepsPerBeat": 2,
+      "lanes": {
+        "kick": "x.....",
+        "snare": "..o.o.",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "brush-swing",
+      "kind": "groove",
+      "intensity": 0.6,
+      "stepsPerBeat": 2,
+      "lanes": {
+        "kick": "x.....",
+        "snare": "o.x.x.",
+        "rim": "x.....",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "brush-fill",
+      "kind": "fill",
+      "intensity": 0.5,
+      "stepsPerBeat": 2,
+      "lanes": {
+        "kick": "x.....",
+        "snare": "o.ooxX",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "java-sway",
+      "kind": "groove",
+      "intensity": 0.45,
+      "stepsPerBeat": 2,
+      "lanes": {
+        "kick": "x.....",
+        "snare": "",
+        "rim": "..x.x.",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "xoxoxo"
+      },
+      "palette": "java"
+    },
+    {
+      "id": "lente-tick",
+      "kind": "groove",
+      "intensity": 0.25,
+      "stepsPerBeat": 2,
+      "lanes": {
+        "kick": "o.....",
+        "snare": "",
+        "rim": "..o.o.",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "rainy Montmartre"
+    }
+  ],
+  "forms": [
+    {
+      "id": "valse-musette",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.4,
+          "roles": [
+            "comp",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.55,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 16,
+          "intensity": 0.65,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "pad",
+            "arp"
+          ],
+          "progression": "relative"
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bal",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.35,
+          "roles": [
+            "pad",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.5,
+          "roles": [
+            "lead",
+            "comp",
+            "bass"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 16,
+          "intensity": 0.6,
+          "roles": [
+            "counter",
+            "arp",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 2,
+          "intensity": 0.35,
+          "roles": [
+            "pad",
+            "comp",
+            "bass"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "java",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.4,
+          "roles": [
+            "comp",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.5,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 16,
+          "intensity": 0.55,
+          "roles": [
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "arp",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.55,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        }
+      ],
+      "palette": "java",
+      "tempo": {
+        "min": 126,
+        "max": 144
+      },
+      "keys": [
+        {
+          "tonic": "C",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "F",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "G",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "Bb",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "D",
+          "mode": "ionian"
+        }
+      ]
+    },
+    {
+      "id": "valse-lente",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.2,
+          "roles": [
+            "arp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.35,
+          "roles": [
+            "lead",
+            "arp",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.4,
+          "roles": [
+            "lead",
+            "arp",
+            "bass",
+            "pad",
+            "counter"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 16,
+          "intensity": 0.45,
+          "roles": [
+            "lead",
+            "arp",
+            "bass",
+            "pad",
+            "comp",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 16,
+          "intensity": 0.4,
+          "roles": [
+            "lead",
+            "arp",
+            "bass",
+            "pad"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 2,
+          "intensity": 0.2,
+          "roles": [
+            "arp"
+          ]
+        }
+      ],
+      "palette": "rainy Montmartre",
+      "tempo": {
+        "min": 96,
+        "max": 116
+      },
+      "keys": [
+        {
+          "tonic": "E",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "A",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "D",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "B",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "G",
+          "mode": "aeolian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "arp",
+          "name": "Piano",
+          "program": 0,
+          "octave": 4,
+          "volume": 0.45,
+          "pan": 0.2
+        },
+        {
+          "role": "counter",
+          "name": "Glockenspiel",
+          "program": 9,
+          "octave": 5,
+          "volume": 0.3,
+          "pan": -0.3
+        },
+        {
+          "role": "pad",
+          "name": "Strings",
+          "program": 49,
+          "octave": 4,
+          "volume": 0.3,
+          "pan": 0
+        },
+        {
+          "role": "comp",
+          "name": "Soft guitar",
+          "program": 24,
+          "octave": 3,
+          "volume": 0.35,
+          "pan": -0.15
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.7,
+    "low": 62,
+    "high": 88,
+    "phraseBars": 4,
+    "stepwise": 0.65,
+    "restProbability": 0.1,
+    "ornament": 0.25
+  }
+}

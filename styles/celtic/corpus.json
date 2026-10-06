@@ -1,0 +1,2215 @@
+{
+  "title": "Celtic Tavern",
+  "description": "Jigs by a peat fire: tin whistle and fiddle trading tunes over bouzouki and bodhrán in dorian and mixolydian, a banjo at the fair, a misty slow air and the pipes coming over the hill.",
+  "tempo": {
+    "min": 104,
+    "max": 120
+  },
+  "beatsPerBar": 2,
+  "swing": 0,
+  "swingUnit": "8th",
+  "humanize": 0.2,
+  "keys": [
+    {
+      "tonic": "E",
+      "mode": "dorian"
+    },
+    {
+      "tonic": "A",
+      "mode": "dorian"
+    },
+    {
+      "tonic": "D",
+      "mode": "dorian"
+    },
+    {
+      "tonic": "B",
+      "mode": "aeolian"
+    },
+    {
+      "tonic": "E",
+      "mode": "aeolian"
+    },
+    {
+      "tonic": "G",
+      "mode": "dorian"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Tin whistle",
+      "program": 72,
+      "octave": 5,
+      "volume": 0.5,
+      "pan": 0.1
+    },
+    {
+      "role": "counter",
+      "name": "Fiddle",
+      "program": 40,
+      "octave": 5,
+      "volume": 0.42,
+      "pan": -0.3
+    },
+    {
+      "role": "arp",
+      "name": "Celtic harp",
+      "program": 46,
+      "octave": 4,
+      "volume": 0.4,
+      "pan": 0.3
+    },
+    {
+      "role": "comp",
+      "name": "Bouzouki",
+      "program": 25,
+      "octave": 3,
+      "volume": 0.45,
+      "pan": -0.15
+    },
+    {
+      "role": "pad",
+      "name": "Accordion",
+      "program": 21,
+      "octave": 4,
+      "volume": 0.25,
+      "pan": 0.15
+    },
+    {
+      "role": "bass",
+      "name": "Double bass",
+      "program": 32,
+      "octave": 2,
+      "volume": 0.55,
+      "pan": 0
+    },
+    {
+      "role": "drums",
+      "name": "Bodhrán",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.55,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "session",
+      "mood": "the session starts",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 1
+        },
+        {
+          "symbol": "i",
+          "beats": 1
+        }
+      ]
+    },
+    {
+      "id": "kerry",
+      "mood": "Kerry hills",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "lift",
+      "mood": "a lift",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "dorian-iv",
+      "mood": "dorian lilt",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "high-road",
+      "mood": "the high road",
+      "chords": [
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "drone",
+      "mood": "around the drone",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "sea-wall",
+      "mood": "sea wall",
+      "chords": [
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "fair",
+      "mood": "fair day",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        }
+      ],
+      "palette": "fair day"
+    },
+    {
+      "id": "fair-dance",
+      "mood": "set dance",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        }
+      ],
+      "palette": "fair day"
+    },
+    {
+      "id": "fair-home",
+      "mood": "homeward",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        }
+      ],
+      "palette": "fair day"
+    },
+    {
+      "id": "fair-vi",
+      "mood": "sweetheart",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "vi",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        }
+      ],
+      "palette": "fair day"
+    },
+    {
+      "id": "lament",
+      "mood": "lament",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "keening",
+      "mood": "keening",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "v",
+          "beats": 4
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "grey-sea",
+      "mood": "grey sea",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "pipes",
+      "mood": "gathering",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 1
+        },
+        {
+          "symbol": "bVII",
+          "beats": 1
+        }
+      ],
+      "palette": "highland march"
+    },
+    {
+      "id": "pipes-hold",
+      "mood": "the glen",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        }
+      ],
+      "palette": "highland march"
+    },
+    {
+      "id": "pipes-iv",
+      "mood": "over the hill",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        }
+      ],
+      "palette": "highland march"
+    }
+  ],
+  "motifs": [
+    {
+      "id": "kesh",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 0.333333,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 1.333333,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.333333,
+          "deg": 3,
+          "v": 0.78
+        },
+        {
+          "t": 2.333333,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 2.666667,
+          "d": 0.333333,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 0.666667,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 3.666667,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "turf",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.666667,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 1,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.75
+        },
+        {
+          "t": 1.333333,
+          "d": 0.333333,
+          "deg": 1,
+          "v": 0.55
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.333333,
+          "deg": -1,
+          "v": 0.75
+        },
+        {
+          "t": 2.333333,
+          "d": 0.333333,
+          "deg": -3,
+          "v": 0.55
+        },
+        {
+          "t": 2.666667,
+          "d": 0.333333,
+          "deg": -1,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 0.666667,
+          "deg": 0,
+          "v": 0.78
+        },
+        {
+          "t": 3.666667,
+          "d": 0.333333,
+          "deg": 1,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "rolling",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.8
+        },
+        {
+          "t": 0.333333,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.333333,
+          "deg": 6,
+          "v": 0.75
+        },
+        {
+          "t": 1.333333,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.6
+        }
+      ]
+    },
+    {
+      "id": "cadence",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.78
+        },
+        {
+          "t": 0.333333,
+          "d": 0.333333,
+          "deg": 3,
+          "v": 0.55
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.333333,
+          "deg": 1,
+          "v": 0.72
+        },
+        {
+          "t": 1.333333,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 2.333333,
+          "d": 0.333333,
+          "deg": 1,
+          "v": 0.55
+        },
+        {
+          "t": 2.666667,
+          "d": 0.333333,
+          "deg": -1,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 0,
+          "v": 0.8
+        }
+      ]
+    },
+    {
+      "id": "high-part",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 0.333333,
+          "d": 0.333333,
+          "deg": 8,
+          "v": 0.6
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 9,
+          "v": 0.65
+        },
+        {
+          "t": 1,
+          "d": 0.666667,
+          "deg": 8,
+          "v": 0.75
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.333333,
+          "deg": 6,
+          "v": 0.75
+        },
+        {
+          "t": 2.333333,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 2.666667,
+          "d": 0.333333,
+          "deg": 8,
+          "v": 0.62
+        },
+        {
+          "t": 3,
+          "d": 0.666667,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 3.666667,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.58
+        }
+      ]
+    },
+    {
+      "id": "chord-jig",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.333333,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 0.333333,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 1.333333,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.6
+        }
+      ]
+    },
+    {
+      "id": "fiddle-answer",
+      "role": "counter",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 2,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 2.333333,
+          "d": 0.333333,
+          "deg": 5,
+          "v": 0.5
+        },
+        {
+          "t": 2.666667,
+          "d": 0.333333,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.666667,
+          "deg": 7,
+          "v": 0.65
+        },
+        {
+          "t": 3.666667,
+          "d": 0.333333,
+          "deg": 6,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "fiddle-thirds",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.666667,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.666667,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 0,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "fiddle-drone",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 2,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "harp-rise",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.333333,
+          "deg": 0,
+          "v": 0.55
+        },
+        {
+          "t": 0.333333,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1.333333,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "harp-wide",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.333333,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 0.333333,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.333333,
+          "deg": 9,
+          "v": 0.5
+        },
+        {
+          "t": 1.333333,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.333333,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 2.333333,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 2.666667,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 11,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "boom-chick",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.666667,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 1,
+          "d": 0.666667,
+          "deg": -3,
+          "v": 0.65
+        }
+      ]
+    },
+    {
+      "id": "jig-bass",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.333333,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.333333,
+          "deg": -3,
+          "v": 0.7
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": -1,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "walk-down",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.666667,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 1,
+          "d": 0.666667,
+          "deg": -3,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 0.666667,
+          "deg": -2,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.666667,
+          "deg": -1,
+          "v": 0.65
+        }
+      ]
+    },
+    {
+      "id": "air",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.333333,
+          "deg": 5,
+          "v": 0.45
+        },
+        {
+          "t": 1.333333,
+          "d": 0.666667,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.666667,
+          "deg": 1,
+          "v": 0.45
+        },
+        {
+          "t": 3.666667,
+          "d": 0.333333,
+          "deg": 0,
+          "v": 0.45
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "air-long",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.666667,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 0.333333,
+          "deg": 5,
+          "v": 0.45
+        },
+        {
+          "t": 2.333333,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 2.666667,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 3,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 0.666667,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 4.666667,
+          "d": 0.333333,
+          "deg": 5,
+          "v": 0.45
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 6,
+          "d": 0.333333,
+          "deg": 6,
+          "v": 0.45
+        },
+        {
+          "t": 6.333333,
+          "d": 0.666667,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 2,
+          "v": 0.5
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "air-fiddle",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 2,
+          "v": 0.4
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 4,
+          "v": 0.4
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "air-drone",
+      "role": "bass",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 3.9,
+          "deg": 0,
+          "v": 0.5
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "march",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.666667,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.666667,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.78
+        },
+        {
+          "t": 2.333333,
+          "d": 0.333333,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 2.666667,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.65
+        },
+        {
+          "t": 3,
+          "d": 0.666667,
+          "deg": 6,
+          "v": 0.75
+        },
+        {
+          "t": 3.666667,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.6
+        }
+      ],
+      "palette": "highland march"
+    },
+    {
+      "id": "march-turn",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.333333,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 0.333333,
+          "d": 0.333333,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.62
+        },
+        {
+          "t": 1,
+          "d": 0.666667,
+          "deg": 5,
+          "v": 0.75
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.666667,
+          "deg": 2,
+          "v": 0.75
+        },
+        {
+          "t": 2.666667,
+          "d": 0.333333,
+          "deg": 1,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 0,
+          "v": 0.78
+        }
+      ],
+      "palette": "highland march"
+    },
+    {
+      "id": "drones",
+      "role": "arp",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 4,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 0,
+          "d": 4,
+          "deg": 7,
+          "v": 0.42
+        }
+      ],
+      "palette": "highland march"
+    }
+  ],
+  "comping": [
+    {
+      "id": "jig-strum",
+      "role": "comp",
+      "voicing": "power",
+      "lengthBeats": 2,
+      "strum": 0.02,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.333333,
+          "v": 0.75
+        },
+        {
+          "t": 0.333333,
+          "d": 0.333333,
+          "v": 0.4
+        },
+        {
+          "t": 0.666667,
+          "d": 0.333333,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.333333,
+          "v": 0.7
+        },
+        {
+          "t": 1.333333,
+          "d": 0.333333,
+          "v": 0.4
+        },
+        {
+          "t": 1.666667,
+          "d": 0.333333,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "jig-chop",
+      "role": "comp",
+      "voicing": "power",
+      "lengthBeats": 2,
+      "strum": 0.015,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "v": 0.75
+        },
+        {
+          "t": 0.666667,
+          "d": 0.25,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "v": 0.7
+        },
+        {
+          "t": 1.666667,
+          "d": 0.25,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "accordion",
+      "role": "pad",
+      "voicing": "triad",
+      "lengthBeats": 2,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 2,
+          "v": 0.4
+        }
+      ]
+    },
+    {
+      "id": "accordion-pulse",
+      "role": "pad",
+      "voicing": "triad",
+      "lengthBeats": 2,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.666667,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.666667,
+          "v": 0.4
+        }
+      ]
+    },
+    {
+      "id": "slow-roll",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 4,
+      "strum": 0.08,
+      "hits": [
+        {
+          "t": 0,
+          "d": 2,
+          "v": 0.4
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "v": 0.35
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "mist",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 4,
+          "v": 0.35
+        }
+      ],
+      "palette": "slow air"
+    }
+  ],
+  "drums": [
+    {
+      "id": "bodhran-jig",
+      "kind": "groove",
+      "intensity": 0.6,
+      "stepsPerBeat": 3,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X.xX.x",
+        "tomHigh": ".x..x.",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "bodhran-drive",
+      "kind": "groove",
+      "intensity": 0.8,
+      "stepsPerBeat": 6,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "......x.....",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X.o.x.X.o.x.",
+        "tomHigh": "..x.......x.",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "bodhran-light",
+      "kind": "groove",
+      "intensity": 0.35,
+      "stepsPerBeat": 3,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X..x..",
+        "tomHigh": "",
+        "shaker": "xoxxox"
+      }
+    },
+    {
+      "id": "bodhran-roll",
+      "kind": "fill",
+      "intensity": 0.65,
+      "stepsPerBeat": 6,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X.x.x.X.xxxx",
+        "tomHigh": "......x.x...",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "air-pulse",
+      "kind": "groove",
+      "intensity": 0.15,
+      "stepsPerBeat": 3,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X.....",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "slow air"
+    },
+    {
+      "id": "pipe-march",
+      "kind": "groove",
+      "intensity": 0.7,
+      "stepsPerBeat": 6,
+      "lanes": {
+        "kick": "X.....X.....",
+        "snare": "X..x.xXoox.x",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "highland march"
+    },
+    {
+      "id": "pipe-street",
+      "kind": "groove",
+      "intensity": 0.55,
+      "stepsPerBeat": 6,
+      "lanes": {
+        "kick": "X.....X.....",
+        "snare": "x..o.ox..o.o",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "highland march"
+    },
+    {
+      "id": "pipe-roll",
+      "kind": "fill",
+      "intensity": 0.75,
+      "stepsPerBeat": 6,
+      "lanes": {
+        "kick": "X.....X.....",
+        "snare": "xxxxxxxxxxxX",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "highland march"
+    }
+  ],
+  "forms": [
+    {
+      "id": "jig-set",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.45,
+          "roles": [
+            "comp",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.65,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.75,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "arp",
+            "pad"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "session",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 1,
+          "intensity": 0.4,
+          "roles": [
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "lead",
+            "comp",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.65,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "counter",
+            "arp",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.75,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fair-day",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.5,
+          "roles": [
+            "comp",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.65,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.75,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.8,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "pad",
+            "arp"
+          ]
+        }
+      ],
+      "palette": "fair day",
+      "tempo": {
+        "min": 108,
+        "max": 124
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "mixolydian"
+        },
+        {
+          "tonic": "A",
+          "mode": "mixolydian"
+        },
+        {
+          "tonic": "G",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "D",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "E",
+          "mode": "mixolydian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Tenor banjo",
+          "program": 105,
+          "octave": 5,
+          "volume": 0.5,
+          "pan": 0.1
+        }
+      ]
+    },
+    {
+      "id": "slow-air",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.15,
+          "roles": [
+            "pad",
+            "arp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.25,
+          "roles": [
+            "lead",
+            "arp",
+            "bass",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.3,
+          "roles": [
+            "lead",
+            "arp",
+            "bass",
+            "pad",
+            "counter"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.35,
+          "roles": [
+            "lead",
+            "comp",
+            "arp",
+            "bass",
+            "pad",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.3,
+          "roles": [
+            "lead",
+            "arp",
+            "bass",
+            "pad"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 2,
+          "intensity": 0.15,
+          "roles": [
+            "pad",
+            "arp"
+          ]
+        }
+      ],
+      "palette": "slow air",
+      "tempo": {
+        "min": 40,
+        "max": 50
+      },
+      "keys": [
+        {
+          "tonic": "E",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "A",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "D",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "B",
+          "mode": "aeolian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Low whistle",
+          "program": 73,
+          "octave": 5,
+          "volume": 0.5,
+          "pan": 0.05
+        },
+        {
+          "role": "pad",
+          "name": "Choir",
+          "program": 52,
+          "octave": 4,
+          "volume": 0.3,
+          "pan": 0
+        }
+      ]
+    },
+    {
+      "id": "highland",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.5,
+          "roles": [
+            "arp",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "lead",
+            "arp",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.75,
+          "roles": [
+            "lead",
+            "arp",
+            "drums",
+            "bass"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.75,
+          "roles": [
+            "lead",
+            "arp",
+            "drums",
+            "bass"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.8,
+          "roles": [
+            "lead",
+            "arp",
+            "drums",
+            "bass"
+          ]
+        }
+      ],
+      "palette": "highland march",
+      "tempo": {
+        "min": 88,
+        "max": 100
+      },
+      "keys": [
+        {
+          "tonic": "A",
+          "mode": "mixolydian"
+        },
+        {
+          "tonic": "D",
+          "mode": "mixolydian"
+        },
+        {
+          "tonic": "G",
+          "mode": "mixolydian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Highland pipes",
+          "program": 109,
+          "octave": 5,
+          "volume": 0.5,
+          "pan": 0
+        },
+        {
+          "role": "arp",
+          "name": "Drones",
+          "program": 109,
+          "octave": 3,
+          "volume": 0.35,
+          "pan": 0
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.85,
+    "low": 62,
+    "high": 86,
+    "phraseBars": 4,
+    "stepwise": 0.7,
+    "restProbability": 0.05,
+    "ornament": 0.35
+  }
+}

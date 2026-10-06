@@ -9,6 +9,14 @@ STYLES = [
     "monkey_island",
     "electro_swing",
     "synthwave",
+    "bossa_nova",
+    "funk",
+    "western",
+    "celtic",
+    "musette",
+    "liquid_dnb",
+    "castlevania",
+    "jrpg",
 ]
 
 style_pack(

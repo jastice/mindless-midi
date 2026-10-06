@@ -2,7 +2,9 @@
 
 Endless background music in a browser tab. Pick one or more styles (Metroid
 Vibes, Retro Games, Lo-fi Hip Hop, Jazz Piano Trio, Minimalist Piano, Monkey
-Island Vibes, Electro Swing, Synthwave) and it plays forever, never repeating,
+Island Vibes, Electro Swing, Synthwave, Bossa Nova, 70s Funk, Spaghetti
+Western, Celtic Tavern, Café Musette, Liquid Drum & Bass, Castlevania Vibes,
+16-bit JRPG) and it plays forever, never repeating,
 without streaming anything: every note is arranged and synthesized live in the
 page.
 

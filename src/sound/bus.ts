@@ -69,6 +69,44 @@ Object.assign(PRESETS, {
     reverb: { seconds: 1.2, predelay: 0.015, bright: 0.45, send: { lead: 0.18, counter: 0.2, arp: 0.15, comp: 0.12, pad: 0.2, drums: 0.08 } },
     highpass: { lead: 120, counter: 150, arp: 120, comp: 150, pad: 150 },
   },
+  bossa_nova: {
+    reverb: { seconds: 1.6, predelay: 0.02, bright: 0.45, send: { lead: 0.22, counter: 0.25, arp: 0.2, comp: 0.12, pad: 0.35, drums: 0.08 } },
+    highpass: { lead: 100, counter: 150, arp: 120, comp: 90, pad: 150 },
+  },
+  funk: {
+    reverb: { seconds: 0.9, predelay: 0.01, bright: 0.5, send: { lead: 0.12, counter: 0.12, pad: 0.1, comp: 0.06, arp: 0.08, drums: 0.04 } },
+    highpass: { lead: 120, counter: 150, arp: 180, comp: 120, pad: 150 },
+  },
+  western: {
+    reverb: { seconds: 3.2, predelay: 0.05, bright: 0.5, send: { lead: 0.4, counter: 0.35, arp: 0.25, comp: 0.15, pad: 0.45, drums: 0.2 } },
+    delay: { beats: 0.75, feedback: 0.35, send: { lead: 0.2, counter: 0.15, arp: 0.12 } },
+    highpass: { lead: 150, counter: 150, arp: 80, comp: 120, pad: 150 },
+  },
+  celtic: {
+    reverb: { seconds: 1.4, predelay: 0.015, bright: 0.5, send: { lead: 0.2, counter: 0.2, arp: 0.25, comp: 0.1, pad: 0.25, drums: 0.1 } },
+    highpass: { lead: 200, counter: 150, arp: 100, comp: 120, pad: 150 },
+  },
+  musette: {
+    reverb: { seconds: 1.1, predelay: 0.012, bright: 0.4, send: { lead: 0.15, counter: 0.18, arp: 0.12, comp: 0.1, pad: 0.2, drums: 0.06 } },
+    lofi: { drive: 1.15, lowpass: 11000, wow: 0.0006, flutter: 0.00008, crackle: 0.008 },
+    highpass: { lead: 150, counter: 150, arp: 150, comp: 120, pad: 150 },
+  },
+  liquid_dnb: {
+    reverb: { seconds: 2.6, predelay: 0.03, bright: 0.55, send: { lead: 0.3, counter: 0.4, arp: 0.3, comp: 0.22, pad: 0.4, drums: 0.06 } },
+    delay: { beats: 0.75, feedback: 0.35, send: { lead: 0.2, counter: 0.15, arp: 0.15 } },
+    chorus: ["pad", "comp"],
+    duck: { depth: { pad: 0.35, comp: 0.25, arp: 0.15 }, release: 0.2 },
+    highpass: { lead: 150, counter: 200, arp: 200, comp: 150, pad: 200 },
+  },
+  castlevania: {
+    reverb: { seconds: 2.2, predelay: 0.03, bright: 0.45, send: { lead: 0.2, counter: 0.25, arp: 0.18, comp: 0.08, pad: 0.35, drums: 0.1 } },
+    delay: { beats: 0.5, feedback: 0.25, send: { lead: 0.12 } },
+    highpass: { lead: 120, counter: 150, arp: 150, comp: 100, pad: 120 },
+  },
+  jrpg: {
+    reverb: { seconds: 2.8, predelay: 0.035, bright: 0.5, send: { lead: 0.3, counter: 0.35, arp: 0.35, comp: 0.2, pad: 0.45, drums: 0.2, bass: 0.08 } },
+    highpass: { lead: 100, counter: 150, arp: 120, comp: 120, pad: 120 },
+  },
 } satisfies Record<string, MixPreset>);
 
 const DEFAULT_PRESET: MixPreset = { reverb: { seconds: 1.8, predelay: 0.02, bright: 0.5, send: { lead: 0.2, pad: 0.3 } }, highpass: {} };

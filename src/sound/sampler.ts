@@ -261,6 +261,43 @@ const KITS: Record<string, Record<number, string>> = {
     70: `${TR808}maraca/ma.m4a`, 45: `${TR808}conga-low/lc25.m4a`, 50: `${TR808}conga-mid/mc25.m4a`,
     42: `${LM2}cabasa.m4a`, 49: `${LM2}crash.m4a`,
   },
+  bossa_nova: {
+    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-m.m4a`, 39: `${LM2}clap.m4a`,
+    42: `${SP}cymbal/drum_cymbal_pedal.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
+    49: `${SP}other/drum_splash_soft.m4a`, 45: `${SP}tom/drum_tom_lo_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`, 70: `${LM2}cabasa.m4a`,
+  },
+  funk: {
+    36: `${SP}kick/drum_bass_hard.m4a`, 38: `${SP}snare/drum_snare_hard.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${LM2}clap.m4a`,
+    42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
+    49: `${SP}cymbal/drum_cymbal_hard.m4a`, 45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_hi_hard.m4a`, 70: `${LM2}tambourine.m4a`,
+  },
+  western: {
+    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${SP}percussion/perc_snap2.m4a`,
+    45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_hi_hard.m4a`, 70: `${TR808}maraca/ma.m4a`,
+    49: `${SP}other/drum_splash_soft.m4a`,
+  },
+  celtic: {
+    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_hard.m4a`, 37: `${LM2}stick-m.m4a`,
+    45: `${SP}tom/drum_tom_mid_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`, 70: `${TR808}maraca/ma.m4a`,
+  },
+  musette: {
+    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-m.m4a`, 70: `${LM2}cabasa.m4a`,
+  },
+  liquid_dnb: {
+    36: `${SP}kick/drum_bass_hard.m4a`, 38: `${SP}snare/drum_snare_hard.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${LM2}clap.m4a`,
+    42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${SP}cymbal/drum_cymbal_soft.m4a`,
+    49: `${SP}other/drum_splash_hard.m4a`, 45: `${SP}tom/drum_tom_lo_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`, 70: `${LM2}cabasa.m4a`,
+  },
+  castlevania: {
+    36: `${SP}kick/drum_heavy_kick.m4a`, 38: `${SP}snare/drum_snare_hard.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${LM2}clap.m4a`,
+    42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
+    49: `${SP}cymbal/drum_cymbal_hard.m4a`, 45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_hi_hard.m4a`, 70: `${LM2}cabasa.m4a`,
+  },
+  jrpg: {
+    36: `${SP}kick/drum_bass_hard.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-m.m4a`, 39: `${LM2}clap.m4a`,
+    42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
+    49: `${SP}cymbal/drum_cymbal_hard.m4a`, 45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_mid_soft.m4a`, 70: `${TR808}maraca/ma.m4a`,
+  },
 };
 
 function drumKit(styleId: string): Instrument {

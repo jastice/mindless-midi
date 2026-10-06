@@ -1,0 +1,2636 @@
+{
+  "title": "Bossa Nova",
+  "description": "Late afternoon in Ipanema: nylon-string batida, a cross-stick clave and a breathy tenor sax over sliding major sevenths, with a samba-jazz club downstairs and a little saudade at dusk.",
+  "tempo": {
+    "min": 62,
+    "max": 74
+  },
+  "beatsPerBar": 4,
+  "swing": 0.12,
+  "swingUnit": "16th",
+  "humanize": 0.25,
+  "keys": [
+    {
+      "tonic": "F",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "C",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "G",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "Bb",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "D",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "Eb",
+      "mode": "ionian"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Tenor sax",
+      "program": 66,
+      "octave": 4,
+      "volume": 0.55,
+      "pan": 0.15
+    },
+    {
+      "role": "counter",
+      "name": "Flute",
+      "program": 73,
+      "octave": 5,
+      "volume": 0.4,
+      "pan": -0.3
+    },
+    {
+      "role": "arp",
+      "name": "Piano fills",
+      "program": 0,
+      "octave": 5,
+      "volume": 0.38,
+      "pan": 0.25
+    },
+    {
+      "role": "comp",
+      "name": "Nylon guitar",
+      "program": 24,
+      "octave": 4,
+      "volume": 0.55,
+      "pan": -0.15
+    },
+    {
+      "role": "pad",
+      "name": "Soft strings",
+      "program": 49,
+      "octave": 4,
+      "volume": 0.24,
+      "pan": 0
+    },
+    {
+      "role": "bass",
+      "name": "Upright bass",
+      "program": 32,
+      "octave": 2,
+      "volume": 0.7,
+      "pan": 0
+    },
+    {
+      "role": "drums",
+      "name": "Brushes & cross-stick",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.45,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "praia",
+      "mood": "sun on the sand",
+      "chords": [
+        {
+          "symbol": "Imaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "II7",
+          "beats": 4
+        },
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "bII7",
+          "beats": 2
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "corcova",
+      "mood": "a view over the bay",
+      "chords": [
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 2
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "IVmaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "iv6",
+          "beats": 4
+        },
+        {
+          "symbol": "iii7",
+          "beats": 2
+        },
+        {
+          "symbol": "VI7b9",
+          "beats": 2
+        },
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "lento",
+      "mood": "slow descent",
+      "chords": [
+        {
+          "symbol": "IVmaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "iv6",
+          "beats": 4
+        },
+        {
+          "symbol": "iii7",
+          "beats": 2
+        },
+        {
+          "symbol": "VI7b9",
+          "beats": 2
+        },
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "diminuto",
+      "mood": "chromatic stroll",
+      "chords": [
+        {
+          "symbol": "I6",
+          "beats": 2
+        },
+        {
+          "symbol": "#io7",
+          "beats": 2
+        },
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "#iio7",
+          "beats": 2
+        },
+        {
+          "symbol": "iii7",
+          "beats": 2
+        },
+        {
+          "symbol": "VI7b9",
+          "beats": 2
+        },
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "lidio",
+      "mood": "floating vamp",
+      "chords": [
+        {
+          "symbol": "I69",
+          "beats": 4
+        },
+        {
+          "symbol": "II7#11",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "engano",
+      "mood": "deceptive turnaround",
+      "chords": [
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "iii7",
+          "beats": 2
+        },
+        {
+          "symbol": "VI7",
+          "beats": 2
+        },
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "bII7",
+          "beats": 2
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "ponte",
+      "mood": "bridge",
+      "chords": [
+        {
+          "symbol": "IVmaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII7",
+          "beats": 4
+        },
+        {
+          "symbol": "iii7",
+          "beats": 2
+        },
+        {
+          "symbol": "VI7b9",
+          "beats": 2
+        },
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "mare",
+      "mood": "gentle tide",
+      "chords": [
+        {
+          "symbol": "Imaj9",
+          "beats": 2
+        },
+        {
+          "symbol": "vi9",
+          "beats": 2
+        },
+        {
+          "symbol": "ii9",
+          "beats": 2
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "verao",
+      "mood": "backdoor home",
+      "chords": [
+        {
+          "symbol": "iii7",
+          "beats": 2
+        },
+        {
+          "symbol": "VI7",
+          "beats": 2
+        },
+        {
+          "symbol": "ii7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII9",
+          "beats": 2
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "copa-vamp",
+      "mood": "dorian vamp",
+      "chords": [
+        {
+          "symbol": "im7",
+          "beats": 4
+        },
+        {
+          "symbol": "IV7",
+          "beats": 4
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "copa-menor",
+      "mood": "minor samba",
+      "chords": [
+        {
+          "symbol": "im7",
+          "beats": 2
+        },
+        {
+          "symbol": "iv7",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII7",
+          "beats": 2
+        },
+        {
+          "symbol": "bIIImaj7",
+          "beats": 2
+        },
+        {
+          "symbol": "bVImaj7",
+          "beats": 2
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 4
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "copa-partido",
+      "mood": "partido alto",
+      "chords": [
+        {
+          "symbol": "im9",
+          "beats": 2
+        },
+        {
+          "symbol": "IV9",
+          "beats": 2
+        },
+        {
+          "symbol": "im9",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII9",
+          "beats": 2
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "copa-245",
+      "mood": "minor ii-V-i",
+      "chords": [
+        {
+          "symbol": "iiø7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 2
+        },
+        {
+          "symbol": "im7",
+          "beats": 4
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "saudade-longa",
+      "mood": "longing",
+      "chords": [
+        {
+          "symbol": "im7",
+          "beats": 4
+        },
+        {
+          "symbol": "iv7",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII7",
+          "beats": 4
+        },
+        {
+          "symbol": "bIIImaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "bVImaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 2
+        },
+        {
+          "symbol": "i6",
+          "beats": 4
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 4
+        }
+      ],
+      "palette": "saudade at dusk"
+    },
+    {
+      "id": "saudade-curta",
+      "mood": "sigh",
+      "chords": [
+        {
+          "symbol": "i6",
+          "beats": 4
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 2
+        }
+      ],
+      "palette": "saudade at dusk"
+    },
+    {
+      "id": "saudade-ceu",
+      "mood": "evening sky",
+      "chords": [
+        {
+          "symbol": "bVImaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 4
+        },
+        {
+          "symbol": "im9",
+          "beats": 4
+        },
+        {
+          "symbol": "iv9",
+          "beats": 4
+        }
+      ],
+      "palette": "saudade at dusk"
+    }
+  ],
+  "motifs": [
+    {
+      "id": "areia",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 0.75,
+          "d": 1.25,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 2.75,
+          "d": 1.25,
+          "deg": 2,
+          "v": 0.68
+        }
+      ]
+    },
+    {
+      "id": "onda",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.55
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 1,
+          "v": 0.6
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.62
+        },
+        {
+          "t": 0.75,
+          "d": 0.75,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 2,
+          "d": 1.75,
+          "deg": 4,
+          "v": 0.68
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 4.5,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.55
+        },
+        {
+          "t": 4.75,
+          "d": 0.75,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.55
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 0,
+          "v": 0.62
+        }
+      ]
+    },
+    {
+      "id": "brisa",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 6,
+          "v": 0.7
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.55
+        },
+        {
+          "t": 2.75,
+          "d": 1.25,
+          "deg": 6,
+          "v": 0.68
+        }
+      ]
+    },
+    {
+      "id": "sorriso",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 0.5,
+          "d": 1.25,
+          "deg": 5,
+          "v": 0.72
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 2.75,
+          "d": 1.25,
+          "deg": 1,
+          "v": 0.65
+        }
+      ]
+    },
+    {
+      "id": "uma-nota",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 1,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1.25,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.62
+        },
+        {
+          "t": 1.75,
+          "d": 1.25,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 4,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 4.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 5.25,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.62
+        },
+        {
+          "t": 5.75,
+          "d": 1.5,
+          "deg": 3,
+          "v": 0.68
+        },
+        {
+          "t": 7.25,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 7.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.58
+        }
+      ]
+    },
+    {
+      "id": "desafio",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.62
+        },
+        {
+          "t": 0.25,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.65
+        },
+        {
+          "t": 0.75,
+          "d": 0.75,
+          "deg": 5,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.55
+        },
+        {
+          "t": 2.25,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2.75,
+          "d": 1.25,
+          "deg": 4,
+          "v": 0.68
+        }
+      ]
+    },
+    {
+      "id": "fim-de-tarde",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.75,
+          "deg": 4,
+          "v": 0.68
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 4.5,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 4.75,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.55
+        },
+        {
+          "t": 5,
+          "d": 0.75,
+          "deg": 4,
+          "v": 0.62
+        },
+        {
+          "t": 5.75,
+          "d": 2.25,
+          "deg": 1,
+          "v": 0.65
+        }
+      ]
+    },
+    {
+      "id": "eco",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 1,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 2.5,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 7.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "resposta",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 2.75,
+          "d": 1.25,
+          "deg": 2,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "jobim-fill",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1.75,
+          "d": 0.75,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.4
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.42
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "contracanto",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.4
+        },
+        {
+          "t": 1.75,
+          "d": 0.75,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 3.5,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.38
+        },
+        {
+          "t": 3.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.4
+        }
+      ]
+    },
+    {
+      "id": "dois",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 1,
+          "d": 0.9,
+          "deg": -3,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.9,
+          "deg": -3,
+          "v": 0.6
+        }
+      ]
+    },
+    {
+      "id": "surdo",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.7,
+          "deg": 0,
+          "v": 0.78
+        },
+        {
+          "t": 0.75,
+          "d": 0.95,
+          "deg": -3,
+          "v": 0.6
+        },
+        {
+          "t": 1.75,
+          "d": 0.95,
+          "deg": 0,
+          "v": 0.68
+        },
+        {
+          "t": 2.75,
+          "d": 0.95,
+          "deg": -3,
+          "v": 0.6
+        },
+        {
+          "t": 3.75,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "dois-passo",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 1,
+          "d": 0.9,
+          "deg": -3,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.7,
+          "deg": -1,
+          "v": 0.58
+        },
+        {
+          "t": 3.75,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.5,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "copa-riff",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.65
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 0.75,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.7
+        },
+        {
+          "t": 1.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.68
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2.75,
+          "d": 1.25,
+          "deg": 2,
+          "v": 0.72
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "copa-chamada",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 0.75,
+          "d": 0.75,
+          "deg": 9,
+          "v": 0.8
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 2.5,
+          "d": 1.5,
+          "deg": 6,
+          "v": 0.75
+        },
+        {
+          "t": 4.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 4.75,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.72
+        },
+        {
+          "t": 5.5,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 5.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 3,
+          "v": 0.7
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "copa-arpejo",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.68
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 0.75,
+          "deg": 8,
+          "v": 0.78
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 2.75,
+          "d": 1.25,
+          "deg": 1,
+          "v": 0.7
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "copa-metais",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2.75,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.75
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "copa-vibes",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.25,
+          "deg": 8,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.5
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "copa-samba",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.9,
+          "deg": -3,
+          "v": 0.8
+        },
+        {
+          "t": 2,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 0.7,
+          "deg": -3,
+          "v": 0.8
+        },
+        {
+          "t": 3.75,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.55,
+          "approach": true
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "saudade",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 6,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.5
+        },
+        {
+          "t": 6.5,
+          "d": 1.5,
+          "deg": -1,
+          "v": 0.55
+        }
+      ],
+      "palette": "saudade at dusk"
+    },
+    {
+      "id": "lamento",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 2,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 1.5,
+          "deg": 5,
+          "v": 0.55
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 2,
+          "v": 0.55
+        }
+      ],
+      "palette": "saudade at dusk"
+    },
+    {
+      "id": "chuva",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.55
+        }
+      ],
+      "palette": "saudade at dusk"
+    },
+    {
+      "id": "saudade-cello",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 0,
+          "v": 0.45
+        },
+        {
+          "t": 4,
+          "d": 2,
+          "deg": -1,
+          "v": 0.45
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": -3,
+          "v": 0.45
+        }
+      ],
+      "palette": "saudade at dusk"
+    },
+    {
+      "id": "saudade-arpejo",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.4
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.35
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.4
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.4
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 8,
+          "v": 0.38
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.35
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 4,
+          "v": 0.35
+        }
+      ],
+      "palette": "saudade at dusk"
+    },
+    {
+      "id": "saudade-baixo",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.9,
+          "deg": 0,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 1.9,
+          "deg": -3,
+          "v": 0.55
+        }
+      ],
+      "palette": "saudade at dusk"
+    }
+  ],
+  "comping": [
+    {
+      "id": "batida",
+      "role": "comp",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0.012,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "v": 0.58
+        },
+        {
+          "t": 0.75,
+          "d": 0.45,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.6,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "v": 0.5
+        },
+        {
+          "t": 3.25,
+          "d": 0.6,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "batida-2-3",
+      "role": "comp",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0.012,
+      "hits": [
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "v": 0.55
+        },
+        {
+          "t": 1.25,
+          "d": 0.45,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "v": 0.58
+        },
+        {
+          "t": 2.75,
+          "d": 0.45,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "violao-joao",
+      "role": "comp",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0.01,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.2,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.2,
+          "v": 0.38
+        },
+        {
+          "t": 0.75,
+          "d": 0.45,
+          "v": 0.5
+        },
+        {
+          "t": 1.25,
+          "d": 0.2,
+          "v": 0.38
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "v": 0.52
+        },
+        {
+          "t": 2,
+          "d": 0.2,
+          "v": 0.5
+        },
+        {
+          "t": 2.5,
+          "d": 0.2,
+          "v": 0.38
+        },
+        {
+          "t": 2.75,
+          "d": 0.45,
+          "v": 0.5
+        },
+        {
+          "t": 3.25,
+          "d": 0.45,
+          "v": 0.52
+        },
+        {
+          "t": 3.75,
+          "d": 0.2,
+          "v": 0.38
+        }
+      ]
+    },
+    {
+      "id": "ogerman",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 4,
+          "v": 0.38
+        }
+      ]
+    },
+    {
+      "id": "ogerman-respira",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 5.5,
+          "v": 0.35
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "v": 0.3
+        }
+      ]
+    },
+    {
+      "id": "partido-piano",
+      "role": "comp",
+      "voicing": "rootless",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0.25,
+          "d": 0.2,
+          "v": 0.65
+        },
+        {
+          "t": 0.75,
+          "d": 0.45,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.2,
+          "v": 0.55
+        },
+        {
+          "t": 2.25,
+          "d": 0.2,
+          "v": 0.65
+        },
+        {
+          "t": 2.75,
+          "d": 0.45,
+          "v": 0.6
+        },
+        {
+          "t": 3.5,
+          "d": 0.2,
+          "v": 0.55
+        }
+      ],
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "violao-lento",
+      "role": "comp",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0.06,
+      "hits": [
+        {
+          "t": 0,
+          "d": 1.8,
+          "v": 0.45
+        },
+        {
+          "t": 2.5,
+          "d": 1.4,
+          "v": 0.4
+        }
+      ],
+      "palette": "saudade at dusk"
+    },
+    {
+      "id": "saudade-cordas",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 8,
+          "v": 0.4
+        }
+      ],
+      "palette": "saudade at dusk"
+    }
+  ],
+  "drums": [
+    {
+      "id": "bossa-3-2",
+      "kind": "groove",
+      "intensity": 0.45,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x..ox..ox..ox..o",
+        "snare": "",
+        "rim": "x..x..x...x..x..",
+        "clap": "",
+        "closedHat": "xoxoxoxoxoxoxoxo",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "bossa-2-3",
+      "kind": "groove",
+      "intensity": 0.4,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x..ox..ox..ox..o",
+        "snare": "",
+        "rim": "..x..x..x..x..x.",
+        "clap": "",
+        "closedHat": "oxoxoxoxoxoxoxox",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "bossa-prato",
+      "kind": "groove",
+      "intensity": 0.55,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x..ox..ox..ox..o",
+        "snare": "",
+        "rim": "x..x..x...x..x..",
+        "clap": "",
+        "closedHat": "..x...x...x...x.",
+        "openHat": "",
+        "ride": "xoxoxoxoxoxoxoxo",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "vassourinha",
+      "kind": "groove",
+      "intensity": 0.2,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x.......x.......",
+        "snare": "",
+        "rim": "x.....x...x.....",
+        "clap": "",
+        "closedHat": "o.o.o.o.o.o.o.o.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "respiro",
+      "kind": "fill",
+      "intensity": 0.4,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x..o............",
+        "snare": "",
+        "rim": "x..x..x...x.x.x.",
+        "clap": "",
+        "closedHat": "xoxoxoxo........",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "............x..x",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "samba-prato",
+      "kind": "groove",
+      "intensity": 0.75,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x..xx..xx..xx..x",
+        "snare": "..o..o....o..o..",
+        "rim": "",
+        "clap": "",
+        "closedHat": "..x...x...x...x.",
+        "openHat": "",
+        "ride": "X.xx.x.xX.xx.x.x",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "samba-ganza",
+      "kind": "groove",
+      "intensity": 0.6,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x..ox..ox..ox..o",
+        "snare": "",
+        "rim": "..x..x.x..x..x.x",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "oxoXoxoXoxoXoxoX"
+      },
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "virada",
+      "kind": "fill",
+      "intensity": 0.8,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x..xx..xx.......",
+        "snare": "o.xo.xo.xxoxXxXX",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "...........x.x..",
+        "tomHigh": "........x.x.....",
+        "shaker": ""
+      },
+      "palette": "samba-jazz club"
+    },
+    {
+      "id": "saudade-escova",
+      "kind": "groove",
+      "intensity": 0.2,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x.......x.......",
+        "snare": "",
+        "rim": "x.....x...x.....",
+        "clap": "",
+        "closedHat": "o...o...o...o...",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "saudade at dusk"
+    }
+  ],
+  "forms": [
+    {
+      "id": "garota",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.3,
+          "roles": [
+            "comp",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "arp",
+            "pad"
+          ],
+          "progression": "ponte"
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 2,
+          "intensity": 0.3,
+          "roles": [
+            "comp",
+            "bass",
+            "pad"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "violao",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 1,
+          "intensity": 0.25,
+          "roles": [
+            "comp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.35,
+          "roles": [
+            "lead",
+            "comp",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 4,
+          "intensity": 0.5,
+          "roles": [
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 2,
+          "intensity": 0.25,
+          "roles": [
+            "comp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "copacabana",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.6,
+          "roles": [
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.8,
+          "roles": [
+            "counter",
+            "arp",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.75,
+          "roles": [
+            "lead",
+            "arp",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        }
+      ],
+      "palette": "samba-jazz club",
+      "tempo": {
+        "min": 84,
+        "max": 98
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "G",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "C",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "A",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "F",
+          "mode": "dorian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Trumpet",
+          "program": 56,
+          "octave": 5,
+          "volume": 0.5,
+          "pan": 0.15
+        },
+        {
+          "role": "counter",
+          "name": "Tenor sax",
+          "program": 66,
+          "octave": 4,
+          "volume": 0.45,
+          "pan": -0.25
+        },
+        {
+          "role": "comp",
+          "name": "Samba-jazz piano",
+          "program": 0,
+          "octave": 4,
+          "volume": 0.48,
+          "pan": -0.1
+        },
+        {
+          "role": "arp",
+          "name": "Vibraphone",
+          "program": 11,
+          "octave": 5,
+          "volume": 0.4,
+          "pan": 0.3
+        }
+      ]
+    },
+    {
+      "id": "saudade",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.2,
+          "roles": [
+            "pad",
+            "comp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.3,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.35,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "pad",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.4,
+          "roles": [
+            "counter",
+            "comp",
+            "bass",
+            "pad",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.35,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "pad",
+            "drums"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 2,
+          "intensity": 0.2,
+          "roles": [
+            "comp",
+            "pad"
+          ]
+        }
+      ],
+      "palette": "saudade at dusk",
+      "tempo": {
+        "min": 50,
+        "max": 60
+      },
+      "keys": [
+        {
+          "tonic": "A",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "D",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "E",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "G",
+          "mode": "aeolian"
+        },
+        {
+          "tonic": "B",
+          "mode": "aeolian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Alto flute",
+          "program": 73,
+          "octave": 5,
+          "volume": 0.45,
+          "pan": 0.1
+        },
+        {
+          "role": "counter",
+          "name": "Cello",
+          "program": 42,
+          "octave": 3,
+          "volume": 0.4,
+          "pan": -0.25
+        },
+        {
+          "role": "pad",
+          "name": "String section",
+          "program": 48,
+          "octave": 4,
+          "volume": 0.3,
+          "pan": 0
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.45,
+    "low": 55,
+    "high": 79,
+    "phraseBars": 2,
+    "stepwise": 0.65,
+    "restProbability": 0.15,
+    "ornament": 0.08
+  }
+}

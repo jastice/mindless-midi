@@ -46,10 +46,13 @@ function voiceFor(program: number): Voice {
   if (program <= 7) return pluck({ bright: 0.92, t60: program === 7 ? 0.7 : 1.8, pick: 0.12 });
   if (program <= 15) return mallet(program);
   if (program <= 23) return organ;
+  if (program === 28) return pluck({ bright: 0.6, t60: 0.25, pick: 0.2 });
   if (program <= 31) return pluck(program === 24 ? { bright: 0.45, t60: 3, pick: 0.2 } : { bright: 0.72, t60: 2.4, pick: 0.15 });
   if (program <= 37) return pluck({ bright: program === 34 ? 0.5 : 0.28, t60: 2.6, pick: 0.25, thump: 0.5 });
   if (program <= 39) return sub(SYNTH_BASS);
   if (program <= 41) return sub(VIOLIN);
+  if (program === 45) return pluck({ bright: 0.4, t60: 0.5, pick: 0.3 });
+  if (program === 46) return pluck({ bright: 0.55, t60: 3.5, pick: 0.1 });
   if (program <= 47) return sub({ ...VIOLIN, cutoff: 1200, vib: [5.2, 14, 0.2] });
   if (program <= 51) return sub(program === 49 ? { ...STRINGS, a: 0.6 } : STRINGS);
   if (program <= 55) return sub(CHOIR);
@@ -66,6 +69,7 @@ function voiceFor(program: number): Voice {
   if (program === 98 || program === 112) return mallet(program);
   if (program >= 104 && program <= 107) return pluck({ bright: 0.7, t60: 2, pick: 0.15 });
   if (program >= 113 && program <= 119) return mallet(program);
+  if (program === 109) return sub(OBOE);
   return sub(PAD);
 }
 
@@ -421,6 +425,17 @@ const KITS: Record<string, Kit> = {
   retro: { kick: { f0: 300, f1: 50, sweep: 0.02, decay: 0.15, drive: 3, click: 0.6 }, snare: { tone: 240, toneDecay: 0.04, noiseDecay: 0.1, noiseHp: 800, mix: 0.9 }, hatScale: 1.4, hatDecay: 0.03 },
   metroid: { kick: { f0: 150, f1: 42, sweep: 0.05, decay: 0.5, drive: 1.8, click: 0.2 }, snare: { tone: 170, toneDecay: 0.1, noiseDecay: 0.25, noiseHp: 1000, mix: 0.7 }, hatScale: 0.9, hatDecay: 0.05 },
   monkey_island: { kick: { f0: 110, f1: 60, sweep: 0.03, decay: 0.2, drive: 1, click: 0.1 }, snare: { tone: 330, toneDecay: 0.05, noiseDecay: 0.06, noiseHp: 2000, mix: 0.35 }, hatScale: 1, hatDecay: 0.03, toms: [210, 320] },
+  bossa_nova: { kick: { f0: 90, f1: 50, sweep: 0.04, decay: 0.22, drive: 1, click: 0.05 }, snare: { tone: 190, toneDecay: 0.04, noiseDecay: 0.28, noiseHp: 2500, mix: 0.85 }, hatScale: 0.9, hatDecay: 0.05 },
+  funk: { kick: { f0: 170, f1: 50, sweep: 0.03, decay: 0.3, drive: 1.8, click: 0.35 }, snare: { tone: 220, toneDecay: 0.07, noiseDecay: 0.14, noiseHp: 1600, mix: 0.6 }, hatScale: 1.1, hatDecay: 0.035 },
+  // Gallop on deep floor toms.
+  western: { kick: { f0: 100, f1: 50, sweep: 0.04, decay: 0.25, drive: 1, click: 0.1 }, snare: { tone: 210, toneDecay: 0.05, noiseDecay: 0.12, noiseHp: 1500, mix: 0.6 }, hatScale: 1, hatDecay: 0.04, toms: [95, 150] },
+  // Bodhrán on the toms; a tight pipe-band snare.
+  celtic: { kick: { f0: 100, f1: 55, sweep: 0.03, decay: 0.2, drive: 1, click: 0.05 }, snare: { tone: 280, toneDecay: 0.03, noiseDecay: 0.09, noiseHp: 2500, mix: 0.75 }, hatScale: 1, hatDecay: 0.03, toms: [110, 180] },
+  musette: { kick: { f0: 95, f1: 52, sweep: 0.04, decay: 0.22, drive: 1, click: 0.05 }, snare: { tone: 190, toneDecay: 0.04, noiseDecay: 0.3, noiseHp: 2500, mix: 0.85 }, hatScale: 0.9, hatDecay: 0.06 },
+  liquid_dnb: { kick: { f0: 160, f1: 48, sweep: 0.04, decay: 0.32, drive: 1.6, click: 0.3 }, snare: { tone: 230, toneDecay: 0.08, noiseDecay: 0.18, noiseHp: 1800, mix: 0.65 }, hatScale: 1.2, hatDecay: 0.03 },
+  castlevania: { kick: { f0: 190, f1: 48, sweep: 0.03, decay: 0.35, drive: 2.2, click: 0.45 }, snare: { tone: 200, toneDecay: 0.09, noiseDecay: 0.22, noiseHp: 1300, mix: 0.7 }, hatScale: 1.1, hatDecay: 0.04 },
+  // Timpani on the toms.
+  jrpg: { kick: { f0: 120, f1: 48, sweep: 0.04, decay: 0.35, drive: 1.3, click: 0.15 }, snare: { tone: 190, toneDecay: 0.05, noiseDecay: 0.2, noiseHp: 1800, mix: 0.8 }, hatScale: 1, hatDecay: 0.045, toms: [70, 105] },
 };
 
 const HAT_FREQS = [205.3, 304.4, 369.6, 522.7, 540, 800];

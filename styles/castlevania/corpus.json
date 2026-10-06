@@ -1,0 +1,2741 @@
+{
+  "title": "Castlevania Vibes",
+  "description": "Whip-cracking 16-bit gothic: harpsichord arpeggios, a pipe organ, power chords and driving octave bass under a heroic minor-key melody climbing the castle stairs, past the clock tower and down into the catacombs.",
+  "tempo": {
+    "min": 132,
+    "max": 156
+  },
+  "beatsPerBar": 4,
+  "swing": 0,
+  "swingUnit": "16th",
+  "humanize": 0.06,
+  "keys": [
+    {
+      "tonic": "D",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "A",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "E",
+      "mode": "aeolian"
+    },
+    {
+      "tonic": "C",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "G",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "F#",
+      "mode": "aeolian"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Gothic lead guitar",
+      "program": 29,
+      "octave": 5,
+      "volume": 0.5,
+      "pan": 0.05
+    },
+    {
+      "role": "counter",
+      "name": "Violin",
+      "program": 40,
+      "octave": 5,
+      "volume": 0.42,
+      "pan": -0.25
+    },
+    {
+      "role": "arp",
+      "name": "Harpsichord",
+      "program": 6,
+      "octave": 4,
+      "volume": 0.42,
+      "pan": 0.3
+    },
+    {
+      "role": "comp",
+      "name": "Power chords",
+      "program": 30,
+      "octave": 3,
+      "volume": 0.42,
+      "pan": -0.2
+    },
+    {
+      "role": "pad",
+      "name": "Pipe organ",
+      "program": 19,
+      "octave": 4,
+      "volume": 0.28,
+      "pan": 0
+    },
+    {
+      "role": "bass",
+      "name": "Rock bass",
+      "program": 34,
+      "octave": 2,
+      "volume": 0.72,
+      "pan": 0
+    },
+    {
+      "role": "drums",
+      "name": "Rock kit",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.62,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "stage",
+      "mood": "the castle gate",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "baroque",
+      "mood": "circle of fifths",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "andalusian",
+      "mood": "descending the stairs",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "march",
+      "mood": "night march",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "iv",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "heroic",
+      "mood": "the hunter",
+      "chords": [
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "bIII",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "pedal",
+      "mood": "pulse",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "neapolitan",
+      "mood": "a cursed hall",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bII",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "climb",
+      "mood": "climbing the keep",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "tick",
+      "mood": "tick tock",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bII",
+          "beats": 2
+        }
+      ],
+      "palette": "clock tower"
+    },
+    {
+      "id": "gears",
+      "mood": "gears",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        }
+      ],
+      "palette": "clock tower"
+    },
+    {
+      "id": "pendulum",
+      "mood": "pendulum",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "viio7",
+          "beats": 4
+        }
+      ],
+      "palette": "clock tower"
+    },
+    {
+      "id": "crypt",
+      "mood": "crypt",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 8
+        },
+        {
+          "symbol": "bII",
+          "beats": 8
+        }
+      ],
+      "palette": "catacombs"
+    },
+    {
+      "id": "bones",
+      "mood": "bones",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "viio7",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bII",
+          "beats": 4
+        }
+      ],
+      "palette": "catacombs"
+    },
+    {
+      "id": "toccata",
+      "mood": "toccata",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "iv6",
+          "beats": 4
+        }
+      ],
+      "palette": "chapel"
+    },
+    {
+      "id": "requiem",
+      "mood": "requiem",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "viio7",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        }
+      ],
+      "palette": "chapel"
+    },
+    {
+      "id": "throne",
+      "mood": "the throne room",
+      "chords": [
+        {
+          "symbol": "iv",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 8
+        }
+      ],
+      "palette": "chapel"
+    },
+    {
+      "id": "passacaglia",
+      "mood": "passacaglia",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ],
+      "palette": "chapel"
+    }
+  ],
+  "motifs": [
+    {
+      "id": "vampire",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 6,
+          "v": 0.75
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.65
+        },
+        {
+          "t": 6,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 6.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.7
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": -1,
+          "v": 0.75
+        }
+      ]
+    },
+    {
+      "id": "blood",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.65
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.75
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.75
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.65
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 3,
+          "v": 0.75
+        }
+      ]
+    },
+    {
+      "id": "beginning",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.72
+        },
+        {
+          "t": 4,
+          "d": 1,
+          "deg": 3,
+          "v": 0.75
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.7
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": -1,
+          "v": 0.78
+        }
+      ]
+    },
+    {
+      "id": "whip",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.75
+        },
+        {
+          "t": 2,
+          "d": 1.5,
+          "deg": 8,
+          "v": 0.8
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "stairs",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.65
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 6,
+          "v": 0.8
+        }
+      ]
+    },
+    {
+      "id": "violin-sigh",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 5,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 2,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 1,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "violin-runs",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 0,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "alberti",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 1.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 3.5,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 3.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "prelude",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.25,
+          "deg": 9,
+          "v": 0.6
+        },
+        {
+          "t": 1.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 9,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 0.25,
+          "deg": 9,
+          "v": 0.6
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 3.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 3.75,
+          "d": 0.25,
+          "deg": 9,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "toccata",
+      "role": "arp",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.45
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 1,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 1.25,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.45
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 1,
+          "v": 0.45
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.45
+        },
+        {
+          "t": 3,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": -1,
+          "v": 0.45
+        },
+        {
+          "t": 3.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 3.75,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "octave-pump",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "gallop-bass",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 1,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 1.25,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 3,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": -1,
+          "v": 0.75
+        }
+      ]
+    },
+    {
+      "id": "baroque-walk",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": -1,
+          "v": 0.7
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": -2,
+          "v": 0.7
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": -3,
+          "v": 0.75
+        },
+        {
+          "t": 6,
+          "d": 0.5,
+          "deg": -2,
+          "v": 0.7
+        },
+        {
+          "t": 6.5,
+          "d": 0.5,
+          "deg": -1,
+          "v": 0.7
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 0,
+          "v": 0.8
+        }
+      ]
+    },
+    {
+      "id": "tick-tock",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.75
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.75
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.75
+        },
+        {
+          "t": 1.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.75
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.75
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 1,
+          "v": 0.75
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.25,
+          "deg": -1,
+          "v": 0.75
+        },
+        {
+          "t": 3.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.55
+        }
+      ],
+      "palette": "clock tower"
+    },
+    {
+      "id": "clockwork",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.7
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 4,
+          "d": 2,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 6,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.7
+        },
+        {
+          "t": 6.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 1,
+          "v": 0.7
+        }
+      ],
+      "palette": "clock tower"
+    },
+    {
+      "id": "chime",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 9,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.45
+        }
+      ],
+      "palette": "clock tower"
+    },
+    {
+      "id": "crypt-call",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.5
+        },
+        {
+          "t": 2.5,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 3,
+          "deg": 1,
+          "v": 0.55
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 0,
+          "v": 0.5
+        }
+      ],
+      "palette": "catacombs"
+    },
+    {
+      "id": "crypt-whisper",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 5,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 1,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 5,
+          "d": 1,
+          "deg": 1,
+          "v": 0.5
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 0,
+          "v": 0.5
+        }
+      ],
+      "palette": "catacombs"
+    },
+    {
+      "id": "drip",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": -1,
+          "v": 0.7
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.6
+        }
+      ],
+      "palette": "catacombs"
+    },
+    {
+      "id": "crypt-bells",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 7,
+          "v": 0.45
+        },
+        {
+          "t": 4,
+          "d": 2,
+          "deg": 4,
+          "v": 0.4
+        }
+      ],
+      "palette": "catacombs"
+    },
+    {
+      "id": "fugue",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.65
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": -1,
+          "v": 0.7
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.7
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": -1,
+          "v": 0.65
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 0,
+          "v": 0.75
+        }
+      ],
+      "palette": "chapel"
+    },
+    {
+      "id": "chorale",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 0,
+          "v": 0.7
+        }
+      ],
+      "palette": "chapel"
+    },
+    {
+      "id": "pedals",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": -3,
+          "v": 0.7
+        }
+      ],
+      "palette": "chapel"
+    }
+  ],
+  "comping": [
+    {
+      "id": "palm-mute",
+      "role": "comp",
+      "voicing": "power",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.4,
+          "v": 0.8
+        },
+        {
+          "t": 0.5,
+          "d": 0.4,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.4,
+          "v": 0.75
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.4,
+          "v": 0.8
+        },
+        {
+          "t": 2.5,
+          "d": 0.4,
+          "v": 0.6
+        },
+        {
+          "t": 3,
+          "d": 0.4,
+          "v": 0.75
+        },
+        {
+          "t": 3.5,
+          "d": 0.4,
+          "v": 0.6
+        }
+      ]
+    },
+    {
+      "id": "power-gallop",
+      "role": "comp",
+      "voicing": "power",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.2,
+          "v": 0.85
+        },
+        {
+          "t": 0.25,
+          "d": 0.2,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.4,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 0.2,
+          "v": 0.8
+        },
+        {
+          "t": 1.25,
+          "d": 0.2,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 0.2,
+          "v": 0.85
+        },
+        {
+          "t": 2.25,
+          "d": 0.2,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 0.4,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.2,
+          "v": 0.8
+        },
+        {
+          "t": 3.25,
+          "d": 0.2,
+          "v": 0.55
+        },
+        {
+          "t": 3.5,
+          "d": 0.4,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "power-hits",
+      "role": "comp",
+      "voicing": "power",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 1.4,
+          "v": 0.85
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 1.4,
+          "v": 0.8
+        }
+      ]
+    },
+    {
+      "id": "organ",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 4,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "organ-halves",
+      "role": "pad",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 2,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "v": 0.42
+        }
+      ]
+    },
+    {
+      "id": "crypt-choir",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 8,
+          "v": 0.4
+        }
+      ],
+      "palette": "catacombs"
+    },
+    {
+      "id": "chapel-choir",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 4,
+          "v": 0.5
+        }
+      ],
+      "palette": "chapel"
+    }
+  ],
+  "drums": [
+    {
+      "id": "stage",
+      "kind": "groove",
+      "intensity": 0.75,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.x...x.X.x...x.",
+        "snare": "....X.......X...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.x.x.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "double-time",
+      "kind": "groove",
+      "intensity": 0.9,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.X.X.X.X.X.X.X.",
+        "snare": "....X.......X...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.x.x.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "night-march",
+      "kind": "groove",
+      "intensity": 0.6,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.......",
+        "snare": "x.xxx.x.x.xxX.x.",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "x...x...x...x...",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "drive",
+      "kind": "groove",
+      "intensity": 0.8,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X.x.X...X.x.",
+        "snare": "....X.......X..x",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "x.x.x.x.x.x.x.x.",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "tom-cascade",
+      "kind": "fill",
+      "intensity": 0.8,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.......",
+        "snare": "....X...xx......",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "............xxXX",
+        "tomHigh": "..........xx....",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "snare-burst",
+      "kind": "fill",
+      "intensity": 0.65,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.......",
+        "snare": "....X...x.x.xxxx",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.........",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "clock",
+      "kind": "groove",
+      "intensity": 0.65,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.......X.......",
+        "snare": "....X.......X...",
+        "rim": "x...x...x...x...",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.x.x.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "clock tower"
+    },
+    {
+      "id": "clockwork",
+      "kind": "groove",
+      "intensity": 0.85,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X..X..X.X..X..X.",
+        "snare": "....X.......X...",
+        "rim": "x.x.x.x.x.x.x.x.",
+        "clap": "",
+        "closedHat": "xxxxxxxxxxxxxxxx",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "clock tower"
+    },
+    {
+      "id": "crypt-steps",
+      "kind": "groove",
+      "intensity": 0.3,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "......x.........",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X.......X...x...",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "palette": "catacombs"
+    }
+  ],
+  "forms": [
+    {
+      "id": "stage-1",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.6,
+          "roles": [
+            "comp",
+            "drums",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.75,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.8,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "counter",
+            "arp",
+            "bass",
+            "drums",
+            "pad"
+          ],
+          "progression": "baroque"
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.85,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums",
+            "arp",
+            "pad"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stage-2",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.5,
+          "roles": [
+            "arp",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "lead",
+            "arp",
+            "bass",
+            "drums",
+            "comp"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.8,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums"
+          ],
+          "progression": "heroic"
+        },
+        {
+          "label": "C",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "arp",
+            "counter",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.85,
+          "roles": [
+            "lead",
+            "counter",
+            "arp",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "clock-tower",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.55,
+          "roles": [
+            "arp",
+            "drums"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.7,
+          "roles": [
+            "lead",
+            "arp",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.8,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.85,
+          "roles": [
+            "lead",
+            "arp",
+            "comp",
+            "bass",
+            "drums",
+            "pad"
+          ]
+        }
+      ],
+      "palette": "clock tower",
+      "tempo": {
+        "min": 140,
+        "max": 156
+      },
+      "keys": [
+        {
+          "tonic": "E",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "B",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "F#",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "C#",
+          "mode": "aeolian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Harpsichord",
+          "program": 6,
+          "octave": 5,
+          "volume": 0.5,
+          "pan": 0.1
+        },
+        {
+          "role": "arp",
+          "name": "Music box",
+          "program": 10,
+          "octave": 5,
+          "volume": 0.35,
+          "pan": 0.3
+        }
+      ]
+    },
+    {
+      "id": "catacombs",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.15,
+          "roles": [
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.3,
+          "roles": [
+            "lead",
+            "pad",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.35,
+          "roles": [
+            "counter",
+            "pad",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.35,
+          "roles": [
+            "lead",
+            "pad",
+            "bass",
+            "drums",
+            "arp"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 2,
+          "intensity": 0.15,
+          "roles": [
+            "pad"
+          ]
+        }
+      ],
+      "palette": "catacombs",
+      "tempo": {
+        "min": 84,
+        "max": 100
+      },
+      "keys": [
+        {
+          "tonic": "E",
+          "mode": "phrygian"
+        },
+        {
+          "tonic": "A",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "D",
+          "mode": "phrygian"
+        },
+        {
+          "tonic": "C",
+          "mode": "harmonicMinor"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Haunted flute",
+          "program": 75,
+          "octave": 5,
+          "volume": 0.45,
+          "pan": 0.1
+        },
+        {
+          "role": "arp",
+          "name": "Funeral bells",
+          "program": 14,
+          "octave": 4,
+          "volume": 0.35,
+          "pan": 0.3
+        },
+        {
+          "role": "pad",
+          "name": "Crypt choir",
+          "program": 52,
+          "octave": 4,
+          "volume": 0.35,
+          "pan": 0
+        }
+      ]
+    },
+    {
+      "id": "chapel",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 2,
+          "intensity": 0.35,
+          "roles": [
+            "pad",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "lead",
+            "arp",
+            "bass",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "arp",
+            "bass",
+            "pad",
+            "counter"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.65,
+          "roles": [
+            "arp",
+            "bass",
+            "pad",
+            "counter"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.65,
+          "roles": [
+            "lead",
+            "arp",
+            "bass",
+            "pad"
+          ]
+        },
+        {
+          "label": "outro",
+          "bars": 2,
+          "intensity": 0.4,
+          "roles": [
+            "pad",
+            "bass"
+          ]
+        }
+      ],
+      "palette": "chapel",
+      "tempo": {
+        "min": 96,
+        "max": 112
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "G",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "C",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "A",
+          "mode": "harmonicMinor"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Pipe organ",
+          "program": 19,
+          "octave": 5,
+          "volume": 0.45,
+          "pan": 0
+        },
+        {
+          "role": "arp",
+          "name": "Organ toccata",
+          "program": 19,
+          "octave": 4,
+          "volume": 0.35,
+          "pan": 0.15
+        },
+        {
+          "role": "pad",
+          "name": "Choir",
+          "program": 52,
+          "octave": 4,
+          "volume": 0.35,
+          "pan": 0
+        },
+        {
+          "role": "bass",
+          "name": "Organ pedals",
+          "program": 19,
+          "octave": 2,
+          "volume": 0.6,
+          "pan": 0
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.6,
+    "low": 62,
+    "high": 88,
+    "phraseBars": 4,
+    "stepwise": 0.55,
+    "restProbability": 0.1,
+    "ornament": 0.15
+  }
+}
