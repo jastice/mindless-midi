@@ -2,15 +2,18 @@
  * Build-time style compiler, driven by the `music_style` / `style_pack`
  * rules in //bazel:music.bzl.
  *
- *   stylec bundle --corpus C --id ID --bank N --color HEX --out OUT [--report R]
+ *   stylec bundle --corpus C --id ID --bank N --color HEX --out OUT [--report R] [--sound S]
  *     Validate a corpus (failing the build on errors), attach metadata and
- *     calibrate loudness by rendering through the real synth.
+ *     calibrate loudness by rendering through the real synth. S gets the
+ *     style's sound declaration (instruments, key ranges), which //tools/samples
+ *     turns into the sample files the site ships.
  *   stylec pack --out OUT BUNDLE...
  *     Merge style bundles into the single styles.json the app loads.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { isAbsolute, join } from "node:path";
 import type { StyleBundle } from "../../src/corpus/schema.js";
+import { declareSound } from "../../src/corpus/sound.js";
 import { validateCorpus } from "../../src/corpus/validate.js";
 import { calibrate } from "../render/calibrate_lib.js";
 
@@ -54,6 +57,7 @@ async function bundle(opts: Record<string, string>): Promise<void> {
   out.gain = cal.gain;
   writeFileSync(p(need(opts, "out")), JSON.stringify(out));
   if (opts.report) writeFileSync(p(opts.report), cal.report.join("\n") + "\n");
+  if (opts.sound) writeFileSync(p(opts.sound), JSON.stringify({ id: out.id, sound: declareSound(out.corpus) }));
 }
 
 function pack(opts: Record<string, string>, inputs: string[]): void {

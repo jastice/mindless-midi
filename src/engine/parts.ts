@@ -3,8 +3,9 @@
  * one bar. Times are bar-relative beats; swing and humanization are applied
  * afterwards by the piece.
  */
-import type { CompPattern, DrumLane, DrumPattern, Instrument, MelodyRules, Motif, PatternNote, Role } from "../corpus/schema.js";
-import { DRUM_LANES } from "../corpus/constants.js";
+import type { CompPattern, DrumPattern, Instrument, MelodyRules, Motif, PatternNote, Role } from "../corpus/schema.js";
+import { DRUM_LANES, GM_DRUMS } from "../corpus/constants.js";
+import type { PitchRange } from "../corpus/sound.js";
 import { Rng } from "../theory/rng.js";
 import {
   chordScale,
@@ -21,20 +22,6 @@ import {
 } from "../theory/theory.js";
 import type { ChordSpan, Harmony } from "./harmony.js";
 import { CHANNELS, type NoteEvent } from "./types.js";
-
-export const GM_DRUMS: Record<DrumLane, number> = {
-  kick: 36,
-  snare: 38,
-  rim: 37,
-  clap: 39,
-  closedHat: 42,
-  openHat: 46,
-  ride: 51,
-  crash: 49,
-  tomLow: 45,
-  tomHigh: 50,
-  shaker: 70,
-};
 
 /** Everything a part writer needs to know about the current bar. */
 export interface BarContext {
@@ -138,7 +125,7 @@ export function resolveDegree(
   return snapToPitchClasses(raw, scalePcs);
 }
 
-export function writeOstinato(ctx: BarContext, motif: Motif, range: [number, number]): NoteEvent[] {
+export function writeOstinato(ctx: BarContext, motif: Motif, range: PitchRange): NoteEvent[] {
   const out: NoteEvent[] = [];
   const role = motif.role === "bass" ? "bass" : "arp";
   const center = registerCenter(ctx.instrument) + (role === "bass" ? 4 : 0);
@@ -380,7 +367,7 @@ export function writeMelody(
   ctx: BarContext,
   phrase: PhraseNote[],
   role: "lead" | "counter",
-  range: [number, number],
+  range: PitchRange,
   memory: PartMemory,
 ): NoteEvent[] {
   const out: NoteEvent[] = [];

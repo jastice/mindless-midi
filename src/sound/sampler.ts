@@ -7,12 +7,37 @@
  * Split in two so playback can run in a worker: `SampleLibrary` (main thread:
  * resolves notes to sample zones, downloads and decodes them) and
  * `renderSampleNote` (pure: mixes decoded sample data into a Stereo).
+ *
+ * Files are named by their upstream URL. The site serves its own copies of the
+ * ones the styles can play (see `requiredSamples` and //tools/samples); the
+ * bench reads from upstream directly.
  */
+import type { SoundDeclaration } from "../corpus/sound.js";
 import type { ScoreNote } from "./types.js";
 import type { Samples, Stereo } from "./dsp.js";
 
 const DANIGB = "https://danigb.github.io/samples/";
 const GLEITZ = "https://gleitz.github.io/midi-js-soundfonts/";
+
+/**
+ * Instruments name their files by upstream URL. The site ships those files
+ * itself (//tools/samples fetches the ones the styles can play at build time),
+ * laid out as `danigb/<path>` and `gleitz/<path>` under one directory.
+ */
+export function mirrorPath(url: string): string | undefined {
+  if (url.startsWith(DANIGB)) return `danigb/${url.slice(DANIGB.length)}`;
+  if (url.startsWith(GLEITZ)) return `gleitz/${url.slice(GLEITZ.length)}`;
+  return undefined;
+}
+
+/** Fetches from the mirror directory at `base` (ending in a slash) instead of upstream. */
+export function mirroredAt(base: string): (url: string) => string {
+  return (url) => {
+    const path = mirrorPath(url);
+    if (path === undefined) throw new Error(`not a mirrored sample: ${url}`);
+    return base + path;
+  };
+}
 
 export type Soundfont = "MusyngKite" | "FluidR3_GM";
 
@@ -26,17 +51,25 @@ export interface SampleData {
 export class SampleCache {
   private readonly buffers = new Map<string, Promise<{ data: SampleData; bytes: number }>>();
   private readonly json = new Map<string, Promise<unknown>>();
-  constructor(private readonly ctx: BaseAudioContext) {}
+  /**
+   * `ctx` decodes audio (not needed to read sample documents); `locate` maps an
+   * upstream URL to where to fetch it from (default: upstream itself).
+   */
+  constructor(
+    private readonly ctx?: BaseAudioContext,
+    private readonly locate: (url: string) => string = (url) => url,
+  ) {}
 
   audio(url: string): Promise<{ data: SampleData; bytes: number }> {
     let p = this.buffers.get(url);
     if (!p) {
-      p = fetch(url)
+      p = fetch(this.locate(url))
         .then((r) => {
           if (!r.ok) throw new Error(`${r.status} ${url}`);
           return r.arrayBuffer();
         })
         .then(async (raw) => {
+          if (!this.ctx) throw new Error("no audio context to decode with");
           const bytes = raw.byteLength; // decodeAudioData detaches `raw`
           const b = await this.ctx.decodeAudioData(raw);
           const channels = Array.from({ length: b.numberOfChannels }, (_, c) => b.getChannelData(c).slice());
@@ -50,7 +83,7 @@ export class SampleCache {
   getJson<T>(url: string): Promise<T> {
     let p = this.json.get(url);
     if (!p) {
-      p = fetch(url).then((r) => {
+      p = fetch(this.locate(url)).then((r) => {
         if (!r.ok) throw new Error(`${r.status} ${url}`);
         return r.json();
       });
@@ -86,6 +119,8 @@ interface Instrument {
   release: number;
   sustain: boolean;
   zones(key: number, vel: number): Promise<Zone[]>;
+  /** Every upstream URL (sample documents and audio) that playing any of `keys` can need. */
+  required(keys: readonly number[]): Promise<string[]>;
 }
 
 // --- websfz (SFZ as JSON, as published by danigb/samples) ---------------
@@ -129,7 +164,7 @@ function playable(o: Opcodes): boolean {
 }
 
 async function loadSfz(cache: SampleCache, url: string, samplePath = ""): Promise<{ base: string; regions: SfzRegion[] }> {
-  const doc = await cache.getJson<{ meta: { baseUrl?: string }; global?: Opcodes; groups: (Opcodes & { regions: Opcodes[]; control?: Opcodes })[] }>(url);
+  const doc = await cache.getJson<{ global?: Opcodes; groups: (Opcodes & { regions: Opcodes[]; control?: Opcodes })[] }>(url);
   const regions: SfzRegion[] = [];
   // A <control> header applies to every group after it, not just its own.
   let prefix = "";
@@ -160,7 +195,12 @@ async function loadSfz(cache: SampleCache, url: string, samplePath = ""): Promis
       });
     }
   }
-  return { base: doc.meta.baseUrl ?? url.slice(0, url.lastIndexOf("/") + 1), regions };
+  // Samples sit beside the document (upstream's meta.baseUrl says the same, but would defeat a mirror).
+  return { base: url.slice(0, url.lastIndexOf("/") + 1), regions };
+}
+
+function regionUrl(base: string, r: SfzRegion): string {
+  return encodeURI(`${base}${r.prefix}${r.sample}.m4a`).replace(/#/g, "%23");
 }
 
 function sfzInstrument(cache: SampleCache, label: string, url: string, release: number, sustain = false, samplePath = ""): Instrument {
@@ -183,13 +223,19 @@ function sfzInstrument(cache: SampleCache, label: string, url: string, release: 
         if (r.xfout) w *= 1 - ramp(vel, r.xfout[0], r.xfout[1]);
         if (w < 0.02) continue;
         out.push({
-          url: encodeURI(`${base}${r.prefix}${r.sample}.m4a`).replace(/#/g, "%23"),
+          url: regionUrl(base, r),
           rate: Math.pow(2, (key - r.center + r.tune / 100) / 12),
           gain: Math.sqrt(w) * Math.pow(10, r.volume / 20),
           offset: r.offset,
         });
       }
       return out;
+    },
+    async required(keys) {
+      const { base, regions } = await loaded;
+      // Any velocity layer or round robin can sound, so take every region the keys reach.
+      const urls = regions.filter((r) => keys.some((k) => k >= r.lokey && k <= r.hikey)).map((r) => regionUrl(base, r));
+      return [url, ...new Set(urls)];
     },
   };
 }
@@ -204,16 +250,23 @@ function ramp(x: number, lo: number, hi: number): number {
 const FLAT_NAMES = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
 function gmInstrument(cache: SampleCache, font: Soundfont, program: number, sustain: boolean, release: number): Instrument {
-  const names = cache.getJson<string[]>(`${GLEITZ}${font}/names.json`);
+  const namesUrl = `${GLEITZ}${font}/names.json`;
+  const names = cache.getJson<string[]>(namesUrl);
+  const fileKey = (key: number) => Math.max(21, Math.min(108, key));
+  const file = async (key: number) => {
+    const name = (await names)[program] ?? "acoustic_grand_piano";
+    const k = fileKey(key);
+    return `${GLEITZ}${font}/${name}-mp3/${FLAT_NAMES[k % 12]}${Math.floor(k / 12) - 1}.mp3`;
+  };
   return {
     label: font === "MusyngKite" ? "MusyngKite GM soundfont (CC BY-SA 3.0)" : "FluidR3 GM soundfont (MIT)",
     release,
     sustain,
     async zones(key) {
-      const name = (await names)[program] ?? "acoustic_grand_piano";
-      const k = Math.max(21, Math.min(108, key));
-      const file = `${FLAT_NAMES[k % 12]}${Math.floor(k / 12) - 1}`;
-      return [{ url: `${GLEITZ}${font}/${name}-mp3/${file}.mp3`, rate: Math.pow(2, (key - k) / 12), gain: 1, offset: 0 }];
+      return [{ url: await file(key), rate: Math.pow(2, (key - fileKey(key)) / 12), gain: 1, offset: 0 }];
+    },
+    async required(keys) {
+      return [namesUrl, ...new Set(await Promise.all(keys.map(file)))];
     },
   };
 }
@@ -311,6 +364,9 @@ function drumKit(styleId: string): Instrument {
       const url = kit[alias[key] ?? key];
       return url ? [{ url, rate: 1, gain: 1, offset: 0 }] : [];
     },
+    async required(keys) {
+      return [...new Set(keys.flatMap((k) => kit[alias[k] ?? k] ?? []))];
+    },
   };
 }
 
@@ -404,6 +460,29 @@ export class SampleLibrary {
     await Promise.all(Array.from({ length: concurrency }, worker));
     return { plans, fresh };
   }
+}
+
+/**
+ * Upstream URL of every file the styles can play, given what they declare:
+ * each program's keys across all styles, and each style's drum kit. Sorted.
+ */
+export async function requiredSamples(cache: SampleCache, styles: { id: string; sound: SoundDeclaration }[], font: Soundfont = "MusyngKite"): Promise<string[]> {
+  const keysByProgram = new Map<number, Set<number>>();
+  for (const { sound } of styles) {
+    for (const inst of sound.instruments) {
+      const keys = keysByProgram.get(inst.program) ?? new Set<number>();
+      for (let k = inst.range[0]; k <= inst.range[1]; k++) keys.add(k);
+      keysByProgram.set(inst.program, keys);
+    }
+  }
+  const urls = new Set<string>();
+  for (const [program, keys] of keysByProgram) {
+    for (const url of await instrumentFor(cache, font, program).required([...keys])) urls.add(url);
+  }
+  for (const { id, sound } of styles) {
+    for (const url of await drumKit(id).required(sound.drums)) urls.add(url);
+  }
+  return [...urls].sort();
 }
 
 /** An open hi-hat stops at the next closed hi-hat among the same notes. */

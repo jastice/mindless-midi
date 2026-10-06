@@ -1,5 +1,5 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//bazel:ts.bzl", "ts_lib")
+load("//bazel:ts.bzl", "ts_lib", "ts_test")
 
 # Sound engines beyond the OPL3 path: DSP synth voices, sampled instruments,
 # the mix bus, and the protocol between player, render worker and stem worklet.
@@ -18,6 +18,15 @@ ts_lib(
     deps = [
         "//src/corpus",
         "//src/engine",
+    ],
+)
+
+ts_test(
+    name = "sampler_test",
+    src = "sampler.test.ts",
+    deps = [
+        ":sound",
+        "//src/corpus",
     ],
 )
 

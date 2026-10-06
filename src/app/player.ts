@@ -18,7 +18,7 @@ import { barsToMidi } from "../engine/midi_file.js";
 import { type Bar, barSeconds } from "../engine/types.js";
 import { Bus } from "../sound/bus.js";
 import { type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../sound/protocol.js";
-import { type PlannedNote, SampleCache, SampleLibrary } from "../sound/sampler.js";
+import { type PlannedNote, SampleCache, SampleLibrary, mirroredAt } from "../sound/sampler.js";
 import type { ScoreNote } from "../sound/types.js";
 
 export type { Engine };
@@ -616,7 +616,8 @@ export class Player {
       this.toWorker({ type: "wasm", wasm }, [wasm]);
       this.workerHasWasm = true;
     }
-    if (engine === "samples") this.library ??= new SampleLibrary(new SampleCache(ctx));
+    // The site ships the samples its styles can play (//styles:samples) next to the page.
+    if (engine === "samples") this.library ??= new SampleLibrary(new SampleCache(ctx, mirroredAt(new URL("samples/", document.baseURI).href)));
   }
 
   /**

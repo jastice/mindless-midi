@@ -1,0 +1,12 @@
+load("//bazel:ts.bzl", "ts_binary")
+
+# Fetches the sample files the styles declare they can play; see style_samples in //bazel:music.bzl.
+ts_binary(
+    name = "samples",
+    src = "samples.ts",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src/corpus",
+        "//src/sound",
+    ],
+)

@@ -3,8 +3,9 @@
  * Planning happens up front (cheap); notes are rendered lazily bar by bar.
  */
 import type { CompPattern, DrumPattern, Instrument, Motif, Progression, Role, StyleBundle, StyleCorpus } from "../corpus/schema.js";
+import { melodicRange, pitchRange } from "../corpus/sound.js";
 import { Rng } from "../theory/rng.js";
-import { MODES, type ModeName, keyLabel, mod, parseRoman, pitchClass } from "../theory/theory.js";
+import { MODES, type ModeName, foldIntoRange, keyLabel, mod, parseRoman, pitchClass } from "../theory/theory.js";
 import { Harmony } from "./harmony.js";
 import {
   type BarContext,
@@ -351,9 +352,7 @@ export class Piece {
         if (!motifs.length) return [];
         const alt = motifs[1] && ctx.barInSection % 8 >= 6 && this.rng.fork(`alt:${section.index}:${role}`).chance(0.6);
         const motif = alt ? motifs[1]! : motifs[0]!;
-        const center = 12 * (ctx.instrument.octave + 1);
-        const range: [number, number] = role === "bass" ? [Math.max(28, center - 8), center + 16] : [center - 7, center + 19];
-        return writeOstinato(ctx, motif, range);
+        return writeOstinato(ctx, motif, melodicRange(role, ctx.instrument.octave, this.corpus.melody));
       }
       case "pad":
       case "comp": {
@@ -366,10 +365,7 @@ export class Piece {
         const phraseBars = Math.max(1, rules.phraseBars);
         const phraseIdx = Math.floor(ctx.barInSection / phraseBars);
         const phrase = this.phrase(section, role, phraseIdx, phraseBars);
-        const center = 12 * (ctx.instrument.octave + 1) + 5;
-        const range: [number, number] =
-          role === "lead" ? [rules.low, rules.high] : [Math.max(36, center - 10), Math.min(96, center + 12)];
-        return writeMelody(ctx, phrase, role, range, this.memory);
+        return writeMelody(ctx, phrase, role, melodicRange(role, ctx.instrument.octave, rules), this.memory);
       }
     }
   }
@@ -427,12 +423,18 @@ export class Piece {
       ?? (["pad", "comp"] as const).find((r) => this.instruments.has(r));
     if (chordRole) {
       const ctx = ctxFor(chordRole)!;
-      out.push(...holdChord(ctx, span, chordRole, dur, this.memory, 0.55));
+      // Pads and comps are voiced inside their declared range already; a lead or arp
+      // holding the chord folds into its own register (merging notes that land together).
+      const [low, high] = pitchRange(ctx.instrument, this.corpus);
+      const held = holdChord(ctx, span, chordRole, dur, this.memory, 0.55);
+      for (const n of held) n.key = foldIntoRange(n.key, low, high);
+      out.push(...held.filter((n, i) => held.findIndex((m) => m.key === n.key) === i));
     }
     const bassCtx = ctxFor("bass");
     if (bassCtx && last.roles.includes("bass")) {
       const root = 12 * (bassCtx.instrument.octave + 1) + bassCtx.tonic;
-      out.push({ beat: 0, dur, ch: CHANNELS.bass, key: root > 50 ? root - 12 : root, vel: 70, role: "bass" });
+      const [low, high] = pitchRange(bassCtx.instrument, this.corpus);
+      out.push({ beat: 0, dur, ch: CHANNELS.bass, key: foldIntoRange(root > 50 ? root - 12 : root, low, high), vel: 70, role: "bass" });
     }
     if (last.roles.includes("drums")) {
       if (!last.grooves[0] || hasCymbals(last.grooves[0])) {

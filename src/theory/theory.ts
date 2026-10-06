@@ -334,16 +334,11 @@ export function voicingIntervals(c: Chord, v: Voicing): number[] {
 }
 
 /**
- * Choose concrete MIDI notes for a chord, near `center`, moving as little as
- * possible from the previous voicing.
+ * Every voicing `voiceChord` chooses between for a chord, near `center`. They
+ * depend on the chord and voicing alone, so the union over chords bounds the
+ * notes a part can play (see `chordRange`).
  */
-export function voiceChord(
-  tonic: number,
-  c: Chord,
-  v: Voicing,
-  center: number,
-  prev: readonly number[] | null,
-): number[] {
+export function voicingCandidates(tonic: number, c: Chord, v: Voicing, center: number): number[][] {
   const rootPc = mod(tonic + c.root, 12);
   const pcs = voicingIntervals(c, v).map((i) => mod(rootPc + i, 12));
 
@@ -370,7 +365,21 @@ export function voiceChord(
       }
     }
   }
+  return candidates;
+}
 
+/**
+ * Choose concrete MIDI notes for a chord, near `center`, moving as little as
+ * possible from the previous voicing.
+ */
+export function voiceChord(
+  tonic: number,
+  c: Chord,
+  v: Voicing,
+  center: number,
+  prev: readonly number[] | null,
+): number[] {
+  const candidates = voicingCandidates(tonic, c, v, center);
   let best = candidates[0]!;
   let bestCost = Infinity;
   for (const cand of candidates) {

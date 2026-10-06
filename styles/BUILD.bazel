@@ -1,4 +1,4 @@
-load("//bazel:music.bzl", "style_pack")
+load("//bazel:music.bzl", "style_pack", "style_samples")
 
 STYLES = [
     "metroid",
@@ -21,6 +21,16 @@ STYLES = [
 
 style_pack(
     name = "styles",
+    styles = ["//styles/%s:style" % s for s in STYLES],
+    visibility = ["//visibility:public"],
+)
+
+# The sample files these styles can play, fetched at build time (the declared
+# instruments and key ranges decide which). The site serves them as samples/.
+# samples.lock.json pins their hashes; bazel run //styles:samples_lock refreshes it.
+style_samples(
+    name = "samples",
+    lock = "samples.lock.json",
     styles = ["//styles/%s:style" % s for s in STYLES],
     visibility = ["//visibility:public"],
 )

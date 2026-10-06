@@ -5,6 +5,7 @@ ts_lib(
     srcs = [
         "constants.ts",
         "schema.ts",
+        "sound.ts",
         "validate.ts",
     ],
     visibility = ["//visibility:public"],

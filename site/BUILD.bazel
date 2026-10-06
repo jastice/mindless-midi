@@ -16,6 +16,7 @@ copy_to_directory(
         "//src/sound:render_worker",
         "//src/sound:stem_worklet",
         "//styles",
+        "//styles:samples",
     ],
     root_paths = [
         "src/app/bundle",

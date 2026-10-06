@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import type { StyleBundle } from "../corpus/schema.js";
+import { declareSound } from "../corpus/sound.js";
 import { MODES, chordPitchClasses, mod, parseRoman } from "../theory/theory.js";
 import { Conductor, MAX_SEEK_PIECE } from "./conductor.js";
 import { barsToMidi } from "./midi_file.js";
@@ -43,6 +44,36 @@ for (const style of styles) {
     assert.ok(ratio > 0.9, `only ${(ratio * 100).toFixed(1)}% of notes fit key/chord`);
     const used = new Set(style.corpus.forms.flatMap((f) => f.sections.flatMap((s) => s.roles)));
     for (const r of used) assert.ok(roles.has(r), `role ${r} never played`);
+  });
+}
+
+// The build fetches exactly the samples the declaration names, so a note outside it would be silent.
+for (const style of styles) {
+  test(`${style.id}: notes stay within the declared instruments and ranges`, () => {
+    const sound = declareSound(style.corpus);
+    for (const inst of sound.instruments) assert.ok(inst.range[0] < inst.range[1], `${inst.role} range ${inst.range}`);
+    let checked = 0;
+    for (const seed of ["a", "b", "c"]) {
+      const program = new Map<number, number>();
+      for (const bar of take(new Conductor([style], `bounds-${style.id}-${seed}`), 500)) {
+        for (const c of bar.controls) if (c.kind === "program") program.set(c.ch, c.value);
+        for (const n of bar.notes) {
+          checked++;
+          if (n.role === "drums") {
+            assert.ok(sound.drums.includes(n.key), `drum key ${n.key} not in [${sound.drums}]`);
+            continue;
+          }
+          const p = program.get(n.ch);
+          const fits = sound.instruments.filter((i) => i.role === n.role && i.program === p);
+          assert.ok(fits.length, `${n.role} played program ${p}, which the style does not declare`);
+          assert.ok(
+            fits.some((i) => n.key >= i.range[0] && n.key <= i.range[1]),
+            `${n.role} (program ${p}) played ${n.key}, outside ${fits.map((i) => `[${i.range}]`).join(" ")}`,
+          );
+        }
+      }
+    }
+    assert.ok(checked > 1000, `only ${checked} notes checked`);
   });
 }
 
