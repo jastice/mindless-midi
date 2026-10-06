@@ -5,7 +5,7 @@
  */
 import type { StyleBundle } from "../corpus/schema.js";
 import { Rng } from "../theory/rng.js";
-import { DEFAULT_PIECE_OPTIONS, Piece, type PieceOptions } from "./piece.js";
+import { DEFAULT_PIECE_OPTIONS, Piece, type PieceOptions, type Segment } from "./piece.js";
 import type { Bar, ControlEvent } from "./types.js";
 
 /** How many pieces `seek` will replay (a link can't ask for more), so a hand-edited position can't hang the tab. */
@@ -44,6 +44,8 @@ export class Conductor {
   private readonly chosen: Choice[] = [];
   /** Setup of the bars `seek` skipped, to ride along with the first bar returned. */
   private carry: ControlEvent[] = [];
+  /** The latest seek, redone if the pool changes before any bar has been played. */
+  private start: (() => Landing) | null = null;
 
   constructor(styles: StyleBundle[], seed: string, opts: PieceOptions = DEFAULT_PIECE_OPTIONS) {
     if (!styles.length) throw new Error("Conductor needs at least one style");
@@ -52,11 +54,22 @@ export class Conductor {
     this.opts = opts;
   }
 
-  /** Change the style pool. Takes effect at the next piece (not yet started ones are chosen again). */
-  setStyles(styles: StyleBundle[]): void {
+  /**
+   * Change the style pool. Takes effect at the next piece (not yet started ones are chosen again).
+   * If no bar has been played yet, the piece a seek started is no exception: the seek is redone
+   * with the new pool, and where it lands now is returned.
+   */
+  setStyles(styles: StyleBundle[]): Landing | null {
     if (!styles.length) throw new Error("Conductor needs at least one style");
     this.styles = styles;
+    if (this.start && !this.barIndex) {
+      this.chosen.length = 0;
+      this.pieceIndex = 0;
+      this.piece = null;
+      return this.start();
+    }
     this.chosen.length = Math.min(this.chosen.length, this.pieceIndex);
+    return null;
   }
 
   /** Abandon the current piece; the next bar starts a new one. */
@@ -80,14 +93,26 @@ export class Conductor {
    * piece, as a listener joining mid-piece needs it. Positions out of range are clamped.
    */
   seek(pieceIndex: number, barInPiece: number): Landing {
-    return this.land(this.enter(pieceIndex), barInPiece);
+    this.start = () => this.land(this.enter(pieceIndex), barInPiece);
+    return this.start();
   }
 
   /** Like `seek`, to the first bar of a segment of the piece; a negative `segment` counts from the end. */
   seekSegment(pieceIndex: number, segment: number): Landing {
-    const piece = this.enter(pieceIndex);
-    const segments = piece.segments;
-    return this.land(piece, segments[clamp(segment < 0 ? segments.length + segment : segment, 0, segments.length - 1)]!.start);
+    this.start = () => {
+      const piece = this.enter(pieceIndex);
+      const segments = piece.segments;
+      return this.land(piece, segments[clamp(segment < 0 ? segments.length + segment : segment, 0, segments.length - 1)]!.start);
+    };
+    return this.start();
+  }
+
+  /** The segments of a piece that has been started (where each begins, in bars, and how long it runs), else null. */
+  layout(pieceIndex: number): Segment[] | null {
+    const choice = this.chosen[pieceIndex];
+    if (!choice) return null;
+    if (this.piece?.index === pieceIndex) return this.piece.segments;
+    return new Piece(choice.style, `${this.seed}/piece/${pieceIndex}/${choice.style.id}`, pieceIndex, this.opts, choice.previousForm).segments;
   }
 
   nextBar(): Bar {

@@ -118,6 +118,10 @@ async function main(): Promise<void> {
       }
       card.setAttribute("aria-pressed", String(selected.has(s.id)));
       player.setStyles(styles.filter((x) => selected.has(x.id)));
+      // Before the first play this can change the piece the position names, and its sections.
+      shownSeg = "";
+      layoutKey = "";
+      renderSeg();
       remember();
     });
     cards.set(s.id, card);
@@ -262,7 +266,7 @@ async function main(): Promise<void> {
   playBtn.addEventListener("click", toggle);
   $("splash-play").addEventListener("click", toggle);
   $("skip").addEventListener("click", () => {
-    player.skip();
+    jump(() => player.stepPiece(1));
     if (!player.playing) {
       holdMedia(true);
       void player.play().then(() => (splash.hidden = true));
@@ -275,11 +279,10 @@ async function main(): Promise<void> {
     store.set("volume", vol.value);
   });
   $("reseed").addEventListener("click", () => {
-    player.reseed(randomSeed());
+    jump(() => player.reseed(randomSeed()));
     $("seed").textContent = player.seed;
     // Until the new seed's first bar is heard, the display still shows the old one.
     lastKey = "";
-    afterJump();
     toast(`New seed: ${player.seed}`);
   });
   // Past and future step through the piece's segments; the number between is piece.segment.
@@ -288,26 +291,101 @@ async function main(): Promise<void> {
   function renderSeg(): void {
     const s = player.segment();
     const seeking = player.seeking;
-    const key = `${s.piece}.${s.index}.${s.count}.${s.label}.${seeking}`;
+    const key = `${player.seed}.${s.piece}.${s.index}.${s.count}.${s.label}.${seeking}`;
     if (key === shownSeg) return;
     shownSeg = key;
+    buildLayout(s.piece);
+    scrub.setAttribute("aria-valuenow", String(s.index + 1));
+    scrub.setAttribute("aria-valuetext", `${s.label}, section ${s.index + 1} of ${s.count}`);
     seg.textContent = `${s.piece + 1}.${s.index + 1}`;
     seg.title = `Piece ${s.piece + 1}, section ${s.index + 1} of ${s.count}${s.label ? ` (${s.label})` : ""}`;
     seg.classList.toggle("seeking", seeking);
+  }
+  // The progress bar is the piece cut into its sections. Drag over it to pick one, let go to jump there.
+  const scrub = $("scrub");
+  const bar = $("progress");
+  const pickEl = document.createElement("div");
+  pickEl.className = "pick";
+  let layout: { label: string; start: number; bars: number }[] = [];
+  let layoutKey = "";
+  let layoutPiece = 0;
+  let picked = -1;
+  let dragging = false;
+  const barsInPiece = () => (layout.length ? layout[layout.length - 1]!.start + layout[layout.length - 1]!.bars : 1);
+  function buildLayout(piece: number): void {
+    const key = `${player.seed}/${piece}`;
+    if (key === layoutKey) return;
+    layoutKey = key;
+    layoutPiece = piece;
+    layout = player.layout(piece) ?? [];
+    const ticks = layout.slice(1).map((s) => {
+      const t = document.createElement("i");
+      t.className = "tick";
+      t.style.left = `${(s.start / barsInPiece()) * 100}%`;
+      return t;
+    });
+    bar.replaceChildren(...ticks, pickEl);
+    scrub.setAttribute("aria-valuemax", String(layout.length || 1));
+    pick(-1);
+  }
+  function sectionAt(e: PointerEvent): number {
+    const r = bar.getBoundingClientRect();
+    const here = Math.min(Math.max((e.clientX - r.left) / r.width, 0), 0.9999) * barsInPiece();
+    let i = layout.length - 1;
+    while (i > 0 && layout[i]!.start > here) i--;
+    return i;
+  }
+  /** Highlight a section of the bar (and name it under the bar) as the one a click would jump to; -1 for none. */
+  function pick(i: number): void {
+    if (i === picked) return;
+    picked = i;
+    const s = layout[i];
+    pickEl.classList.toggle("on", !!s);
+    if (s) {
+      pickEl.style.left = `${(s.start / barsInPiece()) * 100}%`;
+      pickEl.style.width = `${(s.bars / barsInPiece()) * 100}%`;
+      $("prog-where").textContent = `jump to ${s.label} · section ${i + 1} of ${layout.length}`;
+    } else {
+      lastKey = "";
+      describe(player.current());
+    }
+  }
+  scrub.addEventListener("pointermove", (e) => {
+    if (layout.length) pick(sectionAt(e));
+  });
+  scrub.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || !layout.length) return;
+    dragging = true;
+    scrub.setPointerCapture(e.pointerId);
+    pick(sectionAt(e));
+  });
+  scrub.addEventListener("pointerup", (e) => {
+    if (!dragging) return;
+    dragging = false;
+    const i = sectionAt(e);
+    jump(() => player.goTo(layoutPiece, i));
+    pick(-1);
+  });
+  scrub.addEventListener("pointercancel", () => {
+    dragging = false;
+    pick(-1);
+  });
+  scrub.addEventListener("pointerleave", () => {
+    if (!dragging) pick(-1);
+  });
+
+  /** Make a move (to another segment, piece or seed) and show where it is heading. */
+  function jump(move: () => void): void {
+    move();
+    afterJump();
   }
   function afterJump(): void {
     renderSeg();
     renderSplash();
     persist();
   }
-  $("past").addEventListener("click", () => {
-    player.step(-1);
-    afterJump();
-  });
-  $("future").addEventListener("click", () => {
-    player.step(1);
-    afterJump();
-  });
+  $("past").addEventListener("click", () => jump(() => player.step(-1)));
+  $("future").addEventListener("click", () => jump(() => player.step(1)));
   $("midi").addEventListener("click", () => {
     const bytes = player.exportMidi(10);
     if (!bytes) return toast("Nothing played yet");
@@ -318,12 +396,17 @@ async function main(): Promise<void> {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   });
   document.addEventListener("keydown", (e) => {
-    if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey || e.altKey) return;
+    // (The sound options handle their own arrow keys.)
+    if (e.defaultPrevented || e.repeat || e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.code === "Space") {
       e.preventDefault();
       void toggle();
-    } else if (e.key === "n" || e.key === "N" || e.key === "ArrowRight") {
-      player.skip();
+    } else if (e.key === "n" || e.key === "N") {
+      jump(() => player.stepPiece(1));
+    } else if (e.key === "ArrowRight") {
+      jump(() => player.step(1));
+    } else if (e.key === "ArrowLeft") {
+      jump(() => player.step(-1));
     }
   });
 
@@ -349,7 +432,7 @@ async function main(): Promise<void> {
       ? "next piece coming up"
       : `${i.area ? `${i.area} · ` : ""}${i.keyName} · ${tb.bar.bpm} bpm${player.playing ? "" : " · paused"}`;
     $("prog-piece").textContent = `Piece ${i.pieceIndex + 1}`;
-    $("prog-where").textContent = i.gap ? "" : `${i.section} · bar ${i.barInPiece + 1} of ${i.pieceBars}`;
+    if (picked < 0) $("prog-where").textContent = i.gap ? "" : `${i.section} · bar ${i.barInPiece + 1} of ${i.pieceBars}`;
     const tonic = i.tonic;
     chord.replaceChildren(
       ...i.chords.flatMap((sym, k) => {
@@ -385,7 +468,8 @@ async function main(): Promise<void> {
   if ("mediaSession" in navigator) {
     navigator.mediaSession.setActionHandler("play", () => void player.play());
     navigator.mediaSession.setActionHandler("pause", () => void player.pause());
-    navigator.mediaSession.setActionHandler("nexttrack", () => player.skip());
+    navigator.mediaSession.setActionHandler("previoustrack", () => jump(() => player.stepPiece(-1)));
+    navigator.mediaSession.setActionHandler("nexttrack", () => jump(() => player.stepPiece(1)));
   }
 
   function render(): void {

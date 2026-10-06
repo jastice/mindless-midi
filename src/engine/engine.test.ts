@@ -158,6 +158,36 @@ test("seeking back replays the pieces as they were, even after the style pool ch
   assert.ok(styles.slice(8, 10).some((s) => s.id === next.info.styleId));
 });
 
+test("a pool change before anything has played redoes the start with the new pool", () => {
+  const first = styles.slice(0, 4);
+  const second = styles.slice(4, 6);
+  const inSecond = (id: string) => second.some((s) => s.id === id);
+  // A fresh player starts at the beginning as soon as it loads, long before play.
+  const fresh = new Conductor(first, "pre-play");
+  fresh.seek(0, 0);
+  assert.ok(fresh.setStyles(second));
+  const bar = fresh.nextBar();
+  assert.equal(bar.info.pieceIndex, 0);
+  assert.ok(inSecond(bar.info.styleId), `${bar.info.styleId} is not in the new pool`);
+  // So does a position from a link, or a jump made before play: same place, new pool.
+  for (const go of [(c: Conductor) => c.seek(3, 5), (c: Conductor) => c.seekSegment(2, 2)]) {
+    const c = new Conductor(first, "pre-play-2");
+    const was = go(c);
+    const now = c.setStyles(second)!;
+    assert.equal(now.piece, was.piece);
+    const b = c.nextBar();
+    assert.equal(b.info.pieceIndex, now.piece);
+    assert.equal(b.info.barInPiece, now.bar);
+    assert.ok(inSecond(b.info.styleId));
+  }
+  // Once a bar has been played, a change waits for the next piece as before.
+  const live = new Conductor(first, "pre-play-3");
+  live.seek(0, 0);
+  const playing = live.nextBar().info.styleId;
+  assert.equal(live.setStyles(second), null);
+  assert.equal(live.nextBar().info.styleId, playing);
+});
+
 test("seekSegment lands on the first bar of a section or the ending", () => {
   const c = new Conductor(styles, "segments", { minSeconds: 20, maxSeconds: 30 });
   const straight = new Conductor(styles, "segments", { minSeconds: 20, maxSeconds: 30 });
@@ -180,6 +210,14 @@ test("seekSegment lands on the first bar of a section or the ending", () => {
   assert.equal(last.segment, ending.info.sectionCount);
   assert.equal(ending.info.section, "ending");
   assert.equal(c.seekSegment(1, 99).segment, last.segment);
+  // The layout agrees with where each segment starts, and covers the whole piece.
+  const layout = c.layout(1)!;
+  assert.equal(layout.length, last.segments);
+  layout.forEach((s, i) => assert.equal(c.seekSegment(1, i).bar, s.start));
+  assert.equal(layout[0]!.start, 0);
+  layout.slice(1).forEach((s, i) => assert.equal(s.start, layout[i]!.start + layout[i]!.bars));
+  assert.ok(c.layout(0)!.length > 0);
+  assert.equal(c.layout(500), null);
   assert.equal(c.seekSegment(1, -99).segment, 0);
 });
 

@@ -317,6 +317,12 @@ code { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; font-size: 
 .chords .sep { color: var(--soft); margin: 0 12px; }
 
 .prog { margin-top: 14px; }
+/* A taller target around the thin bar, which marks the piece's sections; drag over it and let go to jump. */
+.track { position: relative; z-index: 1; padding: 9px 0; margin: -9px 0; cursor: pointer; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.track:focus-visible { outline: 3px solid var(--spot); outline-offset: 1px; }
+.bar > .tick { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--paper); }
+.bar > .pick { position: absolute; top: -3px; bottom: -3px; background: var(--spot); opacity: 0.45; pointer-events: none; display: none; }
+.bar > .pick.on { display: block; }
 .bar { height: 4px; background: var(--rule); position: relative; }
 .bar::before { content: ""; position: absolute; inset: 0; width: calc(var(--p, 0) * 100%); background: var(--ink); transition: width 0.25s linear; }
 .bar::after {

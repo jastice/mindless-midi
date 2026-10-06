@@ -324,7 +324,12 @@ export class Player {
     if (!styles.length) return;
     for (const s of styles) this.styleById.set(s.id, s);
     this.pool = styles;
-    this.conductor.setStyles(styles);
+    // Before anything has played, the start (page load, a link, a jump) is chosen again from the new pool.
+    const restarted = this.conductor.setStyles(styles);
+    if (restarted) {
+      this.last = restarted;
+      if (this.heading) this.heading = { ...this.heading, at: restarted };
+    }
     const cur = this.current();
     if (cur && !styles.some((s) => s.id === cur.bar.info.styleId)) this.skip();
   }
@@ -404,6 +409,11 @@ export class Player {
     this.head(landing);
   }
 
+  /** The segments of a piece that has been started (null before): where each begins, in bars, and how long it runs. */
+  layout(piece: number): { label: string; start: number; bars: number }[] | null {
+    return this.conductor.layout(piece);
+  }
+
   /**
    * Move to the next or previous segment. Going back restarts the current one
    * if it has been playing a few seconds; after the last segment comes the next piece.
@@ -417,6 +427,14 @@ export class Player {
     else if (at.index > 0) this.goTo(at.piece, at.index - 1);
     else if (at.piece > 0) this.goTo(at.piece - 1, -1);
     else this.goTo(0, 0);
+  }
+
+  /** Move to the next or previous piece; going back restarts the one you are in if it has been playing a few seconds. */
+  stepPiece(direction: -1 | 1): void {
+    const at = this.segment();
+    if (direction > 0) this.goTo(at.piece + 1, 0);
+    else if (!this.heading && this.secondsIn(true) >= RESTART_AFTER) this.goTo(at.piece, 0);
+    else this.goTo(Math.max(at.piece - 1, 0), 0);
   }
 
   /** Show `landing` until a bar generated after the cut that led to it is audible. */
@@ -491,10 +509,12 @@ export class Player {
     return this.heading !== null && this.playing;
   }
 
-  /** Seconds the audible segment has been playing. */
-  private secondsIn(): number {
+  /** Seconds the audible segment (or the whole piece) has been playing. */
+  private secondsIn(wholePiece = false): number {
     const tb = this.audible();
-    return tb ? this.now - tb.start + tb.bar.info.barInSection * barSeconds(tb.bar) : 0;
+    if (!tb) return 0;
+    const { barInPiece, barInSection } = tb.bar.info;
+    return this.now - tb.start + (wholePiece ? barInPiece : barInSection) * barSeconds(tb.bar);
   }
 
   /** Bars overlapping [from, to] (AudioContext seconds). */

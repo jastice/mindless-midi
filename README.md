@@ -52,13 +52,15 @@ bazel build //site
 bazel run //tools/render -- --styles lofi,jazz_trio --seconds 120 --out /tmp/mix.wav --midi /tmp/mix.mid
 ```
 
-In the page: <kbd>Space</kbd> plays/pauses, <kbd>N</kbd> or <kbd>→</kbd> skips
-to a new piece, and **⤓ MIDI** downloads the last 10 minutes as a `.mid`. **↻ Reseed**
-starts over with a new random seed. Under the score, **◂ past** and **future ▸** step
-through a piece's segments (its sections, then its ending; after the last comes the next
-piece). Going back first restarts the segment you are in if it has been playing a few
-seconds. The number between them is the place: `3.4` is piece 3, segment 4. While a jump
-waits for its samples to download, it pulses.
+In the page: <kbd>Space</kbd> plays/pauses, <kbd>N</kbd> skips to the next piece, and
+**⤓ MIDI** downloads the last 10 minutes as a `.mid`. **↻ Reseed** starts over with a
+new random seed. Under the score, **◂ past** and **future ▸** (or <kbd>←</kbd> and
+<kbd>→</kbd>) step through a piece's segments: its sections, then its ending, after which
+comes the next piece. Going back first restarts the segment you are in if it has been
+playing a few seconds. The number between them is the place: `3.4` is piece 3, segment 4.
+While a jump waits for its samples to download, it pulses. The progress bar is the piece
+cut into the same segments (the gaps are the joins): drag along it to pick one, and let go
+to jump there.
 
 The URL is the session: it carries the seed, the place in it (`at=13.4` is piece 13,
 bar 4, updated every bar), the style selection and the sound engine, so a link reproduces
@@ -67,9 +69,11 @@ page without a link picks up the last session you played, from where you left of
 won't start audio on their own, so press Play to continue. A position is replayed from the
 seed, so it lands on the same piece as long as the style selection hasn't changed along the
 way; within a session, going back always replays what actually played.
-The system's play/pause and next-track keys (and the now-playing widget) work through
-the Media Session API; because browsers only route them to pages with a media element
-playing, a silent looping clip plays alongside the music (`src/app/media_anchor.ts`).
+The system's play/pause keys, and its previous/next keys (which step by piece; previous
+restarts the current piece first if it has been playing a few seconds), work through
+the Media Session API, as does the now-playing widget; because browsers only route them
+to pages with a media element playing, a silent looping clip plays alongside the music
+(`src/app/media_anchor.ts`).
 
 ### Synthesis bench
 

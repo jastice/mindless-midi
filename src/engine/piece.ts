@@ -49,6 +49,14 @@ interface PlannedSection {
   fill: DrumPattern | undefined;
 }
 
+/** A stretch of a piece: a section, or the ending. */
+export interface Segment {
+  label: string;
+  /** First bar, counted from the start of the piece. */
+  start: number;
+  bars: number;
+}
+
 const FRAME_LABELS = /^(intro|outro|ending|coda)/i;
 
 export class Piece {
@@ -181,7 +189,7 @@ export class Piece {
   }
 
   /** The chunks a listener can jump between: each section, then the ending (its last bar and the gap). */
-  get segments(): { label: string; start: number; bars: number }[] {
+  get segments(): Segment[] {
     return [
       ...this.sections.map((s) => ({ label: s.label, start: s.startBar, bars: s.bars })),
       { label: "ending", start: this.bodyBars, bars: this.totalBars - this.bodyBars },
