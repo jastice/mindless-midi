@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import type { StyleBundle } from "../corpus/schema.js";
 import { MODES, chordPitchClasses, mod, parseRoman } from "../theory/theory.js";
-import { Conductor } from "./conductor.js";
+import { Conductor, MAX_SEEK_PIECE } from "./conductor.js";
 import { barsToMidi } from "./midi_file.js";
 import type { Bar } from "./types.js";
 
@@ -94,6 +94,45 @@ test("setStyles and skip take effect at the next bar", () => {
   assert.equal(bar.info.styleId, styles[1]!.id);
   assert.equal(bar.info.barInPiece, 0);
   assert.ok(bar.controls.some((x) => x.kind === "reset"));
+});
+
+test("seek resumes exactly where a straight run was, skips included", () => {
+  const pool = styles.slice(0, 4);
+  const opts = { minSeconds: 20, maxSeconds: 30 };
+  const run = new Conductor(pool, "seek", opts);
+  const bars = take(run, 7);
+  run.skip();
+  bars.push(...take(run, 500));
+  const key = (b: Bar) => JSON.stringify([b.beats, b.bpm, b.notes, b.info]);
+  for (const [piece, bar] of [[0, 0], [1, 0], [4, 5], [6, 13]] as const) {
+    const at = bars.findIndex((b) => b.info.pieceIndex === piece && b.info.barInPiece === bar);
+    assert.ok(at >= 0, `piece ${piece} bar ${bar} reached`);
+    const c = new Conductor(pool, "seek", opts);
+    c.seek(piece, bar);
+    const resumed = take(c, 60);
+    let same = 0;
+    for (const [j, b] of resumed.entries()) {
+      const was = bars[at + j]!;
+      if (was.info.pieceIndex !== b.info.pieceIndex) break; // the straight run skipped away from piece 0 here
+      assert.equal(key(b), key(was), `piece ${piece} bar ${bar} + ${j}`);
+      same++;
+    }
+    assert.equal(same, piece === 0 ? 7 : 60);
+    // The setup of the piece's earlier bars comes along with the first bar, and only with it.
+    const setup = bars.slice(at - bar, at + 1).flatMap((b) => b.controls.map((x) => ({ ...x, beat: 0 })));
+    assert.deepEqual(resumed[0]!.controls, setup);
+    for (const b of resumed.slice(1, 40)) if (b.info.barInPiece > 0) assert.deepEqual(b.controls, []);
+  }
+});
+
+test("seek clamps wild positions", () => {
+  const c = new Conductor(styles, "wild");
+  const landed = c.seek(10 ** 9, 10 ** 9);
+  const bar = c.nextBar();
+  assert.deepEqual(landed, { piece: bar.info.pieceIndex, bar: bar.info.barInPiece });
+  assert.equal(bar.info.pieceIndex, MAX_SEEK_PIECE);
+  assert.equal(bar.info.barInPiece, bar.info.pieceBars - 1);
+  assert.throws(() => c.seek(1, 1), /before the first bar/);
 });
 
 test("MIDI export is a valid format-0 file", () => {

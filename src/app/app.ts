@@ -1,14 +1,15 @@
 /**
  * Page wiring: style picker, transport, now-playing, Media Session, and
- * persistence of the listener's choices (URL for sharing, localStorage for
- * convenience).
+ * persistence of the listener's choices. The URL carries the whole session
+ * (seed, position in it, styles, sound) so a link shares exactly where you
+ * are; localStorage holds the same for a bare reopen.
  */
 import wasmUrl from "libadlmidi-js/dist/libadlmidi.nuked.browser.wasm";
 import type { StyleBundle } from "../corpus/schema.js";
 import { randomSeed } from "../theory/seed.js";
 import { chordName } from "../theory/theory.js";
 import { mediaAnchor } from "./media_anchor.js";
-import { type Engine, Player, type TimedBar } from "./player.js";
+import { type Engine, Player, type Position, type TimedBar } from "./player.js";
 
 /** Each engine is also an "edition" of the page: its look is in styles.css, keyed on `data-engine`. */
 const ENGINES: { id: Engine; label: string; tag: string; edition: string; desc: string }[] = [
@@ -38,6 +39,19 @@ const store = {
   },
 };
 
+/** A position as shown on the page and in links: "13.4" is piece 13, bar 4. */
+function formatAt(p: Position): string {
+  return `${p.piece + 1}.${p.bar + 1}`;
+}
+
+function parseAt(s: string | null): Position | undefined {
+  const m = /^(\d{1,6})(?:\.(\d{1,6}))?$/.exec(s ?? "");
+  if (!m) return undefined;
+  const piece = Number(m[1]) - 1;
+  const bar = Number(m[2] ?? 1) - 1;
+  return piece >= 0 && bar >= 0 ? { piece, bar } : undefined;
+}
+
 function toast(text: string): void {
   const el = document.createElement("div");
   el.className = "toast";
@@ -51,9 +65,14 @@ async function main(): Promise<void> {
   const { styles } = (await res.json()) as { styles: StyleBundle[] };
   const byId = new Map(styles.map((s) => [s.id, s]));
 
+  // A link carries the session it was made from; a bare visit picks up the last one played.
   const params = new URLSearchParams(location.search);
-  const seed = params.get("seed") || randomSeed();
-  const wanted = (params.get("styles") ?? store.get("styles") ?? "").split(",").filter((id) => byId.has(id));
+  const linked = params.get("seed");
+  const savedSeed = linked ? null : store.get("seed");
+  const seed = linked || savedSeed || randomSeed();
+  const at = parseAt(linked ? params.get("at") : savedSeed ? store.get("at") : null);
+  // Without `styles` a link means all of them, as it does to whoever made it.
+  const wanted = (params.get("styles") ?? (linked ? "" : store.get("styles")) ?? "").split(",").filter((id) => byId.has(id));
   const selected = new Set(wanted.length ? wanted : styles.map((s) => s.id));
   const volume = Number(store.get("volume") ?? "0.8");
   const wantedEngine = params.get("sound") ?? store.get("sound") ?? "fm";
@@ -63,6 +82,7 @@ async function main(): Promise<void> {
     styles.filter((s) => selected.has(s.id)),
     {
       seed,
+      ...(at && { at }),
       engine,
       processorUrl: new URL("worklet.js", import.meta.url).href,
       wasmUrl: new URL(wasmUrl, import.meta.url).href,
@@ -98,7 +118,7 @@ async function main(): Promise<void> {
       }
       card.setAttribute("aria-pressed", String(selected.has(s.id)));
       player.setStyles(styles.filter((x) => selected.has(x.id)));
-      persist();
+      remember();
     });
     cards.set(s.id, card);
     grid.append(card);
@@ -119,7 +139,7 @@ async function main(): Promise<void> {
     chip.title = e.desc;
     chip.addEventListener("click", () => {
       void player.setEngine(e.id);
-      persist();
+      remember();
     });
     chipFor.set(e.id, chip);
     chips.append(chip);
@@ -174,29 +194,48 @@ async function main(): Promise<void> {
     const next = ENGINES[(i + (ev.key === "ArrowRight" ? 1 : ENGINES.length - 1)) % ENGINES.length]!;
     void player.setEngine(next.id);
     chipFor.get(next.id)?.focus();
-    persist();
+    remember();
   });
 
   function shareUrl(): string {
     const u = new URL(location.href);
     u.search = "";
-    u.searchParams.set("seed", seed);
+    u.searchParams.set("seed", player.seed);
+    const here = player.position();
+    if (here.piece || here.bar) u.searchParams.set("at", formatAt(here));
     if (selected.size !== styles.length) u.searchParams.set("styles", [...selected].join(","));
     if (player.engine !== "fm") u.searchParams.set("sound", player.engine);
     return u.href;
   }
 
-  function persist(): void {
+  /** Keep a choice the listener just made for next time (a link's own settings are not choices). */
+  function remember(): void {
     store.set("styles", [...selected].join(","));
     store.set("sound", player.engine);
+    persist();
+  }
+
+  /** Mirror the session into the URL, and, once it is being played, into storage for the next bare visit. */
+  function persist(): void {
+    if (player.started) {
+      store.set("seed", player.seed);
+      store.set("at", formatAt(player.position()));
+    }
     history.replaceState(null, "", shareUrl());
   }
   persist();
+  addEventListener("pagehide", persist);
   $("seed").textContent = seed;
+  if (at) {
+    const start = player.position();
+    $("splash-text").textContent = `Picks up at piece ${start.piece + 1}, bar ${start.bar + 1}. Every note is composed and played right here in your browser.`;
+    $("splash-play").textContent = "▶ Continue";
+    $("splash-play").setAttribute("aria-label", "Continue music");
+  }
   $("share").addEventListener("click", (e) => {
     e.preventDefault();
     navigator.clipboard?.writeText(shareUrl()).then(
-      () => toast("Link copied — same seed, same music"),
+      () => toast("Link copied — same seed, same place"),
       () => toast(shareUrl()),
     );
   });
@@ -232,12 +271,20 @@ async function main(): Promise<void> {
     player.setVolume(Number(vol.value));
     store.set("volume", vol.value);
   });
+  $("reseed").addEventListener("click", () => {
+    player.reseed(randomSeed());
+    $("seed").textContent = player.seed;
+    // Until the new seed's first bar is heard, the display still shows the old one.
+    lastKey = "";
+    persist();
+    toast(`New seed: ${player.seed}`);
+  });
   $("midi").addEventListener("click", () => {
     const bytes = player.exportMidi(10);
     if (!bytes) return toast("Nothing played yet");
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([bytes as BlobPart], { type: "audio/midi" }));
-    a.download = `mindless-midi-${seed}-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "")}.mid`;
+    a.download = `mindless-midi-${player.seed}-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "")}.mid`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   });
@@ -263,9 +310,10 @@ async function main(): Promise<void> {
       return;
     }
     const i = tb.bar.info;
-    const key = `${i.pieceIndex}:${i.barInPiece}:${player.playing}`;
+    const key = `${i.pieceSeed}:${i.barInPiece}:${player.playing}`;
     if (key === lastKey) return;
     lastKey = key;
+    persist();
     nowStyle.textContent = i.styleTitle;
     nowStyle.style.setProperty("--swatch", byId.get(i.styleId)?.color ?? "");
     meta.textContent = i.gap
@@ -302,7 +350,7 @@ async function main(): Promise<void> {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: `${title} — ${keyName}`,
       artist: "Mindless Midi",
-      album: `Session ${seed}, piece ${piece + 1}`,
+      album: `Session ${player.seed}, piece ${piece + 1}`,
     });
   }
   if ("mediaSession" in navigator) {

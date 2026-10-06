@@ -36,7 +36,7 @@
   <body>
     <div class="sheet">
       <div class="strip mono">
-        <span>Seed <b id="seed"></b></span>
+        <span>Seed <b id="seed"></b> <button id="reseed" class="link" type="button" title="Start over with a new random seed">↻ Reseed</button></span>
         <span id="edition"></span>
         <span>Endless · never repeats</span>
       </div>
@@ -61,7 +61,7 @@
             <div class="score">
               <canvas id="roll" aria-hidden="true"></canvas>
               <div class="splash" id="splash">
-                <p>Press play. Every note is composed and played right here in your browser.</p>
+                <p id="splash-text">Press play. Every note is composed and played right here in your browser.</p>
                 <button id="splash-play" class="oval solid" type="button" aria-label="Start music">▶ Start music</button>
               </div>
             </div>

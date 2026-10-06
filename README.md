@@ -53,9 +53,14 @@ bazel run //tools/render -- --styles lofi,jazz_trio --seconds 120 --out /tmp/mix
 ```
 
 In the page: <kbd>Space</kbd> plays/pauses, <kbd>N</kbd> or <kbd>→</kbd> skips
-to a new piece, and **⤓ MIDI** downloads the last 10 minutes as a `.mid`. The URL
-carries the seed, style selection and sound engine, so a link reproduces the same music.
-The system's play/pause and next-track keys (and the now-playing widget) work through
+to a new piece, and **⤓ MIDI** downloads the last 10 minutes as a `.mid`. **↻ Reseed**
+starts over with a new random seed. The URL is the session: it carries the seed, the place
+in it (`at=13.4` is piece 13, bar 4, updated every bar), the style selection and the sound
+engine, so a link reproduces the same music from the same spot (a link without `styles`
+means all of them). Opening the page without a link picks up the last session you played,
+from where you left off; browsers won't start audio on their own, so press Play to continue.
+The position is replayed from the seed, so it lands on the same piece as long as the
+style selection hasn't changed along the way. The system's play/pause and next-track keys (and the now-playing widget) work through
 the Media Session API; because browsers only route them to pages with a media element
 playing, a silent looping clip plays alongside the music (`src/app/media_anchor.ts`).
 

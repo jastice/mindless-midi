@@ -23,6 +23,12 @@ import type { ScoreNote } from "../sound/types.js";
 
 export type { Engine };
 
+/** A place in a session: 0-based piece and bar-in-piece. */
+export interface Position {
+  piece: number;
+  bar: number;
+}
+
 export interface TimedBar {
   bar: Bar;
   /** AudioContext time (seconds) at which the bar starts / ends. */
@@ -49,6 +55,8 @@ const SWITCH_MAX_WAIT = 30;
 
 export interface PlayerOptions {
   seed: string;
+  /** Where in the seed to start (default: the beginning). */
+  at?: Position;
   processorUrl: string;
   wasmUrl: string;
   stemWorkletUrl: string;
@@ -99,7 +107,9 @@ export class Player {
   private library: SampleLibrary | null = null;
   private wasm: Promise<ArrayBuffer> | null = null;
   private workerHasWasm = false;
-  private readonly conductor: Conductor;
+  private conductor: Conductor;
+  private pool: StyleBundle[];
+  private lastPosition: Position;
   private readonly opts: PlayerOptions;
   private readonly styleById: Map<string, StyleBundle>;
   private engineName: Engine;
@@ -158,7 +168,9 @@ export class Player {
     this.opts = opts;
     this.engineName = opts.engine ?? "fm";
     this.styleById = new Map(styles.map((s) => [s.id, s]));
+    this.pool = styles;
     this.conductor = new Conductor(styles, opts.seed);
+    this.lastPosition = opts.at ? this.conductor.seek(opts.at.piece, opts.at.bar) : { piece: 0, bar: 0 };
   }
 
   get seed(): string {
@@ -296,6 +308,7 @@ export class Player {
   setStyles(styles: StyleBundle[]): void {
     if (!styles.length) return;
     for (const s of styles) this.styleById.set(s.id, s);
+    this.pool = styles;
     this.conductor.setStyles(styles);
     const cur = this.current();
     if (cur && !styles.some((s) => s.id === cur.bar.info.styleId)) this.skip();
@@ -358,6 +371,19 @@ export class Player {
   /** Abandon the current piece and start a new one right away. */
   skip(): void {
     this.conductor.skip();
+    this.cut();
+  }
+
+  /** Start over with another seed: its first piece begins right away. */
+  reseed(seed: string): void {
+    this.conductor = new Conductor(this.pool, seed);
+    this.lastPosition = { piece: 0, bar: 0 };
+    this.lastPieceIndex = -1;
+    this.cut();
+  }
+
+  /** Throw away what the conductor generated ahead and play whatever it makes next from now on. */
+  private cut(): void {
     this.skips++;
     this.ahead = [];
     if (this.pending) this.pending.at = undefined;
@@ -384,6 +410,14 @@ export class Player {
       if (tb.start <= t) return t < tb.end ? tb : undefined;
     }
     return undefined;
+  }
+
+  /** Where the listener is: the audible bar, or failing that the last one heard (the starting point before play). */
+  position(): Position {
+    const info = this.current()?.bar.info;
+    // After a reseed the old seed's last bar stays audible for a moment.
+    if (info?.pieceSeed.startsWith(`${this.seed}/`)) this.lastPosition = { piece: info.pieceIndex, bar: info.barInPiece };
+    return this.lastPosition;
   }
 
   /** Bars overlapping [from, to] (AudioContext seconds). */
@@ -797,9 +831,9 @@ export class Player {
   private withSetup(entry: Scheduled): Bar {
     if (!this.needsSetup) return entry.bar;
     this.needsSetup = false;
-    const piece = entry.bar.info.pieceIndex;
+    const piece = entry.bar.info.pieceSeed;
     const setup = this.timeline
-      .filter((t) => t.bar.info.pieceIndex === piece && t.frame < entry.frame)
+      .filter((t) => t.bar.info.pieceSeed === piece && t.frame < entry.frame)
       .flatMap((t) => t.bar.controls.map((c) => ({ ...c, beat: 0 })));
     return setup.length ? { ...entry.bar, controls: [...setup, ...entry.bar.controls] } : entry.bar;
   }
