@@ -97,6 +97,7 @@ Media keys work through the Media Session API.
 - `tools/generate`: regenerates corpora with Claude.
 - `tools/stylec`: the build-time style compiler used by the rules.
 - `tools/render`: offline WAV/MIDI rendering and loudness calibration (Node + the same WASM synth).
+- `tools/social`: the link-preview card; `tools/social/render.sh` re-renders `src/app/social.png` (headless Chrome) after you edit `card.html`.
 - `site`: assembles the static site; dev server; deploy target.
 
 ## Bazel rules

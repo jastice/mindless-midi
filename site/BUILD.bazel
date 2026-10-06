@@ -10,6 +10,7 @@ copy_to_directory(
         "//src/app:favicon.svg",
         "//src/app:fonts",
         "//src/app:index_html",
+        "//src/app:social.png",
         "//src/app:styles.css",
         "//src/audio:worklet",
         "//src/sound:render_worker",

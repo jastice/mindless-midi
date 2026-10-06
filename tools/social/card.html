@@ -1,0 +1,149 @@
+<!doctype html>
+<!--
+  The link-preview card (1200x630) behind src/app/social.png: the page's masthead
+  and score in the default cream-and-vermilion edition. Link unfurlers want a
+  raster image, so the PNG is checked in; regenerate it after editing this file:
+
+    tools/social/render.sh
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mindless Midi card</title>
+    <style>
+      @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 300 800; src: url("../../src/app/fonts/fraunces-normal-300-800.woff2") format("woff2"); }
+      @font-face { font-family: "Fraunces"; font-style: italic; font-weight: 300 800; src: url("../../src/app/fonts/fraunces-italic-300-800.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-weight: 500; src: url("../../src/app/fonts/ibm-plex-mono-normal-500.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-weight: 600; src: url("../../src/app/fonts/ibm-plex-mono-normal-600.woff2") format("woff2"); }
+
+      :root {
+        --paper: #f3eee2;
+        --ink: #1c1a16;
+        --spot: #d93a18;
+        --on-spot: #fff8ee;
+        --soft: #6b6555;
+        --rule: rgba(28, 26, 22, 0.2);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body { width: 1200px; height: 630px; overflow: hidden; background: var(--paper); color: var(--ink); font: 400 17px/1.5 "Fraunces", Georgia, serif; }
+      /* Paper grain, as on the page. */
+      body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.05;
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+      .sheet { position: relative; height: 100%; padding: 34px 48px 30px; display: flex; flex-direction: column; }
+      .mono { font: 500 15px/1.4 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0.06em; text-transform: uppercase; }
+
+      .strip { display: flex; justify-content: space-between; padding-bottom: 9px; border-bottom: 2px solid var(--ink); color: var(--soft); }
+      .strip b { color: var(--ink); font-weight: 600; }
+
+      .mast { display: flex; align-items: flex-end; justify-content: space-between; padding: 20px 0 18px; border-bottom: 2px solid var(--ink); }
+      h1 { margin: 0; font-weight: 800; font-size: 168px; line-height: 0.86; letter-spacing: -0.045em; font-variation-settings: "opsz" 144; }
+      h1 em { font-weight: 300; font-style: italic; color: var(--spot); letter-spacing: -0.03em; }
+      .play {
+        flex: none;
+        width: 132px;
+        height: 132px;
+        margin-bottom: 4px;
+        border-radius: 50%;
+        display: grid;
+        place-content: center;
+        text-align: center;
+        background: var(--spot);
+        color: var(--on-spot);
+        font-weight: 600;
+        font-style: italic;
+        font-size: 27px;
+        line-height: 1;
+        box-shadow: 0 0 0 2px var(--paper), 0 0 0 5px var(--spot);
+        transform: rotate(-6deg);
+      }
+      .play span { display: block; font-style: normal; font-size: 32px; margin-bottom: 7px; }
+
+      .score { position: relative; flex: 1; margin-top: 20px; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+      .score svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .foot { display: flex; justify-content: space-between; align-items: baseline; padding-top: 11px; color: var(--soft); }
+      .foot .tag { font-style: italic; font-size: 25px; color: var(--ink); letter-spacing: -0.01em; text-transform: none; font-family: "Fraunces", Georgia, serif; font-weight: 400; }
+    </style>
+  </head>
+  <body>
+    <div class="sheet">
+      <div class="strip mono">
+        <span>Seed <b>mellow-tritone-waltz</b></span>
+        <span>Sound · FM chip</span>
+        <span>Endless · never repeats</span>
+      </div>
+      <header class="mast">
+        <h1>Mindless <em>Midi</em></h1>
+        <div class="play"><div><span>▶</span>Play</div></div>
+      </header>
+      <div class="score"><svg id="roll" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+      <div class="foot mono">
+        <span class="tag">Endless background music, composed live in this tab.</span>
+        <span>Fig. 1 · the score, as it is being written</span>
+      </div>
+    </div>
+
+    <script>
+      // A fixed little score so the card is reproducible: two staves, a lead in the spot colour, bass and
+      // chords in ink, and a playhead with the (lighter) future to its right, like the live roll.
+      const W = 1104, H = 196;
+      const svg = document.getElementById("roll");
+      svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+      const NS = "http://www.w3.org/2000/svg";
+      const add = (name, attrs) => {
+        const el = document.createElementNS(NS, name);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+        svg.appendChild(el);
+      };
+
+      let s = 7;
+      const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+
+      const LOW = 38, HIGH = 83;
+      const y = (key) => 14 + (H - 28) * (1 - (key - LOW) / (HIGH - LOW));
+      for (const staff of [[64, 67, 71, 74, 77], [43, 47, 50, 53, 57]])
+        for (const key of staff) add("line", { x1: 0, x2: W, y1: y(key), y2: y(key), stroke: "#1c1a16", "stroke-opacity": 0.2, "stroke-width": 1.5 });
+
+      const playX = W * 0.76;
+      const SEC = W / 9.2;
+      for (let bar = -3; bar <= 1; bar++) {
+        const x = playX + bar * 2.4 * SEC - 0.4 * SEC;
+        add("line", { x1: x, x2: x, y1: y(77) - 3, y2: y(43) + 3, stroke: "#1c1a16", "stroke-opacity": 0.35, "stroke-width": 1.5 });
+      }
+
+      // Pentatonic-ish lead, bass line and block chords.
+      const lead = [74, 72, 69, 72, 76, 74, 72, 69, 67, 69, 72, 74, 76, 79, 76, 74, 72, 74, 69, 67, 69, 72, 69, 67, 64, 67, 69, 72];
+      const bass = [41, 41, 43, 45, 45, 43, 41, 36, 38, 38, 40, 43, 41, 41, 45, 43];
+      const chords = [[57, 60, 64], [53, 57, 60], [55, 59, 62], [57, 60, 64]];
+      const note = (t, key, dur, color, op, r) => {
+        const x = playX + t * SEC, f = x > playX ? 0.5 : 1;
+        add("rect", { x, y: y(key) - r * 0.28, width: Math.max(8, dur * SEC), height: r * 0.56, rx: r * 0.28, fill: color, "fill-opacity": op * f });
+        add("circle", { cx: x, cy: y(key), r, fill: color, "fill-opacity": op * f });
+      };
+
+      let t = -6.6;
+      for (const key of lead) {
+        const dur = [0.25, 0.25, 0.5, 0.5, 0.75][Math.floor(rnd() * 5)];
+        if (t > -7.2 && t < 2.1) note(t, key, dur * 0.8, "#d93a18", 1, 7);
+        t += dur + (rnd() < 0.3 ? 0.25 : 0);
+      }
+      t = -6.9;
+      for (const key of bass) {
+        if (t < 2.1) note(t, key + 12, 0.9, "#1c1a16", 0.95, 5.5);
+        t += 1.2;
+      }
+      chords.forEach((chord, i) => chord.forEach((key) => note(-6.6 + i * 2.4, key + 12, 1.9, "#1c1a16", 0.45, 4.5)));
+      for (let n = -6.8; n < 2.1; n += 0.6) {
+        const x = playX + n * SEC;
+        add("path", { d: `M${x - 4.5} ${H - 15}l9 9m0 -9l-9 9`, stroke: "#1c1a16", "stroke-opacity": x > playX ? 0.3 : 0.65, "stroke-width": 2, fill: "none", "stroke-linecap": "round" });
+      }
+
+      add("line", { x1: playX, x2: playX, y1: 0, y2: H, stroke: "#d93a18", "stroke-width": 2.5 });
+    </script>
+  </body>
+</html>

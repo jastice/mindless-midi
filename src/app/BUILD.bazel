@@ -60,6 +60,7 @@ exports_files(
     [
         "styles.css",
         "favicon.svg",
+        "social.png",
     ],
     visibility = ["//site:__pkg__", "//src/bench:__pkg__"],
 )

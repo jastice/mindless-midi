@@ -16,6 +16,7 @@ const TYPES: Record<string, string> = {
   ".wasm": "application/wasm",
   ".woff2": "font/woff2",
   ".svg": "image/svg+xml",
+  ".png": "image/png",
   ".map": "application/json",
   ".txt": "text/plain; charset=utf-8",
 };
