@@ -55,6 +55,9 @@ bazel run //tools/render -- --styles lofi,jazz_trio --seconds 120 --out /tmp/mix
 In the page: <kbd>Space</kbd> plays/pauses, <kbd>N</kbd> or <kbd>→</kbd> skips
 to a new piece, and **⤓ MIDI** downloads the last 10 minutes as a `.mid`. The URL
 carries the seed, style selection and sound engine, so a link reproduces the same music.
+The system's play/pause and next-track keys (and the now-playing widget) work through
+the Media Session API; because browsers only route them to pages with a media element
+playing, a silent looping clip plays alongside the music (`src/app/media_anchor.ts`).
 
 ### Synthesis bench
 
@@ -69,7 +72,6 @@ them at the same playhead, blind if you like, with per-instrument solos and a
 spectrogram. CI deploys it to its own Cloudflare Pages project (see
 Deploying); `bazel run //src/bench:deploy` publishes it to a `bench-pages`
 branch by hand instead.
-Media keys work through the Media Session API.
 
 ## How it fits together
 

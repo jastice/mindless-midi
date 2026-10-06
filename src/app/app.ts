@@ -7,6 +7,7 @@ import wasmUrl from "libadlmidi-js/dist/libadlmidi.nuked.browser.wasm";
 import type { StyleBundle } from "../corpus/schema.js";
 import { randomSeed } from "../theory/seed.js";
 import { chordName } from "../theory/theory.js";
+import { mediaAnchor } from "./media_anchor.js";
 import { type Engine, Player, type TimedBar } from "./player.js";
 
 /** Each engine is also an "edition" of the page: its look is in styles.css, keyed on `data-engine`. */
@@ -203,7 +204,10 @@ async function main(): Promise<void> {
   // --- Transport ----------------------------------------------------------
   const playBtn = $<HTMLButtonElement>("play");
   const splash = $("splash");
+  // Lets the system's media keys reach the page (see media_anchor.ts); `render` keeps it in step.
+  const holdMedia = mediaAnchor();
   async function toggle(): Promise<void> {
+    if (!player.playing) holdMedia(true); // inside the click, before any await
     try {
       await player.toggle();
       splash.hidden = true;
@@ -217,7 +221,10 @@ async function main(): Promise<void> {
   $("splash-play").addEventListener("click", toggle);
   $("skip").addEventListener("click", () => {
     player.skip();
-    if (!player.playing) void player.play().then(() => (splash.hidden = true));
+    if (!player.playing) {
+      holdMedia(true);
+      void player.play().then(() => (splash.hidden = true));
+    }
   });
   const vol = $<HTMLInputElement>("volume");
   vol.value = String(volume);
@@ -308,6 +315,7 @@ async function main(): Promise<void> {
     $("play-glyph").textContent = player.playing ? "❚❚" : "▶";
     $("play-word").textContent = player.playing ? "Pause" : "Play";
     playBtn.setAttribute("aria-label", player.playing ? "Pause" : "Play");
+    holdMedia(player.playing);
     if ("mediaSession" in navigator) navigator.mediaSession.playbackState = player.playing ? "playing" : "paused";
     lastKey = "";
     describe(player.current());
