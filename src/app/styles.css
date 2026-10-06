@@ -284,6 +284,12 @@ code { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; font-size: 
 .splash[hidden] { display: none; }
 .splash p { margin: 0; max-width: 26em; line-height: 1.3; }
 .cap { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0 0; color: var(--soft); }
+.cap .nav { white-space: nowrap; }
+.cap .nav b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* Waiting for a jump to start playing (samples downloading): the number breathes, after a beat's grace. */
+.cap .nav b.seeking { animation: seeking 0.9s ease-in-out 0.3s infinite; }
+@keyframes seeking { 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) { .cap .nav b.seeking { animation: none; opacity: 0.5; } }
 
 .now { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 4px 24px; padding: 22px 0 6px; }
 .now-style {

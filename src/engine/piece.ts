@@ -180,6 +180,14 @@ export class Piece {
     return keyLabel(this.tonic, this.mode);
   }
 
+  /** The chunks a listener can jump between: each section, then the ending (its last bar and the gap). */
+  get segments(): { label: string; start: number; bars: number }[] {
+    return [
+      ...this.sections.map((s) => ({ label: s.label, start: s.startBar, bars: s.bars })),
+      { label: "ending", start: this.bodyBars, bars: this.totalBars - this.bodyBars },
+    ];
+  }
+
   get seconds(): number {
     return (this.totalBars * this.corpus.beatsPerBar * 60) / this.bpm;
   }

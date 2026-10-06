@@ -226,12 +226,15 @@ async function main(): Promise<void> {
   persist();
   addEventListener("pagehide", persist);
   $("seed").textContent = seed;
-  if (at) {
-    const start = player.position();
-    $("splash-text").textContent = `Picks up at piece ${start.piece + 1}, bar ${start.bar + 1}. Every note is composed and played right here in your browser.`;
-    $("splash-play").textContent = "▶ Continue";
-    $("splash-play").setAttribute("aria-label", "Continue music");
+  /** Before the first play, the splash says where it will pick up. */
+  function renderSplash(): void {
+    const here = player.position();
+    const resuming = here.piece > 0 || here.bar > 0;
+    $("splash-text").textContent = `${resuming ? `Picks up at piece ${here.piece + 1}, bar ${here.bar + 1}. ` : "Press play. "}Every note is composed and played right here in your browser.`;
+    $("splash-play").textContent = resuming ? "▶ Continue" : "▶ Start music";
+    $("splash-play").setAttribute("aria-label", resuming ? "Continue music" : "Start music");
   }
+  renderSplash();
   $("share").addEventListener("click", (e) => {
     e.preventDefault();
     navigator.clipboard?.writeText(shareUrl()).then(
@@ -276,8 +279,34 @@ async function main(): Promise<void> {
     $("seed").textContent = player.seed;
     // Until the new seed's first bar is heard, the display still shows the old one.
     lastKey = "";
-    persist();
+    afterJump();
     toast(`New seed: ${player.seed}`);
+  });
+  // Past and future step through the piece's segments; the number between is piece.segment.
+  const seg = $("seg");
+  let shownSeg = "";
+  function renderSeg(): void {
+    const s = player.segment();
+    const seeking = player.seeking;
+    const key = `${s.piece}.${s.index}.${s.count}.${s.label}.${seeking}`;
+    if (key === shownSeg) return;
+    shownSeg = key;
+    seg.textContent = `${s.piece + 1}.${s.index + 1}`;
+    seg.title = `Piece ${s.piece + 1}, section ${s.index + 1} of ${s.count}${s.label ? ` (${s.label})` : ""}`;
+    seg.classList.toggle("seeking", seeking);
+  }
+  function afterJump(): void {
+    renderSeg();
+    renderSplash();
+    persist();
+  }
+  $("past").addEventListener("click", () => {
+    player.step(-1);
+    afterJump();
+  });
+  $("future").addEventListener("click", () => {
+    player.step(1);
+    afterJump();
   });
   $("midi").addEventListener("click", () => {
     const bytes = player.exportMidi(10);
@@ -367,6 +396,7 @@ async function main(): Promise<void> {
     if ("mediaSession" in navigator) navigator.mediaSession.playbackState = player.playing ? "playing" : "paused";
     lastKey = "";
     describe(player.current());
+    renderSeg();
   }
   player.onChange(render);
   player.onChange(renderEngine);
@@ -379,7 +409,10 @@ async function main(): Promise<void> {
     wasBusy = busy;
   }, 200);
   // Cheap enough to poll; keeps the display in step with what is audible.
-  setInterval(() => describe(player.current()), 200);
+  setInterval(() => {
+    describe(player.current());
+    renderSeg();
+  }, 200);
   render();
 }
 

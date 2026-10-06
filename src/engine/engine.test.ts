@@ -129,10 +129,58 @@ test("seek clamps wild positions", () => {
   const c = new Conductor(styles, "wild");
   const landed = c.seek(10 ** 9, 10 ** 9);
   const bar = c.nextBar();
-  assert.deepEqual(landed, { piece: bar.info.pieceIndex, bar: bar.info.barInPiece });
+  assert.equal(landed.piece, bar.info.pieceIndex);
+  assert.equal(landed.bar, bar.info.barInPiece);
   assert.equal(bar.info.pieceIndex, MAX_SEEK_PIECE);
   assert.equal(bar.info.barInPiece, bar.info.pieceBars - 1);
-  assert.throws(() => c.seek(1, 1), /before the first bar/);
+});
+
+test("seeking back replays the pieces as they were, even after the style pool changed", () => {
+  const opts = { minSeconds: 20, maxSeconds: 30 };
+  const c = new Conductor(styles.slice(0, 4), "log", opts);
+  const played = take(c, 150);
+  c.setStyles(styles.slice(4, 8));
+  played.push(...take(c, 400));
+  const pieces = new Set(played.map((b) => b.info.pieceIndex));
+  assert.ok(pieces.size >= 6, `${pieces.size} pieces`);
+  assert.ok(new Set(played.map((b) => b.info.styleId)).size > 4, "both pools were heard");
+  const key = (b: Bar) => JSON.stringify([b.beats, b.bpm, b.notes, b.info]);
+  const at = played.findIndex((b) => b.info.pieceIndex === 1 && b.info.barInPiece === 3);
+  c.seek(1, 3);
+  // Back through the old pool's pieces and on through the new pool's, as they played.
+  take(c, played.length - at).forEach((b, j) => assert.equal(key(b), key(played[at + j]!), `bar +${j}`));
+  // Changing the pool after going back forgets the pieces that were ahead.
+  c.seek(1, 0);
+  c.setStyles(styles.slice(8, 10));
+  c.skip();
+  const next = c.nextBar();
+  assert.equal(next.info.pieceIndex, 2);
+  assert.ok(styles.slice(8, 10).some((s) => s.id === next.info.styleId));
+});
+
+test("seekSegment lands on the first bar of a section or the ending", () => {
+  const c = new Conductor(styles, "segments", { minSeconds: 20, maxSeconds: 30 });
+  const straight = new Conductor(styles, "segments", { minSeconds: 20, maxSeconds: 30 });
+  const bars = take(straight, 300);
+  for (const segment of [0, 1, 2]) {
+    const landing = c.seekSegment(1, segment);
+    const bar = c.nextBar();
+    assert.equal(bar.info.pieceIndex, 1);
+    assert.equal(bar.info.barInPiece, landing.bar);
+    assert.equal(bar.info.sectionIndex, segment);
+    assert.equal(bar.info.barInSection, 0);
+    assert.equal(landing.segment, segment);
+    assert.equal(landing.label, bar.info.section);
+    assert.equal(landing.segments, bar.info.sectionCount + 1);
+    const was = bars.find((b) => b.info.pieceIndex === 1 && b.info.barInPiece === landing.bar)!;
+    assert.deepEqual(bar.notes, was.notes);
+  }
+  const last = c.seekSegment(1, -1);
+  const ending = c.nextBar();
+  assert.equal(last.segment, ending.info.sectionCount);
+  assert.equal(ending.info.section, "ending");
+  assert.equal(c.seekSegment(1, 99).segment, last.segment);
+  assert.equal(c.seekSegment(1, -99).segment, 0);
 });
 
 test("MIDI export is a valid format-0 file", () => {

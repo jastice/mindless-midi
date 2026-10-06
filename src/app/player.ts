@@ -13,9 +13,9 @@ import { TARGET_RMS } from "../audio/leveler.js";
 import { type FromWorklet, PROCESSOR_NAME, type ToWorklet } from "../audio/protocol.js";
 import { ROLES, type Role } from "../corpus/constants.js";
 import type { StyleBundle } from "../corpus/schema.js";
-import { Conductor } from "../engine/conductor.js";
+import { Conductor, type Landing } from "../engine/conductor.js";
 import { barsToMidi } from "../engine/midi_file.js";
-import type { Bar } from "../engine/types.js";
+import { type Bar, barSeconds } from "../engine/types.js";
 import { Bus } from "../sound/bus.js";
 import { type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../sound/protocol.js";
 import { type PlannedNote, SampleCache, SampleLibrary } from "../sound/sampler.js";
@@ -28,6 +28,18 @@ export interface Position {
   piece: number;
   bar: number;
 }
+
+/** A chunk of a piece the listener can jump between: one of its sections, or its ending. 0-based. */
+export interface Segment {
+  piece: number;
+  index: number;
+  /** Segments in the piece. */
+  count: number;
+  label: string;
+}
+
+/** Going back restarts the segment if it has been playing at least this long (seconds), else goes to the one before. */
+const RESTART_AFTER = 3;
 
 export interface TimedBar {
   bar: Bar;
@@ -109,7 +121,10 @@ export class Player {
   private workerHasWasm = false;
   private conductor: Conductor;
   private pool: StyleBundle[];
-  private lastPosition: Position;
+  /** Where the listener last was, as far as the audible bars have said. */
+  private last: Landing;
+  /** A jump (or reseed) that isn't audible yet: what to show until a bar from after it plays. */
+  private heading: { at: Landing; epoch: number } | null = null;
   private readonly opts: PlayerOptions;
   private readonly styleById: Map<string, StyleBundle>;
   private engineName: Engine;
@@ -170,7 +185,7 @@ export class Player {
     this.styleById = new Map(styles.map((s) => [s.id, s]));
     this.pool = styles;
     this.conductor = new Conductor(styles, opts.seed);
-    this.lastPosition = opts.at ? this.conductor.seek(opts.at.piece, opts.at.bar) : { piece: 0, bar: 0 };
+    this.last = this.conductor.seek(opts.at?.piece ?? 0, opts.at?.bar ?? 0);
   }
 
   get seed(): string {
@@ -377,13 +392,42 @@ export class Player {
   /** Start over with another seed: its first piece begins right away. */
   reseed(seed: string): void {
     this.conductor = new Conductor(this.pool, seed);
-    this.lastPosition = { piece: 0, bar: 0 };
-    this.lastPieceIndex = -1;
+    const landing = this.conductor.seek(0, 0);
     this.cut();
+    this.head(landing);
+  }
+
+  /** Jump to the start of a segment of a piece (negative counts from the end); it plays right away. */
+  goTo(piece: number, segment: number): void {
+    const landing = this.conductor.seekSegment(piece, segment);
+    this.cut();
+    this.head(landing);
+  }
+
+  /**
+   * Move to the next or previous segment. Going back restarts the current one
+   * if it has been playing a few seconds; after the last segment comes the next piece.
+   */
+  step(direction: -1 | 1): void {
+    const at = this.segment();
+    if (direction > 0) {
+      if (at.index + 1 < at.count) this.goTo(at.piece, at.index + 1);
+      else this.goTo(at.piece + 1, 0);
+    } else if (!this.heading && this.secondsIn() >= RESTART_AFTER) this.goTo(at.piece, at.index);
+    else if (at.index > 0) this.goTo(at.piece, at.index - 1);
+    else if (at.piece > 0) this.goTo(at.piece - 1, -1);
+    else this.goTo(0, 0);
+  }
+
+  /** Show `landing` until a bar generated after the cut that led to it is audible. */
+  private head(landing: Landing): void {
+    this.last = landing;
+    this.heading = { at: landing, epoch: this.skips };
   }
 
   /** Throw away what the conductor generated ahead and play whatever it makes next from now on. */
   private cut(): void {
+    this.heading = null;
     this.skips++;
     this.ahead = [];
     if (this.pending) this.pending.at = undefined;
@@ -404,6 +448,10 @@ export class Player {
 
   /** The bar audible now. */
   current(): TimedBar | undefined {
+    return this.audible();
+  }
+
+  private audible(): Scheduled | undefined {
     const t = this.now;
     for (let i = this.timeline.length - 1; i >= 0; i--) {
       const tb = this.timeline[i]!;
@@ -412,12 +460,41 @@ export class Player {
     return undefined;
   }
 
-  /** Where the listener is: the audible bar, or failing that the last one heard (the starting point before play). */
+  /** Where the listener is: the audible bar, or the place a jump is heading for, or the last one heard (the start before play). */
+  private where(): Landing {
+    const tb = this.audible();
+    if (tb) {
+      // Bars from before a jump or reseed are still audible for a moment.
+      if (this.heading && tb.skips >= this.heading.epoch) this.heading = null;
+      if (!this.heading) {
+        const i = tb.bar.info;
+        this.last = { piece: i.pieceIndex, bar: i.barInPiece, segment: i.sectionIndex, segments: i.sectionCount + 1, label: i.section || "ending" };
+      }
+    }
+    return this.heading?.at ?? this.last;
+  }
+
   position(): Position {
-    const info = this.current()?.bar.info;
-    // After a reseed the old seed's last bar stays audible for a moment.
-    if (info?.pieceSeed.startsWith(`${this.seed}/`)) this.lastPosition = { piece: info.pieceIndex, bar: info.barInPiece };
-    return this.lastPosition;
+    const { piece, bar } = this.where();
+    return { piece, bar };
+  }
+
+  /** The segment the listener is in (or a jump is heading for). */
+  segment(): Segment {
+    const { piece, segment, segments, label } = this.where();
+    return { piece, index: segment, count: segments, label };
+  }
+
+  /** A jump has been made but its music isn't playing yet (waiting for samples, say). */
+  get seeking(): boolean {
+    this.where();
+    return this.heading !== null && this.playing;
+  }
+
+  /** Seconds the audible segment has been playing. */
+  private secondsIn(): number {
+    const tb = this.audible();
+    return tb ? this.now - tb.start + tb.bar.info.barInSection * barSeconds(tb.bar) : 0;
   }
 
   /** Bars overlapping [from, to] (AudioContext seconds). */
@@ -831,6 +908,8 @@ export class Player {
   private withSetup(entry: Scheduled): Bar {
     if (!this.needsSetup) return entry.bar;
     this.needsSetup = false;
+    // A bar that starts a piece, or carries its setup after a jump, already has it.
+    if (entry.bar.controls.some((c) => c.kind === "reset")) return entry.bar;
     const piece = entry.bar.info.pieceSeed;
     const setup = this.timeline
       .filter((t) => t.bar.info.pieceSeed === piece && t.frame < entry.frame)
