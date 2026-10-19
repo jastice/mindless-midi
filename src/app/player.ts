@@ -111,6 +111,9 @@ function initialRate(): number | null {
 
 export class Player {
   private ctx: AudioContext | null = null;
+  /** `now`'s estimate of AudioContext time minus page time, and the page time it was last updated. */
+  private clockOffset = -Infinity;
+  private clockAt = 0;
   private output: GainNode | null = null;
   private fmNode: AudioWorkletNode | null = null;
   private stemNode: AudioWorkletNode | null = null;
@@ -279,10 +282,32 @@ export class Player {
     return this.library?.labels ?? [];
   }
 
+  /**
+   * What is audible now, not what the worklet is rendering, in AudioContext seconds.
+   *
+   * `currentTime` only advances once per rendered audio buffer, in steps of 5 to
+   * 60 ms and more on phones, so a display that reads it each frame stands still
+   * for a few frames and then jumps. Between updates this extrapolates along the
+   * page clock instead, which is smooth and never ahead of what the audio clock
+   * will say next.
+   */
   get now(): number {
-    if (!this.ctx) return 0;
-    // What is audible now, not what the worklet is rendering.
-    return this.ctx.currentTime - (this.ctx.outputLatency || this.ctx.baseLatency || 0);
+    const ctx = this.ctx;
+    if (!ctx) return 0;
+    const latency = ctx.outputLatency || ctx.baseLatency || 0;
+    if (ctx.state !== "running") {
+      this.clockOffset = -Infinity;
+      return ctx.currentTime - latency;
+    }
+    const wall = performance.now() / 1000;
+    // The offset between the two clocks is best seen right after the audio clock ticks, so keep the highest
+    // reading, sagging a little for clock drift. If the audio clock stands still for longer than any buffer
+    // would take, it has stalled: believe it again.
+    const offset = ctx.currentTime - wall;
+    const sagged = this.clockOffset - 0.002 * Math.max(0, wall - this.clockAt);
+    this.clockOffset = sagged - offset > 0.25 ? offset : Math.max(offset, sagged);
+    this.clockAt = wall;
+    return wall + this.clockOffset - latency;
   }
 
   /** Subscribe to state changes (play/pause, new piece, engine, loading). */

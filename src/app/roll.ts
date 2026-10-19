@@ -11,6 +11,8 @@ const PAST = 7;
 const FUTURE = 2.2;
 const LOW = 28;
 const HIGH = 100;
+/** Past 2x the extra pixels cost fill rate on phones and are invisible on ink and thin lines. */
+const MAX_DPR = 2;
 /** How strongly each part is inked; the lead is the only one in the spot colour. */
 const WEIGHT: Record<Role, number> = { lead: 1, counter: 0.85, arp: 0.7, pad: 0.5, comp: 0.6, bass: 0.95, drums: 0.7 };
 /** Staff lines as MIDI keys: treble E4 to F5, bass G2 to A3. */
@@ -22,6 +24,12 @@ export class Roll {
   private spot = "";
   private rule = "";
   private raf = 0;
+  /** CSS size, kept by a ResizeObserver: reading clientWidth every frame forces a layout. */
+  private cssW = 0;
+  private cssH = 0;
+  /** What was last drawn, so a paused roll costs nothing. */
+  private drawn = { now: NaN, started: false, w: 0, h: 0, theme: 0 };
+  private theme = 0;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -29,6 +37,14 @@ export class Roll {
   ) {
     this.ctx = canvas.getContext("2d")!;
     this.readTheme();
+    this.cssW = canvas.clientWidth;
+    this.cssH = canvas.clientHeight;
+    // A jump while paused rearranges the timeline without moving the clock.
+    player.onChange(() => (this.drawn.now = NaN));
+    new ResizeObserver(() => {
+      this.cssW = canvas.clientWidth;
+      this.cssH = canvas.clientHeight;
+    }).observe(canvas);
     matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => this.readTheme());
   }
 
@@ -38,6 +54,7 @@ export class Roll {
     this.ink = css.getPropertyValue("--ink").trim() || "#222";
     this.spot = css.getPropertyValue("--spot").trim() || "#d33";
     this.rule = css.getPropertyValue("--rule").trim() || "#8884";
+    this.theme++;
   }
 
   start(): void {
@@ -51,9 +68,14 @@ export class Roll {
 
   private draw(): void {
     const { canvas, ctx } = this;
-    const dpr = window.devicePixelRatio || 1;
-    const w = Math.round(canvas.clientWidth * dpr);
-    const h = Math.round(canvas.clientHeight * dpr);
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    const w = Math.round(this.cssW * dpr);
+    const h = Math.round(this.cssH * dpr);
+    const started = this.player.started;
+    const now = started ? this.player.now : 0;
+    const d = this.drawn;
+    if (d.now === now && d.started === started && d.w === w && d.h === h && d.theme === this.theme) return;
+    this.drawn = { now, started, w, h, theme: this.theme };
     if (canvas.width !== w || canvas.height !== h) {
       canvas.width = w;
       canvas.height = h;
@@ -67,9 +89,8 @@ export class Roll {
     // Staves.
     ctx.fillStyle = this.rule;
     for (const staff of STAVES) for (const key of staff) ctx.fillRect(0, Math.round(yOf(key)), w, Math.max(1, Math.round(dpr)));
-    if (!this.player.started) return;
+    if (!started) return;
 
-    const now = this.player.now;
     const playX = w * (PAST / (PAST + FUTURE));
     const pxPerSec = w / (PAST + FUTURE);
     const r = Math.max(3.2 * dpr, noteH * 0.8);
