@@ -558,6 +558,11 @@ export class Player {
 
   private async boot(): Promise<void> {
     const ctx = new AudioContext({ latencyHint: "playback" });
+    // Browsers only offer audio worklets on secure origins: https, or localhost.
+    if (!ctx.audioWorklet) {
+      void ctx.close();
+      throw new Error("this page needs HTTPS (or localhost) to play audio");
+    }
     const output = ctx.createGain();
     output.gain.value = this.volume * this.volume;
     output.connect(ctx.destination);
