@@ -18,12 +18,94 @@ const WEIGHT: Record<Role, number> = { lead: 1, counter: 0.85, arp: 0.7, pad: 0.
 /** Staff lines as MIDI keys: treble E4 to F5, bass G2 to A3. */
 const STAVES = [[64, 67, 71, 74, 77], [43, 47, 50, 53, 57]];
 
+/** `?perf` turns the readout on (and keeps it on for this tab, since the app rewrites the URL); `?perf=0` turns it off. */
+function perfRequested(): boolean {
+  const asked = new URLSearchParams(location.search).get("perf");
+  try {
+    if (asked === "0") sessionStorage.removeItem("perf");
+    else if (asked !== null) sessionStorage.setItem("perf", "1");
+    return sessionStorage.getItem("perf") === "1";
+  } catch {
+    return asked !== null && asked !== "0";
+  }
+}
+
+/**
+ * `?perf` on the URL shows a readout over the score for judging smoothness on a real device:
+ * frame pacing, how steadily the music clock advances against the page clock, and what drawing costs.
+ */
+class Probe {
+  private readonly el = Object.assign(document.createElement("pre"), { className: "perf" });
+  private frames: number[] = [];
+  private speeds: number[] = [];
+  private draws: number[] = [];
+  private lastFrame = 0;
+  private lastNow = NaN;
+  private shownAt = 0;
+  private reported = 0;
+
+  constructor(private readonly player: Player) {
+    this.el.style.cssText = "position:fixed;left:6px;bottom:6px;z-index:99;margin:0;padding:6px 8px;font:11px/1.35 ui-monospace,monospace;background:#000c;color:#9f9;pointer-events:none;white-space:pre";
+    document.body.append(this.el);
+  }
+
+  /** Send a second's summary to the dev server's log (it has no endpoint on the deployed site; the failure is ignored). */
+  private report(row: object): void {
+    const first = !this.reported++;
+    const body = JSON.stringify(first ? { ...row, ua: navigator.userAgent, screen: [screen.width, screen.height] } : row);
+    try {
+      navigator.sendBeacon("/__perf", body);
+    } catch {
+      // Not worth a second thought.
+    }
+  }
+
+  frame(t: number, now: number, drawMs: number): void {
+    if (this.lastFrame) {
+      const wall = t - this.lastFrame;
+      this.frames.push(wall);
+      if (this.player.playing && !Number.isNaN(this.lastNow)) this.speeds.push((now - this.lastNow) / (wall / 1000));
+    }
+    this.lastFrame = t;
+    this.lastNow = now;
+    this.draws.push(drawMs);
+    if (t - this.shownAt < 1000) return;
+    this.shownAt = t;
+    const q = (a: number[], p: number) => [...a].sort((x, y) => x - y)[Math.min(a.length - 1, Math.floor(a.length * p))] ?? 0;
+    const f = (n: number, d = 1) => n.toFixed(d);
+    const slow = this.frames.filter((g) => g > 25).length;
+    const row = {
+      at: new Date().toISOString().slice(11, 23),
+      playing: this.player.playing,
+      fps: this.frames.length,
+      gap: { p50: q(this.frames, 0.5), p95: q(this.frames, 0.95), max: q(this.frames, 1) },
+      late: slow,
+      speed: { p5: q(this.speeds, 0.05), p50: q(this.speeds, 0.5), p95: q(this.speeds, 0.95) },
+      draw: { p50: q(this.draws, 0.5), max: q(this.draws, 1) },
+      dpr: devicePixelRatio,
+      latencyMs: (this.player.latency ?? 0) * 1000,
+    };
+    this.el.textContent = [
+      `frames  ${row.fps}/s  gap p50 ${f(row.gap.p50)} p95 ${f(row.gap.p95)} max ${f(row.gap.max)} ms`,
+      `late    ${slow} frames over 25 ms`,
+      `clock   speed p5 ${f(row.speed.p5, 2)} p50 ${f(row.speed.p50, 2)} p95 ${f(row.speed.p95, 2)}  (1.00 is steady)`,
+      `draw    p50 ${f(row.draw.p50, 2)} max ${f(row.draw.max, 2)} ms`,
+      `dpr ${row.dpr} (drawn at ${Math.min(row.dpr, MAX_DPR)})  latency ${f(row.latencyMs, 0)} ms`,
+    ].join("\n");
+    this.report(row);
+    this.frames = [];
+    this.speeds = [];
+    this.draws = [];
+  }
+}
+
 export class Roll {
   private readonly ctx: CanvasRenderingContext2D;
   private ink = "";
   private spot = "";
   private rule = "";
   private raf = 0;
+  private readonly probe: Probe | null;
   /** CSS size, kept by a ResizeObserver: reading clientWidth every frame forces a layout. */
   private cssW = 0;
   private cssH = 0;
@@ -36,6 +118,7 @@ export class Roll {
     private readonly player: Player,
   ) {
     this.ctx = canvas.getContext("2d")!;
+    this.probe = perfRequested() ? new Probe(player) : null;
     this.readTheme();
     this.cssW = canvas.clientWidth;
     this.cssH = canvas.clientHeight;
@@ -58,8 +141,10 @@ export class Roll {
   }
 
   start(): void {
-    const frame = () => {
+    const frame = (t: number) => {
+      const began = performance.now();
       this.draw();
+      this.probe?.frame(t, this.drawn.now, performance.now() - began);
       this.raf = requestAnimationFrame(frame);
     };
     cancelAnimationFrame(this.raf);

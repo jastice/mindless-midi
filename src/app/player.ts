@@ -282,6 +282,12 @@ export class Player {
     return this.library?.labels ?? [];
   }
 
+  /** Seconds between the audio clock and the speaker, as the browser reports it. */
+  get latency(): number | null {
+    const ctx = this.ctx;
+    return ctx ? ctx.outputLatency || ctx.baseLatency || 0 : null;
+  }
+
   /**
    * What is audible now, not what the worklet is rendering, in AudioContext seconds.
    *

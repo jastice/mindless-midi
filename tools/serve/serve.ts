@@ -38,6 +38,18 @@ const requested = Number(process.env.PORT ?? 8080);
 
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? "/", "http://localhost");
+  // The page's ?perf readout reports here, one JSON line per second, for reading in this server's log.
+  if (req.method === "POST" && url.pathname === "/__perf") {
+    let body = "";
+    req.on("data", (chunk: Buffer) => {
+      if (body.length < 16_384) body += chunk.toString();
+    });
+    req.on("end", () => {
+      console.log(`[perf] ${req.socket.remoteAddress} ${body}`);
+      res.writeHead(204).end();
+    });
+    return;
+  }
   let path = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, "");
   if (path.endsWith("/")) path += "index.html";
   const file = join(root, path);
