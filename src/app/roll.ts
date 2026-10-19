@@ -43,6 +43,8 @@ class Probe {
   private lastNow = NaN;
   private shownAt = 0;
   private reported = 0;
+  private notes = 0;
+  private latencies: number[] = [];
 
   constructor(private readonly player: Player) {
     this.el.style.cssText = "position:fixed;left:6px;bottom:6px;z-index:99;margin:0;padding:6px 8px;font:11px/1.35 ui-monospace,monospace;background:#000c;color:#9f9;pointer-events:none;white-space:pre";
@@ -60,7 +62,7 @@ class Probe {
     }
   }
 
-  frame(t: number, now: number, drawMs: number): void {
+  frame(t: number, now: number, drawMs: number, notes: number): void {
     if (this.lastFrame) {
       const wall = t - this.lastFrame;
       this.frames.push(wall);
@@ -69,6 +71,9 @@ class Probe {
     this.lastFrame = t;
     this.lastNow = now;
     this.draws.push(drawMs);
+    this.notes = Math.max(this.notes, notes);
+    const lat = this.player.latency;
+    if (lat !== null) this.latencies.push(lat * 1000);
     if (t - this.shownAt < 1000) return;
     this.shownAt = t;
     const q = (a: number[], p: number) => [...a].sort((x, y) => x - y)[Math.min(a.length - 1, Math.floor(a.length * p))] ?? 0;
@@ -83,19 +88,22 @@ class Probe {
       speed: { p5: q(this.speeds, 0.05), p50: q(this.speeds, 0.5), p95: q(this.speeds, 0.95) },
       draw: { p50: q(this.draws, 0.5), max: q(this.draws, 1) },
       dpr: devicePixelRatio,
-      latencyMs: (this.player.latency ?? 0) * 1000,
+      notes: this.notes,
+      latencyMs: { min: Math.min(...this.latencies), max: Math.max(...this.latencies) },
     };
     this.el.textContent = [
       `frames  ${row.fps}/s  gap p50 ${f(row.gap.p50)} p95 ${f(row.gap.p95)} max ${f(row.gap.max)} ms`,
       `late    ${slow} frames over 25 ms`,
       `clock   speed p5 ${f(row.speed.p5, 2)} p50 ${f(row.speed.p50, 2)} p95 ${f(row.speed.p95, 2)}  (1.00 is steady)`,
       `draw    p50 ${f(row.draw.p50, 2)} max ${f(row.draw.max, 2)} ms`,
-      `dpr ${row.dpr} (drawn at ${Math.min(row.dpr, MAX_DPR)})  latency ${f(row.latencyMs, 0)} ms`,
+      `notes ${row.notes}  dpr ${row.dpr} (drawn at ${Math.min(row.dpr, MAX_DPR)})  latency ${f(row.latencyMs.min, 0)}-${f(row.latencyMs.max, 0)} ms`,
     ].join("\n");
     this.report(row);
     this.frames = [];
     this.speeds = [];
     this.draws = [];
+    this.latencies = [];
+    this.notes = 0;
   }
 }
 
@@ -107,6 +115,7 @@ export class Roll {
   private raf = 0;
   private readonly probe: Probe | null;
   /** CSS size, kept by a ResizeObserver: reading clientWidth every frame forces a layout. */
+  private notesDrawn = 0;
   private cssW = 0;
   private cssH = 0;
   /** What was last drawn, so a paused roll costs nothing. */
@@ -144,7 +153,7 @@ export class Roll {
     const frame = (t: number) => {
       const began = performance.now();
       this.draw();
-      this.probe?.frame(t, this.drawn.now, performance.now() - began);
+      this.probe?.frame(t, this.drawn.now, performance.now() - began, this.notesDrawn);
       this.raf = requestAnimationFrame(frame);
     };
     cancelAnimationFrame(this.raf);
@@ -161,6 +170,7 @@ export class Roll {
     const d = this.drawn;
     if (d.now === now && d.started === started && d.w === w && d.h === h && d.theme === this.theme) return;
     this.drawn = { now, started, w, h, theme: this.theme };
+    this.notesDrawn = 0;
     if (canvas.width !== w || canvas.height !== h) {
       canvas.width = w;
       canvas.height = h;
@@ -194,6 +204,7 @@ export class Roll {
         const t0 = tb.start + n.beat * spb;
         const t1 = t0 + n.dur * spb;
         if (t1 < now - PAST || t0 > now + FUTURE) continue;
+        this.notesDrawn++;
         const x0 = playX + (t0 - now) * pxPerSec;
         const x1 = playX + (t1 - now) * pxPerSec;
         const sounding = t0 <= now && now < t1;

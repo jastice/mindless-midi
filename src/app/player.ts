@@ -79,6 +79,8 @@ export interface PlayerOptions {
 type Listener = () => void;
 
 const HISTORY_SECONDS = 20 * 60;
+/** Seconds over which the display follows the browser's reported output latency. */
+const LATENCY_TAU = 2;
 const OPL_CHIPS = 4;
 /** Seconds of music rendered ahead. Samples get more slack for downloads. */
 const LOOKAHEAD: Record<Engine, number> = { fm: 3, fm_bus: 4, synth: 4, samples: 6 };
@@ -114,6 +116,8 @@ export class Player {
   /** `now`'s estimate of AudioContext time minus page time, and the page time it was last updated. */
   private clockOffset = -Infinity;
   private clockAt = 0;
+  /** `now`'s smoothed output latency, in seconds; NaN until the context runs. */
+  private latencyEstimate = NaN;
   private output: GainNode | null = null;
   private fmNode: AudioWorkletNode | null = null;
   private stemNode: AudioWorkletNode | null = null;
@@ -300,12 +304,18 @@ export class Player {
   get now(): number {
     const ctx = this.ctx;
     if (!ctx) return 0;
-    const latency = ctx.outputLatency || ctx.baseLatency || 0;
+    const reported = ctx.outputLatency || ctx.baseLatency || 0;
     if (ctx.state !== "running") {
       this.clockOffset = -Infinity;
-      return ctx.currentTime - latency;
+      this.latencyEstimate = NaN;
+      return ctx.currentTime - reported;
     }
     const wall = performance.now() / 1000;
+    // The reported output latency wobbles by tens of milliseconds from one read to the next on phones, which
+    // would shift the whole score each time; only its average matters, so follow it slowly.
+    const dt = Math.max(0, wall - this.clockAt);
+    this.latencyEstimate = Number.isNaN(this.latencyEstimate) ? reported : this.latencyEstimate + (reported - this.latencyEstimate) * (1 - Math.exp(-dt / LATENCY_TAU));
+    const latency = this.latencyEstimate;
     // The offset between the two clocks is best seen right after the audio clock ticks, so keep the highest
     // reading, sagging a little for clock drift. If the audio clock stands still for longer than any buffer
     // would take, it has stalled: believe it again.
