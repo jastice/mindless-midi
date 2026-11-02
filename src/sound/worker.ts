@@ -102,9 +102,10 @@ class FmStems {
 }
 
 function loadFm(): Promise<FmStems> {
+  // Don't remember the failure: the wasm may still be on its way, and later bars should get it.
+  if (!wasm) return Promise.reject(new Error("no libADLMIDI wasm"));
   fm ??= (async () => {
-    if (!wasm) throw new Error("no libADLMIDI wasm");
-    const bytes = wasm;
+    const bytes = wasm!;
     const m = await createADLMIDI({
       instantiateWasm: (imports, done) => {
         WebAssembly.instantiate(bytes, imports).then((r) => done(r.instance));

@@ -634,7 +634,9 @@ export class Player {
       return;
     }
     if (!this.stemNode) {
-      await ctx.audioWorklet.addModule(this.opts.stemWorkletUrl);
+      // The worklet ticks the scheduler as soon as it exists, so FM + studio's wasm must reach the
+      // worker before any bar can: on a cold cache it downloads slower than the first tick.
+      const [, wasm] = await Promise.all([ctx.audioWorklet.addModule(this.opts.stemWorkletUrl), engine === "fm_bus" ? this.loadWasm() : null]);
       const node = new AudioWorkletNode(ctx, STEM_PROCESSOR, {
         numberOfInputs: 0,
         numberOfOutputs: ROLES.length,
@@ -647,6 +649,11 @@ export class Player {
       worker.onerror = (e) => console.error("render worker", e.message);
       const channel = new MessageChannel();
       worker.postMessage({ type: "init", sampleRate: ctx.sampleRate, port: channel.port1 } satisfies ToWorker, [channel.port1]);
+      if (wasm) {
+        const copy = wasm.slice(0);
+        worker.postMessage({ type: "wasm", wasm: copy } satisfies ToWorker, [copy]);
+        this.workerHasWasm = true;
+      }
       node.port.postMessage({ type: "port", port: channel.port2 }, [channel.port2]);
       node.port.onmessage = (e: MessageEvent<FromStems>) => {
         if (e.data.type !== "tick") return;
