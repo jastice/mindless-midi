@@ -107,6 +107,19 @@ Object.assign(PRESETS, {
     reverb: { seconds: 2.8, predelay: 0.035, bright: 0.5, send: { lead: 0.3, counter: 0.35, arp: 0.35, comp: 0.2, pad: 0.45, drums: 0.2, bass: 0.08 } },
     highpass: { lead: 100, counter: 150, arp: 120, comp: 120, pad: 120 },
   },
+  // A dry, wide dance floor: strings and electric piano in chorus, everything breathing with the kick.
+  disco: {
+    reverb: { seconds: 1.6, predelay: 0.02, bright: 0.6, send: { lead: 0.3, counter: 0.2, arp: 0.1, comp: 0.15, pad: 0.35, drums: 0.08 } },
+    delay: { beats: 0.75, feedback: 0.25, send: { lead: 0.1, counter: 0.08 } },
+    chorus: ["pad", "comp"],
+    duck: { depth: { pad: 0.35, comp: 0.2, arp: 0.12 }, release: 0.18 },
+    highpass: { lead: 180, counter: 150, arp: 200, comp: 150, pad: 180 },
+  },
+  // A stone hall: long and even, the continuo included.
+  baroque: {
+    reverb: { seconds: 2.5, predelay: 0.03, bright: 0.5, send: { lead: 0.3, counter: 0.3, arp: 0.22, comp: 0.18, pad: 0.38, bass: 0.12, drums: 0.25 } },
+    highpass: { lead: 150, counter: 150, arp: 100, comp: 80, pad: 110 },
+  },
 } satisfies Record<string, MixPreset>);
 
 const DEFAULT_PRESET: MixPreset = { reverb: { seconds: 1.8, predelay: 0.02, bright: 0.5, send: { lead: 0.2, pad: 0.3 } }, highpass: {} };

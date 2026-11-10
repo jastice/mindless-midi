@@ -130,6 +130,25 @@ export function writeOstinato(ctx: BarContext, motif: Motif, range: PitchRange):
   const role = motif.role === "bass" ? "bass" : "arp";
   const center = registerCenter(ctx.instrument) + (role === "bass" ? 4 : 0);
   const barEnd = ctx.barStart + ctx.beatsPerBar;
+  // A figure that would poke out of the register moves by an octave as a whole
+  // where it can, so its shape survives (an octave bass line stays in octaves
+  // rather than folding onto one note). Decided per chord from the whole figure,
+  // so every bar under that chord agrees.
+  const octaveShift = new Map<number, number>();
+  const shiftUnder = (span: ChordSpan): number => {
+    if (motif.anchor !== "chord") return 0;
+    let shift = octaveShift.get(span.chord.root);
+    if (shift === undefined) {
+      const anchorMidi = nearestWithPitchClass(mod(ctx.tonic + span.chord.root, 12), center);
+      const scale = chordScale(ctx.mode, span.chord);
+      const keys = motif.notes.filter((n) => !n.approach).map((n) => degreeToMidi(scale, n.deg, anchorMidi));
+      const low = Math.min(...keys);
+      const high = Math.max(...keys);
+      shift = high > range[1] && low - 12 >= range[0] ? -12 : low < range[0] && high + 12 <= range[1] ? 12 : 0;
+      octaveShift.set(span.chord.root, shift);
+    }
+    return shift;
+  };
   // Motif repetitions overlapping this bar.
   const firstRep = Math.floor(ctx.barStart / motif.lengthBeats);
   for (let rep = firstRep; rep * motif.lengthBeats < barEnd; rep++) {
@@ -137,10 +156,10 @@ export function writeOstinato(ctx: BarContext, motif: Motif, range: PitchRange):
     for (const n of motif.notes) {
       const t = repStart + n.t;
       if (t < ctx.barStart - 1e-9 || t >= barEnd - 1e-9) continue;
-      let key = resolveDegree(ctx, motif.anchor, n, t, center);
+      const span = ctx.harmony.at(t);
+      let key = resolveDegree(ctx, motif.anchor, n, t, center) + (n.approach ? 0 : shiftUnder(span));
       key = foldIntoRange(key, range[0], range[1]);
       // Don't let held notes ring through a chord change.
-      const span = ctx.harmony.at(t);
       const dur = Math.max(0.05, Math.min(n.d, span.end - t + (n.approach ? 0 : 0.02)));
       out.push({ beat: t - ctx.barStart, dur, ch: CHANNELS[role], key, vel: vel(n.v, ctx.intensity), role });
     }
@@ -369,6 +388,8 @@ export function writeMelody(
   role: "lead" | "counter",
   range: PitchRange,
   memory: PartMemory,
+  /** Chance that a long note opens with a trill (see MelodyRules.trill). */
+  trill = 0,
 ): NoteEvent[] {
   const out: NoteEvent[] = [];
   const barEnd = ctx.barStart + ctx.beatsPerBar;
@@ -399,14 +420,45 @@ export function writeMelody(
     memory.lastNote.set(role, key);
     // Phrase arch: a little louder towards the middle of the bar group.
     const arch = 0.9 + 0.1 * Math.sin(Math.PI * ((n.t % (ctx.beatsPerBar * 2)) / (ctx.beatsPerBar * 2)));
-    out.push({
+    const note: NoteEvent = {
       beat: n.t - ctx.barStart,
       dur: Math.max(0.05, Math.min(n.d, span.end - n.t + 1) - 0.03),
       ch: CHANNELS[role],
       key,
       vel: vel(n.v * arch, ctx.intensity),
       role,
-    });
+    };
+    if (trill > 0 && !n.grace && n.d >= 1 && ctx.rng.chance(n.cadence ? Math.min(1, trill * 1.5) : trill)) {
+      const scalePcs = chordScale(ctx.mode, span.chord).map((i) => mod(ctx.tonic + span.chord.root + i, 12));
+      out.push(...trilled(note, scalePcs, range));
+    } else out.push(note);
   }
+  return out;
+}
+
+/** Length of one trill note, beats (a 32nd). */
+const TRILL_STEP = 0.125;
+
+/**
+ * A baroque trill: the note starts on its upper scale neighbour and shakes
+ * for half a beat before settling. At the top of the range, where there is no
+ * neighbour above to reach, it becomes a mordent on the lower one.
+ */
+function trilled(note: NoteEvent, scalePcs: readonly number[], range: PitchRange): NoteEvent[] {
+  const neighbour = (dir: 1 | -1): number => {
+    for (let k = note.key + dir; Math.abs(k - note.key) <= 2; k += dir) if (scalePcs.includes(mod(k, 12))) return k;
+    return note.key + 2 * dir;
+  };
+  const upper = neighbour(1);
+  const shake = upper <= range[1] ? [upper, note.key, upper] : [note.key, Math.max(range[0], neighbour(-1))];
+  const out: NoteEvent[] = shake.map((key, i) => ({
+    ...note,
+    beat: note.beat + i * TRILL_STEP,
+    dur: TRILL_STEP - 0.01,
+    key,
+    vel: Math.max(1, Math.round(note.vel * (i === 0 ? 0.95 : 0.8))),
+  }));
+  const settle = shake.length * TRILL_STEP;
+  out.push({ ...note, beat: note.beat + settle, dur: Math.max(0.05, note.dur - settle) });
   return out;
 }

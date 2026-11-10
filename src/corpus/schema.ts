@@ -156,8 +156,20 @@ export const MelodyRules = z.object({
   stepwise: unit.describe("Preference for stepwise motion when the arranger varies motifs."),
   restProbability: unit.describe("Chance that a phrase is left silent for breathing room."),
   ornament: unit.describe("Chance of grace notes / neighbour-tone decoration."),
+  trill: unit
+    .optional()
+    .describe("Chance that a long lead note opens with a trill from its upper neighbour (baroque ornamentation). Omit for none."),
 });
 export type MelodyRules = z.infer<typeof MelodyRules>;
+
+export const Ending = z.object({
+  picardy: z.boolean().optional().describe("A piece in a minor mode ends on the major tonic chord (a Picardy third)."),
+  ritardando: z
+    .number().min(0).max(0.5)
+    .optional()
+    .describe("How far the last bar slows into the final chord: 0 = in tempo, 0.3 = it arrives 30% slower. Chip and dance music 0; chamber music 0.2-0.35."),
+});
+export type Ending = z.infer<typeof Ending>;
 
 export const StyleCorpus = z.object({
   title: z.string(),
@@ -178,6 +190,7 @@ export const StyleCorpus = z.object({
   drums: z.array(DrumPattern),
   forms: z.array(Form).min(1),
   melody: MelodyRules,
+  ending: Ending.optional().describe("How pieces come to a close. Omit for a plain in-tempo final chord."),
 });
 export type StyleCorpus = z.infer<typeof StyleCorpus>;
 

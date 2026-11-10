@@ -22,7 +22,9 @@ for (const style of styles) {
     const roles = new Set<string>();
     for (const bar of bars) {
       const ranges = [style.corpus.tempo, ...style.corpus.forms.flatMap((f) => (f.tempo ? [f.tempo] : []))];
-      assert.ok(ranges.some((r) => bar.bpm >= r.min && bar.bpm <= r.max), `${bar.bpm} bpm outside every tempo range`);
+      // A style may slow into its final chord: the last bar of the body and the chord itself.
+      const closing = (style.corpus.ending?.ritardando ?? 0) > 0 && bar.info.barInPiece >= bar.info.pieceBars - 3 && !bar.info.gap;
+      assert.ok(closing || ranges.some((r) => bar.bpm >= r.min && bar.bpm <= r.max), `${bar.bpm} bpm outside every tempo range`);
       const { tonic, mode } = bar.info;
       assert.doesNotMatch(bar.info.keyName, /[A-Z][a-z]+[A-Z]/, "display name has no camelCase");
       const allowed = new Set(MODES[mode].map((i) => mod(tonic + i, 12)));
@@ -325,6 +327,114 @@ test("a style never plays the same form twice in a row", () => {
       assert.notEqual(form, last, `${style.id} repeated form ${form}`);
       last = form;
       pieces++;
+    }
+  }
+});
+
+/** A copy of a style that ends its pieces the given way, with short pieces so endings come round quickly. */
+function endingWith(style: StyleBundle, ending: StyleBundle["corpus"]["ending"]): StyleBundle {
+  return { ...style, corpus: { ...style.corpus, ending } };
+}
+
+function pieces(style: StyleBundle, seed: string, n: number): Bar[][] {
+  const c = new Conductor([style], seed, { minSeconds: 20, maxSeconds: 30 });
+  const out: Bar[][] = [];
+  while (out.length <= n) {
+    const bar = c.nextBar();
+    if (bar.info.barInPiece === 0) out.push([]);
+    out[out.length - 1]!.push(bar);
+  }
+  return out.slice(0, n);
+}
+
+test("a ritardando slows the last bar into the final chord and nothing else", () => {
+  const base = styles.find((s) => s.id === "jazz_trio")!;
+  const plain = pieces(endingWith(base, undefined), "rit", 3);
+  const slowed = pieces(endingWith(base, { ritardando: 0.3 }), "rit", 3);
+  for (const [i, piece] of slowed.entries()) {
+    const bpm = piece[0]!.bpm;
+    const [lastBar, chord, gap] = piece.slice(-3) as [Bar, Bar, Bar];
+    for (const bar of piece.slice(0, -3)) assert.equal(bar.bpm, bpm);
+    assert.equal(chord.info.section, "ending");
+    assert.equal(chord.bpm, Math.round(bpm * 0.7));
+    assert.ok(lastBar.bpm < bpm && lastBar.bpm > chord.bpm, `last bar at ${lastBar.bpm}, between ${chord.bpm} and ${bpm}`);
+    assert.equal(gap.bpm, bpm);
+    // Same notes as in tempo, pushed later and later within the bar, never past its end.
+    const inTempo = plain[i]!.at(-3)!;
+    assert.deepEqual(lastBar.notes.map((n) => n.key), inTempo.notes.map((n) => n.key));
+    for (const [k, n] of lastBar.notes.entries()) {
+      const was = inTempo.notes[k]!.beat;
+      assert.ok(n.beat <= was + 1e-9 && n.beat < lastBar.beats, `beat ${was} moved to ${n.beat}`);
+      // In seconds, each note is later than it would have been.
+      assert.ok(n.beat / lastBar.bpm >= was / bpm - 1e-9);
+    }
+    assert.deepEqual(piece.slice(0, -3), plain[i]!.slice(0, -3));
+  }
+});
+
+test("a Picardy third ends minor pieces on the major tonic", () => {
+  const base = styles.find((s) => s.id === "castlevania")!;
+  const thirdOf = (piece: Bar[]): number[] => {
+    const chord = piece.at(-2)!;
+    return [...new Set(chord.notes.filter((n) => n.role !== "drums").map((n) => mod(n.key - chord.info.tonic, 12)))];
+  };
+  let minor = 0;
+  const plain = pieces(endingWith(base, undefined), "picardy", 8);
+  for (const [i, piece] of pieces(endingWith(base, { picardy: true }), "picardy", 8).entries()) {
+    const chord = piece.at(-2)!;
+    assert.deepEqual(chord.info.chords, ["I"]);
+    assert.ok(thirdOf(piece).includes(4) && !thirdOf(piece).includes(3), `${chord.info.keyName} ended on ${thirdOf(piece)}`);
+    if (MODES[chord.info.mode][2] === 3) {
+      minor++;
+      assert.deepEqual(plain[i]!.at(-2)!.info.chords, ["i"]);
+      assert.ok(thirdOf(plain[i]!).includes(3));
+    }
+  }
+  assert.ok(minor > 0, "no minor piece to check");
+});
+
+test("trills decorate long lead notes, start on the upper neighbour and stay in range", () => {
+  const base = styles.find((s) => s.id === "jrpg")!;
+  const withTrill = (trill: number | undefined): StyleBundle => ({ ...base, corpus: { ...base.corpus, melody: { ...base.corpus.melody, trill } } });
+  const plain = take(new Conductor([withTrill(undefined)], "trill"), 300);
+  const trilled = take(new Conductor([withTrill(1)], "trill"), 300);
+  const { low, high } = base.corpus.melody;
+  let shakes = 0;
+  for (const [i, bar] of trilled.entries()) {
+    // The other parts play the same notes (their humanized timing shifts with the note count).
+    const others = (b: Bar) => b.notes.filter((n) => n.role !== "lead").map((n) => `${n.role}:${n.key}`).sort();
+    assert.deepEqual(others(bar), others(plain[i]!), "only the lead changes");
+    const lead = bar.notes.filter((n) => n.role === "lead");
+    for (const n of lead) assert.ok(n.key >= low && n.key <= high, `trill note ${n.key} outside ${low}..${high}`);
+    for (const [k, n] of lead.entries()) {
+      const next = lead[k + 1];
+      if (n.dur > 0.12 || !next || next.dur > 0.12 || next.beat - n.beat > 0.2) continue;
+      // The first two notes of a shake: a step apart.
+      const step = Math.abs(n.key - next.key);
+      if (step >= 1 && step <= 2) shakes++;
+    }
+  }
+  assert.ok(shakes > 20, `only ${shakes} trills`);
+});
+
+test("an octave bass line keeps its octaves in every key", () => {
+  const base = styles.find((s) => s.id === "synthwave")!;
+  const hop = base.corpus.motifs.find((m) => m.id === "octave-pulse")!;
+  for (const tonic of ["C", "D", "E", "F#", "G#", "Bb"] as const) {
+    const style: StyleBundle = {
+      ...base,
+      corpus: {
+        ...base.corpus,
+        keys: [{ tonic, mode: "aeolian" }],
+        motifs: base.corpus.motifs.filter((m) => m.role !== "bass").concat(hop),
+        forms: [{ id: "bass", sections: [{ label: "A", bars: 8, intensity: 0.6, roles: ["bass"] }] }],
+      },
+    };
+    for (const bar of take(new Conductor([style], `octaves-${tonic}`), 8)) {
+      const keys = bar.notes.map((n) => n.key);
+      for (let i = 0; i + 1 < keys.length; i += 2) {
+        assert.equal(keys[i + 1]! - keys[i]!, 12, `${tonic}, ${bar.info.chords}: ${keys}`);
+      }
     }
   }
 });

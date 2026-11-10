@@ -325,11 +325,42 @@ export class Piece {
         notes.push(...this.renderRole(role, ctx, section));
       }
     } else if (barInPiece === this.bodyBars) {
+      info.chords = [this.finalChord()];
       notes.push(...this.renderEnding(last));
     }
 
     this.groove(notes, this.rng.fork(`feel:${barInPiece}`), section);
-    return { index: globalIndex, beats: bpb, bpm: this.bpm, notes, controls, info };
+    return { index: globalIndex, beats: bpb, bpm: this.ritardando(barInPiece, notes), notes, controls, info };
+  }
+
+  /** The chord a piece comes to rest on: the tonic, made major in a minor mode if the style ends with a Picardy third. */
+  private finalChord(): string {
+    return MODES[this.mode][2] === 4 || this.corpus.ending?.picardy ? "I" : "i";
+  }
+
+  /**
+   * Tempo of a bar, slowing into the final chord if the style asks for it.
+   * The last bar of the body eases from the piece's tempo down to the arrival
+   * tempo (its notes are moved, in place, so the slowing is gradual rather than
+   * a step at the barline: a bar has one tempo), and the final chord is held at
+   * the arrival tempo. The silence after it is back in time.
+   */
+  private ritardando(barInPiece: number, notes: NoteEvent[]): number {
+    const amount = this.corpus.ending?.ritardando ?? 0;
+    if (amount <= 0 || barInPiece > this.bodyBars || barInPiece < this.bodyBars - 1) return this.bpm;
+    const arrival = this.bpm * (1 - amount);
+    if (barInPiece === this.bodyBars) return Math.round(arrival);
+    // Seconds per beat grow linearly across the bar, from 60/bpm to 60/arrival,
+    // so the bar lasts as long as one at the mean of the two beat lengths.
+    const bpb = this.corpus.beatsPerBar;
+    const stretch = this.bpm / arrival - 1;
+    const warp = (beat: number) => (beat + (stretch * beat * beat) / (2 * bpb)) / (1 + stretch / 2);
+    for (const n of notes) {
+      const end = warp(n.beat + n.dur);
+      n.beat = warp(n.beat);
+      n.dur = Math.max(0.03, end - n.beat);
+    }
+    return Math.round(this.bpm / (1 + stretch / 2));
   }
 
   private renderRole(role: Role, ctx: BarContext, section: PlannedSection): NoteEvent[] {
@@ -365,7 +396,7 @@ export class Piece {
         const phraseBars = Math.max(1, rules.phraseBars);
         const phraseIdx = Math.floor(ctx.barInSection / phraseBars);
         const phrase = this.phrase(section, role, phraseIdx, phraseBars);
-        return writeMelody(ctx, phrase, role, melodicRange(role, ctx.instrument.octave, rules), this.memory);
+        return writeMelody(ctx, phrase, role, melodicRange(role, ctx.instrument.octave, rules), this.memory, role === "lead" ? rules.trill : 0);
       }
     }
   }
@@ -399,8 +430,7 @@ export class Piece {
   private renderEnding(last: PlannedSection): NoteEvent[] {
     const c = this.corpus;
     const bpb = c.beatsPerBar;
-    const third = MODES[this.mode][2];
-    const span = { chord: parseRoman(third === 4 ? "I" : "i"), start: 0, end: bpb };
+    const span = { chord: parseRoman(this.finalChord()), start: 0, end: bpb };
     const out: NoteEvent[] = [];
     const dur = bpb * 1.5;
     const ctxFor = (role: Role): BarContext | undefined => {

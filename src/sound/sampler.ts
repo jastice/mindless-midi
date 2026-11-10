@@ -350,6 +350,15 @@ const KITS: Record<string, Record<number, string>> = {
     36: `${SP}kick/drum_bass_hard.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-m.m4a`, 39: `${LM2}clap.m4a`,
     42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
     49: `${SP}cymbal/drum_cymbal_hard.m4a`, 45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_mid_soft.m4a`, 70: `${TR808}maraca/ma.m4a`,
+  },  disco: {
+    36: `${SP}kick/bd_haus.m4a`, 38: `${SP}snare/drum_snare_hard.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${LM2}clap.m4a`,
+    42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
+    49: `${LM2}crash.m4a`, 45: `${LM2}tom-l.m4a`, 50: `${LM2}tom-h.m4a`, 70: `${LM2}cabasa.m4a`,
+  },
+  // Kettledrums only.
+  baroque: {
+    36: `${SP}kick/drum_bass_soft.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
+    45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_mid_soft.m4a`,
   },
 };
 

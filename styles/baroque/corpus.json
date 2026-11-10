@@ -1,0 +1,3954 @@
+{
+  "title": "Baroque Court",
+  "description": "Powdered wigs by candlelight: a harpsichord and cello continuo under a duelling violin and oboe, sequences tumbling round the circle of fifths and a trill on every cadence. With a slow air, trumpets and kettledrums for the fireworks, and a toccata up in the organ loft.",
+  "tempo": {
+    "min": 92,
+    "max": 112
+  },
+  "beatsPerBar": 4,
+  "swing": 0,
+  "swingUnit": "16th",
+  "humanize": 0.14,
+  "keys": [
+    {
+      "tonic": "D",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "G",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "A",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "E",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "B",
+      "mode": "harmonicMinor"
+    },
+    {
+      "tonic": "C",
+      "mode": "harmonicMinor"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Solo violin",
+      "program": 40,
+      "octave": 5,
+      "volume": 0.55,
+      "pan": -0.25
+    },
+    {
+      "role": "counter",
+      "name": "Oboe",
+      "program": 68,
+      "octave": 5,
+      "volume": 0.45,
+      "pan": 0.3
+    },
+    {
+      "role": "arp",
+      "name": "Harpsichord",
+      "program": 6,
+      "octave": 4,
+      "volume": 0.45,
+      "pan": 0.15
+    },
+    {
+      "role": "comp",
+      "name": "Theorbo",
+      "program": 24,
+      "octave": 3,
+      "volume": 0.42,
+      "pan": -0.1
+    },
+    {
+      "role": "pad",
+      "name": "String ripieno",
+      "program": 48,
+      "octave": 4,
+      "volume": 0.36,
+      "pan": 0
+    },
+    {
+      "role": "bass",
+      "name": "Violoncello",
+      "program": 42,
+      "octave": 2,
+      "volume": 0.7,
+      "pan": 0.05
+    },
+    {
+      "role": "drums",
+      "name": "Kettledrums",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.6,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "fifths-fall",
+      "mood": "tumbling round the circle of fifths",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "ritornello",
+      "mood": "the tune everyone comes back to",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "lament",
+      "mood": "descending tetrachord",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "ground",
+      "mood": "an old dance bass",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "bIII",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "neapolitan",
+      "mood": "a shadow before the cadence",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bII",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "relative-sun",
+      "mood": "a glimpse of the major",
+      "chords": [
+        {
+          "symbol": "bIII",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "sequence-home",
+      "mood": "sequence into a full close",
+      "chords": [
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "diminished-suspense",
+      "mood": "leading-tone tension",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "viio7",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "cadence-loop",
+      "mood": "brisk full closes",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "i",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "romanesca",
+      "mood": "a serene old ground",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        },
+        {
+          "symbol": "vi",
+          "beats": 4
+        },
+        {
+          "symbol": "iii",
+          "beats": 4
+        },
+        {
+          "symbol": "IV",
+          "beats": 4
+        },
+        {
+          "symbol": "I",
+          "beats": 4
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 4
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "tender",
+      "mood": "candlelit",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 4
+        },
+        {
+          "symbol": "vi",
+          "beats": 4
+        },
+        {
+          "symbol": "ii7",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "suspended",
+      "mood": "sighing suspensions",
+      "chords": [
+        {
+          "symbol": "IV",
+          "beats": 4
+        },
+        {
+          "symbol": "V7sus4",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "iii",
+          "beats": 4
+        },
+        {
+          "symbol": "vi",
+          "beats": 4
+        },
+        {
+          "symbol": "ii7",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        },
+        {
+          "symbol": "I",
+          "beats": 8
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "major-circle",
+      "mood": "gentle fall of fifths",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "viio",
+          "beats": 2
+        },
+        {
+          "symbol": "iii",
+          "beats": 2
+        },
+        {
+          "symbol": "vi",
+          "beats": 2
+        },
+        {
+          "symbol": "ii",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "fanfare",
+      "mood": "trumpets from the balcony",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        },
+        {
+          "symbol": "vi",
+          "beats": 4
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        }
+      ],
+      "palette": "royal fireworks"
+    },
+    {
+      "id": "procession",
+      "mood": "the court walks in",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "V",
+          "beats": 2
+        },
+        {
+          "symbol": "vi",
+          "beats": 2
+        },
+        {
+          "symbol": "iii",
+          "beats": 2
+        },
+        {
+          "symbol": "IV",
+          "beats": 2
+        },
+        {
+          "symbol": "I",
+          "beats": 2
+        },
+        {
+          "symbol": "ii",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        }
+      ],
+      "palette": "royal fireworks"
+    },
+    {
+      "id": "trumpet-tune",
+      "mood": "plain and proud",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 4
+        },
+        {
+          "symbol": "IV",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        },
+        {
+          "symbol": "I",
+          "beats": 4
+        }
+      ],
+      "palette": "royal fireworks"
+    },
+    {
+      "id": "to-the-dominant",
+      "mood": "a step up to the dominant",
+      "chords": [
+        {
+          "symbol": "I",
+          "beats": 4
+        },
+        {
+          "symbol": "II7",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ],
+      "palette": "royal fireworks"
+    },
+    {
+      "id": "pedal-point",
+      "mood": "a long pedal under shifting chords",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 8
+        },
+        {
+          "symbol": "viio7",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "organ-circle",
+      "mood": "the full organ falls by fifths",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 2
+        },
+        {
+          "symbol": "iv",
+          "beats": 2
+        },
+        {
+          "symbol": "bVII",
+          "beats": 2
+        },
+        {
+          "symbol": "bIII",
+          "beats": 2
+        },
+        {
+          "symbol": "bVI",
+          "beats": 2
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "shadowed",
+      "mood": "flat-side darkness",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "bII",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "stone-steps",
+      "mood": "a slow descent down the nave",
+      "chords": [
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "V",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII",
+          "beats": 4
+        },
+        {
+          "symbol": "IV",
+          "beats": 4
+        },
+        {
+          "symbol": "bVI",
+          "beats": 4
+        },
+        {
+          "symbol": "i",
+          "beats": 4
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 4
+        },
+        {
+          "symbol": "V7",
+          "beats": 4
+        }
+      ],
+      "palette": "organ loft"
+    }
+  ],
+  "motifs": [
+    {
+      "id": "drum-bass",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 0.5,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.62
+        },
+        {
+          "t": 1,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.78
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.62
+        },
+        {
+          "t": 2,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 2.5,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.62
+        },
+        {
+          "t": 3,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.78
+        },
+        {
+          "t": 3.5,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.62
+        }
+      ]
+    },
+    {
+      "id": "walking-eighths",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.68
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.68
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.7,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "octave-leaps",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.42,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 0.5,
+          "d": 0.42,
+          "deg": 7,
+          "v": 0.68
+        },
+        {
+          "t": 1,
+          "d": 0.42,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 1.5,
+          "d": 0.42,
+          "deg": 7,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 0.42,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 2.5,
+          "d": 0.42,
+          "deg": 7,
+          "v": 0.68
+        },
+        {
+          "t": 3,
+          "d": 0.42,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 3.5,
+          "d": 0.42,
+          "deg": 0,
+          "v": 0.7,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "stately",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 1,
+          "d": 0.9,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 2,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.72
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.7,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "running-continuo",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 0.5,
+          "d": 0.24,
+          "deg": 7,
+          "v": 0.68
+        },
+        {
+          "t": 0.75,
+          "d": 0.24,
+          "deg": 6,
+          "v": 0.62
+        },
+        {
+          "t": 1,
+          "d": 0.24,
+          "deg": 5,
+          "v": 0.66
+        },
+        {
+          "t": 1.25,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.62
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.72
+        }
+      ]
+    },
+    {
+      "id": "air-walk",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.65
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.68
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.64
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.62
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.68
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.62,
+          "approach": true
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "air-step",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.64
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.62
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": -1,
+          "v": 0.62
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": -2,
+          "v": 0.66
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.62,
+          "approach": true
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "pedal",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 4,
+          "deg": 0,
+          "v": 0.85
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "pedal-steps",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.72
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "pedal-solo",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 0,
+          "v": 0.88
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.66
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": -1,
+          "v": 0.68
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.7,
+          "approach": true
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "style-brise",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.22,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.25,
+          "d": 0.22,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 0.75,
+          "d": 0.22,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.22,
+          "deg": 9,
+          "v": 0.7
+        },
+        {
+          "t": 1.25,
+          "d": 0.22,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1.75,
+          "d": 0.22,
+          "deg": 2,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "bariolage",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.22,
+          "deg": 2,
+          "v": 0.68
+        },
+        {
+          "t": 0.25,
+          "d": 0.22,
+          "deg": 7,
+          "v": 0.52
+        },
+        {
+          "t": 0.5,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.52
+        },
+        {
+          "t": 0.75,
+          "d": 0.22,
+          "deg": 7,
+          "v": 0.52
+        },
+        {
+          "t": 1,
+          "d": 0.22,
+          "deg": 2,
+          "v": 0.68
+        },
+        {
+          "t": 1.25,
+          "d": 0.22,
+          "deg": 7,
+          "v": 0.52
+        },
+        {
+          "t": 1.5,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.52
+        },
+        {
+          "t": 1.75,
+          "d": 0.22,
+          "deg": 7,
+          "v": 0.52
+        }
+      ]
+    },
+    {
+      "id": "figura-corta",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.22,
+          "deg": 6,
+          "v": 0.52
+        },
+        {
+          "t": 0.75,
+          "d": 0.22,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.66
+        },
+        {
+          "t": 1.5,
+          "d": 0.22,
+          "deg": 2,
+          "v": 0.52
+        },
+        {
+          "t": 1.75,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 9,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.22,
+          "deg": 8,
+          "v": 0.52
+        },
+        {
+          "t": 2.75,
+          "d": 0.22,
+          "deg": 9,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.66
+        },
+        {
+          "t": 3.5,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.52
+        },
+        {
+          "t": 3.75,
+          "d": 0.22,
+          "deg": 2,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "scale-rush",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.22,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.25,
+          "d": 0.22,
+          "deg": 1,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.22,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 0.75,
+          "d": 0.22,
+          "deg": 3,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1.25,
+          "d": 0.22,
+          "deg": 5,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.22,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 1.75,
+          "d": 0.22,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 0.22,
+          "deg": 9,
+          "v": 0.7
+        },
+        {
+          "t": 2.25,
+          "d": 0.22,
+          "deg": 7,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 2.75,
+          "d": 0.22,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.66
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.6
+        }
+      ]
+    },
+    {
+      "id": "broken-tenths",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.22,
+          "deg": 0,
+          "v": 0.68
+        },
+        {
+          "t": 0.25,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.52
+        },
+        {
+          "t": 0.5,
+          "d": 0.22,
+          "deg": 9,
+          "v": 0.52
+        },
+        {
+          "t": 0.75,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.52
+        },
+        {
+          "t": 1,
+          "d": 0.22,
+          "deg": 7,
+          "v": 0.68
+        },
+        {
+          "t": 1.25,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.52
+        },
+        {
+          "t": 1.5,
+          "d": 0.22,
+          "deg": 9,
+          "v": 0.52
+        },
+        {
+          "t": 1.75,
+          "d": 0.22,
+          "deg": 4,
+          "v": 0.52
+        }
+      ]
+    },
+    {
+      "id": "lute-roll",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.7,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 0.5,
+          "d": 0.7,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.7,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.7,
+          "deg": 9,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 0.7,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.7,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 0.7,
+          "deg": 2,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.7,
+          "deg": 4,
+          "v": 0.5
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "air-broken",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.6,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.6,
+          "deg": 7,
+          "v": 0.52
+        },
+        {
+          "t": 1.5,
+          "d": 0.6,
+          "deg": 9,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 0.6,
+          "deg": 7,
+          "v": 0.5
+        },
+        {
+          "t": 3,
+          "d": 0.6,
+          "deg": 4,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.6,
+          "deg": 2,
+          "v": 0.48
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "organ-sweep",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.24,
+          "deg": 0,
+          "v": 0.72
+        },
+        {
+          "t": 0.25,
+          "d": 0.24,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 0.5,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.6
+        },
+        {
+          "t": 0.75,
+          "d": 0.24,
+          "deg": 7,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.24,
+          "deg": 9,
+          "v": 0.72
+        },
+        {
+          "t": 1.25,
+          "d": 0.24,
+          "deg": 11,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 1.5,
+          "deg": 14,
+          "v": 0.78
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 13,
+          "v": 0.6
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 11,
+          "v": 0.6
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "manual-figure",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.24,
+          "deg": 7,
+          "v": 0.68
+        },
+        {
+          "t": 0.25,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.24,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 0.75,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1,
+          "d": 0.24,
+          "deg": 5,
+          "v": 0.68
+        },
+        {
+          "t": 1.25,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.24,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 1.75,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.55
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "pleno",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.48,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.48,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 1,
+          "d": 0.48,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.48,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 2,
+          "d": 0.48,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.48,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 3,
+          "d": 0.48,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 3.5,
+          "d": 0.48,
+          "deg": 4,
+          "v": 0.58
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "corta",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.62
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.75
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.75
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 1,
+          "v": 0.62
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.66
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 4,
+          "v": 0.82
+        }
+      ]
+    },
+    {
+      "id": "suspirans",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.62
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.66
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 0.75,
+          "deg": 7,
+          "v": 0.85
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.62
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.66
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.8
+        }
+      ]
+    },
+    {
+      "id": "leap-and-fill",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.78
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.85
+        },
+        {
+          "t": 1,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.66
+        },
+        {
+          "t": 1.25,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.62
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.75
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.66
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.72
+        }
+      ]
+    },
+    {
+      "id": "sequence-cell",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.62
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.66
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.75
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "singing-line",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.66
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.66
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.76
+        },
+        {
+          "t": 4,
+          "d": 1.5,
+          "deg": 3,
+          "v": 0.78
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.66
+        },
+        {
+          "t": 6,
+          "d": 1,
+          "deg": 1,
+          "v": 0.72
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 2,
+          "v": 0.75
+        }
+      ]
+    },
+    {
+      "id": "cadence-turn",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 2,
+          "v": 0.82
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 1,
+          "v": 0.62
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.66
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "deg": 0,
+          "v": 0.8
+        }
+      ]
+    },
+    {
+      "id": "string-crossing",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.24,
+          "deg": 7,
+          "v": 0.76
+        },
+        {
+          "t": 0.25,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 0.5,
+          "d": 0.24,
+          "deg": 6,
+          "v": 0.58
+        },
+        {
+          "t": 0.75,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 1,
+          "d": 0.24,
+          "deg": 5,
+          "v": 0.76
+        },
+        {
+          "t": 1.25,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 1.5,
+          "d": 0.24,
+          "deg": 6,
+          "v": 0.58
+        },
+        {
+          "t": 1.75,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 2,
+          "d": 0.24,
+          "deg": 7,
+          "v": 0.76
+        },
+        {
+          "t": 2.25,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 2.5,
+          "d": 0.24,
+          "deg": 9,
+          "v": 0.58
+        },
+        {
+          "t": 2.75,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 3,
+          "d": 0.24,
+          "deg": 7,
+          "v": 0.76
+        },
+        {
+          "t": 3.25,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 3.5,
+          "d": 0.24,
+          "deg": 6,
+          "v": 0.58
+        },
+        {
+          "t": 3.75,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.58
+        }
+      ]
+    },
+    {
+      "id": "entree",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 0,
+          "v": 0.85
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 1,
+          "v": 0.62
+        },
+        {
+          "t": 1,
+          "d": 0.75,
+          "deg": 2,
+          "v": 0.8
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.62
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 7,
+          "v": 0.85
+        }
+      ]
+    },
+    {
+      "id": "rocket",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.24,
+          "deg": 0,
+          "v": 0.78
+        },
+        {
+          "t": 0.25,
+          "d": 0.24,
+          "deg": 2,
+          "v": 0.66
+        },
+        {
+          "t": 0.5,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.66
+        },
+        {
+          "t": 0.75,
+          "d": 0.24,
+          "deg": 7,
+          "v": 0.66
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 9,
+          "v": 0.86
+        },
+        {
+          "t": 2,
+          "d": 0.24,
+          "deg": 8,
+          "v": 0.72
+        },
+        {
+          "t": 2.25,
+          "d": 0.24,
+          "deg": 7,
+          "v": 0.62
+        },
+        {
+          "t": 2.5,
+          "d": 0.24,
+          "deg": 6,
+          "v": 0.62
+        },
+        {
+          "t": 2.75,
+          "d": 0.24,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 4,
+          "v": 0.78
+        }
+      ]
+    },
+    {
+      "id": "air-arch",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 3,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.66
+        },
+        {
+          "t": 4,
+          "d": 2,
+          "deg": 7,
+          "v": 0.82
+        },
+        {
+          "t": 6,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.66
+        },
+        {
+          "t": 6.5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 4,
+          "v": 0.72
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "air-sigh",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.74
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.64
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.64
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "air-turn",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 2,
+          "v": 0.75
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.64
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 1,
+          "v": 0.6
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.68
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 3,
+          "v": 0.72
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "air-ascent",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 0,
+          "v": 0.72
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 1,
+          "v": 0.66
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.62
+        },
+        {
+          "t": 6,
+          "d": 2,
+          "deg": 2,
+          "v": 0.74
+        }
+      ],
+      "palette": "slow air"
+    },
+    {
+      "id": "fanfare-call",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 0,
+          "v": 0.88
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.78
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 2,
+          "d": 1.5,
+          "deg": 7,
+          "v": 0.92
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.75
+        }
+      ],
+      "palette": "royal fireworks"
+    },
+    {
+      "id": "trumpet-air",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 4,
+          "v": 0.85
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.66
+        },
+        {
+          "t": 1,
+          "d": 0.75,
+          "deg": 6,
+          "v": 0.8
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.66
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.78
+        }
+      ],
+      "palette": "royal fireworks"
+    },
+    {
+      "id": "tattoo",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 0.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.66
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.78
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 7,
+          "v": 0.9
+        },
+        {
+          "t": 2,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.76
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.64
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.76
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.82
+        }
+      ],
+      "palette": "royal fireworks"
+    },
+    {
+      "id": "clarino",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.88
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 8,
+          "v": 0.68
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 9,
+          "v": 0.72
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 8,
+          "v": 0.82
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.78
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 4,
+          "v": 0.8
+        }
+      ],
+      "palette": "royal fireworks"
+    },
+    {
+      "id": "subject",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1,
+          "deg": 0,
+          "v": 0.82
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.7
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.66
+        },
+        {
+          "t": 3,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.66
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.66
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.72
+        },
+        {
+          "t": 4.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.66
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.66
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.66
+        },
+        {
+          "t": 6,
+          "d": 1,
+          "deg": -1,
+          "v": 0.76
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 0,
+          "v": 0.8
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "answer-run",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.76
+        },
+        {
+          "t": 0.25,
+          "d": 0.24,
+          "deg": 3,
+          "v": 0.62
+        },
+        {
+          "t": 0.5,
+          "d": 0.24,
+          "deg": 2,
+          "v": 0.62
+        },
+        {
+          "t": 0.75,
+          "d": 0.24,
+          "deg": 1,
+          "v": 0.62
+        },
+        {
+          "t": 1,
+          "d": 0.24,
+          "deg": 0,
+          "v": 0.76
+        },
+        {
+          "t": 1.25,
+          "d": 0.24,
+          "deg": 1,
+          "v": 0.62
+        },
+        {
+          "t": 1.5,
+          "d": 0.24,
+          "deg": 2,
+          "v": 0.62
+        },
+        {
+          "t": 1.75,
+          "d": 0.24,
+          "deg": 3,
+          "v": 0.62
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.78
+        },
+        {
+          "t": 2.5,
+          "d": 0.5,
+          "deg": 7,
+          "v": 0.82
+        },
+        {
+          "t": 3,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.66
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 3.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.72
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "chorale-phrase",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 7,
+          "v": 0.8
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 6,
+          "v": 0.7
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 5,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 2,
+          "deg": 4,
+          "v": 0.78
+        },
+        {
+          "t": 6,
+          "d": 1,
+          "deg": 3,
+          "v": 0.68
+        },
+        {
+          "t": 7,
+          "d": 1,
+          "deg": 2,
+          "v": 0.74
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "episode",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 2,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.76
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.64
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.62
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.72
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.68
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "echo-thirds",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.66
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.66
+        },
+        {
+          "t": 2,
+          "d": 1.5,
+          "deg": 0,
+          "v": 0.72
+        }
+      ]
+    },
+    {
+      "id": "held-suspension",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2,
+          "deg": 4,
+          "v": 0.7
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 3,
+          "v": 0.72
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.68
+        }
+      ]
+    },
+    {
+      "id": "imitation",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 2,
+          "d": 0.24,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 2.25,
+          "d": 0.24,
+          "deg": 5,
+          "v": 0.64
+        },
+        {
+          "t": 2.5,
+          "d": 0.24,
+          "deg": 6,
+          "v": 0.64
+        },
+        {
+          "t": 2.75,
+          "d": 0.24,
+          "deg": 7,
+          "v": 0.64
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 9,
+          "v": 0.78
+        }
+      ]
+    },
+    {
+      "id": "walking-sixths",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.68
+        },
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.64
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.64
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.68
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "oboe-lilt",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.75,
+          "deg": 2,
+          "v": 0.72
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 3,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 1,
+          "deg": 4,
+          "v": 0.74
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 5,
+          "v": 0.62
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.62
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "deg": 2,
+          "v": 0.7
+        }
+      ]
+    }
+  ],
+  "comping": [
+    {
+      "id": "continuo-quarters",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 4,
+      "strum": 0.03,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.8,
+          "v": 0.6
+        },
+        {
+          "t": 1,
+          "d": 0.8,
+          "v": 0.45
+        },
+        {
+          "t": 2,
+          "d": 0.8,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.8,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "continuo-halves",
+      "role": "comp",
+      "voicing": "close",
+      "lengthBeats": 4,
+      "strum": 0.05,
+      "hits": [
+        {
+          "t": 0,
+          "d": 1.8,
+          "v": 0.58
+        },
+        {
+          "t": 2,
+          "d": 1.8,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "rolled-chord",
+      "role": "comp",
+      "voicing": "spread",
+      "lengthBeats": 4,
+      "strum": 0.09,
+      "hits": [
+        {
+          "t": 0,
+          "d": 3.6,
+          "v": 0.58
+        }
+      ]
+    },
+    {
+      "id": "after-beats",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 4,
+      "strum": 0.02,
+      "hits": [
+        {
+          "t": 0.5,
+          "d": 0.4,
+          "v": 0.5
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "v": 0.45
+        },
+        {
+          "t": 2.5,
+          "d": 0.4,
+          "v": 0.5
+        },
+        {
+          "t": 3.5,
+          "d": 0.4,
+          "v": 0.45
+        }
+      ]
+    },
+    {
+      "id": "ripieno-sustain",
+      "role": "pad",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 4,
+          "v": 0.5
+        }
+      ]
+    },
+    {
+      "id": "ripieno-eighths",
+      "role": "pad",
+      "voicing": "close",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.4,
+          "v": 0.55
+        },
+        {
+          "t": 0.5,
+          "d": 0.4,
+          "v": 0.38
+        },
+        {
+          "t": 1,
+          "d": 0.4,
+          "v": 0.46
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "v": 0.38
+        },
+        {
+          "t": 2,
+          "d": 0.4,
+          "v": 0.55
+        },
+        {
+          "t": 2.5,
+          "d": 0.4,
+          "v": 0.38
+        },
+        {
+          "t": 3,
+          "d": 0.4,
+          "v": 0.46
+        },
+        {
+          "t": 3.5,
+          "d": 0.4,
+          "v": 0.38
+        }
+      ]
+    },
+    {
+      "id": "ripieno-halves",
+      "role": "pad",
+      "voicing": "triad",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 2,
+          "v": 0.52
+        },
+        {
+          "t": 2,
+          "d": 2,
+          "v": 0.46
+        }
+      ]
+    },
+    {
+      "id": "plenum",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 8,
+          "v": 0.55
+        }
+      ],
+      "palette": "organ loft"
+    },
+    {
+      "id": "manual-chords",
+      "role": "pad",
+      "voicing": "close",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 2,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 1,
+          "v": 0.48
+        },
+        {
+          "t": 3,
+          "d": 1,
+          "v": 0.5
+        }
+      ],
+      "palette": "organ loft"
+    }
+  ],
+  "drums": [
+    {
+      "id": "timpani-sparse",
+      "kind": "groove",
+      "intensity": 0.3,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X...............",
+        "tomHigh": "........x.......",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "timpani-march",
+      "kind": "groove",
+      "intensity": 0.55,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X.......x.......",
+        "tomHigh": "....x.......x.x.",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "timpani-thunder",
+      "kind": "groove",
+      "intensity": 0.82,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "X...x...X...x.xx",
+        "tomHigh": "..x...x...x.....",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "timpani-flourish",
+      "kind": "fill",
+      "intensity": 0.7,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "......xx....xxXX",
+        "tomHigh": "x.x.xx..x.x.....",
+        "shaker": ""
+      }
+    }
+  ],
+  "forms": [
+    {
+      "id": "concerto-allegro",
+      "sections": [
+        {
+          "label": "ritornello",
+          "bars": 8,
+          "intensity": 0.72,
+          "roles": [
+            "lead",
+            "counter",
+            "pad",
+            "comp",
+            "bass"
+          ],
+          "progression": "ritornello"
+        },
+        {
+          "label": "solo",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "lead",
+            "arp",
+            "bass"
+          ]
+        },
+        {
+          "label": "episode",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass"
+          ],
+          "progression": "fifths-fall"
+        },
+        {
+          "label": "tutti",
+          "bars": 8,
+          "intensity": 0.82,
+          "roles": [
+            "lead",
+            "counter",
+            "pad",
+            "arp",
+            "comp",
+            "bass"
+          ]
+        },
+        {
+          "label": "coda",
+          "bars": 4,
+          "intensity": 0.65,
+          "roles": [
+            "lead",
+            "pad",
+            "comp",
+            "bass"
+          ],
+          "progression": "cadence-loop"
+        }
+      ]
+    },
+    {
+      "id": "trio-sonata",
+      "sections": [
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "lead",
+            "counter",
+            "arp",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass",
+            "pad"
+          ]
+        },
+        {
+          "label": "C",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "counter",
+            "arp",
+            "bass"
+          ]
+        },
+        {
+          "label": "coda",
+          "bars": 4,
+          "intensity": 0.55,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "bass"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "air",
+      "sections": [
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.35,
+          "roles": [
+            "lead",
+            "pad",
+            "bass",
+            "comp"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.42,
+          "roles": [
+            "lead",
+            "counter",
+            "bass",
+            "arp",
+            "pad"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.4,
+          "roles": [
+            "lead",
+            "pad",
+            "bass",
+            "arp"
+          ]
+        },
+        {
+          "label": "coda",
+          "bars": 4,
+          "intensity": 0.3,
+          "roles": [
+            "lead",
+            "pad",
+            "bass"
+          ]
+        }
+      ],
+      "palette": "slow air",
+      "tempo": {
+        "min": 60,
+        "max": 72
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "G",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "F",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "Eb",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "A",
+          "mode": "ionian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Flauto traverso",
+          "program": 73,
+          "octave": 5,
+          "volume": 0.5,
+          "pan": -0.2
+        },
+        {
+          "role": "counter",
+          "name": "Viola",
+          "program": 41,
+          "octave": 4,
+          "volume": 0.4,
+          "pan": 0.3
+        }
+      ]
+    },
+    {
+      "id": "fireworks",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "drums",
+            "bass"
+          ],
+          "progression": "trumpet-tune"
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.75,
+          "roles": [
+            "lead",
+            "counter",
+            "pad",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "counter",
+            "arp",
+            "comp",
+            "bass"
+          ]
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.85,
+          "roles": [
+            "lead",
+            "counter",
+            "pad",
+            "arp",
+            "comp",
+            "bass",
+            "drums"
+          ]
+        },
+        {
+          "label": "trio",
+          "bars": 8,
+          "intensity": 0.5,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "pad"
+          ]
+        },
+        {
+          "label": "coda",
+          "bars": 4,
+          "intensity": 0.85,
+          "roles": [
+            "lead",
+            "counter",
+            "pad",
+            "comp",
+            "bass",
+            "drums"
+          ],
+          "progression": "trumpet-tune"
+        }
+      ],
+      "palette": "royal fireworks",
+      "tempo": {
+        "min": 104,
+        "max": 120
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "C",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "Bb",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "G",
+          "mode": "ionian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Natural trumpet",
+          "program": 56,
+          "octave": 5,
+          "volume": 0.55,
+          "pan": -0.2
+        }
+      ]
+    },
+    {
+      "id": "toccata",
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.55,
+          "roles": [
+            "arp",
+            "bass"
+          ],
+          "progression": "pedal-point"
+        },
+        {
+          "label": "subject",
+          "bars": 8,
+          "intensity": 0.45,
+          "roles": [
+            "lead",
+            "bass"
+          ]
+        },
+        {
+          "label": "answer",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "lead",
+            "counter",
+            "bass",
+            "arp"
+          ]
+        },
+        {
+          "label": "pleno",
+          "bars": 8,
+          "intensity": 0.85,
+          "roles": [
+            "lead",
+            "counter",
+            "arp",
+            "pad",
+            "bass"
+          ]
+        },
+        {
+          "label": "coda",
+          "bars": 4,
+          "intensity": 0.8,
+          "roles": [
+            "lead",
+            "pad",
+            "arp",
+            "bass"
+          ],
+          "progression": "pedal-point"
+        }
+      ],
+      "palette": "organ loft",
+      "tempo": {
+        "min": 80,
+        "max": 96
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "G",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "C",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "A",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "E",
+          "mode": "harmonicMinor"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Great organ",
+          "program": 19,
+          "octave": 5,
+          "volume": 0.5,
+          "pan": -0.15
+        },
+        {
+          "role": "counter",
+          "name": "Reed stop",
+          "program": 20,
+          "octave": 4,
+          "volume": 0.4,
+          "pan": 0.25
+        },
+        {
+          "role": "arp",
+          "name": "Positive organ",
+          "program": 19,
+          "octave": 4,
+          "volume": 0.42,
+          "pan": 0.15
+        },
+        {
+          "role": "pad",
+          "name": "Principal chorus",
+          "program": 19,
+          "octave": 3,
+          "volume": 0.4,
+          "pan": 0
+        },
+        {
+          "role": "bass",
+          "name": "Organ pedals",
+          "program": 19,
+          "octave": 2,
+          "volume": 0.7,
+          "pan": 0
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.65,
+    "low": 57,
+    "high": 88,
+    "phraseBars": 4,
+    "stepwise": 0.75,
+    "restProbability": 0.12,
+    "ornament": 0.2,
+    "trill": 0.3
+  },
+  "ending": {
+    "picardy": true,
+    "ritardando": 0.3
+  }
+}

@@ -4,7 +4,7 @@ Endless background music in a browser tab. Pick one or more styles (Metroid
 Vibes, Retro Games, Lo-fi Hip Hop, Jazz Piano Trio, Minimalist Piano, Monkey
 Island Vibes, Electro Swing, Synthwave, Bossa Nova, 70s Funk, Spaghetti
 Western, Celtic Tavern, Café Musette, Liquid Drum & Bass, Castlevania Vibes,
-16-bit JRPG) and it plays forever, never repeating,
+16-bit JRPG, Mirrorball Disco, Baroque Court) and it plays forever, never repeating,
 without streaming anything: every note is arranged and synthesized live in the
 page.
 
@@ -17,7 +17,9 @@ page.
 - **Algorithmically arranged.** In the browser, a seeded arranger picks key,
   tempo and form for each piece, binds material to sections, develops lead
   motifs (sequence, inversion, mutation, cadences), voice-leads the chords,
-  swings and humanizes, and rotates between your selected styles.
+  swings and humanizes, and rotates between your selected styles. A style can
+  also ask for trills on long notes, a ritardando into the final chord and a
+  Picardy third (Baroque Court asks for all three).
 - **Played on an FM chip, or not.** By default notes go to [libADLMIDI](https://github.com/Wohlstand/libADLMIDI)
   (Nuked OPL3 emulation, WebAssembly) in an AudioWorklet, with sample-accurate
   timing. Each style uses a classic DOS-era FM patch bank. The **Sound** chips
@@ -221,7 +223,7 @@ localhost) for AudioWorklet.
   under `samples/`, so the page makes no requests to other hosts. Only what the
   styles can play is fetched: each style declares its instruments and key
   ranges, so a soundfont program contributes just the notes its parts can reach
-  (about 2,700 files, 85 MB for all sixteen styles; a listener downloads the
+  (about 2,800 files, 92 MB for all eighteen styles; a listener downloads the
   slice a piece needs). The files are pinned by hash and not checked in. The recordings: Splendid Grand Piano (public domain), VCSL
   (CC0), D. Smolken double bass (CC0), Greg Sullivan's Wurlitzer (CC BY 3.0),
   MusyngKite (CC BY-SA 3.0), plus drum-machine and Sonic Pi kits. The page

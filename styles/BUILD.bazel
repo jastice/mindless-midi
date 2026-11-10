@@ -17,6 +17,8 @@ STYLES = [
     "liquid_dnb",
     "castlevania",
     "jrpg",
+    "disco",
+    "baroque",
 ]
 
 style_pack(
