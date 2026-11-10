@@ -30,6 +30,8 @@ export interface BarContext {
   mode: ModeName;
   harmony: Harmony;
   beatsPerBar: number;
+  /** Optional additive meter; group starts are melodic landing points. */
+  beatGroups?: readonly number[];
   /** Section-relative beat at which this bar starts. */
   barStart: number;
   barInSection: number;
@@ -394,11 +396,19 @@ export function writeMelody(
   const out: NoteEvent[] = [];
   const barEnd = ctx.barStart + ctx.beatsPerBar;
   const center = Math.round((range[0] + range[1]) / 2);
+  let groupStart = 0;
+  const strongBeats = ctx.beatGroups?.map((beats) => {
+    const start = groupStart;
+    groupStart += beats;
+    return start;
+  });
   for (const n of phrase) {
     if (n.t < ctx.barStart - 1e-9 || n.t >= barEnd - 1e-9) continue;
     const raw = resolveDegree(ctx, n.anchor, n, n.t, center);
     const span = ctx.harmony.at(n.t);
-    const strong = n.t % 2 === 0 || n.cadence;
+    // Grouping resets at each barline, including in odd meters. Without an
+    // explicit grouping, keep existing corpora's phrasing and seeded output.
+    const strong = (strongBeats ? strongBeats.includes(mod(n.t, ctx.beatsPerBar)) : n.t % 2 === 0) || n.cadence;
     const prev = memory.lastNote.get(role);
     let allowed: number[] | null = null;
     if (!n.grace && ((strong && n.d >= 0.5) || n.d >= 1)) allowed = stableMelodyPitchClasses(ctx.tonic, span.chord);

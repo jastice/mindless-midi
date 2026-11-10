@@ -19,6 +19,8 @@ STYLES = [
     "jrpg",
     "disco",
     "baroque",
+    "orbital_glass",
+    "midnight_platform",
 ]
 
 style_pack(

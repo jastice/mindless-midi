@@ -4,13 +4,14 @@ Endless background music in a browser tab. Pick one or more styles (Metroid
 Vibes, Retro Games, Lo-fi Hip Hop, Jazz Piano Trio, Minimalist Piano, Monkey
 Island Vibes, Electro Swing, Synthwave, Bossa Nova, 70s Funk, Spaghetti
 Western, Celtic Tavern, Café Musette, Liquid Drum & Bass, Castlevania Vibes,
-16-bit JRPG, Mirrorball Disco, Baroque Court) and it plays forever, never repeating,
-without streaming anything: every note is arranged and synthesized live in the
+16-bit JRPG, Mirrorball Disco, Baroque Court, Orbital Glass, Midnight Platform)
+and it plays forever, never repeating, without streaming anything: every note
+is arranged and synthesized live in the
 page.
 
 **Live:** https://mindless-midi.pages.dev/ (the old GitHub Pages address redirects here)
 
-- **LLM-seeded.** At build time Claude writes each style's *corpus*: chord
+- **LLM-seeded.** Claude and Astra author each style's checked-in *corpus*: chord
   progressions, motifs, bass and arpeggio ostinatos, comping rhythms, drum
   grooves, song forms, instrumentation. The corpora are checked in, so builds
   are hermetic and need no API key.
@@ -19,7 +20,9 @@ page.
   motifs (sequence, inversion, mutation, cadences), voice-leads the chords,
   swings and humanizes, and rotates between your selected styles. A style can
   also ask for trills on long notes, a ritardando into the final chord and a
-  Picardy third (Baroque Court asks for all three).
+  Picardy third (Baroque Court asks for all three). Optional beat groups let
+  melodies land naturally in additive meters: Orbital Glass uses 7/4 (2+2+3)
+  with drifting bell figures; Midnight Platform is a 5/4 (3+2) jazz quintet.
 - **Played on an FM chip, or not.** By default notes go to [libADLMIDI](https://github.com/Wohlstand/libADLMIDI)
   (Nuked OPL3 emulation, WebAssembly) in an AudioWorklet, with sample-accurate
   timing. Each style uses a classic DOS-era FM patch bank. The **Sound** chips
@@ -157,9 +160,9 @@ profile. Use `--dry-run` to print the prompts without calling the API, and
 `--model <id>` to pick another model. Review the diff, rebuild (which
 re-calibrates loudness), listen, commit.
 
-The corpora currently checked in were written by Claude (Opus 5.5) directly
-during development rather than through this tool. Running the tool replaces
-them with API-generated ones.
+The original eighteen corpora were written by Claude (Opus 5.5) directly
+during development. Astra added Orbital Glass and Midnight Platform. Running
+the generation tool replaces the selected corpus with an API-generated one.
 
 ### Adding a style
 
@@ -223,7 +226,7 @@ localhost) for AudioWorklet.
   under `samples/`, so the page makes no requests to other hosts. Only what the
   styles can play is fetched: each style declares its instruments and key
   ranges, so a soundfont program contributes just the notes its parts can reach
-  (about 2,800 files, 92 MB for all eighteen styles; a listener downloads the
+  (about 2,800 files, 92 MB for all twenty styles; a listener downloads the
   slice a piece needs). The files are pinned by hash and not checked in. The recordings: Splendid Grand Piano (public domain), VCSL
   (CC0), D. Smolken double bass (CC0), Greg Sullivan's Wurlitzer (CC BY 3.0),
   MusyngKite (CC BY-SA 3.0), plus drum-machine and Sonic Pi kits. The page

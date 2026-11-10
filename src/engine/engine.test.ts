@@ -7,6 +7,9 @@ import { MODES, chordPitchClasses, mod, parseRoman } from "../theory/theory.js";
 import { Conductor, MAX_SEEK_PIECE } from "./conductor.js";
 import { barsToMidi } from "./midi_file.js";
 import type { Bar } from "./types.js";
+import { Harmony } from "./harmony.js";
+import { newMemory, writeMelody, writeOstinato, type BarContext } from "./parts.js";
+import { Rng } from "../theory/rng.js";
 
 const { styles } = JSON.parse(readFileSync("styles/styles.json", "utf8")) as { styles: StyleBundle[] };
 
@@ -437,4 +440,42 @@ test("an octave bass line keeps its octaves in every key", () => {
       }
     }
   }
+});
+
+test("additive meter gives melodies stable group starts in every bar", () => {
+  for (const groups of [[3, 2], [2, 2, 3]]) {
+    const beatsPerBar = groups.reduce((a, b) => a + b, 0);
+    const starts = groups.length === 2 ? [0, 3] : [0, 2, 4];
+    const harmony = new Harmony({ id: "held", mood: "test", chords: [{ symbol: "I", beats: beatsPerBar * 3 }] }, beatsPerBar * 3);
+    for (let t = 0; t < beatsPerBar * 3; t++) {
+      const ctx: BarContext = {
+        rng: new Rng("meter"), tonic: 0, mode: "ionian", harmony, beatsPerBar, beatGroups: groups,
+        barStart: Math.floor(t / beatsPerBar) * beatsPerBar, barInSection: Math.floor(t / beatsPerBar),
+        sectionBars: 3, intensity: 0.5,
+        instrument: { role: "lead", name: "piano", program: 0, octave: 4, volume: 0.5, pan: 0 },
+      };
+      // A ninth is allowed on a weak beat; group starts resolve it to a chord tone.
+      const phrase = [{ t, d: 0.5, deg: 1, v: 0.7, anchor: "key" as const }];
+      const pc = mod(writeMelody(ctx, phrase, "lead", [60, 72], newMemory())[0]!.key, 12);
+      assert.equal(pc === 2, !starts.includes(t % beatsPerBar), `${groups} at beat ${t}: pitch class ${pc}`);
+      // Omitting the setting retains the previous phrasing, even across odd barlines.
+      const legacy = mod(writeMelody({ ...ctx, beatGroups: undefined }, phrase, "lead", [60, 72], newMemory())[0]!.key, 12);
+      assert.equal(legacy === 2, t % 2 !== 0);
+    }
+  }
+});
+
+test("a three-beat ostinato drifts across seven-beat bars without resetting or duplicating notes", () => {
+  const harmony = new Harmony({ id: "orbit", mood: "test", chords: [{ symbol: "Imaj7", beats: 21 }] }, 21);
+  const motif = {
+    id: "satellite", role: "arp" as const, anchor: "chord" as const, lengthBeats: 3,
+    notes: [{ t: 0, d: 0.5, deg: 0, v: 0.7 }, { t: 1, d: 0.5, deg: 4, v: 0.5 }, { t: 2, d: 0.5, deg: 6, v: 0.5 }],
+  };
+  const notes = [0, 1, 2].flatMap((bar) => writeOstinato({
+    rng: new Rng("orbit"), tonic: 0, mode: "ionian", harmony, beatsPerBar: 7,
+    barStart: bar * 7, barInSection: bar, sectionBars: 3, intensity: 0.5,
+    instrument: { role: "arp", name: "vibes", program: 11, octave: 4, volume: 0.5, pan: 0 },
+  }, motif, [53, 79]).map((n) => ({ beat: bar * 7 + n.beat, pc: mod(n.key, 12) })));
+  assert.deepEqual(notes.map((n) => n.beat), Array.from({ length: 21 }, (_, i) => i));
+  assert.deepEqual(notes.map((n) => n.pc), Array.from({ length: 21 }, (_, i) => [0, 7, 11][i % 3]));
 });

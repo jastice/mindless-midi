@@ -176,6 +176,8 @@ export const StyleCorpus = z.object({
   description: z.string().describe("One or two evocative sentences shown in the UI."),
   tempo: z.object({ min: z.number().min(40).max(220), max: z.number().min(40).max(220) }).describe("BPM range."),
   beatsPerBar: z.number().int().min(2).max(7),
+  beatGroups: z.array(z.number().int().positive()).min(1).optional()
+    .describe("Optional beat grouping within each bar, e.g. [3, 2] for 5/4 or [2, 2, 3] for 7/4. Must sum to beatsPerBar. Melodies treat the start of each group as a strong beat."),
   swing: unit.describe("0 = straight; 1 = full triplet swing."),
   swingUnit: z.enum(["8th", "16th"]),
   humanize: unit.describe("Timing/velocity looseness. Chip music ~0.05, live trio ~0.5."),

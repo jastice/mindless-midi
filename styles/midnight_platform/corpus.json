@@ -1,0 +1,1099 @@
+{
+  "title": "Midnight Platform",
+  "description": "The last train runs in five. Vibraphone and a late-night sax trade little secrets over piano, upright bass, and a brushed three-plus-two pulse.",
+  "tempo": {
+    "min": 92,
+    "max": 126
+  },
+  "beatsPerBar": 5,
+  "beatGroups": [
+    3,
+    2
+  ],
+  "swing": 0.48,
+  "swingUnit": "8th",
+  "humanize": 0.4,
+  "keys": [
+    {
+      "tonic": "D",
+      "mode": "dorian"
+    },
+    {
+      "tonic": "G",
+      "mode": "dorian"
+    },
+    {
+      "tonic": "Eb",
+      "mode": "ionian"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Platform vibraphone",
+      "program": 11,
+      "octave": 5,
+      "volume": 0.76,
+      "pan": 0.15
+    },
+    {
+      "role": "counter",
+      "name": "After-hours tenor",
+      "program": 66,
+      "octave": 4,
+      "volume": 0.55,
+      "pan": -0.24
+    },
+    {
+      "role": "comp",
+      "name": "Close-miked piano",
+      "program": 0,
+      "octave": 4,
+      "volume": 0.53,
+      "pan": -0.12
+    },
+    {
+      "role": "bass",
+      "name": "Walking upright",
+      "program": 32,
+      "octave": 2,
+      "volume": 0.83,
+      "pan": 0
+    },
+    {
+      "role": "drums",
+      "name": "Soft club kit",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.46,
+      "pan": 0.05
+    }
+  ],
+  "progressions": [
+    {
+      "id": "platform-vamp",
+      "mood": "minor jazz, a warm sixth in the rain",
+      "palette": "last train",
+      "chords": [
+        {
+          "symbol": "i9",
+          "beats": 5
+        },
+        {
+          "symbol": "IV9",
+          "beats": 5
+        },
+        {
+          "symbol": "i7",
+          "beats": 5
+        },
+        {
+          "symbol": "IV6",
+          "beats": 5
+        }
+      ]
+    },
+    {
+      "id": "last-connection",
+      "mood": "a short detour through the relative major",
+      "palette": "last train",
+      "chords": [
+        {
+          "symbol": "bIIImaj7",
+          "beats": 5
+        },
+        {
+          "symbol": "VI7",
+          "beats": 5
+        },
+        {
+          "symbol": "ii7",
+          "beats": 5
+        },
+        {
+          "symbol": "V7",
+          "beats": 5
+        }
+      ]
+    },
+    {
+      "id": "wet-pavement",
+      "mood": "minor turn with a half-diminished doorway",
+      "palette": "rain on the platform",
+      "chords": [
+        {
+          "symbol": "i7",
+          "beats": 5
+        },
+        {
+          "symbol": "iv7",
+          "beats": 5
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 5
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 5
+        }
+      ]
+    },
+    {
+      "id": "neon-reflection",
+      "mood": "falling lights and a held breath",
+      "palette": "rain on the platform",
+      "chords": [
+        {
+          "symbol": "bVImaj7",
+          "beats": 5
+        },
+        {
+          "symbol": "iv9",
+          "beats": 5
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 5
+        },
+        {
+          "symbol": "V7",
+          "beats": 5
+        }
+      ]
+    },
+    {
+      "id": "first-service",
+      "mood": "the shutters rise on a major turnaround",
+      "palette": "first service",
+      "chords": [
+        {
+          "symbol": "Imaj7",
+          "beats": 5
+        },
+        {
+          "symbol": "vi7",
+          "beats": 5
+        },
+        {
+          "symbol": "ii9",
+          "beats": 5
+        },
+        {
+          "symbol": "V13",
+          "beats": 5
+        }
+      ]
+    },
+    {
+      "id": "daybreak",
+      "mood": "a longer way home",
+      "palette": "first service",
+      "chords": [
+        {
+          "symbol": "IVmaj7",
+          "beats": 5
+        },
+        {
+          "symbol": "iv6",
+          "beats": 5
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 5
+        },
+        {
+          "symbol": "ii7",
+          "beats": 3
+        },
+        {
+          "symbol": "V7",
+          "beats": 2
+        }
+      ]
+    }
+  ],
+  "motifs": [
+    {
+      "id": "platform-question",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 10,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.7,
+          "deg": 2,
+          "v": 0.78
+        },
+        {
+          "t": 1,
+          "d": 0.35,
+          "deg": 4,
+          "v": 0.58
+        },
+        {
+          "t": 1.5,
+          "d": 0.35,
+          "deg": 6,
+          "v": 0.66
+        },
+        {
+          "t": 3,
+          "d": 0.8,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 4,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.56
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 1,
+          "v": 0.6
+        },
+        {
+          "t": 6.5,
+          "d": 0.4,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 8,
+          "d": 1.4,
+          "deg": 0,
+          "v": 0.72
+        }
+      ],
+      "palette": "last train"
+    },
+    {
+      "id": "missed-connection",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 5,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.68
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 2.5,
+          "d": 0.3,
+          "deg": 5,
+          "v": 0.55
+        },
+        {
+          "t": 3,
+          "d": 0.8,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 4.5,
+          "d": 0.35,
+          "deg": 2,
+          "v": 0.52
+        }
+      ],
+      "palette": "last train"
+    },
+    {
+      "id": "rain-question",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 10,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.3,
+          "deg": 6,
+          "v": 0.72
+        },
+        {
+          "t": 2,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.56
+        },
+        {
+          "t": 3,
+          "d": 0.8,
+          "deg": 2,
+          "v": 0.73
+        },
+        {
+          "t": 5.5,
+          "d": 0.45,
+          "deg": 1,
+          "v": 0.54
+        },
+        {
+          "t": 6.5,
+          "d": 0.4,
+          "deg": 2,
+          "v": 0.63
+        },
+        {
+          "t": 8,
+          "d": 1.5,
+          "deg": 0,
+          "v": 0.68
+        }
+      ],
+      "palette": "rain on the platform"
+    },
+    {
+      "id": "wet-footsteps",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 5,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.8,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "deg": 3,
+          "v": 0.54
+        },
+        {
+          "t": 2,
+          "d": 0.4,
+          "deg": 2,
+          "v": 0.61
+        },
+        {
+          "t": 3,
+          "d": 1.5,
+          "deg": 0,
+          "v": 0.7
+        }
+      ],
+      "palette": "rain on the platform"
+    },
+    {
+      "id": "morning-ticket",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 10,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.7,
+          "deg": 0,
+          "v": 0.74
+        },
+        {
+          "t": 1,
+          "d": 0.4,
+          "deg": 2,
+          "v": 0.6
+        },
+        {
+          "t": 1.5,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.68
+        },
+        {
+          "t": 3,
+          "d": 0.8,
+          "deg": 6,
+          "v": 0.8
+        },
+        {
+          "t": 4.5,
+          "d": 0.4,
+          "deg": 4,
+          "v": 0.56
+        },
+        {
+          "t": 5.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.63
+        },
+        {
+          "t": 6.5,
+          "d": 0.4,
+          "deg": 1,
+          "v": 0.54
+        },
+        {
+          "t": 8,
+          "d": 1.5,
+          "deg": 0,
+          "v": 0.72
+        }
+      ],
+      "palette": "first service"
+    },
+    {
+      "id": "doors-open",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 5,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 2,
+          "v": 0.62
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "deg": 4,
+          "v": 0.68
+        },
+        {
+          "t": 3,
+          "d": 0.8,
+          "deg": 7,
+          "v": 0.78
+        },
+        {
+          "t": 4,
+          "d": 0.7,
+          "deg": 6,
+          "v": 0.6
+        }
+      ],
+      "palette": "first service"
+    },
+    {
+      "id": "tenor-answer",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 10,
+      "notes": [
+        {
+          "t": 1.5,
+          "d": 0.8,
+          "deg": 2,
+          "v": 0.58
+        },
+        {
+          "t": 3,
+          "d": 1.4,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 6.5,
+          "d": 0.6,
+          "deg": 6,
+          "v": 0.52
+        },
+        {
+          "t": 8,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.6
+        }
+      ]
+    },
+    {
+      "id": "smoke-ring",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 5,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.8,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 0.6,
+          "deg": 4,
+          "v": 0.57
+        },
+        {
+          "t": 3,
+          "d": 1.6,
+          "deg": 2,
+          "v": 0.62
+        }
+      ]
+    },
+    {
+      "id": "three-then-two",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 5,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.85,
+          "deg": 0,
+          "v": 0.82
+        },
+        {
+          "t": 1,
+          "d": 0.75,
+          "deg": 2,
+          "v": 0.63
+        },
+        {
+          "t": 2,
+          "d": 0.75,
+          "deg": 4,
+          "v": 0.66
+        },
+        {
+          "t": 3,
+          "d": 0.85,
+          "deg": 0,
+          "v": 0.78
+        },
+        {
+          "t": 4,
+          "d": 0.75,
+          "deg": 4,
+          "v": 0.64
+        }
+      ]
+    },
+    {
+      "id": "walking-home",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 10,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.85,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 1,
+          "d": 0.8,
+          "deg": 2,
+          "v": 0.62
+        },
+        {
+          "t": 2,
+          "d": 0.8,
+          "deg": 4,
+          "v": 0.67
+        },
+        {
+          "t": 3,
+          "d": 0.85,
+          "deg": 6,
+          "v": 0.76
+        },
+        {
+          "t": 4,
+          "d": 0.7,
+          "deg": 0,
+          "v": 0.58,
+          "approach": true
+        },
+        {
+          "t": 5,
+          "d": 0.85,
+          "deg": 0,
+          "v": 0.8
+        },
+        {
+          "t": 6,
+          "d": 0.8,
+          "deg": 4,
+          "v": 0.64
+        },
+        {
+          "t": 7,
+          "d": 0.8,
+          "deg": 2,
+          "v": 0.61
+        },
+        {
+          "t": 8,
+          "d": 0.85,
+          "deg": 4,
+          "v": 0.74
+        },
+        {
+          "t": 9,
+          "d": 0.7,
+          "deg": 0,
+          "v": 0.58,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "waiting-room",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 5,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2.65,
+          "deg": 0,
+          "v": 0.77
+        },
+        {
+          "t": 3,
+          "d": 1.65,
+          "deg": 4,
+          "v": 0.66
+        }
+      ]
+    }
+  ],
+  "comping": [
+    {
+      "id": "piano-shadows",
+      "role": "comp",
+      "voicing": "rootless",
+      "lengthBeats": 5,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0.5,
+          "d": 0.55,
+          "v": 0.57
+        },
+        {
+          "t": 3,
+          "d": 0.75,
+          "v": 0.66
+        },
+        {
+          "t": 4.5,
+          "d": 0.3,
+          "v": 0.43
+        }
+      ]
+    },
+    {
+      "id": "quiet-shells",
+      "role": "comp",
+      "voicing": "shell",
+      "lengthBeats": 5,
+      "strum": 0.012,
+      "hits": [
+        {
+          "t": 0,
+          "d": 1.5,
+          "v": 0.54
+        },
+        {
+          "t": 3,
+          "d": 1.2,
+          "v": 0.6
+        }
+      ]
+    },
+    {
+      "id": "offbeat-conversation",
+      "role": "comp",
+      "voicing": "rootless",
+      "lengthBeats": 10,
+      "strum": 0.008,
+      "hits": [
+        {
+          "t": 1.5,
+          "d": 0.55,
+          "v": 0.52
+        },
+        {
+          "t": 3,
+          "d": 0.8,
+          "v": 0.64
+        },
+        {
+          "t": 5.5,
+          "d": 0.55,
+          "v": 0.5
+        },
+        {
+          "t": 8,
+          "d": 1.2,
+          "v": 0.62
+        }
+      ]
+    }
+  ],
+  "drums": [
+    {
+      "id": "platform-brushes",
+      "kind": "groove",
+      "intensity": 0.35,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "o...........o.......",
+        "snare": "",
+        "rim": "............x.......",
+        "clap": "",
+        "closedHat": "....o...........o...",
+        "openHat": "",
+        "ride": "x...o.x.....x...o.x.",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "three-plus-two-ride",
+      "kind": "groove",
+      "intensity": 0.62,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x...........x.......",
+        "snare": "........o.......o...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "....x...........x...",
+        "openHat": "",
+        "ride": "X...x.x.....X...x.x.",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "waiting-in-rain",
+      "kind": "groove",
+      "intensity": 0.2,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "o...................",
+        "snare": "",
+        "rim": "............o.......",
+        "clap": "",
+        "closedHat": "....o...........o...",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "last-call",
+      "kind": "fill",
+      "intensity": 0.45,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x...........o.......",
+        "snare": "........o...x.o...o.",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "x.......x...........",
+        "crash": "",
+        "tomLow": "..................x.",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "departure",
+      "kind": "fill",
+      "intensity": 0.68,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x...........x.......",
+        "snare": "....o.....o.xx......",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "x...x...............",
+        "crash": "",
+        "tomLow": "..................x.",
+        "tomHigh": "..............x.x...",
+        "shaker": ""
+      }
+    }
+  ],
+  "forms": [
+    {
+      "id": "last-train",
+      "palette": "last train",
+      "tempo": {
+        "min": 108,
+        "max": 120
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "G",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "C",
+          "mode": "dorian"
+        }
+      ],
+      "sections": [
+        {
+          "label": "intro · empty platform",
+          "bars": 4,
+          "intensity": 0.24,
+          "roles": [
+            "bass",
+            "comp",
+            "drums"
+          ],
+          "progression": "platform-vamp"
+        },
+        {
+          "label": "A · last train",
+          "bars": 8,
+          "intensity": 0.55,
+          "roles": [
+            "bass",
+            "comp",
+            "drums",
+            "lead"
+          ],
+          "progression": "platform-vamp"
+        },
+        {
+          "label": "B · missed connection",
+          "bars": 8,
+          "intensity": 0.64,
+          "roles": [
+            "bass",
+            "comp",
+            "drums",
+            "counter"
+          ],
+          "progression": "last-connection"
+        },
+        {
+          "label": "A · last train",
+          "bars": 8,
+          "intensity": 0.6,
+          "roles": [
+            "bass",
+            "comp",
+            "drums",
+            "lead",
+            "counter"
+          ],
+          "progression": "platform-vamp"
+        },
+        {
+          "label": "outro · tail lights",
+          "bars": 4,
+          "intensity": 0.25,
+          "roles": [
+            "bass",
+            "comp",
+            "lead"
+          ],
+          "progression": "platform-vamp"
+        }
+      ]
+    },
+    {
+      "id": "rain-on-the-platform",
+      "palette": "rain on the platform",
+      "tempo": {
+        "min": 92,
+        "max": 104
+      },
+      "keys": [
+        {
+          "tonic": "C",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "A",
+          "mode": "harmonicMinor"
+        },
+        {
+          "tonic": "D",
+          "mode": "harmonicMinor"
+        }
+      ],
+      "sections": [
+        {
+          "label": "intro · rain",
+          "bars": 4,
+          "intensity": 0.18,
+          "roles": [
+            "comp",
+            "lead"
+          ],
+          "progression": "wet-pavement"
+        },
+        {
+          "label": "A · wet pavement",
+          "bars": 8,
+          "intensity": 0.35,
+          "roles": [
+            "bass",
+            "comp",
+            "drums",
+            "lead"
+          ],
+          "progression": "wet-pavement"
+        },
+        {
+          "label": "B · neon reflection",
+          "bars": 8,
+          "intensity": 0.46,
+          "roles": [
+            "bass",
+            "comp",
+            "counter"
+          ],
+          "progression": "neon-reflection"
+        },
+        {
+          "label": "A · wet pavement",
+          "bars": 8,
+          "intensity": 0.42,
+          "roles": [
+            "bass",
+            "comp",
+            "drums",
+            "lead",
+            "counter"
+          ],
+          "progression": "wet-pavement"
+        },
+        {
+          "label": "outro · footsteps",
+          "bars": 4,
+          "intensity": 0.2,
+          "roles": [
+            "bass",
+            "comp"
+          ],
+          "progression": "wet-pavement"
+        }
+      ]
+    },
+    {
+      "id": "first-service",
+      "palette": "first service",
+      "tempo": {
+        "min": 116,
+        "max": 126
+      },
+      "keys": [
+        {
+          "tonic": "Eb",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "F",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "Bb",
+          "mode": "ionian"
+        }
+      ],
+      "sections": [
+        {
+          "label": "intro · shutters",
+          "bars": 4,
+          "intensity": 0.3,
+          "roles": [
+            "bass",
+            "comp",
+            "drums"
+          ],
+          "progression": "first-service"
+        },
+        {
+          "label": "A · first service",
+          "bars": 8,
+          "intensity": 0.58,
+          "roles": [
+            "bass",
+            "comp",
+            "drums",
+            "lead"
+          ],
+          "progression": "first-service"
+        },
+        {
+          "label": "B · daybreak",
+          "bars": 8,
+          "intensity": 0.66,
+          "roles": [
+            "bass",
+            "comp",
+            "drums",
+            "counter"
+          ],
+          "progression": "daybreak"
+        },
+        {
+          "label": "A · first service",
+          "bars": 8,
+          "intensity": 0.63,
+          "roles": [
+            "bass",
+            "comp",
+            "drums",
+            "lead",
+            "counter"
+          ],
+          "progression": "first-service"
+        },
+        {
+          "label": "outro · doors close",
+          "bars": 4,
+          "intensity": 0.27,
+          "roles": [
+            "bass",
+            "comp",
+            "lead"
+          ],
+          "progression": "first-service"
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.55,
+    "low": 60,
+    "high": 84,
+    "phraseBars": 2,
+    "stepwise": 0.73,
+    "restProbability": 0.1,
+    "ornament": 0.12
+  },
+  "ending": {
+    "ritardando": 0.12
+  }
+}

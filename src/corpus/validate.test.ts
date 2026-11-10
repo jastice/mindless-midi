@@ -32,9 +32,18 @@ test("musical errors are caught", () => {
     ["role without material", (c) => (c.motifs = c.motifs.filter((m: any) => m.role !== "arp")), /no material/],
     ["unknown bound progression", (c) => (c.forms[0].sections[0].progression = "nope"), /unknown progression/],
     ["duplicate role", (c) => c.instruments.push({ ...c.instruments[0] }), /duplicate role/],
+    ["wrong beat grouping", (c) => (c.beatGroups = [3, 2]), /beatGroups.*sum/],
+    ["empty beat grouping", (c) => (c.beatGroups = []), /beatGroups/],
+    ["zero beat group", (c) => (c.beatGroups = [0, 4]), /beatGroups/],
+    ["fractional beat group", (c) => (c.beatGroups = [1.5, 2.5]), /beatGroups/],
   ];
   for (const [name, mutate, re] of cases) {
     const e = errors(mutate);
     assert.ok(e.some((x) => re.test(x)), `${name}: ${e.join(" | ") || "no errors"}`);
   }
+});
+
+test("beat grouping is optional and accepts groups adding to the meter", () => {
+  assert.deepEqual(errors((c) => (c.beatGroups = [2, 2])), []);
+  assert.deepEqual(errors((c) => delete c.beatGroups), []);
 });

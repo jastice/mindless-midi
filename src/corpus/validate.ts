@@ -26,6 +26,10 @@ export function validateCorpus(input: unknown): ValidationResult {
   const warnings: string[] = [];
   const bpb = c.beatsPerBar;
 
+  if (c.beatGroups && c.beatGroups.reduce((sum, beats) => sum + beats, 0) !== bpb) {
+    errors.push(`beatGroups: must sum to beatsPerBar (${bpb})`);
+  }
+
   if (c.tempo.min > c.tempo.max) errors.push(`tempo: min ${c.tempo.min} > max ${c.tempo.max}`);
   if (c.melody.low >= c.melody.high) errors.push(`melody: low ${c.melody.low} >= high ${c.melody.high}`);
   if (c.melody.high - c.melody.low < 12) warnings.push("melody: range narrower than an octave");

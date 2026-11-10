@@ -120,6 +120,18 @@ Object.assign(PRESETS, {
     reverb: { seconds: 2.5, predelay: 0.03, bright: 0.5, send: { lead: 0.3, counter: 0.3, arp: 0.22, comp: 0.18, pad: 0.38, bass: 0.12, drums: 0.25 } },
     highpass: { lead: 150, counter: 150, arp: 100, comp: 80, pad: 110 },
   },
+  // Bells in a dark observatory; keep the low foundation dry and centered.
+  orbital_glass: {
+    reverb: { seconds: 4.2, predelay: 0.045, bright: 0.35, send: { lead: 0.4, counter: 0.45, arp: 0.3, pad: 0.5 } },
+    delay: { beats: 0.75, feedback: 0.3, send: { lead: 0.12, counter: 0.18, arp: 0.1 } },
+    chorus: ["pad"],
+    highpass: { lead: 250, counter: 300, arp: 180, pad: 180 },
+  },
+  // A small club: room around the soloists, clear attacks on piano and bass.
+  midnight_platform: {
+    reverb: { seconds: 1.35, predelay: 0.018, bright: 0.35, send: { lead: 0.22, counter: 0.18, comp: 0.12, bass: 0.04, drums: 0.06 } },
+    highpass: { lead: 140, counter: 130, comp: 100 },
+  },
 } satisfies Record<string, MixPreset>);
 
 const DEFAULT_PRESET: MixPreset = { reverb: { seconds: 1.8, predelay: 0.02, bright: 0.5, send: { lead: 0.2, pad: 0.3 } }, highpass: {} };

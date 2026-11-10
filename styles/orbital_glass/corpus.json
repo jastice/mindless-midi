@@ -1,0 +1,936 @@
+{
+  "title": "Orbital Glass",
+  "description": "Bells orbit a slow sea of chords in seven. Three-beat figures slip past the barline, fall into alignment, and drift apart again.",
+  "tempo": {
+    "min": 72,
+    "max": 90
+  },
+  "beatsPerBar": 7,
+  "beatGroups": [
+    2,
+    2,
+    3
+  ],
+  "swing": 0,
+  "swingUnit": "8th",
+  "humanize": 0.12,
+  "keys": [
+    {
+      "tonic": "F",
+      "mode": "lydian"
+    },
+    {
+      "tonic": "C",
+      "mode": "lydian"
+    },
+    {
+      "tonic": "D",
+      "mode": "dorian"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Celesta glints",
+      "program": 8,
+      "octave": 5,
+      "volume": 0.65,
+      "pan": 0.1
+    },
+    {
+      "role": "counter",
+      "name": "Distant crystal",
+      "program": 98,
+      "octave": 5,
+      "volume": 0.32,
+      "pan": -0.32
+    },
+    {
+      "role": "arp",
+      "name": "Orbiting vibraphone",
+      "program": 11,
+      "octave": 4,
+      "volume": 0.48,
+      "pan": 0.35
+    },
+    {
+      "role": "pad",
+      "name": "Warm horizon",
+      "program": 89,
+      "octave": 3,
+      "volume": 0.42,
+      "pan": -0.12
+    },
+    {
+      "role": "bass",
+      "name": "Sine-like foundation",
+      "program": 38,
+      "octave": 2,
+      "volume": 0.56,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "prism",
+      "mood": "open sky, a raised fourth in the light",
+      "palette": "sunlit rings",
+      "chords": [
+        {
+          "symbol": "Imaj7",
+          "beats": 14
+        },
+        {
+          "symbol": "IIadd9",
+          "beats": 14
+        },
+        {
+          "symbol": "vi7",
+          "beats": 14
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 14
+        }
+      ]
+    },
+    {
+      "id": "refraction",
+      "mood": "a bright side-step before returning",
+      "palette": "sunlit rings",
+      "chords": [
+        {
+          "symbol": "IVmaj7",
+          "beats": 7
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 7
+        },
+        {
+          "symbol": "ii7",
+          "beats": 7
+        },
+        {
+          "symbol": "Vsus4",
+          "beats": 7
+        }
+      ]
+    },
+    {
+      "id": "eclipse",
+      "mood": "minor warmth with a Dorian sixth",
+      "palette": "umbra",
+      "chords": [
+        {
+          "symbol": "i9",
+          "beats": 14
+        },
+        {
+          "symbol": "IV6",
+          "beats": 14
+        },
+        {
+          "symbol": "bVIImaj7",
+          "beats": 14
+        },
+        {
+          "symbol": "i9",
+          "beats": 14
+        }
+      ]
+    },
+    {
+      "id": "night-side",
+      "mood": "slow descending silhouettes",
+      "palette": "umbra",
+      "chords": [
+        {
+          "symbol": "i7",
+          "beats": 7
+        },
+        {
+          "symbol": "bVIIadd9",
+          "beats": 7
+        },
+        {
+          "symbol": "IV6",
+          "beats": 7
+        },
+        {
+          "symbol": "i7",
+          "beats": 7
+        }
+      ]
+    },
+    {
+      "id": "blue-marble",
+      "mood": "home comes into view",
+      "palette": "earthrise",
+      "chords": [
+        {
+          "symbol": "Imaj7",
+          "beats": 14
+        },
+        {
+          "symbol": "iii7",
+          "beats": 14
+        },
+        {
+          "symbol": "IVmaj7",
+          "beats": 14
+        },
+        {
+          "symbol": "Iadd9",
+          "beats": 14
+        }
+      ]
+    },
+    {
+      "id": "horizon",
+      "mood": "a patient suspended arrival",
+      "palette": "earthrise",
+      "chords": [
+        {
+          "symbol": "vi7",
+          "beats": 7
+        },
+        {
+          "symbol": "IVmaj7",
+          "beats": 7
+        },
+        {
+          "symbol": "Vsus4",
+          "beats": 7
+        },
+        {
+          "symbol": "Imaj7",
+          "beats": 7
+        }
+      ]
+    }
+  ],
+  "motifs": [
+    {
+      "id": "prism-call",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 14,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.8,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 2.4,
+          "deg": 7,
+          "v": 0.74
+        },
+        {
+          "t": 7,
+          "d": 1.4,
+          "deg": 6,
+          "v": 0.58
+        },
+        {
+          "t": 9,
+          "d": 1.6,
+          "deg": 4,
+          "v": 0.64
+        },
+        {
+          "t": 11.5,
+          "d": 1.8,
+          "deg": 2,
+          "v": 0.48
+        }
+      ],
+      "palette": "sunlit rings"
+    },
+    {
+      "id": "sun-dust",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 7,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.8,
+          "deg": 2,
+          "v": 0.55
+        },
+        {
+          "t": 2,
+          "d": 1.4,
+          "deg": 4,
+          "v": 0.68
+        },
+        {
+          "t": 4,
+          "d": 0.9,
+          "deg": 6,
+          "v": 0.55
+        },
+        {
+          "t": 5.5,
+          "d": 0.9,
+          "deg": 4,
+          "v": 0.49
+        }
+      ],
+      "palette": "sunlit rings"
+    },
+    {
+      "id": "umbra-call",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 14,
+      "notes": [
+        {
+          "t": 0,
+          "d": 2.8,
+          "deg": 6,
+          "v": 0.6
+        },
+        {
+          "t": 4,
+          "d": 2.2,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 7.5,
+          "d": 1.4,
+          "deg": 2,
+          "v": 0.58
+        },
+        {
+          "t": 10,
+          "d": 2.8,
+          "deg": 0,
+          "v": 0.5
+        }
+      ],
+      "palette": "umbra"
+    },
+    {
+      "id": "distant-beacon",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 7,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.4,
+          "deg": 4,
+          "v": 0.65
+        },
+        {
+          "t": 2.5,
+          "d": 0.4,
+          "deg": 5,
+          "v": 0.45
+        },
+        {
+          "t": 4,
+          "d": 1.7,
+          "deg": 2,
+          "v": 0.58
+        },
+        {
+          "t": 6,
+          "d": 0.65,
+          "deg": 0,
+          "v": 0.42
+        }
+      ],
+      "palette": "umbra"
+    },
+    {
+      "id": "earthrise-call",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 14,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.8,
+          "deg": 0,
+          "v": 0.65
+        },
+        {
+          "t": 2,
+          "d": 1.3,
+          "deg": 2,
+          "v": 0.62
+        },
+        {
+          "t": 4,
+          "d": 2.4,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 7,
+          "d": 2.4,
+          "deg": 7,
+          "v": 0.7
+        },
+        {
+          "t": 10,
+          "d": 0.9,
+          "deg": 6,
+          "v": 0.56
+        },
+        {
+          "t": 12,
+          "d": 1.7,
+          "deg": 4,
+          "v": 0.6
+        }
+      ],
+      "palette": "earthrise"
+    },
+    {
+      "id": "home-signal",
+      "role": "lead",
+      "anchor": "chord",
+      "lengthBeats": 7,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.7,
+          "deg": 7,
+          "v": 0.65
+        },
+        {
+          "t": 2.5,
+          "d": 0.7,
+          "deg": 6,
+          "v": 0.5
+        },
+        {
+          "t": 4,
+          "d": 1.3,
+          "deg": 4,
+          "v": 0.64
+        },
+        {
+          "t": 6,
+          "d": 0.8,
+          "deg": 2,
+          "v": 0.5
+        }
+      ],
+      "palette": "earthrise"
+    },
+    {
+      "id": "crystal-response",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 14,
+      "notes": [
+        {
+          "t": 1.5,
+          "d": 1.2,
+          "deg": 6,
+          "v": 0.4
+        },
+        {
+          "t": 5,
+          "d": 1.6,
+          "deg": 4,
+          "v": 0.44
+        },
+        {
+          "t": 9.5,
+          "d": 1.2,
+          "deg": 2,
+          "v": 0.38
+        },
+        {
+          "t": 12,
+          "d": 1.5,
+          "deg": 4,
+          "v": 0.42
+        }
+      ]
+    },
+    {
+      "id": "far-satellite",
+      "role": "counter",
+      "anchor": "chord",
+      "lengthBeats": 7,
+      "notes": [
+        {
+          "t": 1,
+          "d": 0.8,
+          "deg": 7,
+          "v": 0.42
+        },
+        {
+          "t": 3.5,
+          "d": 1.1,
+          "deg": 4,
+          "v": 0.38
+        },
+        {
+          "t": 6,
+          "d": 0.7,
+          "deg": 6,
+          "v": 0.4
+        }
+      ]
+    },
+    {
+      "id": "three-beat-satellite",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 3,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.8,
+          "deg": 0,
+          "v": 0.58
+        },
+        {
+          "t": 1,
+          "d": 0.65,
+          "deg": 4,
+          "v": 0.44
+        },
+        {
+          "t": 2,
+          "d": 0.75,
+          "deg": 6,
+          "v": 0.48
+        }
+      ]
+    },
+    {
+      "id": "seven-beat-prism",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 7,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.8,
+          "deg": 0,
+          "v": 0.58
+        },
+        {
+          "t": 1,
+          "d": 0.7,
+          "deg": 4,
+          "v": 0.4
+        },
+        {
+          "t": 2,
+          "d": 0.8,
+          "deg": 2,
+          "v": 0.53
+        },
+        {
+          "t": 3,
+          "d": 0.7,
+          "deg": 6,
+          "v": 0.4
+        },
+        {
+          "t": 4,
+          "d": 0.8,
+          "deg": 4,
+          "v": 0.55
+        },
+        {
+          "t": 5,
+          "d": 0.6,
+          "deg": 7,
+          "v": 0.42
+        },
+        {
+          "t": 6,
+          "d": 0.7,
+          "deg": 6,
+          "v": 0.39
+        }
+      ],
+      "palette": "earthrise"
+    },
+    {
+      "id": "two-lights-in-three",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 3,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.4,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 2,
+          "d": 0.8,
+          "deg": 6,
+          "v": 0.43
+        }
+      ]
+    },
+    {
+      "id": "gravity",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 7,
+      "notes": [
+        {
+          "t": 0,
+          "d": 3.8,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 4,
+          "d": 2.7,
+          "deg": 4,
+          "v": 0.55
+        }
+      ]
+    },
+    {
+      "id": "long-shadow",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 14,
+      "notes": [
+        {
+          "t": 0,
+          "d": 6.7,
+          "deg": 0,
+          "v": 0.64
+        },
+        {
+          "t": 7,
+          "d": 3.8,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 11,
+          "d": 2.6,
+          "deg": 4,
+          "v": 0.47
+        }
+      ]
+    }
+  ],
+  "comping": [
+    {
+      "id": "horizon-breath",
+      "role": "pad",
+      "voicing": "open",
+      "lengthBeats": 14,
+      "strum": 0.035,
+      "hits": [
+        {
+          "t": 0,
+          "d": 13.8,
+          "v": 0.53
+        }
+      ]
+    },
+    {
+      "id": "slow-corona",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 7,
+      "strum": 0.04,
+      "hits": [
+        {
+          "t": 0,
+          "d": 6.8,
+          "v": 0.48
+        }
+      ]
+    }
+  ],
+  "drums": [],
+  "forms": [
+    {
+      "id": "glass-orbit",
+      "palette": "sunlit rings",
+      "tempo": {
+        "min": 78,
+        "max": 90
+      },
+      "keys": [
+        {
+          "tonic": "F",
+          "mode": "lydian"
+        },
+        {
+          "tonic": "C",
+          "mode": "lydian"
+        },
+        {
+          "tonic": "D",
+          "mode": "lydian"
+        }
+      ],
+      "sections": [
+        {
+          "label": "intro · ignition",
+          "bars": 2,
+          "intensity": 0.18,
+          "roles": [
+            "pad",
+            "arp"
+          ],
+          "progression": "prism"
+        },
+        {
+          "label": "A · sunlit rings",
+          "bars": 8,
+          "intensity": 0.38,
+          "roles": [
+            "bass",
+            "pad",
+            "arp",
+            "lead"
+          ],
+          "progression": "prism"
+        },
+        {
+          "label": "B · refraction",
+          "bars": 4,
+          "intensity": 0.5,
+          "roles": [
+            "bass",
+            "arp",
+            "lead",
+            "counter"
+          ],
+          "progression": "refraction"
+        },
+        {
+          "label": "A · sunlit rings",
+          "bars": 8,
+          "intensity": 0.46,
+          "roles": [
+            "bass",
+            "pad",
+            "arp",
+            "lead",
+            "counter"
+          ],
+          "progression": "prism"
+        },
+        {
+          "label": "outro · afterimage",
+          "bars": 2,
+          "intensity": 0.18,
+          "roles": [
+            "pad",
+            "arp"
+          ],
+          "progression": "prism"
+        }
+      ]
+    },
+    {
+      "id": "shadow-transit",
+      "palette": "umbra",
+      "tempo": {
+        "min": 72,
+        "max": 80
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "A",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "G",
+          "mode": "dorian"
+        }
+      ],
+      "sections": [
+        {
+          "label": "intro · dark limb",
+          "bars": 2,
+          "intensity": 0.15,
+          "roles": [
+            "pad",
+            "counter"
+          ],
+          "progression": "eclipse"
+        },
+        {
+          "label": "A · shadow transit",
+          "bars": 8,
+          "intensity": 0.3,
+          "roles": [
+            "bass",
+            "pad",
+            "arp",
+            "lead"
+          ],
+          "progression": "eclipse"
+        },
+        {
+          "label": "B · radio silence",
+          "bars": 4,
+          "intensity": 0.22,
+          "roles": [
+            "bass",
+            "pad",
+            "counter"
+          ],
+          "progression": "night-side"
+        },
+        {
+          "label": "A · shadow transit",
+          "bars": 8,
+          "intensity": 0.4,
+          "roles": [
+            "bass",
+            "pad",
+            "arp",
+            "lead"
+          ],
+          "progression": "eclipse"
+        },
+        {
+          "label": "outro · occlusion",
+          "bars": 2,
+          "intensity": 0.12,
+          "roles": [
+            "pad",
+            "counter"
+          ],
+          "progression": "eclipse"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Music-box beacon",
+          "program": 10,
+          "octave": 5,
+          "volume": 0.55,
+          "pan": 0.12
+        }
+      ]
+    },
+    {
+      "id": "earthrise",
+      "palette": "earthrise",
+      "tempo": {
+        "min": 76,
+        "max": 86
+      },
+      "keys": [
+        {
+          "tonic": "C",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "F",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "G",
+          "mode": "ionian"
+        }
+      ],
+      "sections": [
+        {
+          "label": "intro · blue edge",
+          "bars": 2,
+          "intensity": 0.17,
+          "roles": [
+            "pad",
+            "bass"
+          ],
+          "progression": "blue-marble"
+        },
+        {
+          "label": "A · earthrise",
+          "bars": 8,
+          "intensity": 0.4,
+          "roles": [
+            "bass",
+            "pad",
+            "arp",
+            "lead"
+          ],
+          "progression": "blue-marble"
+        },
+        {
+          "label": "B · first light",
+          "bars": 4,
+          "intensity": 0.55,
+          "roles": [
+            "bass",
+            "pad",
+            "arp",
+            "lead",
+            "counter"
+          ],
+          "progression": "horizon"
+        },
+        {
+          "label": "A · earthrise",
+          "bars": 8,
+          "intensity": 0.48,
+          "roles": [
+            "bass",
+            "pad",
+            "arp",
+            "lead",
+            "counter"
+          ],
+          "progression": "blue-marble"
+        },
+        {
+          "label": "outro · home",
+          "bars": 2,
+          "intensity": 0.2,
+          "roles": [
+            "pad",
+            "bass",
+            "arp"
+          ],
+          "progression": "horizon"
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.24,
+    "low": 67,
+    "high": 88,
+    "phraseBars": 2,
+    "stepwise": 0.8,
+    "restProbability": 0.12,
+    "ornament": 0.02
+  },
+  "ending": {
+    "ritardando": 0.2
+  }
+}

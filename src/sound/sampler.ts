@@ -360,6 +360,11 @@ const KITS: Record<string, Record<number, string>> = {
     36: `${SP}kick/drum_bass_soft.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
     45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_mid_soft.m4a`,
   },
+  midnight_platform: {
+    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-m.m4a`,
+    42: `${SP}cymbal/drum_cymbal_pedal.m4a`, 51: `${LM2}ride.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
+    45: `${SP}tom/drum_tom_lo_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`,
+  },
 };
 
 function drumKit(styleId: string): Instrument {

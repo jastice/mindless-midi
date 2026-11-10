@@ -316,6 +316,7 @@ export class Piece {
           mode: this.mode,
           harmony: section.harmony,
           beatsPerBar: bpb,
+          beatGroups: c.beatGroups,
           barStart,
           barInSection,
           sectionBars: section.bars,

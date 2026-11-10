@@ -439,6 +439,7 @@ const KITS: Record<string, Kit> = {
   disco: { kick: { f0: 150, f1: 52, sweep: 0.03, decay: 0.28, drive: 1.6, click: 0.35 }, snare: { tone: 215, toneDecay: 0.06, noiseDecay: 0.16, noiseHp: 1700, mix: 0.65 }, hatScale: 1.15, hatDecay: 0.04, toms: [120, 190] },
   // Kettledrums on the toms, a fourth apart.
   baroque: { kick: { f0: 100, f1: 50, sweep: 0.04, decay: 0.3, drive: 1, click: 0.05 }, snare: { tone: 190, toneDecay: 0.05, noiseDecay: 0.2, noiseHp: 1800, mix: 0.8 }, hatScale: 1, hatDecay: 0.045, toms: [82, 110] },
+  midnight_platform: { kick: { f0: 95, f1: 52, sweep: 0.04, decay: 0.23, drive: 1, click: 0.04 }, snare: { tone: 185, toneDecay: 0.035, noiseDecay: 0.28, noiseHp: 2400, mix: 0.88 }, hatScale: 0.9, hatDecay: 0.055, toms: [120, 180] },
 };
 
 const HAT_FREQS = [205.3, 304.4, 369.6, 522.7, 540, 800];
