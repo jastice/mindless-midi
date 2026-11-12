@@ -440,6 +440,10 @@ const KITS: Record<string, Kit> = {
   // Kettledrums on the toms, a fourth apart.
   baroque: { kick: { f0: 100, f1: 50, sweep: 0.04, decay: 0.3, drive: 1, click: 0.05 }, snare: { tone: 190, toneDecay: 0.05, noiseDecay: 0.2, noiseHp: 1800, mix: 0.8 }, hatScale: 1, hatDecay: 0.045, toms: [82, 110] },
   midnight_platform: { kick: { f0: 95, f1: 52, sweep: 0.04, decay: 0.23, drive: 1, click: 0.04 }, snare: { tone: 185, toneDecay: 0.035, noiseDecay: 0.28, noiseHp: 2400, mix: 0.88 }, hatScale: 0.9, hatDecay: 0.055, toms: [120, 180] },
+  // Frame drum: a short dum, a slap on the low tom.
+  courtyard_nine: { kick: { f0: 140, f1: 58, sweep: 0.02, decay: 0.16, drive: 1.15, click: 0.08 }, snare: { tone: 240, toneDecay: 0.03, noiseDecay: 0.07, noiseHp: 1800, mix: 0.45 }, hatScale: 0.7, hatDecay: 0.03, toms: [110, 160] },
+  // Soft kick under a singing bass; the shaker is the only chatter.
+  low_log: { kick: { f0: 125, f1: 44, sweep: 0.04, decay: 0.26, drive: 1.25, click: 0.1 }, snare: { tone: 170, toneDecay: 0.03, noiseDecay: 0.08, noiseHp: 1600, mix: 0.55 }, hatScale: 0.55, hatDecay: 0.025, toms: [95, 140] },
 };
 
 const HAT_FREQS = [205.3, 304.4, 369.6, 522.7, 540, 800];

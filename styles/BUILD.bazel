@@ -21,6 +21,8 @@ STYLES = [
     "baroque",
     "orbital_glass",
     "midnight_platform",
+    "courtyard_nine",
+    "low_log",
 ]
 
 style_pack(

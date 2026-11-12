@@ -365,6 +365,16 @@ const KITS: Record<string, Record<number, string>> = {
     42: `${SP}cymbal/drum_cymbal_pedal.m4a`, 51: `${LM2}ride.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
     45: `${SP}tom/drum_tom_lo_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`,
   },
+  // Dum on the kick, tek on the stick, slap on the tom, zills on the cabasa.
+  courtyard_nine: {
+    36: `${SP}kick/drum_bass_soft.m4a`, 37: `${LM2}stick-h.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
+    45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`, 70: `${LM2}cabasa.m4a`,
+  },
+  // Soft kick, a stick for the rare tick, cabasa for the shaker.
+  low_log: {
+    36: `${SP}kick/drum_bass_soft.m4a`, 37: `${LM2}stick-m.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
+    45: `${SP}tom/drum_tom_lo_soft.m4a`, 70: `${LM2}cabasa.m4a`,
+  },
 };
 
 function drumKit(styleId: string): Instrument {

@@ -4,14 +4,14 @@ Endless background music in a browser tab. Pick one or more styles (Metroid
 Vibes, Retro Games, Lo-fi Hip Hop, Jazz Piano Trio, Minimalist Piano, Monkey
 Island Vibes, Electro Swing, Synthwave, Bossa Nova, 70s Funk, Spaghetti
 Western, Celtic Tavern, Café Musette, Liquid Drum & Bass, Castlevania Vibes,
-16-bit JRPG, Mirrorball Disco, Baroque Court, Orbital Glass, Midnight Platform)
-and it plays forever, never repeating, without streaming anything: every note
+16-bit JRPG, Mirrorball Disco, Baroque Court, Orbital Glass, Midnight Platform,
+Courtyard Nine, Low Log) and it plays forever, never repeating, without streaming anything: every note
 is arranged and synthesized live in the
 page.
 
 **Live:** https://mindless-midi.pages.dev/ (the old GitHub Pages address redirects here)
 
-- **LLM-seeded.** Claude and Astra author each style's checked-in *corpus*: chord
+- **LLM-seeded.** Claude, Astra, and Grok author each style's checked-in *corpus*: chord
   progressions, motifs, bass and arpeggio ostinatos, comping rhythms, drum
   grooves, song forms, instrumentation. The corpora are checked in, so builds
   are hermetic and need no API key.
@@ -22,7 +22,10 @@ page.
   also ask for trills on long notes, a ritardando into the final chord and a
   Picardy third (Baroque Court asks for all three). Optional beat groups let
   melodies land naturally in additive meters: Orbital Glass uses 7/4 (2+2+3)
-  with drifting bell figures; Midnight Platform is a 5/4 (3+2) jazz quintet.
+  with drifting bell figures; Midnight Platform is a 5/4 (3+2) jazz quintet;
+  Courtyard Nine is a 9/8 aksak (2+2+2+3) in a double-harmonic mode, so a flat
+  second can lean against a major third. Low Log stays in 4/4 and puts the
+  tune in a late, hummable bass cell; the chords follow a half-beat behind.
 - **Played on an FM chip, or not.** By default notes go to [libADLMIDI](https://github.com/Wohlstand/libADLMIDI)
   (Nuked OPL3 emulation, WebAssembly) in an AudioWorklet, with sample-accurate
   timing. Each style uses a classic DOS-era FM patch bank. The **Sound** chips
@@ -161,7 +164,8 @@ profile. Use `--dry-run` to print the prompts without calling the API, and
 re-calibrates loudness), listen, commit.
 
 The original eighteen corpora were written by Claude (Opus 5.5) directly
-during development. Astra added Orbital Glass and Midnight Platform. Running
+during development. Astra added Orbital Glass and Midnight Platform. Grok added
+Courtyard Nine and Low Log. Running
 the generation tool replaces the selected corpus with an API-generated one.
 
 ### Adding a style

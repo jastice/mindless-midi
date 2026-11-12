@@ -46,6 +46,8 @@ test("chord scale keeps chord tones on their slots and stays in mode", () => {
   assert.deepEqual(chordScale("ionian", parseRoman("ii7")), [0, 2, 3, 5, 7, 9, 10]);
   // i in phrygian keeps the b2
   assert.deepEqual(chordScale("phrygian", parseRoman("i")), [0, 1, 3, 5, 7, 8, 10]);
+  // Imaj7 in double harmonic is the scale itself: b2, major 3rd, b6, leading tone.
+  assert.deepEqual(chordScale("doubleHarmonic", parseRoman("Imaj7")), [0, 1, 4, 5, 7, 8, 11]);
   // monotonic for every quality
   for (const sym of ["I", "isus2", "Isus4", "i5", "viio7", "bVII9", "IV6", "#ivø7"]) {
     const sc = chordScale("aeolian", parseRoman(sym));
@@ -114,6 +116,7 @@ test("stable melody tones avoid half-step clashes", () => {
 test("key labels are human readable", () => {
   assert.equal(keyLabel(0, "harmonicMinor"), "C harmonic minor");
   assert.equal(keyLabel(6, "phrygianDominant"), "F# phrygian dominant");
+  assert.equal(keyLabel(2, "doubleHarmonic"), "D double harmonic");
   assert.equal(keyLabel(14, "dorian"), "D dorian");
 });
 

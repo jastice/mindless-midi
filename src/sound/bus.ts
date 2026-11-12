@@ -127,6 +127,18 @@ Object.assign(PRESETS, {
     chorus: ["pad"],
     highpass: { lead: 250, counter: 300, arp: 180, pad: 180 },
   },
+  // A dry log in front, a small room on the late chords. The bass does not duck.
+  low_log: {
+    reverb: { seconds: 1.05, predelay: 0.01, bright: 0.28, send: { lead: 0.16, pad: 0.22, drums: 0.04, bass: 0.02 } },
+    duck: { depth: { pad: 0.28 }, release: 0.22 },
+    highpass: { lead: 160, pad: 180 },
+  },
+  // A stone court: the oboe and zither bloom, the oud and frame drum stay close.
+  courtyard_nine: {
+    reverb: { seconds: 2.1, predelay: 0.026, bright: 0.32, send: { lead: 0.2, counter: 0.36, arp: 0.26, pad: 0.4, bass: 0.05, drums: 0.07 } },
+    delay: { beats: 2, feedback: 0.22, send: { counter: 0.14, arp: 0.06 } },
+    highpass: { lead: 90, counter: 220, arp: 140, pad: 130 },
+  },
   // A small club: room around the soloists, clear attacks on piano and bass.
   midnight_platform: {
     reverb: { seconds: 1.35, predelay: 0.018, bright: 0.35, send: { lead: 0.22, counter: 0.18, comp: 0.12, bass: 0.04, drums: 0.06 } },

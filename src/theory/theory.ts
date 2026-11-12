@@ -44,6 +44,8 @@ export const MODES = {
   harmonicMinor: [0, 2, 3, 5, 7, 8, 11],
   melodicMinor: [0, 2, 3, 5, 7, 9, 11],
   phrygianDominant: [0, 1, 4, 5, 7, 8, 10],
+  /** Major with a flat 2 and flat 6: the hijaz kar / Byzantine scale. */
+  doubleHarmonic: [0, 1, 4, 5, 7, 8, 11],
 } as const satisfies Record<string, readonly number[]>;
 
 export type ModeName = keyof typeof MODES;

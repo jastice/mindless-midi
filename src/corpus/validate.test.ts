@@ -47,3 +47,11 @@ test("beat grouping is optional and accepts groups adding to the meter", () => {
   assert.deepEqual(errors((c) => (c.beatGroups = [2, 2])), []);
   assert.deepEqual(errors((c) => delete c.beatGroups), []);
 });
+
+test("a nine-beat aksak grouping fits a 9-beat bar", () => {
+  const e = errors((c) => {
+    c.beatsPerBar = 9;
+    c.beatGroups = [2, 2, 2, 3];
+  });
+  assert.ok(!e.some((x) => /beatGroups|beatsPerBar/.test(x)), e.join(" | "));
+});
