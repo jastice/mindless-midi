@@ -16,6 +16,7 @@ export interface AdlModule {
   _adl_rt_noteOff(player: number, ch: number, key: number): void;
   _adl_rt_controllerChange(player: number, ch: number, cc: number, value: number): void;
   _adl_rt_patchChange(player: number, ch: number, program: number): void;
+  _adl_rt_pitchBend(player: number, ch: number, pitch: number): void;
 }
 
 export type CreateAdlModule = (config?: {

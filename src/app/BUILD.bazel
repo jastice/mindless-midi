@@ -2,16 +2,32 @@ load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//bazel:stamp.bzl", "stamp_build_info")
 load("//bazel:ts.bzl", "ts_lib")
 
+# Playback without a page: the scheduler and engines, and the media-key anchor.
+# Shared with other front ends (//src/mighty).
+ts_lib(
+    name = "player",
+    srcs = [
+        "media_anchor.ts",
+        "player.ts",
+    ],
+    visibility = ["//src:__subpackages__"],
+    deps = [
+        "//src/audio:events",
+        "//src/corpus",
+        "//src/engine",
+        "//src/sound",
+    ],
+)
+
 ts_lib(
     name = "app",
     srcs = [
         "app.ts",
         "assets.d.ts",
-        "media_anchor.ts",
-        "player.ts",
         "roll.ts",
     ],
     deps = [
+        ":player",
         "//:node_modules/libadlmidi-js",
         "//src/audio:events",
         "//src/corpus",
@@ -54,7 +70,7 @@ stamp_build_info(
 filegroup(
     name = "fonts",
     srcs = glob(["fonts/*.woff2", "fonts/OFL-*.txt"]),
-    visibility = ["//site:__pkg__"],
+    visibility = ["//site:__pkg__", "//src/mighty:__pkg__"],
 )
 
 exports_files(

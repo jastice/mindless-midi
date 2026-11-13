@@ -51,6 +51,9 @@ class CoreSink implements SynthSink {
   programChange(ch: number, program: number): void {
     this.core.programChange(ch, program);
   }
+  pitchBend(ch: number, value: number): void {
+    this.core.pitchBend(ch, value);
+  }
   setBank(bank: number): void {
     if (bank === this.bank) return;
     this.bank = bank;

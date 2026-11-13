@@ -1,3 +1,4 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("//bazel:music.bzl", "style_pack", "style_samples")
 
 STYLES = [
@@ -38,6 +39,13 @@ style_samples(
     name = "samples",
     lock = "samples.lock.json",
     styles = ["//styles/%s:style" % s for s in STYLES],
+    visibility = ["//visibility:public"],
+)
+
+# The pin itself, for tests that check a file is among the ones the site serves.
+js_library(
+    name = "samples_lock_json",
+    srcs = ["samples.lock.json"],
     visibility = ["//visibility:public"],
 )
 

@@ -56,6 +56,9 @@ class Sink implements SynthSink {
   programChange(ch: number, program: number): void {
     this.m._adl_rt_patchChange(this.p, ch, program);
   }
+  pitchBend(ch: number, value: number): void {
+    this.m._adl_rt_pitchBend(this.p, ch, value);
+  }
   setBank(bank: number): void {
     if (bank === this.bank) return;
     this.bank = bank;

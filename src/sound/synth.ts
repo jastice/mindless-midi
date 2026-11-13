@@ -10,16 +10,26 @@
 import type { Role } from "../corpus/constants.js";
 import type { ScoreNote } from "./types.js";
 import { Noise, OnePole, Osc, type Stereo, Svf, adsr, mtof, stereo, yieldToUi } from "./dsp.js";
+import { renderShaped } from "./shape.js";
 
 /** Longest a synth note can ring past its onset, seconds (window sizing). */
 export const MAX_VOICE_SECONDS = 9;
 
-type Voice = (out: Stereo, n: ScoreNote, sr: number, prev: ScoreNote | undefined) => void;
+type Voice = (out: Stereo, n: ScoreNote, sr: number, prev: ScoreNote | undefined, touch: boolean) => void;
 
-/** Render one note (drums included) into `out`. `prev` is the previous note of the same role. */
-export function renderSynthNote(out: Stereo, n: ScoreNote, sr: number, styleId: string, prev?: ScoreNote): void {
-  if (n.role === "drums") drum(out, n, sr, KITS[styleId] ?? KITS.default!);
-  else voiceFor(n.program)(out, n, sr, prev);
+/**
+ * Render one note (drums included) into `out`. `prev` is the previous note of the same role.
+ *
+ * With `touch`, velocity is how hard the note is played and not only how loud:
+ * subtractive voices open their filter further and close it sooner, and drums
+ * get more click, a higher strike and a longer ring. A note's curves (a slide,
+ * a swell) are played either way.
+ */
+export function renderSynthNote(out: Stereo, n: ScoreNote, sr: number, styleId: string, prev?: ScoreNote, touch = false): void {
+  if (n.role === "drums") drum(out, n, sr, KITS[styleId] ?? KITS.default!, touch);
+  // A slide is the note's own glide: don't also glide from the previous note.
+  else if (n.curves) renderShaped(out, n, sr, (o, m) => voiceFor(m.program)(o, m, sr, m.curves?.bend ? undefined : prev, touch));
+  else voiceFor(n.program)(out, n, sr, prev, touch);
 }
 
 /** Offline: every note of a clip, one stem per role. */
@@ -339,9 +349,14 @@ const VIOLIN: SubSpec = { wave: "saw", voices: 1, detune: 0, cutoff: 2500, keytr
 
 
 function sub(spec: SubSpec): Voice {
-  return (out, n, sr, prev) => {
+  return (out, n, sr, prev, touch) => {
     const v = n.vel / 127;
     const f = mtof(n.key);
+    // How far velocity opens the filter envelope, where the filter rests, and how fast it closes.
+    const open = touch ? 0.12 + 1.2 * Math.pow(v, 1.6) : 0.4 + 0.6 * v;
+    const rest = touch ? spec.cutoff * (0.6 + 0.6 * v) : spec.cutoff;
+    const track = touch ? spec.keytrack * (0.6 + 0.6 * v) : spec.keytrack;
+    const fD = touch ? spec.fD * (1.35 - 0.7 * v) : spec.fD;
     const fromKey = spec.glide && prev?.legato && Math.abs(prev.t + prev.dur - n.t) < 0.03 ? prev.key : n.key;
     const len = Math.ceil((n.dur + spec.r) * sr);
     const start = Math.round(n.t * sr) - (out.base ?? 0);
@@ -382,8 +397,8 @@ function sub(spec: SubSpec): Voice {
       y /= Math.sqrt(oscs.length);
       if (spec.sub) y += spec.sub * subOsc.pulse(hz / 2 / sr);
       if (spec.breath) y += spec.breath * breathFilt.tick(noise.next()) * 4;
-      const fenv = adsr(t, n.dur, spec.fA, spec.fD, spec.fS, spec.r);
-      filt.set(spec.cutoff + spec.keytrack * hz + spec.envAmt * fenv * (0.4 + 0.6 * v), spec.q);
+      const fenv = adsr(t, n.dur, spec.fA, fD, spec.fS, spec.r);
+      filt.set(rest + track * hz + spec.envAmt * fenv * open, spec.q);
       let s = filt.tick(y);
       for (let k = 0; k < forms.length; k++) s += forms[k]!.tick(y) * spec.formants![k]![2];
       if (hp) {
@@ -448,8 +463,16 @@ const KITS: Record<string, Kit> = {
 
 const HAT_FREQS = [205.3, 304.4, 369.6, 522.7, 540, 800];
 
-function drum(out: Stereo, n: ScoreNote, sr: number, kit: Kit): void {
+function drum(out: Stereo, n: ScoreNote, sr: number, kit: Kit, touch: boolean): void {
   const v = Math.pow(n.vel / 127, 1.4);
+  // Touch: a harder hit has more click, starts higher and rings longer. (All 1 without it.)
+  const hit = n.vel / 127;
+  const snap = touch ? 0.35 + 1.5 * hit : 1;
+  const strike = touch ? 0.8 + 0.35 * hit : 1;
+  const ring = touch ? 0.75 + 0.4 * hit : 1;
+  // A choked note (an open hi-hat closing) stops at the end of its written length.
+  const cut = n.gesture === "choke" ? n.dur : Infinity;
+  const choke = (t: number) => (t > cut ? Math.exp(-(t - cut) / 0.012) : 1);
   const start = Math.round(n.t * sr) - (out.base ?? 0);
   const noise = new Noise(n.key * 2654435761 + Math.round(n.t * 1000));
   const write = (len: number, pan: number, fn: (t: number, i: number) => number) => {
@@ -474,7 +497,7 @@ function drum(out: Stereo, n: ScoreNote, sr: number, kit: Kit): void {
       y = y * 0.5 + noise.next() * 0.4;
       bp.tick(y);
       hp.tick(bp.bp);
-      return hp.hp * Math.exp(-t / decay) * level;
+      return hp.hp * Math.exp(-t / (decay * ring)) * level * choke(t);
     });
   };
   switch (n.key) {
@@ -483,10 +506,10 @@ function drum(out: Stereo, n: ScoreNote, sr: number, kit: Kit): void {
       const k = kit.kick;
       let ph = 0;
       write(k.decay * 3, 0, (t) => {
-        const f = k.f1 + (k.f0 - k.f1) * Math.exp(-t / k.sweep);
+        const f = k.f1 + (k.f0 * strike - k.f1) * Math.exp(-t / k.sweep);
         ph += f / sr;
-        const body = Math.sin(2 * Math.PI * ph) * Math.exp(-t / k.decay);
-        const click = t < 0.004 ? noise.next() * k.click * (1 - t / 0.004) : 0;
+        const body = Math.sin(2 * Math.PI * ph) * Math.exp(-t / (k.decay * ring));
+        const click = t < 0.004 ? noise.next() * (k.click * snap) * (1 - t / 0.004) : 0;
         return Math.tanh((body + click) * k.drive) * 0.8;
       });
       break;
@@ -497,9 +520,9 @@ function drum(out: Stereo, n: ScoreNote, sr: number, kit: Kit): void {
       const hp = new Svf(sr);
       hp.set(s.noiseHp, 0.8);
       write(0.6, 0.05, (t) => {
-        const tone = (Math.sin(2 * Math.PI * s.tone * t) + 0.5 * Math.sin(2 * Math.PI * s.tone * 1.73 * t)) * Math.exp(-t / s.toneDecay);
+        const tone = (Math.sin(2 * Math.PI * (s.tone * strike) * t) + 0.5 * Math.sin(2 * Math.PI * (s.tone * strike) * 1.73 * t)) * Math.exp(-t / s.toneDecay);
         hp.tick(noise.next());
-        const nz = hp.hp * Math.exp(-t / s.noiseDecay);
+        const nz = hp.hp * Math.exp(-t / (s.noiseDecay * ring));
         return (tone * (1 - s.mix) + nz * s.mix) * 0.7;
       });
       break;

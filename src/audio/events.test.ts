@@ -18,6 +18,7 @@ class VoiceCounter implements SynthSink {
   }
   controlChange(): void {}
   programChange(): void {}
+  pitchBend(): void {}
   setBank(): void {}
   reset(): void {}
   setGain(): void {}

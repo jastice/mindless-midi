@@ -34,6 +34,7 @@ export function barsToMidi(bars: readonly Bar[], title = "Mindless Midi"): Uint8
       const tick = at(c.beat);
       if (c.kind === "program") events.push({ tick, order: 1, bytes: [0xc0 | c.ch, c.value & 0x7f] });
       else if (c.kind === "cc") events.push({ tick, order: 1, bytes: [0xb0 | c.ch, c.cc & 0x7f, c.value & 0x7f] });
+      else if (c.kind === "bend") events.push({ tick, order: 1, bytes: [0xe0 | c.ch, c.value & 0x7f, (c.value >> 7) & 0x7f] });
       else if (c.kind === "reset") for (let ch = 0; ch < 16; ch++) events.push({ tick, order: 1, bytes: [0xb0 | ch, 123, 0] });
     }
     for (const n of bar.notes) {

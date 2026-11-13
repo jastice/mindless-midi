@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mighty Midi</title>
+    <meta name="description" content="Endless, algorithmically arranged MIDI music, played for weight: a kick-driven mix, notes that speak harder when they are hit harder, slides and swells. Generated live in your browser." />
+    <meta name="theme-color" content="#0b0b0d" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="fonts/ibm-plex-mono-normal-500.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <div class="rig">
+      <header class="top">
+        <h1>Mighty<br /><em>Midi</em></h1>
+        <div class="blurb">
+          <p>Endless music, written note by note in this tab. Still just MIDI, played like it means it.</p>
+          <p class="mono">Seed <b id="seed"></b> · <button id="reseed" class="text" type="button" title="Start over with a new random seed">Reseed</button> · <button id="share" class="text" type="button">Copy link</button></p>
+        </div>
+      </header>
+
+      <main>
+        <section class="deck" aria-label="Player">
+          <div class="screen">
+            <canvas id="stage" aria-hidden="true"></canvas>
+            <button id="curtain" class="curtain" type="button">
+              <span class="big"><span aria-hidden="true">▶</span> <span id="curtain-word">Play</span></span>
+              <span class="mono" id="curtain-note">Composed and played in this tab. Nothing is streamed.</span>
+            </button>
+          </div>
+
+          <div class="map" id="map" aria-label="Sections of this piece"></div>
+
+          <div class="bar">
+            <div class="transport">
+              <button id="play" class="play" type="button" aria-label="Play"><span id="play-glyph" aria-hidden="true">▶</span></button>
+              <button id="back" class="key" type="button" title="Back a section (←)" aria-label="Back a section">◂</button>
+              <span class="place mono" id="place" aria-live="polite" title="Piece and section">1.1</span>
+              <button id="on" class="key" type="button" title="On to the next section (→)" aria-label="Next section">▸</button>
+              <button id="next" class="key wide" type="button" title="Next piece (N)">Next piece</button>
+            </div>
+            <div class="now" aria-live="polite">
+              <h2 id="now-style">Ready</h2>
+              <div class="mono dim" id="now-meta">Pick styles, press play</div>
+              <div class="chords" id="now-chord"></div>
+            </div>
+            <div class="side">
+              <label class="vol mono">Volume <input id="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume" /></label>
+              <button id="midi" class="key wide" type="button" title="Download the last 10 minutes as a MIDI file, bends and swells included">Save MIDI</button>
+            </div>
+          </div>
+
+          <div class="meters mono" aria-hidden="true">
+            <div class="meter" id="lean"><span class="lbl">Lean</span><span class="track"><i></i></span><span class="num" id="lean-n"></span></div>
+            <div class="meter" id="m-peak"><span class="lbl">Peak</span><span class="track"><i></i></span><span class="num"></span></div>
+            <div class="meter" id="m-body"><span class="lbl">Body</span><span class="track"><i></i></span><span class="num" id="m-crest" title="Crest: peak over body">–</span></div>
+            <div class="meter hot" id="m-low"><span class="lbl">Low</span><span class="track"><i></i></span><span class="num" id="m-low-n" title="Share of the energy under 100 Hz">–</span></div>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="sound-h">
+          <h2 class="mono" id="sound-h">Sound</h2>
+          <div class="engines" id="engines" role="radiogroup" aria-labelledby="sound-h"></div>
+          <p class="dim" id="engine-desc"></p>
+        </section>
+
+        <section class="panel" aria-labelledby="styles-h">
+          <h2 class="mono" id="styles-h">Styles <button id="all" class="text" type="button">All</button> <button id="only" class="text" type="button" title="Keep only the style playing now">Only this</button></h2>
+          <div class="styles" id="styles"></div>
+        </section>
+      </main>
+
+      <footer class="foot">
+        <p>
+          The heavier sibling of <a href="https://mindless-midi.pages.dev/">Mindless Midi</a>: same seeds, same notes, same arranger. Here a
+          section's intensity reaches the mix, the kick ducks what sits on top of it, the low end is mono, and velocity changes how a note
+          sounds as well as how loud it is. Slides are pitch bend, swells are expression, so the MIDI file keeps all of it.
+        </p>
+        <p class="mono dim">Space plays · N next piece · ← → sections</p>
+        <p class="dim" id="credits" hidden></p>
+        <!-- @BUILD@ -->
+      </footer>
+    </div>
+  </body>
+</html>

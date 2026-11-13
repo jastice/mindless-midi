@@ -11,6 +11,7 @@ export const EV_CC = 3;
 export const EV_OFF = 4;
 export const EV_ON = 5;
 export const EV_GAIN = 6;
+export const EV_BEND = 7;
 
 export interface SynthEvent {
   /** Absolute sample frame. */
@@ -29,6 +30,8 @@ export interface SynthSink {
   noteOff(ch: number, key: number): void;
   controlChange(ch: number, cc: number, value: number): void;
   programChange(ch: number, program: number): void;
+  /** 14-bit pitch bend; 8192 is no bend. */
+  pitchBend(ch: number, value: number): void;
   setBank(bank: number): void;
   reset(): void;
   /** Output gain for the piece that starts here (not a MIDI message). */
@@ -60,6 +63,9 @@ export function barEvents(bar: Bar, startFrame: number, sampleRate: number): Syn
       case "gain":
         out.push({ frame, type: EV_GAIN, ch: 0, a: c.value, b: 0, id: 0 });
         break;
+      case "bend":
+        out.push({ frame, type: EV_BEND, ch: c.ch, a: c.value, b: 0, id: 0 });
+        break;
     }
   }
   for (const n of bar.notes) {
@@ -71,8 +77,11 @@ export function barEvents(bar: Bar, startFrame: number, sampleRate: number): Syn
   return out.sort(compareEvents);
 }
 
+/** At the same frame: setup, then controllers and bends, then note-offs, then note-ons. */
+const rank = (type: number) => (type === EV_BEND ? EV_CC + 0.5 : type);
+
 export function compareEvents(x: SynthEvent, y: SynthEvent): number {
-  return x.frame - y.frame || x.type - y.type;
+  return x.frame - y.frame || rank(x.type) - rank(y.type);
 }
 
 export function barFrames(bar: Pick<Bar, "beats" | "bpm">, sampleRate: number): number {
@@ -173,6 +182,9 @@ export class EventQueue {
         break;
       case EV_PROGRAM:
         sink.programChange(ev.ch, ev.a);
+        break;
+      case EV_BEND:
+        sink.pitchBend(ev.ch, ev.a);
         break;
       case EV_BANK:
         sink.setBank(ev.a);

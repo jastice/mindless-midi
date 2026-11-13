@@ -38,6 +38,8 @@ export interface BarContext {
   sectionBars: number;
   intensity: number;
   instrument: Instrument;
+  /** Share of written velocity the quietest section plays at (default 0.62). */
+  velocityFloor?: number;
 }
 
 /** Mutable state that persists across bars within a piece. */
@@ -51,8 +53,16 @@ export function newMemory(): PartMemory {
   return { voicing: new Map(), lastNote: new Map(), phrases: new Map() };
 }
 
-function vel(v: number, intensity: number, accent = 1): number {
-  const scaled = v * (0.62 + 0.38 * intensity) * accent;
+/** The quietest section plays at this share of written velocity, unless the piece asks for more range. */
+export const VELOCITY_FLOOR = 0.62;
+
+/** The share of written velocity a section of this intensity plays at. */
+export function velocityScale(intensity: number, floor = VELOCITY_FLOOR): number {
+  return floor + (1 - floor) * intensity;
+}
+
+function vel(v: number, ctx: Pick<BarContext, "intensity" | "velocityFloor">, accent = 1): number {
+  const scaled = v * velocityScale(ctx.intensity, ctx.velocityFloor) * accent;
   return Math.max(1, Math.min(127, Math.round(scaled * 127)));
 }
 
@@ -84,13 +94,13 @@ export function writeDrums(ctx: BarContext, pattern: DrumPattern, opts: { crash:
         dur: Math.min(step, 0.25),
         ch: CHANNELS.drums,
         key: GM_DRUMS[lane],
-        vel: vel(v, ctx.intensity),
+        vel: vel(v, ctx),
         role: "drums",
       });
     }
   }
   if (opts.crash && !out.some((n) => n.beat === 0 && n.key === GM_DRUMS.crash)) {
-    out.push({ beat: 0, dur: 0.25, ch: CHANNELS.drums, key: GM_DRUMS.crash, vel: vel(0.85, ctx.intensity), role: "drums" });
+    out.push({ beat: 0, dur: 0.25, ch: CHANNELS.drums, key: GM_DRUMS.crash, vel: vel(0.85, ctx), role: "drums" });
   }
   return out;
 }
@@ -163,7 +173,7 @@ export function writeOstinato(ctx: BarContext, motif: Motif, range: PitchRange):
       key = foldIntoRange(key, range[0], range[1]);
       // Don't let held notes ring through a chord change.
       const dur = Math.max(0.05, Math.min(n.d, span.end - t + (n.approach ? 0 : 0.02)));
-      out.push({ beat: t - ctx.barStart, dur, ch: CHANNELS[role], key, vel: vel(n.v, ctx.intensity), role });
+      out.push({ beat: t - ctx.barStart, dur, ch: CHANNELS[role], key, vel: vel(n.v, ctx), role, ...(n.g && { gesture: n.g }) });
     }
   }
   return out;
@@ -205,7 +215,7 @@ export function writeChords(ctx: BarContext, pattern: CompPattern, memory: PartM
             dur: Math.max(0.05, segEnd - segStart - offset - 0.02),
             ch: CHANNELS[role],
             key,
-            vel: vel(hit.v * (i === 0 ? 1 : 0.92), ctx.intensity),
+            vel: vel(hit.v * (i === 0 ? 1 : 0.92), ctx),
             role,
           });
         });
@@ -219,7 +229,7 @@ export function writeChords(ctx: BarContext, pattern: CompPattern, memory: PartM
 export function holdChord(ctx: BarContext, span: ChordSpan, role: Role, dur: number, memory: PartMemory, v = 0.6): NoteEvent[] {
   const center = registerCenter(ctx.instrument) + 4;
   const notes = voiceChord(ctx.tonic, span.chord, role === "bass" ? "power" : "spread", center, memory.voicing.get(role) ?? null);
-  return notes.map((key) => ({ beat: 0, dur, ch: CHANNELS[role], key, vel: vel(v, ctx.intensity), role }));
+  return notes.map((key) => ({ beat: 0, dur, ch: CHANNELS[role], key, vel: vel(v, ctx), role }));
 }
 
 // ---------------------------------------------------------------------------
@@ -235,6 +245,8 @@ export interface PhraseNote {
   anchor: Motif["anchor"];
   cadence?: boolean;
   grace?: boolean;
+  /** Gesture written on the pattern note. */
+  g?: PatternNote["g"];
 }
 
 interface Cell {
@@ -367,6 +379,7 @@ export function composePhrase(
         deg: n.deg,
         v: n.v,
         anchor: cell.anchor,
+        ...(n.g && { g: n.g }),
       };
       if (rng.chance(rules.ornament * 0.5) && n.d >= 0.5 && n.t >= 0.125) {
         out.push({ ...note, t: note.t - 0.0833, d: 0.0833, deg: note.deg + 1, v: note.v * 0.7, grace: true });
@@ -435,8 +448,9 @@ export function writeMelody(
       dur: Math.max(0.05, Math.min(n.d, span.end - n.t + 1) - 0.03),
       ch: CHANNELS[role],
       key,
-      vel: vel(n.v * arch, ctx.intensity),
+      vel: vel(n.v * arch, ctx),
       role,
+      ...(n.g && !n.grace && { gesture: n.g }),
     };
     if (trill > 0 && !n.grace && n.d >= 1 && ctx.rng.chance(n.cadence ? Math.min(1, trill * 1.5) : trill)) {
       const scalePcs = chordScale(ctx.mode, span.chord).map((i) => mod(ctx.tonic + span.chord.root + i, 12));

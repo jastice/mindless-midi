@@ -12,6 +12,12 @@
       "runtimeExecutable": "bazel",
       "runtimeArgs": ["run", "//src/bench:serve"],
       "port": 8090
+    },
+    {
+      "name": "mighty",
+      "runtimeExecutable": "bazel",
+      "runtimeArgs": ["run", "//src/mighty:serve"],
+      "port": 8081
     }
   ]
 }

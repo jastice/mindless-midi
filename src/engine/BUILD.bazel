@@ -4,6 +4,7 @@ ts_lib(
     name = "engine",
     srcs = [
         "conductor.ts",
+        "gestures.ts",
         "harmony.ts",
         "midi_file.ts",
         "parts.ts",
@@ -23,6 +24,7 @@ ts_test(
     data = ["//styles"],
     deps = [
         ":engine",
+        "//src/audio:events",
         "//src/corpus",
         "//src/theory",
     ],

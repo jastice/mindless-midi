@@ -1,3 +1,4 @@
+import type { Gesture } from "../corpus/constants.js";
 import type { Role } from "../corpus/schema.js";
 import type { ModeName } from "../theory/theory.js";
 
@@ -23,11 +24,31 @@ export interface NoteEvent {
   role: Role;
   /** Exempt from swing (e.g. drums on a triplet grid). Consumed by the piece. */
   straight?: boolean;
+  /** How the note is played, when the piece is arranged with gestures (see gestures.ts). */
+  gesture?: Gesture;
+  /** The gesture as curves on this note. The same curves become the channel's bend and CC11 events. */
+  curve?: NoteCurve;
+}
+
+/** A point of a curve: beats after the note's onset, and the value there. */
+export type Breakpoint = readonly [at: number, value: number];
+
+/**
+ * Straight lines between breakpoints; the first value holds before the first
+ * point and the last after the last. Every curve ends at rest (no bend, full level).
+ */
+export interface NoteCurve {
+  /** Pitch offset, semitones. */
+  bend?: Breakpoint[];
+  /** Expression, 0..1 (CC11 / 127). */
+  level?: Breakpoint[];
 }
 
 export type ControlEvent =
   | { beat: number; kind: "program"; ch: number; value: number }
   | { beat: number; kind: "cc"; ch: number; cc: number; value: number }
+  /** Pitch bend, 14 bits: 8192 is no bend, 0 and 16383 the full range down and up. */
+  | { beat: number; kind: "bend"; ch: number; value: number }
   | { beat: number; kind: "bank"; value: number }
   | { beat: number; kind: "reset" }
   /** Output gain for the piece (calibrated loudness); not sent as MIDI. */

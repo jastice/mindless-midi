@@ -15,10 +15,13 @@ import { ROLES, type Role } from "../corpus/constants.js";
 import type { StyleBundle } from "../corpus/schema.js";
 import { Conductor, type Landing } from "../engine/conductor.js";
 import { barsToMidi } from "../engine/midi_file.js";
+import { velocityScale } from "../engine/parts.js";
+import { DEFAULT_PIECE_OPTIONS, type Expression, type PieceOptions } from "../engine/piece.js";
 import { type Bar, barSeconds } from "../engine/types.js";
 import { Bus } from "../sound/bus.js";
 import { type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../sound/protocol.js";
 import { type PlannedNote, SampleCache, SampleLibrary, mirroredAt } from "../sound/sampler.js";
+import { barScore } from "../sound/score.js";
 import type { ScoreNote } from "../sound/types.js";
 
 export type { Engine };
@@ -74,6 +77,16 @@ export interface PlayerOptions {
   stemWorkletUrl: string;
   workerUrl: string;
   engine?: Engine;
+  /** Performance the arranger adds to the notes (velocity range, gestures). Omitted: none. */
+  expression?: Expression;
+  /**
+   * Stem engines play for weight: the kick-driven mix (sound/weight.ts) with
+   * levels that keep the written dynamics, velocity shaping tone, legato
+   * lines, and each note's gesture. The section's intensity reaches the mix.
+   */
+  weighted?: boolean;
+  /** Track name in exported MIDI files. */
+  title?: string;
 }
 
 type Listener = () => void;
@@ -184,14 +197,19 @@ export class Player {
   /** Bus loudness AGC (the stem engines' counterpart of the FM path's Leveler). */
   private agcEnv = TARGET_RMS * TARGET_RMS;
   private agcGain = 1;
-  private readonly meterBuf = new Float32Array(2048);
+  private readonly meterBuf: Float32Array<ArrayBuffer>;
+  private readonly pieces: PieceOptions;
+  private tap: AnalyserNode | null = null;
 
   constructor(styles: StyleBundle[], opts: PlayerOptions) {
     this.opts = opts;
     this.engineName = opts.engine ?? "fm";
     this.styleById = new Map(styles.map((s) => [s.id, s]));
     this.pool = styles;
-    this.conductor = new Conductor(styles, opts.seed);
+    this.pieces = opts.expression ? { ...DEFAULT_PIECE_OPTIONS, expression: opts.expression } : DEFAULT_PIECE_OPTIONS;
+    // The weighted mix reads its level over two thirds of a second, so a hit is not a loud moment.
+    this.meterBuf = new Float32Array(opts.weighted ? 32768 : 2048);
+    this.conductor = new Conductor(styles, opts.seed, this.pieces);
     this.last = this.conductor.seek(opts.at?.piece ?? 0, opts.at?.bar ?? 0);
   }
 
@@ -437,7 +455,7 @@ export class Player {
 
   /** Start over with another seed: its first piece begins right away. */
   reseed(seed: string): void {
-    this.conductor = new Conductor(this.pool, seed);
+    this.conductor = new Conductor(this.pool, seed, this.pieces);
     const landing = this.conductor.seek(0, 0);
     this.cut();
     this.head(landing);
@@ -567,7 +585,18 @@ export class Player {
   exportMidi(minutes = 10): Uint8Array | null {
     const t = this.now;
     const bars = this.timeline.filter((tb) => tb.start <= t && tb.start >= t - minutes * 60).map((tb) => tb.bar);
-    return bars.length ? barsToMidi(bars) : null;
+    return bars.length ? barsToMidi(bars, this.opts.title) : null;
+  }
+
+  /** A tap on everything the page plays, after the volume control, for meters. Null until audio has started. */
+  get analyser(): AnalyserNode | null {
+    if (!this.tap && this.ctx && this.output) {
+      this.tap = this.ctx.createAnalyser();
+      this.tap.fftSize = 2048;
+      this.tap.smoothingTimeConstant = 0;
+      this.output.connect(this.tap);
+    }
+    return this.tap;
   }
 
   // --- Engines ----------------------------------------------------------------
@@ -642,7 +671,8 @@ export class Player {
         numberOfOutputs: ROLES.length,
         outputChannelCount: ROLES.map(() => 2),
       });
-      const bus = new Bus(ctx);
+      const bus = new Bus(ctx, this.opts.weighted ? { openLimiter: true } : {});
+      if (this.opts.weighted) bus.meter.fftSize = this.meterBuf.length;
       ROLES.forEach((role, i) => node.connect(bus.input(role), i));
       bus.output.connect(this.output!);
       const worker = new Worker(this.opts.workerUrl, { type: "module" });
@@ -670,7 +700,7 @@ export class Player {
       this.workerHasWasm = true;
     }
     // The site ships the samples its styles can play (//styles:samples) next to the page.
-    if (engine === "samples") this.library ??= new SampleLibrary(new SampleCache(ctx, mirroredAt(new URL("samples/", document.baseURI).href)));
+    if (engine === "samples") this.library ??= new SampleLibrary(new SampleCache(ctx, mirroredAt(new URL("samples/", document.baseURI).href)), undefined, this.opts.weighted);
   }
 
   /**
@@ -685,10 +715,13 @@ export class Player {
     for (const x of this.meterBuf) ms += x * x;
     ms /= this.meterBuf.length;
     const pre = ms / (this.agcGain * this.agcGain);
+    // Weighted: follow the body of the mix over many seconds and in a narrower range, so a
+    // quiet section stays quieter than a full one and the trim never rides a single bar.
+    const [follow, lo, hi, down, up] = this.opts.weighted ? [0.03, 0.6, 1.6, 0.02, 0.004] : [0.12, 0.5, 2, 0.15, 0.02];
     // Don't adapt during silence (gaps between pieces, sparse intros).
-    if (pre > (TARGET_RMS / 8) ** 2) this.agcEnv += 0.12 * (pre - this.agcEnv);
-    const want = Math.max(0.5, Math.min(2, TARGET_RMS / Math.sqrt(this.agcEnv)));
-    this.agcGain += (want < this.agcGain ? 0.15 : 0.02) * (want - this.agcGain);
+    if (pre > (TARGET_RMS / 8) ** 2) this.agcEnv += follow * (pre - this.agcEnv);
+    const want = Math.max(lo, Math.min(hi, TARGET_RMS / Math.sqrt(this.agcEnv)));
+    this.agcGain += (want < this.agcGain ? down : up) * (want - this.agcGain);
     bus.trim.gain.setTargetAtTime(this.agcGain, this.ctx.currentTime, 0.1);
   }
 
@@ -921,20 +954,7 @@ export class Player {
 
   /** The bar's notes in seconds from its start, with the program sounding on each channel. */
   private notesOf(bar: Bar): ScoreNote[] {
-    for (const c of bar.controls) {
-      if (c.kind === "reset") this.programs.clear();
-      else if (c.kind === "program") this.programs.set(c.ch, c.value);
-    }
-    const spb = 60 / bar.bpm;
-    return bar.notes.map((n) => ({
-      t: n.beat * spb,
-      dur: Math.max(0.01, n.dur * spb),
-      key: n.key,
-      vel: n.vel,
-      ch: n.ch,
-      role: n.role,
-      program: this.programs.get(n.ch) ?? 0,
-    }));
+    return barScore(bar, this.programs, this.opts.weighted ? { legato: true, gestures: true } : {});
   }
 
   /** Samples engine: resolve and download what the bar needs, hand new samples to the worker. */
@@ -1009,7 +1029,10 @@ export class Player {
       this.busStyle = info.styleId;
     }
     const notes = entry.notes.map((n) => ({ ...n, t: n.t + at }));
-    this.bus?.duck(info.styleId, notes.filter((n) => n.role === "drums" && (n.key === 35 || n.key === 36)).map((n) => n.t));
+    const weighted = this.opts.weighted === true;
+    // Weighted: the worker ducks from the kick's own envelope, and a fuller section is drier.
+    if (!weighted) this.bus?.duck(info.styleId, notes.filter((n) => n.role === "drums" && (n.key === 35 || n.key === 36)).map((n) => n.t));
+    else if (!info.gap) this.bus?.setSendScale(1.3 - 0.6 * info.intensity, Math.max(at, ctx.currentTime));
     const levels = Object.fromEntries((style?.corpus.instruments ?? []).map((i) => [i.role, i.volume])) as Partial<Record<Role, number>>;
     this.toWorker({
       type: "bar",
@@ -1022,6 +1045,7 @@ export class Player {
       notes,
       plans: plans?.map((p) => (p.cut === undefined ? p : { ...p, cut: p.cut + at })),
       bar: engine === "fm_bus" ? bar : undefined,
+      ...(weighted && { mix: { intensity: info.intensity, lean: velocityScale(info.intensity, this.opts.expression?.velocityFloor) }, touch: true }),
     });
   }
 }

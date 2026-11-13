@@ -4,7 +4,10 @@ import { test } from "node:test";
 import type { StyleBundle } from "../corpus/schema.js";
 import { declareSound } from "../corpus/sound.js";
 import { MODES, chordPitchClasses, mod, parseRoman } from "../theory/theory.js";
+import { EV_BEND, EV_CC, barEvents } from "../audio/events.js";
 import { Conductor, MAX_SEEK_PIECE } from "./conductor.js";
+import { BEND_CENTER, BEND_RANGE, bendValue, curveAt, levelValue } from "./gestures.js";
+import { DEFAULT_PIECE_OPTIONS } from "./piece.js";
 import { barsToMidi } from "./midi_file.js";
 import type { Bar } from "./types.js";
 import { Harmony } from "./harmony.js";
@@ -478,4 +481,109 @@ test("a three-beat ostinato drifts across seven-beat bars without resetting or d
   }, motif, [53, 79]).map((n) => ({ beat: bar * 7 + n.beat, pc: mod(n.key, 12) })));
   assert.deepEqual(notes.map((n) => n.beat), Array.from({ length: 21 }, (_, i) => i));
   assert.deepEqual(notes.map((n) => n.pc), Array.from({ length: 21 }, (_, i) => [0, 7, 11][i % 3]));
+});
+
+// --- Expression: gestures, pitch bend, velocity range -------------------------
+
+const expressive = { ...DEFAULT_PIECE_OPTIONS, expression: { gestures: true, velocityFloor: 0.42 } };
+
+test("without expression a piece has no gestures, curves or bends", () => {
+  for (const bar of take(new Conductor(styles, "plain"), 200)) {
+    assert.ok(!bar.controls.some((c) => c.kind === "bend"));
+    assert.ok(!bar.controls.some((c) => c.kind === "cc" && c.cc !== 7 && c.cc !== 10 && c.cc !== 11));
+    for (const n of bar.notes) assert.ok(n.gesture === undefined && n.curve === undefined);
+  }
+});
+
+test("expression plays the same notes: only velocity, a choked hat's length and controllers differ", () => {
+  const plain = take(new Conductor(styles, "same-notes"), 1500);
+  const played = take(new Conductor(styles, "same-notes", expressive), 1500);
+  const kinds = new Set<string>();
+  let quieter = 0;
+  plain.forEach((bar, i) => {
+    const other = played[i]!;
+    assert.equal(other.notes.length, bar.notes.length);
+    assert.equal(other.bpm, bar.bpm);
+    bar.notes.forEach((n, k) => {
+      const m = other.notes[k]!;
+      assert.deepEqual([m.beat, m.key, m.ch, m.role], [n.beat, n.key, n.ch, n.role]);
+      if (m.gesture) kinds.add(m.gesture);
+      if (m.gesture === "choke") assert.ok(m.dur > 0 && m.beat + m.dur <= bar.beats + 1e-9);
+      else assert.equal(m.dur, n.dur);
+      if (m.vel < n.vel) quieter++;
+    });
+  });
+  assert.deepEqual([...kinds].sort(), ["accent", "choke", "slide", "swell"]);
+  assert.ok(quieter > 100, "a lower velocity floor leaves quiet sections quieter");
+});
+
+test("a gesture is one curve: the FM events, the MIDI file and the note agree on it", () => {
+  const bars = take(new Conductor(styles, "curves", expressive), 400);
+  let slides = 0;
+  let swells = 0;
+  for (const bar of bars) {
+    const midi = barsToMidi([bar]);
+    for (const n of bar.notes) {
+      if (!n.curve) continue;
+      // Skip notes whose lane another gesture on the channel takes over before the curve is done.
+      const lane = n.curve.bend ?? n.curve.level!;
+      const length = lane[lane.length - 1]![0];
+      const others = bar.notes.filter((m) => m.ch === n.ch && m.curve && Math.abs(m.beat - n.beat) > 1e-6 && Math.abs(m.beat - n.beat) < length + 0.05);
+      if (others.length) continue;
+      const isBend = n.curve.bend !== undefined;
+      const mine = bar.controls.filter(
+        (c) => (isBend ? c.kind === "bend" : c.kind === "cc" && c.cc === 11) && "ch" in c && c.ch === n.ch && c.beat >= n.beat - 1e-9 && c.beat <= n.beat + length + 1e-9,
+      );
+      assert.ok(mine.length >= 2, "a curve is at least a start and a rest");
+      for (const c of mine) {
+        if (c.kind !== "bend" && c.kind !== "cc") continue;
+        const want = isBend ? bendValue(curveAt(lane, c.beat - n.beat)) : levelValue(curveAt(lane, c.beat - n.beat));
+        // (The onset is added and taken away again, which can move a value by one step.)
+        assert.ok(Math.abs(c.value - want) <= 1, `${c.value} for ${want}`);
+      }
+      const last = mine[mine.length - 1]!;
+      assert.equal("value" in last && last.value, isBend ? BEND_CENTER : 127, "ends at rest");
+      // Same frames and values as the bar's FM events.
+      const events = barEvents(bar, 0, 48000).filter((e) => e.ch === n.ch && (isBend ? e.type === EV_BEND : e.type === EV_CC && e.a === 11));
+      for (const c of mine) {
+        if (c.kind !== "bend" && c.kind !== "cc") continue;
+        const frame = Math.round((c.beat * 48000 * 60) / bar.bpm);
+        assert.ok(events.some((e) => e.frame === frame && (isBend ? e.a : e.b) === c.value));
+      }
+      // And the same bytes in the file.
+      const status = isBend ? 0xe0 | n.ch : 0xb0 | n.ch;
+      for (const c of mine) {
+        if (c.kind !== "bend" && c.kind !== "cc") continue;
+        const bytes = isBend ? [status, c.value & 0x7f, c.value >> 7] : [status, 11, c.value];
+        let found = false;
+        for (let i = 22; i + 2 < midi.length && !found; i++) found = midi[i] === bytes[0] && midi[i + 1] === bytes[1] && midi[i + 2] === bytes[2];
+        assert.ok(found, `MIDI file carries ${bytes}`);
+      }
+      if (isBend) slides++;
+      else swells++;
+    }
+  }
+  assert.ok(slides > 5 && swells > 5, `${slides} slides, ${swells} swells`);
+});
+
+test("bends stay on line parts and a piece sets its bend range first", () => {
+  const bars = take(new Conductor(styles, "range", expressive), 300);
+  const first = bars[0]!;
+  const rpn = first.controls.filter((c) => c.kind === "cc" && (c.cc === 101 || c.cc === 100 || c.cc === 6));
+  assert.ok(rpn.some((c) => c.kind === "cc" && c.cc === 6 && c.value === BEND_RANGE));
+  for (const bar of bars) {
+    for (const n of bar.notes) {
+      if (n.curve?.bend) assert.ok(n.role === "lead" || n.role === "counter" || n.role === "bass");
+      for (const [, v] of n.curve?.bend ?? []) assert.ok(Math.abs(v) <= BEND_RANGE);
+    }
+    for (const c of bar.controls) if (c.kind === "bend") assert.ok(c.value >= 0 && c.value <= 16383 && c.ch !== 9);
+  }
+});
+
+test("seeking into an expressive piece lands on the same bars", () => {
+  const straight = take(new Conductor(styles, "seek-x", expressive), 40);
+  const c = new Conductor(styles, "seek-x", expressive);
+  c.seek(0, 25);
+  const bar = c.nextBar();
+  assert.deepEqual(bar.notes, straight[25]!.notes);
 });

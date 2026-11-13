@@ -8,6 +8,14 @@ export const DRUM_LANES = [
 ] as const;
 export type DrumLane = (typeof DRUM_LANES)[number];
 
+/**
+ * How a note is played beyond its pitch, length and velocity. Each one stays
+ * inside one MIDI channel: a slide is pitch bend, a swell is expression (CC11),
+ * an accent is velocity, a choke is where the note stops.
+ */
+export const GESTURES = ["swell", "slide", "accent", "choke"] as const;
+export type Gesture = (typeof GESTURES)[number];
+
 /** General MIDI percussion key for each drum lane. */
 export const GM_DRUMS: Record<DrumLane, number> = {
   kick: 36,

@@ -33,6 +33,15 @@ export type ToWorker =
       plans?: PlannedNote[];
       /** fm_bus: the bar itself, for libADLMIDI. */
       bar?: Bar;
+      /**
+       * The weighted mix (see weight.ts) instead of plain per-role levelling:
+       * the kick gets its own stem, levels keep the written dynamics, and the
+       * section's intensity (0..1) sets how hard the mix leans in. `lean` is the
+       * share of written velocity the section's notes are played at (0..1].
+       */
+      mix?: { intensity: number; lean: number };
+      /** synth: velocity shapes the tone, not only the level. */
+      touch?: boolean;
     }
   | { type: "clear"; from: number };
 

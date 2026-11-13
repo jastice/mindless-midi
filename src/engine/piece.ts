@@ -6,6 +6,7 @@ import type { CompPattern, DrumPattern, Instrument, Motif, Progression, Role, St
 import { melodicRange, pitchRange } from "../corpus/sound.js";
 import { Rng } from "../theory/rng.js";
 import { MODES, type ModeName, foldIntoRange, keyLabel, mod, parseRoman, pitchClass } from "../theory/theory.js";
+import { bendRangeControls, gestureControls, gestureCurve } from "./gestures.js";
 import { Harmony } from "./harmony.js";
 import {
   type BarContext,
@@ -25,6 +26,20 @@ import { type Bar, CHANNELS, type ControlEvent, type NoteEvent } from "./types.j
 export interface PieceOptions {
   minSeconds: number;
   maxSeconds: number;
+  /** How notes are played. Omitted: velocity as written by the default floor, no gestures. */
+  expression?: Expression;
+}
+
+/**
+ * Performance the arranger adds on top of the notes. None of it changes which
+ * notes are written or draws from their random streams, so a seed gives the
+ * same piece with or without it.
+ */
+export interface Expression {
+  /** Share of written velocity the quietest section plays at (default 0.62). Lower leaves more dynamic range. */
+  velocityFloor?: number;
+  /** Write slides, swells, accents and chokes, and their pitch bend and CC11 events. */
+  gestures?: boolean;
 }
 
 export const DEFAULT_PIECE_OPTIONS: PieceOptions = { minSeconds: 150, maxSeconds: 330 };
@@ -80,6 +95,7 @@ export class Piece {
   private readonly overridden = new Set<Role>();
   private readonly memory: PartMemory = newMemory();
   private readonly bodyBars: number;
+  private readonly expression: Expression;
 
   constructor(
     style: StyleBundle,
@@ -94,6 +110,7 @@ export class Piece {
     this.seed = seed;
     this.index = index;
     this.rng = new Rng(seed);
+    this.expression = opts.expression ?? {};
     const c = this.corpus;
     for (const inst of c.instruments) this.instruments.set(inst.role, inst);
 
@@ -322,6 +339,7 @@ export class Piece {
           sectionBars: section.bars,
           intensity: section.intensity,
           instrument,
+          velocityFloor: this.expression.velocityFloor,
         };
         notes.push(...this.renderRole(role, ctx, section));
       }
@@ -331,6 +349,8 @@ export class Piece {
     }
 
     this.groove(notes, this.rng.fork(`feel:${barInPiece}`), section);
+    if (this.expression.gestures) controls.push(...this.gestures(notes, this.rng.fork(`gesture:${barInPiece}`), section, barInPiece));
+    else for (const n of notes) delete n.gesture;
     return { index: globalIndex, beats: bpb, bpm: this.ritardando(barInPiece, notes), notes, controls, info };
   }
 
@@ -448,6 +468,7 @@ export class Piece {
         sectionBars: 1,
         intensity: Math.min(0.6, last.intensity),
         instrument,
+        velocityFloor: this.expression.velocityFloor,
       };
     };
     const chordRole = (["pad", "comp", "arp", "lead"] as const).find((r) => last.roles.includes(r) && this.instruments.has(r))
@@ -495,8 +516,67 @@ export class Piece {
       out.push({ beat: 0, kind: "cc", ch, cc: 7, value: level });
       out.push({ beat: 0, kind: "cc", ch, cc: 10, value: Math.round(64 + Math.max(-1, Math.min(1, inst.pan)) * 63) });
       out.push({ beat: 0, kind: "cc", ch, cc: 11, value: 127 });
+      if (this.expression.gestures && inst.role !== "drums") out.push(...bendRangeControls(ch), { beat: 0, kind: "bend", ch, value: 8192 });
     }
     return out;
+  }
+
+  /**
+   * Decide how the bar's notes are played, in place, and return the bend and
+   * CC11 events that say so. Gestures written in the corpus are kept; the rest
+   * come from rules that only look at this bar, so a bar is played the same
+   * however it was reached:
+   *
+   *   slide   a line note that starts where the last one ended, a step to a fifth away
+   *   swell   a long note on an instrument that sustains (a held pad chord swells as one)
+   *   accent  bass and kick landing on the downbeat that opens a full section
+   *   choke   an open hi-hat, stopped by the next closed one
+   */
+  private gestures(notes: NoteEvent[], rng: Rng, section: PlannedSection | undefined, barInPiece: number): ControlEvent[] {
+    const prev = new Map<Role, NoteEvent>();
+    const padSwell = new Map<number, boolean>();
+    const landing = section !== undefined && barInPiece === section.startBar && section.index > 0 && section.intensity >= 0.5;
+    notes.forEach((n, i) => {
+      const before = prev.get(n.role);
+      prev.set(n.role, n);
+      if (n.role === "drums") {
+        delete n.gesture;
+        if (n.key === 46) {
+          const closed = notes.find((m, j) => j > i && m.role === "drums" && (m.key === 42 || m.key === 44) && m.beat > n.beat + 0.05);
+          if (closed) {
+            n.gesture = "choke";
+            n.dur = closed.beat - n.beat;
+          }
+        } else if (landing && n.beat < 0.05 && (n.key === 35 || n.key === 36)) n.gesture = "accent";
+        if (n.gesture === "accent") n.vel = Math.min(127, Math.round(n.vel * 1.15));
+        return;
+      }
+      const program = this.instruments.get(n.role)?.program ?? 0;
+      const line = n.role === "lead" || n.role === "counter" || n.role === "bass";
+      // A gesture written in the corpus stands, where the part and the note can carry it.
+      let gesture = line && n.dur >= 0.2 && n.gesture !== "choke" ? n.gesture : undefined;
+      const interval = before ? before.key - n.key : 0;
+      const joined = before !== undefined && n.beat - (before.beat + before.dur) < 0.08 && n.beat > before.beat + 0.05;
+      if (!gesture && line) {
+        const reach = n.role === "bass" ? 5 : 7;
+        if (joined && interval !== 0 && Math.abs(interval) <= reach && n.dur >= 0.4 && bends(program) && rng.chance(n.role === "bass" ? 0.16 : 0.24)) gesture = "slide";
+        else if (n.role !== "bass" && n.dur >= 2 && sustains(program) && rng.chance(0.5)) gesture = "swell";
+        else if (n.role === "bass" && landing && n.beat < 0.05) gesture = "accent";
+      } else if (n.role === "pad" && n.dur >= 2.5 && sustains(program)) {
+        // One decision per chord: the channel has a single expression lane.
+        const slot = Math.round(n.beat * 2);
+        if (!padSwell.has(slot)) padSwell.set(slot, rng.chance(0.4));
+        if (padSwell.get(slot)) gesture = "swell";
+      }
+      delete n.gesture;
+      delete n.curve;
+      if (!gesture) return;
+      n.gesture = gesture;
+      if (gesture === "accent") n.vel = Math.min(127, Math.round(n.vel * 1.15));
+      const curve = gestureCurve(gesture, n.dur, joined && interval !== 0 ? interval : -1);
+      if (curve) n.curve = curve;
+    });
+    return gestureControls(notes);
   }
 
   /** Swing + humanization, in place. */
@@ -539,6 +619,16 @@ function trailingFrame<T extends { label: string }>(ss: T[]): T[] {
     out.unshift(ss[i]!);
   }
   return out.length === ss.length ? [] : out;
+}
+
+/** Programs whose pitch can be bent between notes: guitars, basses, bowed strings, winds, synth leads, folk instruments. */
+function bends(program: number): boolean {
+  return (program >= 24 && program <= 44) || (program >= 56 && program <= 87) || (program >= 104 && program <= 111);
+}
+
+/** Programs that hold a note at level, so a swell has something to act on. */
+function sustains(program: number): boolean {
+  return (program >= 16 && program <= 23) || (program >= 40 && program <= 44) || (program >= 48 && program <= 95) || (program >= 109 && program <= 111);
 }
 
 function clamp01(x: number): number {

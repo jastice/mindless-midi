@@ -6,13 +6,18 @@ load("//bazel:ts.bzl", "ts_lib", "ts_test")
 ts_lib(
     name = "sound",
     srcs = [
+        "body_leveler.ts",
         "bus.ts",
         "dsp.ts",
         "leveler.ts",
+        "measure.ts",
         "protocol.ts",
         "sampler.ts",
+        "score.ts",
+        "shape.ts",
         "synth.ts",
         "types.ts",
+        "weight.ts",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -27,6 +32,21 @@ ts_test(
     deps = [
         ":sound",
         "//src/corpus",
+    ],
+)
+
+ts_test(
+    name = "weight_test",
+    size = "medium",
+    src = "weight.test.ts",
+    data = [
+        "//styles",
+        "//styles:samples_lock_json",
+    ],
+    deps = [
+        ":sound",
+        "//src/corpus",
+        "//src/engine",
     ],
 )
 

@@ -15,6 +15,7 @@
 import type { SoundDeclaration } from "../corpus/sound.js";
 import type { ScoreNote } from "./types.js";
 import type { Samples, Stereo } from "./dsp.js";
+import { renderShaped } from "./shape.js";
 
 const DANIGB = "https://danigb.github.io/samples/";
 const GLEITZ = "https://gleitz.github.io/midi-js-soundfonts/";
@@ -112,13 +113,18 @@ export interface PlannedNote {
   drum: boolean;
   /** Drums: stop at this time (open hi-hat choked by a closed one), seconds. */
   cut?: number;
+  /** Touch: a softer note is duller. Low-pass corner, Hz; absent for full brightness. */
+  lowpass?: number;
 }
 
 interface Instrument {
   label: string;
   release: number;
   sustain: boolean;
-  zones(key: number, vel: number): Promise<Zone[]>;
+  /** One recording per note, whatever the velocity (so touch has to shape it). */
+  flat: boolean;
+  /** `touch`: let velocity choose between recordings where the set has a harder and a softer one. */
+  zones(key: number, vel: number, touch?: boolean): Promise<Zone[]>;
   /** Every upstream URL (sample documents and audio) that playing any of `keys` can need. */
   required(keys: readonly number[]): Promise<string[]>;
 }
@@ -210,6 +216,7 @@ function sfzInstrument(cache: SampleCache, label: string, url: string, release: 
     label,
     release,
     sustain,
+    flat: false,
     async zones(key, vel) {
       const { base, regions } = await loaded;
       const counter = rr.get(key) ?? 0;
@@ -262,6 +269,7 @@ function gmInstrument(cache: SampleCache, font: Soundfont, program: number, sust
     label: font === "MusyngKite" ? "MusyngKite GM soundfont (CC BY-SA 3.0)" : "FluidR3 GM soundfont (MIT)",
     release,
     sustain,
+    flat: true,
     async zones(key) {
       return [{ url: await file(key), rate: Math.pow(2, (key - fileKey(key)) / 12), gain: 1, offset: 0 }];
     },
@@ -377,6 +385,34 @@ const KITS: Record<string, Record<number, string>> = {
   },
 };
 
+/**
+ * Sonic Pi's kit has a hard and a soft recording of some drums. A kit names
+ * one; with touch, a hard hit takes the hard one and a light hit the soft one.
+ * (Both are among the files the site already serves: every one is some kit's default.)
+ */
+const HARD_SOFT: [string, string][] = [
+  [`${SP}kick/drum_bass_hard.m4a`, `${SP}kick/drum_bass_soft.m4a`],
+  [`${SP}snare/drum_snare_hard.m4a`, `${SP}snare/drum_snare_soft.m4a`],
+  [`${SP}tom/drum_tom_lo_hard.m4a`, `${SP}tom/drum_tom_lo_soft.m4a`],
+  [`${SP}tom/drum_tom_hi_hard.m4a`, `${SP}tom/drum_tom_hi_soft.m4a`],
+  [`${SP}cymbal/drum_cymbal_hard.m4a`, `${SP}cymbal/drum_cymbal_soft.m4a`],
+  [`${SP}other/drum_splash_hard.m4a`, `${SP}other/drum_splash_soft.m4a`],
+];
+const HARDER = new Map(HARD_SOFT.map(([hard, soft]) => [soft, hard]));
+const SOFTER = new Map(HARD_SOFT.map(([hard, soft]) => [hard, soft]));
+/** Velocities from which a hit counts as hard, and up to which as light. */
+const HARD_FROM = 100;
+const SOFT_TO = 52;
+
+/** Upstream URLs of the recordings touch can swap in, for checking that the site serves them. */
+export const TOUCH_SAMPLES: readonly string[] = HARD_SOFT.flat();
+
+/** Low-pass corner for a note of this velocity: about 2 kHz at a whisper, open from a firm touch up. */
+function brightness(vel: number): number | undefined {
+  const hz = 700 * Math.pow(2, (4.9 * vel) / 127);
+  return hz < 16000 ? hz : undefined;
+}
+
 function drumKit(styleId: string): Instrument {
   const kit = KITS[styleId] ?? KITS.synthwave!;
   const alias: Record<number, number> = { 35: 36, 40: 38, 44: 42, 57: 49, 59: 51, 47: 45, 48: 50 };
@@ -384,8 +420,10 @@ function drumKit(styleId: string): Instrument {
     label: "drum machine & Sonic Pi kits",
     release: 0.05,
     sustain: false,
-    async zones(key) {
-      const url = kit[alias[key] ?? key];
+    flat: true,
+    async zones(key, vel, touch) {
+      let url = kit[alias[key] ?? key];
+      if (url && touch) url = (vel >= HARD_FROM ? HARDER.get(url) : vel <= SOFT_TO ? SOFTER.get(url) : undefined) ?? url;
       return url ? [{ url, rate: 1, gain: 1, offset: 0 }] : [];
     },
     async required(keys) {
@@ -424,6 +462,8 @@ export class SampleLibrary {
   constructor(
     readonly cache: SampleCache,
     private readonly font: Soundfont = "MusyngKite",
+    /** Velocity shapes the sound: harder and softer recordings where there are both, else a darker tone when soft. */
+    private readonly touch = false,
   ) {}
 
   private instrument(n: ScoreNote, styleId: string): Instrument {
@@ -455,7 +495,10 @@ export class SampleLibrary {
     const plans: PlannedNote[] = [];
     for (const n of notes) {
       const inst = this.instrument(n, styleId);
-      plans.push({ zones: await inst.zones(n.key, n.vel), release: inst.release, sustain: inst.sustain, drum: n.role === "drums" });
+      const plan: PlannedNote = { zones: await inst.zones(n.key, n.vel, this.touch), release: inst.release, sustain: inst.sustain, drum: n.role === "drums" };
+      const lowpass = this.touch && inst.flat ? brightness(n.vel) : undefined;
+      if (lowpass !== undefined) plan.lowpass = lowpass;
+      plans.push(plan);
     }
     const cuts = chokes(notes);
     plans.forEach((p, i) => (p.cut = cuts[i]));
@@ -558,12 +601,18 @@ function read(c: Samples, pos: number): number {
   return y1 + 0.5 * f * (y2 - y0 + f * (2 * y0 - 5 * y1 + 4 * y2 - y3 + f * (3 * (y1 - y2) + y3 - y0)));
 }
 
-/** Mix one planned note into `out` (offset by its `base`). */
+/** Mix one planned note into `out` (offset by its `base`), along its curves if it has any. */
 export function renderSampleNote(out: Stereo, n: ScoreNote, plan: PlannedNote, sample: (url: string) => SampleData | undefined, sr: number): void {
+  if (n.curves) renderShaped(out, n, sr, (o, m) => renderPlain(o, m, plan, sample, sr));
+  else renderPlain(out, n, plan, sample, sr);
+}
+
+function renderPlain(out: Stereo, n: ScoreNote, plan: PlannedNote, sample: (url: string) => SampleData | undefined, sr: number): void {
   const start = Math.round(n.t * sr) - (out.base ?? 0);
   const vgain = Math.pow(n.vel / 127, 1.8);
   const offFrame = Math.round(n.dur * sr);
-  const cutFrame = plan.cut !== undefined ? Math.round((plan.cut - n.t) * sr) : Infinity;
+  const cutFrame = plan.cut !== undefined ? Math.round((plan.cut - n.t) * sr) : n.gesture === "choke" ? Math.round(n.dur * sr) : Infinity;
+  const dull = plan.lowpass !== undefined ? 1 - Math.exp((-2 * Math.PI * plan.lowpass) / sr) : 0;
   const relCoef = Math.exp(-1 / ((plan.release / 4) * sr));
   const chokeCoef = Math.exp(-1 / (0.01 * sr));
   const maxFrames = Math.min(out.l.length - start, Math.round(MAX_SAMPLE_SECONDS * sr));
@@ -578,13 +627,22 @@ export function renderSampleNote(out: Stereo, n: ScoreNote, plan: PlannedNote, s
     const stopAt = plan.drum ? Infinity : offFrame + Math.round(plan.release * 2 * sr);
     let pos = z.offset;
     let env = 1;
+    let yl = 0;
+    let yr = 0;
     for (let i = 0; i < maxFrames && i < stopAt; i++) {
       if (loop && pos >= loop[1]) pos -= loop[1] - loop[0];
       if (pos >= L.length - 1) break;
       if (plan.drum ? i >= cutFrame : i >= offFrame) env *= plan.drum ? chokeCoef : relCoef;
       if (env < 1e-4) break;
       const k = start + i;
-      if (k >= 0) {
+      if (dull) {
+        yl += dull * (read(L, pos) - yl);
+        yr += dull * (read(R, pos) - yr);
+        if (k >= 0) {
+          out.l[k]! += yl * g * env;
+          out.r[k]! += yr * g * env;
+        }
+      } else if (k >= 0) {
         out.l[k]! += read(L, pos) * g * env;
         out.r[k]! += read(R, pos) * g * env;
       }

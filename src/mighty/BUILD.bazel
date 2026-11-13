@@ -1,0 +1,97 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//bazel:deploy.bzl", "gh_pages_deploy")
+load("//bazel:stamp.bzl", "stamp_build_info")
+load("//bazel:ts.bzl", "ts_lib")
+
+# Mighty Midi: a second front end on the same arranger, corpora and engines as
+# Mindless Midi (//src/app), which asks them to play for weight. Its own page
+# and design; nothing here changes what //site sounds like.
+ts_lib(
+    name = "mighty",
+    srcs = [
+        "app.ts",
+        "assets.d.ts",
+        "stage.ts",
+    ],
+    deps = [
+        "//:node_modules/libadlmidi-js",
+        "//src/app:player",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    config = {
+        "assetNames": "[name]-[hash]",
+        "entryNames": "[name]",
+        "loader": {".wasm": "file"},
+        "legalComments": "linked",
+    },
+    entry_points = [":app.js"],
+    format = "esm",
+    minify = True,
+    output_dir = True,
+    sourcemap = "linked",
+    target = "es2022",
+    deps = [
+        ":mighty",
+        "//:node_modules/libadlmidi-js",
+    ],
+)
+
+stamp_build_info(
+    name = "index_html",
+    src = "index.html",
+    out = "stamped/index.html",
+)
+
+# The complete static site.
+copy_to_directory(
+    name = "site",
+    srcs = [
+        "favicon.svg",
+        "styles.css",
+        ":bundle",
+        ":index_html",
+        "//src/app:fonts",
+        "//src/sound:render_worker",
+        "//src/sound:stem_worklet",
+        "//styles",
+        "//styles:samples",
+    ],
+    root_paths = [
+        "src/mighty/bundle",
+        "src/mighty/stamped",
+        "src/mighty",
+        "src/app",
+        "src/sound",
+        "styles",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# bazel run //src/mighty:serve  ->  http://localhost:8081
+js_binary(
+    name = "serve",
+    args = ["src/mighty/site"],
+    data = [
+        ":site",
+        "//tools/serve:serve_lib",
+    ],
+    entry_point = "//tools/serve:serve.js",
+    env = {"PORT": "8081"},
+)
+
+# bazel run //src/mighty:deploy [-- --dry-run]
+# Publishes to its own branch, independent of Mindless Midi's deploy.
+gh_pages_deploy(
+    name = "deploy",
+    branch = "mighty-pages",
+    message = "Deploy Mighty Midi",
+    site = ":site",
+)

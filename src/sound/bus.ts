@@ -168,6 +168,14 @@ interface RoleChain {
   delay: GainNode;
 }
 
+export interface BusOptions {
+  /**
+   * Let short peaks through: the limiter reacts in 8 ms instead of 2, so a
+   * click survives it, and a soft clipper after it is the actual ceiling.
+   */
+  openLimiter?: boolean;
+}
+
 export class Bus {
   readonly output: GainNode;
   /** Master trim before the compressor, for a live loudness AGC. */
@@ -188,8 +196,13 @@ export class Bus {
   private readonly wow: GainNode[] = [];
   private readonly crackle: GainNode;
   private readonly irCache = new Map<string, AudioBuffer>();
+  /** The style whose sends are set, and how far `setSendScale` has them from the preset. */
+  private preset: MixPreset | null = null;
 
-  constructor(private readonly ctx: BaseAudioContext) {
+  constructor(
+    private readonly ctx: BaseAudioContext,
+    opts: BusOptions = {},
+  ) {
     const g = (v = 1) => {
       const n = ctx.createGain();
       n.gain.value = v;
@@ -303,7 +316,20 @@ export class Bus {
     this.meter.fftSize = 2048;
     master.connect(this.dry).connect(this.trim);
     master.connect(this.drivePre).connect(shaper).connect(this.drivePost).connect(this.tone).connect(tape).connect(this.wet).connect(this.trim);
-    this.trim.connect(comp).connect(limiter).connect(this.output);
+    if (opts.openLimiter) {
+      limiter.attack.value = 0.008;
+      const ceiling = ctx.createWaveShaper();
+      const knee = new Float32Array(4097);
+      for (let i = 0; i < knee.length; i++) {
+        // Straight up to 0.7, then bending toward 1 (the shaper clamps past its ends).
+        const x = (i / (knee.length - 1)) * 2 - 1;
+        const a = Math.abs(x);
+        knee[i] = Math.sign(x) * (a <= 0.7 ? a : 0.7 + 0.3 * Math.tanh((a - 0.7) / 0.3));
+      }
+      ceiling.curve = knee;
+      ceiling.oversample = "2x";
+      this.trim.connect(comp).connect(limiter).connect(ceiling).connect(this.output);
+    } else this.trim.connect(comp).connect(limiter).connect(this.output);
     limiter.connect(this.meter);
 
     this.crackle = g(0);
@@ -321,6 +347,7 @@ export class Bus {
   /** Switch to a style's production at time `at` (seconds on the context clock). */
   setStyle(styleId: string, bpm: number, pans: Partial<Record<Role, number>>, at: number): void {
     const p = presetFor(styleId);
+    this.preset = p;
     const set = (param: AudioParam, v: number) => param.setValueAtTime(v, at);
     // Reverb: reuse the active convolver for the same style, else load the idle one.
     let idx = this.reverbs.findIndex((r) => r.style === styleId);
@@ -356,6 +383,13 @@ export class Bus {
     set(this.wow[0]!.gain, lf?.wow ?? 0);
     set(this.wow[1]!.gain, lf?.flutter ?? 0);
     set(this.crackle.gain, lf?.crackle ?? 0);
+  }
+
+  /** Move every role's reverb send to `scale` times the style's (1 = as set), over a moment from `at`. */
+  setSendScale(scale: number, at: number): void {
+    const p = this.preset;
+    if (!p) return;
+    for (const [role, c] of this.roles) c.reverb.gain.setTargetAtTime((p.reverb.send[role] ?? 0) * scale, at, 0.15);
   }
 
   /** Duck the style's ducked roles under each kick (context times). */

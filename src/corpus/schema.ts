@@ -8,9 +8,9 @@
 import { z } from "zod";
 import { CHORD_SUFFIXES, MODE_NAMES, TONIC_NAMES, VOICINGS } from "../theory/theory.js";
 
-import { DRUM_LANES, type DrumLane, ROLES, type Role } from "./constants.js";
+import { DRUM_LANES, type DrumLane, GESTURES, type Gesture, ROLES, type Role } from "./constants.js";
 
-export { DRUM_LANES, ROLES, type DrumLane, type Role };
+export { DRUM_LANES, GESTURES, ROLES, type DrumLane, type Gesture, type Role };
 
 const unit = z.number().min(0).max(1);
 
@@ -68,6 +68,13 @@ export const PatternNote = z.object({
     .boolean()
     .optional()
     .describe("Bass only: ignore deg and play a chromatic approach tone into the NEXT chord's root."),
+  g: z
+    .enum(GESTURES)
+    .optional()
+    .describe(
+      "Optional gesture, for lead, counter and bass lines only; use sparingly. 'slide' glides into the note from the one before, " +
+        "'swell' lets a long note grow from soft to full, 'accent' leans on it. Omit for a plain note. Players that cannot bend or swell play the plain note.",
+    ),
 });
 export type PatternNote = z.infer<typeof PatternNote>;
 
