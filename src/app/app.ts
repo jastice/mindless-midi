@@ -9,14 +9,13 @@ import type { StyleBundle } from "../corpus/schema.js";
 import { randomSeed } from "../theory/seed.js";
 import { chordName } from "../theory/theory.js";
 import { mediaAnchor } from "./media_anchor.js";
-import { type Engine, Player, type Position, type TimedBar } from "./player.js";
+import { EXPRESSION, type Engine, Player, type Position, type TimedBar } from "./player.js";
 
 /** Each engine is also an "edition" of the page: its look is in styles.css, keyed on `data-engine`. */
 const ENGINES: { id: Engine; label: string; tag: string; edition: string; desc: string }[] = [
-  { id: "fm", label: "FM chip", tag: "OPL3 sound card", edition: "Edition I · FM", desc: "An emulated OPL3 FM chip with classic DOS-era patch banks. The original beepy-boopy sound." },
-  { id: "fm_bus", label: "FM + studio", tag: "studio-mixed chip", edition: "Edition II · Studio", desc: "The same chip, one track per instrument, mixed with reverb, echo, ducking and tape." },
-  { id: "synth", label: "Synth", tag: "modelled instruments", edition: "Edition III · Schematic", desc: "Modelled instruments (struck strings, plucks, analog voices), mixed in the studio. Nothing to download." },
-  { id: "samples", label: "Samples", tag: "recorded instruments", edition: "Edition IV · Field notes", desc: "Recorded instruments, downloaded as the music needs them (a few MB per style), mixed in the studio." },
+  { id: "synth", label: "Synth", tag: "modelled instruments", edition: "Edition I · Schematic", desc: "Modelled instruments (struck strings, plucks, analog voices), mixed in the studio. Nothing to download." },
+  { id: "samples", label: "Samples", tag: "recorded instruments", edition: "Edition II · Field notes", desc: "Recorded instruments, downloaded as the music needs them (a few MB per style), mixed in the studio." },
+  { id: "fm", label: "FM chip", tag: "OPL3 sound card", edition: "Edition III · FM", desc: "An emulated OPL3 FM chip with classic DOS-era patch banks. The original beepy-boopy sound." },
 ];
 import { Roll } from "./roll.js";
 
@@ -75,8 +74,8 @@ async function main(): Promise<void> {
   const wanted = (params.get("styles") ?? (linked ? "" : store.get("styles")) ?? "").split(",").filter((id) => byId.has(id));
   const selected = new Set(wanted.length ? wanted : styles.map((s) => s.id));
   const volume = Number(store.get("volume") ?? "0.8");
-  const wantedEngine = params.get("sound") ?? store.get("sound") ?? "fm";
-  const engine: Engine = ENGINES.some((e) => e.id === wantedEngine) ? (wantedEngine as Engine) : "fm";
+  const wantedEngine = params.get("sound") ?? store.get("sound") ?? "synth";
+  const engine: Engine = ENGINES.some((e) => e.id === wantedEngine) ? (wantedEngine as Engine) : "synth";
 
   const player = new Player(
     styles.filter((s) => selected.has(s.id)),
@@ -88,6 +87,8 @@ async function main(): Promise<void> {
       wasmUrl: new URL(wasmUrl, import.meta.url).href,
       stemWorkletUrl: new URL("stem-worklet.js", import.meta.url).href,
       workerUrl: new URL("render-worker.js", import.meta.url).href,
+      expression: EXPRESSION,
+      weighted: true,
     },
   );
   player.setVolume(volume);
@@ -208,7 +209,7 @@ async function main(): Promise<void> {
     const here = player.position();
     if (here.piece || here.bar) u.searchParams.set("at", formatAt(here));
     if (selected.size !== styles.length) u.searchParams.set("styles", [...selected].join(","));
-    if (player.engine !== "fm") u.searchParams.set("sound", player.engine);
+    if (player.engine !== "synth") u.searchParams.set("sound", player.engine);
     return u.href;
   }
 

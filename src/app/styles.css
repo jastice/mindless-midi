@@ -3,7 +3,6 @@
  * changes, only the paper, ink and one spot colour (set on <html data-engine>
  * by app.ts; an inline script in index.html applies the saved one early).
  *   fm       cream and vermilion
- *   fm_bus   midnight press, gold foil
  *   synth    blueprint
  *   samples  sepia field notebook
  */
@@ -66,17 +65,6 @@
   --mark: rgba(217, 58, 24, 0.26);
   --grain: 0.05;
   color-scheme: light;
-}
-:root[data-engine="fm_bus"] {
-  --paper: #111a2e;
-  --ink: #f0e6cf;
-  --spot: #e8b04a;
-  --on-spot: #111a2e;
-  --soft: #a3a8ba;
-  --rule: rgba(240, 230, 207, 0.22);
-  --mark: rgba(232, 176, 74, 0.34);
-  --grain: 0.08;
-  color-scheme: dark;
 }
 :root[data-engine="synth"] {
   --paper: #0b2a63;

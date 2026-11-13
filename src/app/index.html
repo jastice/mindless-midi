@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-engine="fm">
+<html lang="en" data-engine="synth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,7 +27,7 @@
     <script>
       try {
         var e = new URLSearchParams(location.search).get("sound") || localStorage.getItem("mindless-midi:sound");
-        if (e) document.documentElement.dataset.engine = e;
+        if (e === "fm" || e === "synth" || e === "samples") document.documentElement.dataset.engine = e;
       } catch (_) {}
     </script>
     <link rel="stylesheet" href="styles.css" />

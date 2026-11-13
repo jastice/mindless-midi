@@ -26,14 +26,16 @@ page.
   Courtyard Nine is a 9/8 aksak (2+2+2+3) in a double-harmonic mode, so a flat
   second can lean against a major third. Low Log stays in 4/4 and puts the
   tune in a late, hummable bass cell; the chords follow a half-beat behind.
-- **Played on an FM chip, or not.** By default notes go to [libADLMIDI](https://github.com/Wohlstand/libADLMIDI)
-  (Nuked OPL3 emulation, WebAssembly) in an AudioWorklet, with sample-accurate
-  timing. Each style uses a classic DOS-era FM patch bank. The **Sound** chips
-  switch to three other engines that render per-instrument stems in a worker
-  and mix them through a per-style studio bus (reverb, echo, ducking, tape):
-  *FM + studio* (the same chip, one stem per instrument), *Synth* (modelled
-  instruments, nothing to download) and *Samples* (recorded instruments,
-  downloaded from the site on demand).
+- **Still just MIDI, played like it means it.** The arranger writes notes,
+  velocities, program changes and pitch bend (slides, swells, accents, chokes),
+  and **Save MIDI** keeps all of it. By default *Synth* (modelled instruments,
+  nothing to download) or *Samples* (recorded instruments, downloaded on
+  demand) render per-instrument stems in a worker, where velocity shapes tone,
+  and mix them through a per-style studio bus: ducking from the kick, drive on
+  kick and bass, parallel drum compression, mono low end, reverb, echo and tape,
+  with a leveller that keeps quiet sections quiet. *FM chip* sends the notes to
+  [libADLMIDI](https://github.com/Wohlstand/libADLMIDI) (Nuked OPL3 emulation,
+  WebAssembly) in an AudioWorklet with classic DOS-era patch banks.
 - **Bazel all the way.** Corpus validation, loudness calibration, bundling, the
   static site, the dev server and deployment are all Bazel targets.
 

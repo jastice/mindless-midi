@@ -7,14 +7,11 @@
  */
 import wasmUrl from "libadlmidi-js/dist/libadlmidi.nuked.browser.wasm";
 import { mediaAnchor } from "../app/media_anchor.js";
-import { type Engine, Player, type Position, type TimedBar } from "../app/player.js";
+import { EXPRESSION, type Engine, Player, type Position, type TimedBar } from "../app/player.js";
 import type { StyleBundle } from "../corpus/schema.js";
 import { randomSeed } from "../theory/seed.js";
 import { chordName } from "../theory/theory.js";
 import { Stage } from "./stage.js";
-
-/** How far velocity falls in the quietest section (Mindless Midi: 0.62). Lower is more contrast between sections. */
-const VELOCITY_FLOOR = 0.5;
 
 const ENGINES: { id: Engine; label: string; tag: string; desc: string }[] = [
   { id: "synth", label: "Synth", tag: "Modelled, nothing to download", desc: "Modelled instruments. A harder note is brighter and snappier, lines glide, long notes swell." },
@@ -87,7 +84,7 @@ async function main(): Promise<void> {
       wasmUrl: new URL(wasmUrl, import.meta.url).href,
       stemWorkletUrl: new URL("stem-worklet.js", import.meta.url).href,
       workerUrl: new URL("render-worker.js", import.meta.url).href,
-      expression: { gestures: true, velocityFloor: VELOCITY_FLOOR },
+      expression: EXPRESSION,
       weighted: true,
       title: "Mighty Midi",
     },

@@ -26,6 +26,12 @@ import type { ScoreNote } from "../sound/types.js";
 
 export type { Engine };
 
+/**
+ * How both pages have the arranger perform: gestures on, and velocity falling to half in the
+ * quietest section (the arranger's own default floor is 0.62) for more contrast between sections.
+ */
+export const EXPRESSION: Expression = { gestures: true, velocityFloor: 0.5 };
+
 /** A place in a session: 0-based piece and bar-in-piece. */
 export interface Position {
   piece: number;
