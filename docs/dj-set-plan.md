@@ -564,5 +564,20 @@ Sound, in Node through the synth:
   or pickups in the arranger.
 - Which drum-machine one-shots the upstream sample set offers (a 909 in
   particular), and their licences.
+  **Checked 2026-11-13: there is no 909.** `danigb/samples` has ten machines:
+  808-mini, Casio-RZ1, Casio-SK1, LM-2, MFB-512, Micro-Rhythmer-12,
+  Roland-CR-8000, Sequential-Circuits-Drumtraks, TR-808 and Yamaha-MR10. So
+  techno's kit is either the 808 and CR-8000 from here, a modelled 909 in the
+  synth (step 2's drum models), or a second sample source. Its README calls
+  the set "permissive licensed" and points to each folder for the licence;
+  the folders hold only a `dm.json`, which was not read. Licences are still
+  open.
 - That `sub()` can take modulation synced to the bar clock without changing
   its output when there is none.
+  **Read 2026-11-13, not tried.** A voice gets the note's onset in seconds
+  (`ScoreNote.t`) and no tempo, so a tempo-synced modulator needs the beat
+  length or the modulator's period in seconds passed in with the note or the
+  patch. The vibrato already takes its phase from `n.t`, so phase running
+  across notes has a precedent. Whether the per-sample loop stays
+  bit-identical with the modulators guarded off is for step 2's comparison
+  test to show.
