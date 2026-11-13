@@ -101,6 +101,9 @@ branch by hand instead.
 
 ## How it fits together
 
+For a fuller map (every module, app, build rule and how-to guide), see the
+knowledge base in [docs/knowledge](docs/knowledge/index.md).
+
 ![Architecture: style briefs are turned into corpora by Claude, validated and calibrated by Bazel rules, then played by the engine through an AudioWorklet or rendered offline](docs/architecture.svg)
 
 - `src/theory`: seeded RNG, modes, roman-numeral chord parsing, chord-scales,
