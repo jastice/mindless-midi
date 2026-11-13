@@ -9,12 +9,34 @@ ts_lib(
         "midi_file.ts",
         "parts.ts",
         "piece.ts",
+        "set.ts",
         "types.ts",
     ],
     visibility = ["//visibility:public"],
     deps = [
         "//src/corpus",
         "//src/theory",
+    ],
+)
+
+ts_test(
+    name = "set_test",
+    src = "set.test.ts",
+    data = ["//styles"],
+    deps = [
+        ":engine",
+        "//src/corpus",
+        "//src/theory",
+    ],
+)
+
+ts_test(
+    name = "golden_test",
+    src = "golden.test.ts",
+    data = ["//styles"],
+    deps = [
+        ":engine",
+        "//src/corpus",
     ],
 )
 

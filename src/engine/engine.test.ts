@@ -1,15 +1,15 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import type { StyleBundle } from "../corpus/schema.js";
+import type { Role, StyleBundle } from "../corpus/schema.js";
 import { declareSound } from "../corpus/sound.js";
 import { MODES, chordPitchClasses, mod, parseRoman } from "../theory/theory.js";
 import { EV_BEND, EV_CC, barEvents } from "../audio/events.js";
 import { Conductor, MAX_SEEK_PIECE } from "./conductor.js";
 import { BEND_CENTER, BEND_RANGE, bendValue, curveAt, levelValue } from "./gestures.js";
-import { DEFAULT_PIECE_OPTIONS } from "./piece.js";
+import { DEFAULT_PIECE_OPTIONS, Piece, type PieceOptions } from "./piece.js";
 import { barsToMidi } from "./midi_file.js";
-import type { Bar } from "./types.js";
+import { type Bar, CHANNELS } from "./types.js";
 import { Harmony } from "./harmony.js";
 import { newMemory, writeMelody, writeOstinato, type BarContext } from "./parts.js";
 import { Rng } from "../theory/rng.js";
@@ -586,4 +586,77 @@ test("seeking into an expressive piece lands on the same bars", () => {
   c.seek(0, 25);
   const bar = c.nextBar();
   assert.deepEqual(bar.notes, straight[25]!.notes);
+});
+
+
+function render(piece: Piece, leaveOut?: (bar: number) => ReadonlySet<Role> | undefined): Bar[] {
+  return Array.from({ length: piece.totalBars }, (_, b) => piece.renderBar(b, b, leaveOut?.(b)));
+}
+
+test("a fixed tempo and key replace the drawn ones and change nothing else in the plan", () => {
+  for (const style of styles) {
+    const drawn = new Piece(style, "fixed", 0);
+    const fixed = new Piece(style, "fixed", 0, { ...DEFAULT_PIECE_OPTIONS, fixed: { bpm: drawn.bpm, tonic: drawn.tonic + 2, mode: "phrygian" } });
+    assert.equal(fixed.formId, drawn.formId);
+    assert.equal(fixed.tonic, (drawn.tonic + 2) % 12);
+    assert.equal(fixed.mode, "phrygian");
+    assert.deepEqual(fixed.sections.map((s) => [s.label, s.bars, s.intensity, s.roles]), drawn.sections.map((s) => [s.label, s.bars, s.intensity, s.roles]));
+    const keepMode = new Piece(style, "fixed", 0, { ...DEFAULT_PIECE_OPTIONS, fixed: { bpm: 123.5, tonic: 3 } });
+    assert.equal(keepMode.mode, drawn.mode);
+    assert.equal(keepMode.bpm, 123.5);
+    assert.equal(keepMode.renderBar(0, 0).info.tonic, 3);
+  }
+});
+
+test("a set's track has no ending, no gap, no ritardando, one key, and whole phrases", () => {
+  const opts: PieceOptions = { minSeconds: 60, maxSeconds: 200, frame: "set" };
+  let ritardandos = 0;
+  for (const style of styles) {
+    for (const seed of ["a", "b", "c", "d"]) {
+      const piece = new Piece(style, `set-${seed}`, 0, opts);
+      if ((style.corpus.ending?.ritardando ?? 0) > 0) ritardandos++;
+      assert.equal(piece.totalBars % 8, 0, `${style.id} ${piece.totalBars} bars`);
+      for (const s of piece.sections) assert.equal(s.bars % 4, 0, `${style.id} ${s.label} ${s.bars} bars`);
+      const segments = piece.segments;
+      assert.equal(segments.length, piece.sections.length);
+      assert.equal(segments.at(-1)!.start + segments.at(-1)!.bars, piece.totalBars);
+      for (const bar of render(piece)) {
+        assert.equal(bar.bpm, piece.bpm);
+        assert.equal(bar.info.gap, false);
+        assert.notEqual(bar.info.section, "ending");
+        assert.equal(bar.info.tonic, piece.tonic);
+      }
+    }
+  }
+  assert.ok(ritardandos > 0, "some style slows into its ending, and here does not");
+});
+
+test("lift raises every section's intensity, within range", () => {
+  for (const style of styles) {
+    const base = new Piece(style, "lift", 0);
+    for (const lift of [0.2, -0.3, 2]) {
+      const lifted = new Piece(style, "lift", 0, { ...DEFAULT_PIECE_OPTIONS, lift });
+      assert.deepEqual(lifted.sections.map((s) => s.intensity), base.sections.map((s) => Math.max(0, Math.min(1, s.intensity + lift))));
+      assert.deepEqual(lifted.sections.map((s) => s.roles), base.sections.map((s) => s.roles));
+    }
+  }
+});
+
+test("roles left out of a bar are written and dropped: the rest of the bar, and every later bar, are unchanged", () => {
+  const opts: PieceOptions = { minSeconds: 40, maxSeconds: 60, expression: { gestures: true } };
+  for (const style of styles) {
+    const leave = new Set<Role>(["pad", "comp", "lead", "bass"]);
+    const out = (b: number) => (b % 3 === 0 ? leave : undefined);
+    const full = render(new Piece(style, "leave", 0, opts));
+    const thinned = render(new Piece(style, "leave", 0, opts), out);
+    const gone = new Set([...leave].map((r) => CHANNELS[r]));
+    full.forEach((bar, b) => {
+      const was = thinned[b]!;
+      if (!out(b)) return assert.deepEqual(was, bar, `${style.id} bar ${b}`);
+      assert.deepEqual(was.notes, bar.notes.filter((n) => !leave.has(n.role)));
+      assert.deepEqual(was.info, bar.info);
+      // Bends and expression on the left-out channels go with their notes; the rest is as it was.
+      if (b > 0) assert.deepEqual(was.controls, bar.controls.filter((c) => !("ch" in c && gone.has(c.ch))));
+    });
+  }
 });

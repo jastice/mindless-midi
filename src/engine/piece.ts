@@ -28,6 +28,16 @@ export interface PieceOptions {
   maxSeconds: number;
   /** How notes are played. Omitted: velocity as written by the default floor, no gestures. */
   expression?: Expression;
+  /** Play at this tempo and in this key instead of drawing them (the draws still happen, so the rest of the piece is unchanged). */
+  fixed?: { bpm: number; tonic: number; mode?: ModeName };
+  /**
+   * "set": a track in a DJ set. No ending chord, no gap, no ritardando and no
+   * transposing on later passes (a track is in one key); sections are padded to
+   * a multiple of 4 bars and the last one so the piece is whole 8-bar phrases.
+   */
+  frame?: "piece" | "set";
+  /** Added to every section's intensity (clamped to 0..1), to play the same form hotter or cooler. */
+  lift?: number;
 }
 
 /**
@@ -96,6 +106,7 @@ export class Piece {
   private readonly memory: PartMemory = newMemory();
   private readonly bodyBars: number;
   private readonly expression: Expression;
+  private readonly set: boolean;
 
   constructor(
     style: StyleBundle,
@@ -111,6 +122,7 @@ export class Piece {
     this.index = index;
     this.rng = new Rng(seed);
     this.expression = opts.expression ?? {};
+    this.set = opts.frame === "set";
     const c = this.corpus;
     for (const inst of c.instruments) this.instruments.set(inst.role, inst);
 
@@ -125,9 +137,11 @@ export class Piece {
     // (A separate stream, so pieces from forms without overrides keep their seeds.)
     const area = this.rng.fork("area");
     const key = form.keys?.length ? area.pick(form.keys) : styleKey;
-    this.tonic = pitchClass(key.tonic);
-    this.mode = key.mode as ModeName;
-    this.bpm = Math.round(form.tempo ? area.float(form.tempo.min, form.tempo.max) : styleBpm);
+    const fixed = opts.fixed;
+    this.tonic = fixed ? mod(fixed.tonic, 12) : pitchClass(key.tonic);
+    this.mode = fixed?.mode ?? (key.mode as ModeName);
+    const bpm = Math.round(form.tempo ? area.float(form.tempo.min, form.tempo.max) : styleBpm);
+    this.bpm = fixed ? fixed.bpm : bpm;
     for (const inst of form.instruments ?? []) {
       this.instruments.set(inst.role, inst);
       this.overridden.add(inst.role);
@@ -168,8 +182,10 @@ export class Piece {
         roles = this.varyRoles(roles, vary);
         intensity = clamp01(intensity + vary.float(-0.08, 0.12));
       }
+      if (opts.lift) intensity = clamp01(intensity + opts.lift);
+      const bars = this.set ? Math.ceil(s.bars / 4) * 4 : s.bars;
       const material = materialFor(s.label, s.progression);
-      const harmony = new Harmony(material.progression, s.bars * c.beatsPerBar);
+      const harmony = new Harmony(material.progression, bars * c.beatsPerBar);
       const grooveRng = vary.fork("groove");
       const grooves = this.inPalette(c.drums.filter((d) => d.kind === "groove"));
       const byFit = grooveRng.shuffle(grooves).sort((a, b) => Math.abs(a.intensity - intensity) - Math.abs(b.intensity - intensity));
@@ -177,7 +193,7 @@ export class Piece {
       sections.push({
         index: sections.length,
         label: s.label,
-        bars: s.bars,
+        bars,
         startBar: bar,
         intensity,
         roles,
@@ -188,30 +204,37 @@ export class Piece {
         grooves: byFit.slice(0, 2),
         fill: fills.length ? grooveRng.weighted(fills, (f) => 1 / (0.15 + Math.abs(f.intensity - intensity))) : undefined,
       });
-      bar += s.bars;
+      bar += bars;
     };
     for (const s of head) push(s, 0, plan.fork(`head:${s.label}`));
     for (let p = 0; p < passes; p++) {
       const vary = plan.fork(`pass:${p}`);
-      if (p > 0 && vary.chance(0.22)) transpose += vary.pick([2, -2, 5, -3, 1]);
+      if (p > 0 && vary.chance(0.22)) {
+        const step = vary.pick([2, -2, 5, -3, 1]);
+        if (!this.set) transpose += step;
+      }
       for (const s of body) push(s, p, vary.fork(`${s.label}:${sections.length}`));
     }
     for (const s of tail) push(s, 0, plan.fork(`tail:${s.label}`));
+    const last = sections[sections.length - 1]!;
+    if (this.set && bar % 8) {
+      last.bars += 8 - (bar % 8);
+      last.harmony = new Harmony(last.material.progression, last.bars * c.beatsPerBar);
+      bar = last.startBar + last.bars;
+    }
     this.sections = sections;
     this.bodyBars = bar;
-    this.totalBars = bar + 2;
+    this.totalBars = this.set ? bar : bar + 2;
   }
 
   get keyName(): string {
     return keyLabel(this.tonic, this.mode);
   }
 
-  /** The chunks a listener can jump between: each section, then the ending (its last bar and the gap). */
+  /** The chunks a listener can jump between: each section, then the ending (its last bar and the gap) unless the piece is a set's track. */
   get segments(): Segment[] {
-    return [
-      ...this.sections.map((s) => ({ label: s.label, start: s.startBar, bars: s.bars })),
-      { label: "ending", start: this.bodyBars, bars: this.totalBars - this.bodyBars },
-    ];
+    const sections = this.sections.map((s) => ({ label: s.label, start: s.startBar, bars: s.bars }));
+    return this.set ? sections : [...sections, { label: "ending", start: this.bodyBars, bars: this.totalBars - this.bodyBars }];
   }
 
   get seconds(): number {
@@ -291,7 +314,11 @@ export class Piece {
     return this.sections.find((s) => barInPiece >= s.startBar && barInPiece < s.startBar + s.bars);
   }
 
-  renderBar(barInPiece: number, globalIndex: number): Bar {
+  /**
+   * The notes and controls of a bar. Roles in `leaveOut` are written as usual
+   * (so voicings and random streams are the same either way) and then dropped.
+   */
+  renderBar(barInPiece: number, globalIndex: number, leaveOut?: ReadonlySet<Role>): Bar {
     const c = this.corpus;
     const bpb = c.beatsPerBar;
     const notes: NoteEvent[] = [];
@@ -349,9 +376,12 @@ export class Piece {
     }
 
     this.groove(notes, this.rng.fork(`feel:${barInPiece}`), section);
-    if (this.expression.gestures) controls.push(...this.gestures(notes, this.rng.fork(`gesture:${barInPiece}`), section, barInPiece));
-    else for (const n of notes) delete n.gesture;
-    return { index: globalIndex, beats: bpb, bpm: this.ritardando(barInPiece, notes), notes, controls, info };
+    const played = leaveOut?.size ? notes.filter((n) => !leaveOut.has(n.role)) : notes;
+    if (this.expression.gestures) {
+      this.gestures(notes, this.rng.fork(`gesture:${barInPiece}`), section, barInPiece);
+      controls.push(...gestureControls(played));
+    } else for (const n of notes) delete n.gesture;
+    return { index: globalIndex, beats: bpb, bpm: this.ritardando(barInPiece, played), notes: played, controls, info };
   }
 
   /** The chord a piece comes to rest on: the tonic, made major in a minor mode if the style ends with a Picardy third. */
@@ -368,7 +398,7 @@ export class Piece {
    */
   private ritardando(barInPiece: number, notes: NoteEvent[]): number {
     const amount = this.corpus.ending?.ritardando ?? 0;
-    if (amount <= 0 || barInPiece > this.bodyBars || barInPiece < this.bodyBars - 1) return this.bpm;
+    if (amount <= 0 || this.set || barInPiece > this.bodyBars || barInPiece < this.bodyBars - 1) return this.bpm;
     const arrival = this.bpm * (1 - amount);
     if (barInPiece === this.bodyBars) return Math.round(arrival);
     // Seconds per beat grow linearly across the bar, from 60/bpm to 60/arrival,
@@ -531,8 +561,10 @@ export class Piece {
    *   swell   a long note on an instrument that sustains (a held pad chord swells as one)
    *   accent  bass and kick landing on the downbeat that opens a full section
    *   choke   an open hi-hat, stopped by the next closed one
+   *
+   * `gestureControls` turns the curves into events.
    */
-  private gestures(notes: NoteEvent[], rng: Rng, section: PlannedSection | undefined, barInPiece: number): ControlEvent[] {
+  private gestures(notes: NoteEvent[], rng: Rng, section: PlannedSection | undefined, barInPiece: number): void {
     const prev = new Map<Role, NoteEvent>();
     const padSwell = new Map<number, boolean>();
     const landing = section !== undefined && barInPiece === section.startBar && section.index > 0 && section.intensity >= 0.5;
@@ -576,7 +608,6 @@ export class Piece {
       const curve = gestureCurve(gesture, n.dur, joined && interval !== 0 ? interval : -1);
       if (curve) n.curve = curve;
     });
-    return gestureControls(notes);
   }
 
   /** Swing + humanization, in place. */

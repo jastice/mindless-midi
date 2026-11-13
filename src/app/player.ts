@@ -13,7 +13,7 @@ import { TARGET_RMS } from "../audio/leveler.js";
 import { type FromWorklet, PROCESSOR_NAME, type ToWorklet } from "../audio/protocol.js";
 import { ROLES, type Role } from "../corpus/constants.js";
 import type { StyleBundle } from "../corpus/schema.js";
-import { Conductor, type Landing } from "../engine/conductor.js";
+import { type BarSource, Conductor, type Landing } from "../engine/conductor.js";
 import { barsToMidi } from "../engine/midi_file.js";
 import { velocityScale } from "../engine/parts.js";
 import { DEFAULT_PIECE_OPTIONS, type Expression, type PieceOptions } from "../engine/piece.js";
@@ -145,7 +145,7 @@ export class Player {
   private library: SampleLibrary | null = null;
   private wasm: Promise<ArrayBuffer> | null = null;
   private workerHasWasm = false;
-  private conductor: Conductor;
+  private conductor: BarSource;
   private pool: StyleBundle[];
   /** Where the listener last was, as far as the audible bars have said. */
   private last: Landing;

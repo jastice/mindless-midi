@@ -21,6 +21,22 @@ export interface Landing {
   label: string;
 }
 
+/**
+ * What the player needs from whatever makes its bars: the conductor, or a DJ
+ * set (where a "piece" is a track). Positions are (piece, bar in piece).
+ */
+export interface BarSource {
+  readonly seed: string;
+  nextBar(): Bar;
+  seek(pieceIndex: number, barInPiece: number): Landing;
+  seekSegment(pieceIndex: number, segment: number): Landing;
+  /** The segments of a piece that has been started, else null. */
+  layout(pieceIndex: number): Segment[] | null;
+  setStyles(styles: StyleBundle[]): Landing | null;
+  /** Abandon the current piece; the next bar starts a new one. */
+  skip(): void;
+}
+
 /** What it took to start a piece, so it can be started again exactly. */
 interface Choice {
   style: StyleBundle;
@@ -31,7 +47,7 @@ interface Choice {
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(Math.max(Math.floor(n), lo), hi);
 
-export class Conductor {
+export class Conductor implements BarSource {
   readonly seed: string;
   private styles: StyleBundle[];
   private readonly opts: PieceOptions;

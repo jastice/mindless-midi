@@ -9,6 +9,8 @@ import {
   degreeToMidi,
   foldIntoRange,
   keyLabel,
+  keysCompatible,
+  type ModeName,
   parseRoman,
   pitchClass,
   snapToPitchClasses,
@@ -118,6 +120,35 @@ test("key labels are human readable", () => {
   assert.equal(keyLabel(6, "phrygianDominant"), "F# phrygian dominant");
   assert.equal(keyLabel(2, "doubleHarmonic"), "D double harmonic");
   assert.equal(keyLabel(14, "dorian"), "D dorian");
+});
+
+test("keys are compatible when their scales share six of seven pitch classes", () => {
+  const k = (tonic: string, mode: ModeName) => ({ tonic: pitchClass(tonic), mode });
+  const yes: Array<[ReturnType<typeof k>, ReturnType<typeof k>]> = [
+    [k("C", "ionian"), k("C", "ionian")],
+    [k("C", "ionian"), k("A", "aeolian")], // relative minor
+    [k("C", "ionian"), k("G", "ionian")], // a fifth up
+    [k("C", "ionian"), k("F", "ionian")], // a fifth down
+    [k("A", "aeolian"), k("E", "phrygian")], // same notes
+    [k("A", "aeolian"), k("A", "phrygian")], // one degree apart
+    [k("A", "aeolian"), k("A", "dorian")],
+    [k("D", "dorian"), k("E", "aeolian")], // D dorian is C major; E aeolian is G major
+    [k("F", "phrygian"), k("C", "phrygian")], // Db major and Ab major
+  ];
+  const no: Array<[ReturnType<typeof k>, ReturnType<typeof k>]> = [
+    [k("C", "ionian"), k("D", "ionian")], // two fifths
+    [k("C", "ionian"), k("C", "aeolian")], // parallel minor
+    [k("A", "phrygian"), k("E", "aeolian")],
+    [k("C", "harmonicMinor"), k("C", "ionian")],
+  ];
+  for (const [a, b] of yes) {
+    assert.ok(keysCompatible(a, b), `${keyLabel(a.tonic, a.mode)} ~ ${keyLabel(b.tonic, b.mode)}`);
+    assert.ok(keysCompatible(b, a), "symmetric");
+  }
+  for (const [a, b] of no) {
+    assert.ok(!keysCompatible(a, b), `${keyLabel(a.tonic, a.mode)} !~ ${keyLabel(b.tonic, b.mode)}`);
+    assert.ok(!keysCompatible(b, a), "symmetric");
+  }
 });
 
 test("generated seeds are three hyphenated music words", () => {

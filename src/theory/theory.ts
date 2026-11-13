@@ -61,6 +61,27 @@ export function keyLabel(tonic: number, mode: ModeName): string {
   return `${NOTE_NAMES[mod(tonic, 12)]} ${modeLabel(mode)}`;
 }
 
+export interface Key {
+  /** Pitch class, 0..11. */
+  tonic: number;
+  mode: ModeName;
+}
+
+/** The pitch classes of a key's scale. */
+export function keyPitchClasses(key: Key): number[] {
+  return MODES[key.mode].map((i) => mod(key.tonic + i, 12));
+}
+
+/**
+ * Two keys are compatible when their scales share at least six of seven pitch
+ * classes: the same key, the relative major or minor, a fifth either way, and
+ * modes that differ in one degree (A aeolian and A phrygian, say).
+ */
+export function keysCompatible(a: Key, b: Key): boolean {
+  const pcs = new Set(keyPitchClasses(a));
+  return keyPitchClasses(b).filter((pc) => pcs.has(pc)).length >= 6;
+}
+
 // ---------------------------------------------------------------------------
 // Roman numeral chords
 // ---------------------------------------------------------------------------
