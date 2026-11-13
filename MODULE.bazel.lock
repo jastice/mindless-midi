@@ -389,6 +389,24 @@
         }
       }
     },
+    "@@rules_agents+//rules_agents:extensions.bzl%skill_deps": {
+      "general": {
+        "bzlTransitiveDigest": "5SbqCB8P0m91xzw0SJg60aRBrwqmbxrfKIFRRX2tmvw=",
+        "usagesDigest": "7LTDkhd2Kbz9cJW4pEGiOeLzwtuWSILJcP1g0lLD2Zo=",
+        "recordedInputs": [],
+        "generatedRepoSpecs": {
+          "okf_skill": {
+            "repoRuleId": "@@rules_agents+//rules_agents:extensions.bzl%_remote_skill_repo",
+            "attributes": {
+              "repo_name": "okf_skill",
+              "skill_path_prefix": "",
+              "strip_prefix": "skills-ec4099f92fdeadcf1771c2a3f64efa4970733c89/skills/okf-open-knowledge-format",
+              "url": "https://github.com/fabricioctelles/skills/archive/ec4099f92fdeadcf1771c2a3f64efa4970733c89.tar.gz"
+            }
+          }
+        }
+      }
+    },
     "@@rules_kotlin+//src/main/starlark/core/repositories:bzlmod_setup.bzl%rules_kotlin_extensions": {
       "general": {
         "bzlTransitiveDigest": "+Kp6j204mBZ3mxlIDDR0gBoP45BZ4jYRhRAcB8sU0qc=",

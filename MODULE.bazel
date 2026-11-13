@@ -27,3 +27,23 @@ typescript.deps(
     version_from = "//:package.json",
 )
 use_repo(typescript, "npm_typescript")
+
+# Agent skills, managed by rules_agents (https://github.com/jastice/rules_agents).
+bazel_dep(name = "rules_agents", version = "0.1.0")
+
+git_override(
+    module_name = "rules_agents",
+    commit = "4a2e0998c0dd7151a3ec3987c92c34b81498dc57",
+    remote = "https://github.com/jastice/rules_agents.git",
+)
+
+skill_deps = use_extension("@rules_agents//rules_agents:extensions.bzl", "skill_deps")
+
+skill_deps.remote(
+    name = "okf_skill",
+    # The upstream repo has duplicate skill names (human-ai), so scope the archive to this one skill.
+    strip_prefix = "skills-ec4099f92fdeadcf1771c2a3f64efa4970733c89/skills/okf-open-knowledge-format",
+    url = "https://github.com/fabricioctelles/skills/archive/ec4099f92fdeadcf1771c2a3f64efa4970733c89.tar.gz",
+)
+
+use_repo(skill_deps, "okf_skill")

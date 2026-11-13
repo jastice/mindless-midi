@@ -1,5 +1,6 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
 load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_agents//rules_agents:defs.bzl", "agent_profile", "agent_runner")
 
 npm_link_all_packages(name = "node_modules")
 
@@ -18,4 +19,31 @@ ts_config(
     src = "tsconfig.node.json",
     visibility = ["//visibility:public"],
     deps = [":tsconfig"],
+)
+
+# Agent skills, installed repo-locally for each supported agent.
+agent_profile(
+    name = "dev_profile",
+    skills = [
+        "@rules_agents//skills:rules_agents",
+        "@okf_skill//:okf_skill",
+    ],
+)
+
+agent_runner(
+    name = "claude_dev",
+    profile = ":dev_profile",
+    runner = "claude_code",
+)
+
+agent_runner(
+    name = "codex_dev",
+    profile = ":dev_profile",
+    runner = "codex",
+)
+
+agent_runner(
+    name = "pi_dev",
+    profile = ":dev_profile",
+    runner = "pi",
 )
