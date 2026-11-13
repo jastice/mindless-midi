@@ -75,6 +75,8 @@ const SWITCH_READY_SECONDS = 6;
 const SWITCH_MAX_WAIT = 30;
 
 export interface PlayerOptions {
+  /** What makes the bars. Omitted: a `Conductor`. Given the pool, the seed and the expression in use, as piece options. */
+  source?: (styles: StyleBundle[], seed: string, pieces: PieceOptions) => BarSource;
   seed: string;
   /** Where in the seed to start (default: the beginning). */
   at?: Position;
@@ -215,8 +217,12 @@ export class Player {
     this.pieces = opts.expression ? { ...DEFAULT_PIECE_OPTIONS, expression: opts.expression } : DEFAULT_PIECE_OPTIONS;
     // The weighted mix reads its level over two thirds of a second, so a hit is not a loud moment.
     this.meterBuf = new Float32Array(opts.weighted ? 32768 : 2048);
-    this.conductor = new Conductor(styles, opts.seed, this.pieces);
+    this.conductor = this.source(styles, opts.seed);
     this.last = this.conductor.seek(opts.at?.piece ?? 0, opts.at?.bar ?? 0);
+  }
+
+  private source(styles: StyleBundle[], seed: string): BarSource {
+    return this.opts.source ? this.opts.source(styles, seed, this.pieces) : new Conductor(styles, seed, this.pieces);
   }
 
   get seed(): string {
@@ -461,7 +467,7 @@ export class Player {
 
   /** Start over with another seed: its first piece begins right away. */
   reseed(seed: string): void {
-    this.conductor = new Conductor(this.pool, seed, this.pieces);
+    this.conductor = this.source(this.pool, seed);
     const landing = this.conductor.seek(0, 0);
     this.cut();
     this.head(landing);

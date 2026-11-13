@@ -176,7 +176,7 @@ least six of seven pitch classes. That covers the same key, the relative
 major or minor and a fifth either way, and it works for the modal keys techno
 uses (phrygian, dorian), which a major/minor wheel would not.
 
-### Built (2026-11-13, not committed)
+### Built (2026-11-13, committed as `5f4ef00` and the commit after it)
 
 The engine half: key compatibility, the `Piece` options, `BarSource` and the
 first `SetConductor`. Written by Opus, reviewed by Fable. `bazel test //...`
@@ -215,8 +215,10 @@ Decisions made where the plan was silent:
 
 Known gaps:
 
-- `Player` constructs `Conductor` itself in two places, so it cannot drive a
-  `SetConductor` yet. The app shell needs a factory or an option.
+- `Player` takes a `source` option (a factory for its `BarSource`), so the app
+  shell can pass `(styles, seed, pieces) => new SetConductor(...)`. Not yet
+  tried in a browser; `Player` has no tests and it still calls each track a
+  piece.
 - `skip()` cuts mid-track, so the track after a skip does not start on a
   phrase boundary of the set.
 - A track shorter than 32 bars has its mix-in and mix-out overlap.
@@ -227,7 +229,6 @@ Known gaps:
 
 - The app shell: `src/claudia`, its page and Bazel targets (Opus).
 - The `//styles:claudia` pack and the `minimal_techno` corpus (Fable).
-- Letting `Player` take a `SetConductor`.
 
 ## Step 2: patches (L)
 
