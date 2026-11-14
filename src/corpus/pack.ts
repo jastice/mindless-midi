@@ -15,7 +15,12 @@ const PACK_ID = /^[a-z0-9][a-z0-9-]*\/[a-z0-9][a-z0-9-]*$/;
 const SAMPLE_ID = /^[a-z0-9][a-z0-9_-]*$/;
 const HEX40 = /^[0-9a-f]{40}$/;
 const HEX64 = /^[0-9a-f]{64}$/;
-/** Real SPDX ids where one exists, a `LicenseRef-` id for informal claims. */
+/**
+ * Real SPDX ids where one exists, a `LicenseRef-` id for informal claims.
+ * Policy (2026-11-14): free licences, non-commercial ones, public domain and
+ * "free to use" or "royalty free" declarations are all accepted; the licence
+ * block records what the source actually says.
+ */
 const SPDX = /^(CC0-1\.0|CC-BY(-NC)?(-SA)?-[0-9.]+|MIT|Unlicense|LicenseRef-[A-Za-z0-9.-]+)$/;
 /** Audio is kept in upstream's codec, so hashes match upstream. */
 const AUDIO = /\.(wav|m4a|ogg|mp3)$/;
@@ -136,7 +141,6 @@ export function validatePack(input: unknown, where?: string): PackResult {
   const pack = parsed.data;
   const errors: string[] = [];
   if (where !== undefined && where !== `${pack.id}/pack.json`) errors.push(`id: ${pack.id} should live at samples/${pack.id}/pack.json, not ${where}`);
-  if (/NC/.test(pack.licence.spdx)) errors.push(`licence.spdx: ${pack.licence.spdx} has non-commercial terms, which the licence policy does not accept`);
   const files = new Map<string, string>();
   for (const [id, s] of Object.entries(pack.samples)) {
     const want = fileUrl(pack.origin, s.file);

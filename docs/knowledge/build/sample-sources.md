@@ -18,9 +18,11 @@ A list of places to get recordings, kept apart from the build mechanics in
 [Samples](./samples.md). It says where a sound came from and on what terms,
 which is what the page's credits and any future release need.
 
-How sources are judged for this project: a source counts when it states a free
-licence or free use itself. Where the stated terms are loose ("free",
-"royalty free") the entry says so, and the project accepts that for now.
+How sources are judged for this project: a source counts when it states its
+terms itself. As general policy (decided 2026-11-14) the project accepts free
+licences, non-commercial licences (CC BY-NC and the like), public domain and
+"public domain or similar" claims, and "free to use" or "royalty free"
+declarations. Where the stated terms are loose the entry says so.
 Nothing here is content-addressed or mirrored yet; that is a later step.
 
 Checked 2026-11-13 and 2026-11-14 against the sources' own pages. "Not
@@ -30,7 +32,7 @@ checked" means the claim comes from a search summary only.
 
 | Source | Holds | Licence | Notes |
 |---|---|---|---|
-| [danigb/samples](https://github.com/danigb/samples) | Compilation, converted to ogg and m4a: drum machines (808-mini, Casio-RZ1, Casio-SK1, LM-2, MFB-512, Micro-Rhythmer-12, Roland-CR-8000, Drumtraks, TR-808, Yamaha-MR10), Sample Pi, Splendid Grand Piano, VCSL, Smolken bass, jlearman Rhodes, Old Piano, Mellotron, Wurlitzer | "Permissive licensed", per folder. Piano, VCSL, Smolken, Old Piano and Sample Pi are CC0 or public domain; Wurlitzer is CC BY 3.0. The README calls jlearman's Rhodes CC0, but its own LICENSE puts the samples under CC BY-NC 4.0 (checked 2026-11-14) | The drum-machine folders carry no licence text in `dm.json`. Only `TR-808` has a note, which calls the set "ABSOLUTELY FREE". The Rhodes' non-commercial terms are outside the licence policy, so it has no pack (the generator converts it; validation refuses it) |
+| [danigb/samples](https://github.com/danigb/samples) | Compilation, converted to ogg and m4a: drum machines (808-mini, Casio-RZ1, Casio-SK1, LM-2, MFB-512, Micro-Rhythmer-12, Roland-CR-8000, Drumtraks, TR-808, Yamaha-MR10), Sample Pi, Splendid Grand Piano, VCSL, Smolken bass, jlearman Rhodes, Old Piano, Mellotron, Wurlitzer | "Permissive licensed", per folder. Piano, VCSL, Smolken, Old Piano and Sample Pi are CC0 or public domain; Wurlitzer is CC BY 3.0. The README calls jlearman's Rhodes CC0, but its own LICENSE puts the samples under CC BY-NC 4.0 (checked 2026-11-14) | The drum-machine folders carry no licence text in `dm.json`. Only `TR-808` has a note, which calls the set "ABSOLUTELY FREE". The Rhodes is a pack (`danigb-samples/jrhodes3d-st`) under CC BY-NC 4.0, credited "jRhodes3d by Jeff Learman"; no program plays it yet |
 | [gleitz/midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts) | General MIDI sets as per-note files: FluidR3_GM, MusyngKite, FatBoy, a tabla set | FluidR3_GM CC BY 3.0; MusyngKite and FatBoy CC BY-SA 3.0; tabla not stated (README); the repo's LICENSE.txt is MIT, for its code | The share-alike on MusyngKite is the one to watch. The sampler used to credit FluidR3 as MIT; the packs now say CC BY 3.0 |
 | [VCSL](https://github.com/sgossner/VCSL) | Versilian Community Sample Library: orchestral, world and unusual instruments | CC0 | Reached through danigb/samples |
 

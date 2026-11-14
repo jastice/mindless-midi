@@ -30,11 +30,13 @@ use_repo(typescript, "npm_typescript")
 
 # Sample packs: hash-pinned downloads, as @samples//<pack id>:<sample id> and @samples//<pack id>.
 # Each manifest is checked in under samples/ and written by //tools/packs. The
-# table loads every pack an instrument uses; the drum packs are listed below.
+# table loads every pack an instrument uses; packs no program plays yet (the
+# drums, the Rhodes) are listed below.
 samples = use_extension("//bazel:samples.bzl", "samples")
 samples.table(file = "//samples:instruments.json")
 samples.pack(manifest = "//samples:danigb-sampled/tr909-detroit/pack.json")
 samples.pack(manifest = "//samples:danigb-samples/casio-rz1/pack.json")
+samples.pack(manifest = "//samples:danigb-samples/jrhodes3d-st/pack.json")
 samples.pack(manifest = "//samples:danigb-samples/lm-2/pack.json")
 samples.pack(manifest = "//samples:danigb-samples/sample-pi-drums/pack.json")
 samples.pack(manifest = "//samples:danigb-samples/tr-808/pack.json")

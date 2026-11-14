@@ -13,7 +13,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { test } from "node:test";
 import { FONTS, type InstrumentTable, type MultisamplePack, servedPath } from "../../src/corpus/pack.js";
-import { type Zone, SampleCache, instrumentFor } from "../../src/sound/sampler.js";
+import { type Zone, SampleCache, instrumentFor, packInstrument } from "../../src/sound/sampler.js";
 import { type SfzRegion, type WebsfzDoc, parseWebsfz, regionUrl } from "./websfz.js";
 
 const DANIGB = "https://danigb.github.io/samples/";
@@ -124,8 +124,32 @@ for (const font of FONTS) {
   }
 }
 
-test("every multisample manifest is reached from the table", () => {
-  const all = (readdirSync("samples", { recursive: true }) as string[]).filter((f) => f.endsWith("pack.json")).map((f) => JSON.parse(readFileSync(`samples/${f}`, "utf8")) as { id: string; kind: string });
-  const named = new Set(Object.values(table.programs).flatMap((e) => Object.values(e.packs)));
-  assert.deepEqual(all.filter((m) => m.kind === "multisample" && !named.has(m.id)).map((m) => m.id), []);
-});
+// Packs no program plays yet (the Rhodes): the same check against their own document, with no sample folder beyond its <control> prefix.
+const named = new Set(Object.values(table.programs).flatMap((e) => Object.values(e.packs)));
+const others = (readdirSync("samples", { recursive: true }) as string[])
+  .filter((f) => f.endsWith("pack.json"))
+  .map((f) => JSON.parse(readFileSync(`samples/${f}`, "utf8")) as MultisamplePack)
+  .filter((m) => m.kind === "multisample" && !named.has(m.id));
+
+for (const pack of others) {
+  test(`${pack.id} (in no program yet) plays what upstream's document did`, async () => {
+    assert.ok(pack.source.path.endsWith(".websfz.json"), pack.source.path);
+    const docUrl = DANIGB + pack.source.path.slice("audio/".length);
+    const base = docUrl.slice(0, docUrl.lastIndexOf("/") + 1);
+    const old = oldSfz(parseWebsfz(JSON.parse(source(pack)) as WebsfzDoc), base);
+    const now = packInstrument(pack, { release: 0.3, sustain: false, flat: false });
+    let zones = 0;
+    for (let round = 0; round < ROUNDS; round++) {
+      for (let key = 0; key <= 127; key++) {
+        for (const vel of VELS) {
+          const want = old(key, vel).map((z) => ({ ...z, url: served(pack, z.url, encodeURI(base)) }));
+          const got = await now.zones(key, vel);
+          assert.deepEqual(got.map((z) => z.url), want.map((z) => z.url), `key ${key} vel ${vel} round ${round}`);
+          got.forEach((z, i) => assert.ok(Math.abs(z.rate - want[i]!.rate) < 1e-12 && Math.abs(z.gain - want[i]!.gain) < 1e-12 && z.offset === want[i]!.offset, `key ${key} vel ${vel}`));
+          zones += got.length;
+        }
+      }
+    }
+    assert.ok(zones > 0, "plays something");
+  });
+}

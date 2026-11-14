@@ -52,7 +52,7 @@ test("URLs are pinned and percent-encoded; served paths are named by id", () => 
   assert.equal(servedPath("danigb-sampled/tr909-detroit", "kick", "kick.wav"), "danigb-sampled/tr909-detroit/kick.wav");
 });
 
-test("multisample manifests: regions name their samples, every file is played, and non-commercial licences are refused", () => {
+test("multisample manifests: regions name their samples and every file is played", () => {
   const pack = load("danigb-samples/vcsl-marimba/pack.json");
   assert.equal(pack.kind, "multisample");
   const errs = (mutate: (p: any) => void) => {
@@ -65,7 +65,9 @@ test("multisample manifests: regions name their samples, every file is played, a
   assert.ok(errs((p) => (p.regions[0].sample = "nope")).some((e) => /regions\.0\.sample: no sample nope/.test(e)));
   assert.ok(errs((p) => (p.regions = p.regions.filter((r: any) => r.sample !== p.regions[0].sample))).some((e) => /no region plays it/.test(e)));
   assert.ok(errs((p) => (p.regions[0].lo = 127)).some((e) => /lo 127 above hi/.test(e)));
-  assert.ok(errs((p) => (p.licence.spdx = "CC-BY-NC-4.0")).some((e) => /non-commercial/.test(e)));
+  // Non-commercial licences are accepted for this project (2026-11-14); a made-up CC id is not.
+  assert.deepEqual(errs((p) => (p.licence.spdx = "CC-BY-NC-SA-4.0")), []);
+  assert.ok(errs((p) => (p.licence.spdx = "CC-BY-XX-4.0")).some((e) => /licence\.spdx/.test(e)));
   assert.ok(errs((p) => (p.source.url = p.source.url.replace(p.origin.commit, "main"))).some((e) => /source\.url: expected/.test(e)));
 });
 

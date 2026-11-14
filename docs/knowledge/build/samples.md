@@ -33,7 +33,8 @@ soundfont (`MusyngKite`, `FluidR3_GM`), with its release, sustain and whether
 it is flat (one recording per note). SFZ libraries (Splendid piano, Wurlitzer,
 VCSL vibraphone, marimba and tenor sax, Smolken bass) play the same in both
 fonts; every other program has a soundfont group per font,
-`gleitz-musyngkite/<name>` and `gleitz-fluidr3-gm/<name>`. A program the table
+`gleitz-musyngkite/<name>` and `gleitz-fluidr3-gm/<name>`. The jRhodes Rhodes
+(CC BY-NC 4.0) is a pack no program plays yet. A program the table
 does not list plays nothing, and a style cannot declare it. The sampler
 (`src/sound/sampler.ts`) and the Bazel extension both read the table.
 
@@ -77,7 +78,8 @@ commit (default: the branch head) and hashes every file:
 
 The licence block and description are kept from an existing manifest; a new
 pack gets a placeholder that fails validation until someone reads the source's
-terms. Licences with non-commercial terms fail validation. After a new
+terms. Free, non-commercial, public-domain and "free to use" terms are all
+accepted ([Sample sources](./sample-sources.md) says how). After a new
 instrument, add it to `samples/instruments.json`; `//tools/packs:zones_test`
 then checks, key by key, that it plays what the upstream document did.
 

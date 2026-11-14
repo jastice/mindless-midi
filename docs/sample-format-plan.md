@@ -57,10 +57,12 @@ scope here. Pinning by sha256 keeps that door open.
   upstream. Transcoding to one codec belongs with the CAS work.
 - **Licence is mandatory data.** Packs without a licence block fail validation.
   The credits the page shows are generated from it.
-- **Licence policy for now:** a source counts when it states a free licence or
-  free use itself; "royalty free" and "public domain or similar" are accepted
-  for this project (decided 2026-11-14). The catalogue records what each source
-  actually says.
+- **Licence policy:** a source counts when it states its terms itself. Accepted
+  for this project as general policy (decided 2026-11-14): free licences,
+  non-commercial licences (CC BY-NC and the like), public domain and
+  "public domain or similar" claims, and "free to use" or "royalty free"
+  declarations. Attribution and share-alike terms are carried in the licence
+  block and the credits. The catalogue records what each source actually says.
 - **Choosing an instrument is data.** Which pack plays a GM program (today the
   `instrumentFor` switch in `sampler.ts`, with the gleitz soundfont as the
   fallback for every other program) becomes a checked-in table next to the
@@ -231,8 +233,8 @@ restored between runs and a cold cache is the only time all requests happen.
   names its file by sample id (`sample`), so a file shared by regions is
   hashed and served once, and served paths stay `<pack>/<sample id>.<ext>`
   like one-shots. A `source` block pins the upstream document. The validator
-  checks every region's sample exists, every sample is played, and refuses
-  licences with non-commercial terms. The program table's type,
+  checks every region's sample exists and every sample is played; the SPDX
+  pattern accepts CC BY-NC ids. The program table's type,
   `InstrumentTable`, and `packCredit` (credit lines from licence blocks) live
   there too.
 - `//tools/packs`: `websfz` and `gm` subcommands. `tools/packs/websfz.ts` is
@@ -245,11 +247,13 @@ restored between runs and a cold cache is the only time all requests happen.
   programs per font from gleitz at `044fab8` (`gleitz-musyngkite/*`,
   `gleitz-fluidr3-gm/*`, 88 files each, 120 MB and 117 MB). Casio RZ-1 as a
   one-shot pack, so every drum the older kits play is in a pack.
-- **Rhodes:** jlearman's own LICENSE puts the samples under CC BY-NC 4.0
-  (danigb/samples' README says CC0). The generator converts it
-  (`websfz "jlearman/rhodes-mki/jrhodes3dst.websfz.json" ...`), but
-  validation refuses the licence, so no Rhodes pack is checked in. Needs a
-  decision (ask the author, or use another Rhodes) before it can ship.
+- **Rhodes:** `danigb-samples/jrhodes3d-st` (65 files). jlearman's own
+  LICENSE puts the samples under CC BY-NC 4.0 (danigb/samples' README says
+  CC0); accepted under the licence policy of 2026-11-14, with the attribution
+  on the pack. No program plays it yet (programs 4 and 5 stay on the
+  Wurlitzer), so `MODULE.bazel` lists it and it is
+  `@samples//danigb-samples/jrhodes3d-st`; the zone test checks it against
+  its document too, including the `<control>` `prefix_sfz_path`.
 - `samples/instruments.json`: the program table, one pack per program and
   font, with release, sustain and flat. It reproduces the old
   `instrumentFor` switch for the 67 programs the styles and the bench use; a
@@ -258,7 +262,8 @@ restored between runs and a cold cache is the only time all requests happen.
 - `//tools/packs:zones_test`: every program in the table, both fonts, keys
   0-127, eight velocities, four passes for round robins: the zones from the
   manifest equal the zones the old loader computed from the pinned document
-  (`//samples:sources`). Passes for all 140 combinations.
+  (`//samples:sources`). Passes for all 140 combinations, and for the Rhodes,
+  which is in no program yet.
 - `//bazel:samples.bzl`: `samples.table(file = ...)` loads every pack the
   table names; one group repository per multisample (`ctx.download` with
   `block = False`, then waited on); `@samples//<pack id>` is a `sample_pack`
