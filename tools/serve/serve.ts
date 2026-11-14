@@ -13,6 +13,7 @@
  */
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
+import { homedir } from "node:os";
 import { extname, join, normalize, resolve } from "node:path";
 
 const TYPES: Record<string, string> = {
@@ -24,6 +25,8 @@ const TYPES: Record<string, string> = {
   ".woff2": "font/woff2",
   ".svg": "image/svg+xml",
   ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".mp4": "video/mp4",
   ".m4a": "audio/mp4",
   ".mp3": "audio/mpeg",
   ".wav": "audio/wav",
@@ -43,10 +46,17 @@ function siteRoot(arg: string | undefined): string {
 }
 
 const root = siteRoot(process.argv[2]);
-const mounts = process.argv.slice(3).map((m) => {
-  const [prefix, dir] = m.split("=");
-  if (!prefix || !dir) throw new Error(`expected <prefix>=<dir>, not ${m}`);
-  return { prefix: `/${prefix.replace(/^\/+|\/+$/g, "")}/`, dir: siteRoot(dir) };
+// `<prefix>=~/dir?`: a folder in the home directory, skipped with a note if it is missing (local media kept out of the repo).
+const mounts = process.argv.slice(3).flatMap((m) => {
+  const [prefix, spec] = m.split("=");
+  if (!prefix || !spec) throw new Error(`expected <prefix>=<dir>, not ${m}`);
+  const optional = spec.endsWith("?");
+  const dir = spec.replace(/\?$/, "").replace(/^~(?=\/)/, homedir());
+  if (optional && !(existsSync(dir) && statSync(dir).isDirectory())) {
+    console.error(`${prefix}/: ${dir} not found, not served`);
+    return [];
+  }
+  return [{ prefix: `/${prefix.replace(/^\/+|\/+$/g, "")}/`, dir: siteRoot(dir) }];
 });
 const requested = Number(process.env.PORT ?? 8080);
 
@@ -73,9 +83,26 @@ const server = createServer((req, res) => {
     res.writeHead(404, { "content-type": "text/plain" }).end("not found");
     return;
   }
+  const type = TYPES[extname(file)] ?? "application/octet-stream";
+  const size = statSync(file).size;
+  // Byte ranges, which video elements need to seek (Safari will not play without them).
+  const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? "");
+  if (range && (range[1] || range[2])) {
+    const start = range[1] ? Number(range[1]) : Math.max(0, size - Number(range[2]));
+    const end = range[1] && range[2] ? Math.min(size - 1, Number(range[2])) : size - 1;
+    if (start > end || start >= size) {
+      res.writeHead(416, { "content-range": `bytes */${size}` }).end();
+      return;
+    }
+    res.writeHead(206, { "content-type": type, "cache-control": "no-store", "accept-ranges": "bytes", "content-range": `bytes ${start}-${end}/${size}`, "content-length": end - start + 1 });
+    createReadStream(file, { start, end }).pipe(res);
+    return;
+  }
   res.writeHead(200, {
-    "content-type": TYPES[extname(file)] ?? "application/octet-stream",
+    "content-type": type,
     "cache-control": "no-store",
+    "accept-ranges": "bytes",
+    "content-length": size,
   });
   createReadStream(file).pipe(res);
 });

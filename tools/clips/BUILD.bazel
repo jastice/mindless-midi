@@ -1,0 +1,24 @@
+load("//bazel:ts.bzl", "ts_binary", "ts_lib", "ts_test")
+
+# Booth cam clip prep: takes in, content-addressed clips and clips.json out.
+# bazel run //tools/clips:prep [-- --takes DIR --out DIR --config FILE --json FILE]
+ts_lib(
+    name = "analyse",
+    srcs = ["analyse.ts"],
+    node = True,
+)
+
+ts_binary(
+    name = "prep",
+    src = "prep.ts",
+    deps = [
+        ":analyse",
+        "//src/claudia:director",
+    ],
+)
+
+ts_test(
+    name = "analyse_test",
+    src = "analyse.test.ts",
+    deps = [":analyse"],
+)

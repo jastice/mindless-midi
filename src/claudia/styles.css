@@ -99,6 +99,18 @@ main { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 16px; }
 .deck, .desk, .tracklist { border: 1px solid var(--line); background: var(--panel); }
 .tracklist { grid-column: 1 / -1; }
 
+/* ---- the booth cam ----------------------------------------------------- */
+.cam { grid-column: 1 / -1; margin: 0; border: 1px solid var(--line); background: var(--panel); }
+.screen { position: relative; overflow: hidden; width: 100%; aspect-ratio: 752 / 416; background: #1a1708; }
+.screen > img, .screen > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.screen > video { opacity: 0; }
+.screen > img { z-index: 0; }
+.screen.still-only > video { visibility: hidden; }
+.screen.off { display: none; }
+.cam-bar { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; padding: 10px 14px; }
+.cam-bar a { color: var(--dim); }
+.cam-bar button { flex: none; }
+
 /* ---- the deck ---------------------------------------------------------- */
 .deck { padding: 18px 22px 22px; }
 .deck-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; color: var(--dim); }
@@ -219,6 +231,7 @@ main { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 16px; }
   .top { grid-template-columns: minmax(0, 1fr); }
   .top h1 { grid-row: auto; }
   main { grid-template-columns: minmax(0, 1fr); }
+  .cam { margin: 0 -16px; border-left: 0; border-right: 0; }
   .deck { padding: 16px; }
   .readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .readout > div:nth-child(3) { border-left: 0; }

@@ -3,18 +3,44 @@ load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//bazel:deploy.bzl", "gh_pages_deploy")
 load("//bazel:stamp.bzl", "stamp_build_info")
-load("//bazel:ts.bzl", "ts_lib")
+load("//bazel:ts.bzl", "ts_lib", "ts_test")
 
 # DJ Claudia: an endless, seeded DJ set (//src/engine:set.ts) through the
 # shared Player, with her own style pack and page. Synth and Samples only.
 ts_lib(
     name = "claudia",
-    srcs = ["app.ts"],
+    srcs = [
+        "app.ts",
+        "booth.ts",
+    ],
     deps = [
+        ":director",
         "//src/app:player",
         "//src/corpus",
         "//src/engine",
         "//src/theory",
+    ],
+)
+
+# The booth cam's director: which clip plays in which bars. Pure.
+ts_lib(
+    name = "director",
+    srcs = ["director.ts"],
+    visibility = ["//tools/clips:__pkg__"],
+    deps = ["//src/theory"],
+)
+
+ts_test(
+    name = "director_test",
+    src = "director.test.ts",
+    data = [
+        "clips.json",
+        "//styles:claudia",
+    ],
+    deps = [
+        ":director",
+        "//src/corpus",
+        "//src/engine",
     ],
 )
 
@@ -44,6 +70,7 @@ stamp_build_info(
 copy_to_directory(
     name = "site",
     srcs = [
+        "clips.json",
         "favicon.svg",
         "styles.css",
         ":bundle",
@@ -75,6 +102,8 @@ js_binary(
     args = [
         "src/claudia/site",
         "samples=styles/claudia_samples_superset",
+        # Booth cam clips, outside the repo until the content-addressed store exists (bazel run //tools/clips:prep).
+        "clips=~/workspace/claudia/clips?",
     ],
     data = [
         ":site",

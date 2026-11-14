@@ -488,8 +488,8 @@ export class Player {
     this.head(landing);
   }
 
-  /** The segments of a piece that has been started (null before): where each begins, in bars, and how long it runs. */
-  layout(piece: number): { label: string; start: number; bars: number }[] | null {
+  /** The segments of a piece that has been started (null before): where each begins, in bars, how long it runs and how intense it is. */
+  layout(piece: number): { label: string; start: number; bars: number; intensity: number }[] | null {
     return this.conductor.layout(piece);
   }
 

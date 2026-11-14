@@ -11,6 +11,8 @@ import type { StyleBundle } from "../corpus/schema.js";
 import { DEFAULT_SET_OPTIONS, MIX_BARS, PHRASE_BARS, SetConductor } from "../engine/set.js";
 import { barSeconds } from "../engine/types.js";
 import { randomSeed } from "../theory/seed.js";
+import { BoothCam } from "./booth.js";
+import type { ClipSet } from "./director.js";
 
 const ENGINES: { id: Engine; label: string; desc: string }[] = [
   { id: "synth", label: "Synth", desc: "Modelled sounds, nothing to download." },
@@ -100,7 +102,35 @@ async function main(): Promise<void> {
     weighted: true,
   });
   player.setVolume(volume);
-  Object.assign(window, { djClaudia: { player, styles } });
+
+  // --- Booth cam ----------------------------------------------------------
+  // Clips come from the content-addressed store; until it exists, the dev server serves them at clips/.
+  const clipBase = new URL(params.get("clips") ?? "clips/", document.baseURI);
+  let booth: BoothCam | null = null;
+  try {
+    const set = (await (await fetch(new URL("clips.json", document.baseURI))).json()) as ClipSet;
+    // Only where the clips are served: the still answering is the sign.
+    const still = set.stills.home;
+    const served = still ? (await fetch(new URL(still, clipBase), { method: "HEAD" })).ok : false;
+    if (set.clips.length && served) booth = new BoothCam($("cam"), player, set, clipBase);
+  } catch (err) {
+    console.warn("booth cam unavailable", err);
+  }
+  const camToggle = $<HTMLButtonElement>("cam-toggle");
+  $("cam").parentElement!.hidden = !booth;
+  function renderCam(on: boolean): void {
+    booth?.setEnabled(on);
+    camToggle.setAttribute("aria-pressed", String(on));
+    camToggle.textContent = on ? "Hide booth cam" : "Show booth cam";
+  }
+  let camOn = store.get("booth") !== "off";
+  renderCam(camOn);
+  camToggle.addEventListener("click", () => {
+    camOn = !camOn;
+    store.set("booth", camOn ? "on" : "off");
+    renderCam(camOn);
+  });
+  Object.assign(window, { djClaudia: { player, styles, booth } });
 
   // --- Sound --------------------------------------------------------------
   const chipFor = new Map<Engine, HTMLButtonElement>();

@@ -1,0 +1,98 @@
+{
+  "fps": 24,
+  "width": 752,
+  "height": 416,
+  "stills": {
+    "home": "2773513da8bfda9c25bf46055542a29d4ce4489762ca750efebb35e538806d0f.jpg"
+  },
+  "clips": [
+    {
+      "id": "L2-home-mid",
+      "kind": "loop",
+      "from": "home",
+      "to": "home",
+      "energy": "mid",
+      "file": "a39f6e349bd4d74952e2d9a918b099d933e067a0d33c963f9e7d769a67d5a47e.mp4",
+      "frames": 188,
+      "bars": 4,
+      "bpm": 122.553,
+      "beatPhase": 11,
+      "fadeFrames": 6,
+      "source": {
+        "take": "generated_video (2).mp4",
+        "start": 0,
+        "boomerangTurn": 94,
+        "closeDiff": 0,
+        "fromDiff": 3.37,
+        "toDiff": 3.37,
+        "beatStrength": 1.15
+      }
+    },
+    {
+      "id": "L2b-home-mid",
+      "kind": "loop",
+      "from": "home",
+      "to": "home",
+      "energy": "mid",
+      "file": "073735eb072a97d01dadf3b055669f5dccd5bf1d5c9891e89005f49fe386c205.mp4",
+      "frames": 96,
+      "bars": 2,
+      "bpm": 120,
+      "beatPhase": 11,
+      "fadeFrames": 6,
+      "source": {
+        "take": "generated_video (2).mp4",
+        "start": 0,
+        "boomerangTurn": 48,
+        "closeDiff": 0,
+        "fromDiff": 3.37,
+        "toDiff": 3.37,
+        "beatStrength": 1.23
+      }
+    },
+    {
+      "id": "S1-home-cue",
+      "kind": "loop",
+      "from": "home",
+      "to": "home",
+      "energy": "mid",
+      "scene": "blend",
+      "file": "e91a68e428bf6e2bf2ab4ade4118e007f0fd1b3d74a2bbdf89c47c124f3a18d6.mp4",
+      "frames": 133,
+      "bars": 3,
+      "bpm": 129.925,
+      "beatPhase": 10.8,
+      "fadeFrames": 6,
+      "source": {
+        "take": "generated_video.mp4",
+        "start": 11,
+        "closeDiff": 0.98,
+        "fromDiff": 1.32,
+        "toDiff": 1.43,
+        "beatStrength": 1.2
+      }
+    },
+    {
+      "id": "S2-home-peak",
+      "kind": "loop",
+      "from": "home",
+      "to": "home",
+      "energy": "high",
+      "scene": "drop",
+      "file": "ea1a4e6528bf51ae7b5ea4fd0992691efd25f40ca8868b127d4cf4cd70ce2bf4.mp4",
+      "frames": 138,
+      "bars": 3,
+      "bpm": 125.217,
+      "beatPhase": 11,
+      "fadeFrames": 6,
+      "source": {
+        "take": "generated_video (1).mp4",
+        "start": 2,
+        "closeDiff": 1.37,
+        "fromDiff": 1.07,
+        "toDiff": 1.54,
+        "beatStrength": 1.25
+      }
+    }
+  ]
+}

@@ -120,9 +120,18 @@ inputs so it works before and after.
 starts and intensities. `Player.window()` only covers what has been
 scheduled (seconds ahead), so the plan is to read the section layout from
 the piece instead (`Player.layout()` gives sections with start bars; it
-would also need each section's intensity). **To verify before starting:**
-what `layout()` can give for the current and the next track in set mode, and
-whether exposing intensity there is cheap.
+would also need each section's intensity).
+
+*Checked (prototype, 2026-11-14):* `window()` holds only the scheduled
+bars, 4 s ahead for Synth and 6 s for Samples (`LOOKAHEAD`), about 2–3
+bars: no use for planning. `layout(piece)` works for the current track at
+any bar and is `null` for the next one until it has started, since the set
+conductor only picks a track when it begins. Exposing intensity was one
+field on `Segment` (`piece.ts`), now in. The next track is therefore
+assumed: a blend zone for its first 16 bars, middling energy, no drops;
+the plan is corrected once it starts (see `RollingPlan`). The blend zone of
+the outgoing track comes from `pieceBars` alone, so the cue sequence
+across a mix is always known in time.
 
 Tests (`node:test`, as in `set.test.ts`): over long seeded sets,
 
@@ -181,6 +190,105 @@ step 7 page design, which this does not replace.
 Credits under it, always visible:
 "Claudia is an open character by anabology (claudia.gallery). Video
 generated with Grok Imagine." No HÖR name or logo anywhere.
+
+## Prototype results (2026-11-14)
+
+Branch `claude/booth-cam-prototype-ce2cc9`. What exists:
+
+- `tools/clips/` (`bazel run //tools/clips:prep`): reads
+  `art/claudia-dj/selects.json` (which take is which clip, and the pose
+  stills), writes clips named by their SHA-256 to `~/workspace/claudia/clips/`
+  and `src/claudia/clips.json` (the `ClipSet`, the one committed file).
+  752×416 (the frame of the Grok loops; 16:9 takes are cropped to it), 24
+  fps, no audio, CRF 26, keyframe every 12 frames: 0.65–1.4 MB a clip.
+- `src/claudia/director.ts` with `director_test`: the director as planned,
+  plus `cuesFor` (cues from the bar and its track's sections) and
+  `RollingPlan` (the plan as the page keeps it, bar by bar, replanning only
+  when the music turns out other than assumed).
+- `src/claudia/booth.ts`: the clip player, at the top of the page, on by
+  default, a hide button remembered in the page's store, the still for
+  reduced motion and before play. Clips are served by the dev server from
+  `~/workspace/claudia/clips` (`clips/` mount, skipped if the folder is
+  missing; the page hides the cam when the still does not answer, so the
+  deployed site is unchanged until the store exists). `?clips=<url>` points
+  it elsewhere.
+
+**The takes.** Measured with the prep tool (diff scale as above):
+
+| Clip | Take | Range | Bars, bpm | Close | Off Home |
+|---|---|---|---|---|---|
+| L2-home-mid | groove, 1280×720 | boomerang 0→94→0 | 4 at 122.6 | 0 | 3.37 |
+| L2b-home-mid | groove | boomerang 0→48→0 | 2 at 120.0 | 0 | 3.37 |
+| S1-home-cue | cue gesture loop | 11–144 | 3 at 129.9 | 0.98 | 1.32 / 1.43 |
+| S2-home-peak | hands-up loop | 2–140 | 3 at 125.2 | 1.37 | 1.07 / 1.54 |
+
+- The groove take is 16:9 and the Grok loops 752×416 (1.81:1): cropping
+  the groove to that aspect around the centre brings its first frame from
+  7.4 to 3.4 off the Home still, and no crop offset or zoom does better.
+  The rest is a different frame (exposure does not explain it: 3.2 after
+  matching brightness). After frame 0 the take wanders 7–12 away from Home
+  and never comes back, and the best loop inside it (2 bars, close 1.8) is
+  9.9 off Home. So it cannot loop at Home; it plays as a **boomerang**
+  (forward, then reversed), turning on its stillest frame. The reversal is
+  visible if you look for it (her hands run backwards); a proper Home loop
+  of this groove is the first clip to make.
+- The search prefers trimming the Grok loops by a few frames (frames 11–144
+  and 2–140) over their own first/last frames: they close better there
+  (0.98 vs 1.43) and land nearer 128 bpm.
+- Clip lengths must not all share a factor. With only 3-bar clips, drops on
+  8-bar sections are unreachable; the 4- and 2-bar groove cuts make every
+  gap of 2 bars or more fillable, and the tests land over 80% of drops on
+  their downbeat (the rest are too close to the previous drop or the track
+  start).
+- **Beat phase** from motion is weak on these takes (comb strength
+  1.15–1.25, where 1 is no beat): her nods are not steady at a tempo. The
+  groove nods about every 20 frames (72 per minute), not on our beats. The
+  phases found sit within a frame of the clip start, so they change
+  nothing; set them by hand in `selects.json` if a take nods clearly.
+
+**The director with these clips.** No Cue or Peak poses exist yet, so the
+cue gesture and the hands-up are scenes at Home (`scene: "blend"`,
+`"drop"`): the cue gesture fills about half the bars of each blend zone,
+the hands-up lands on drops and very rarely elsewhere as a flourish. The
+same code plans with real poses and transitions: the tests run it on a
+synthetic full shot list too.
+
+**Sync, measured** in headless Chrome on a MacBook (desktop Chrome, 60 s
+of a set, drift of each presented frame against `player.now` via
+`requestVideoFrameCallback`): mean 0.25 frames (10 ms), worst 1.1 frames,
+bias under 0.05 frames, no seeks after the first, 12 joins. Pause holds the
+frame and resume continues without a seek. A skip replans after the clip
+on screen and the cue gesture starts on the new track's mix-in; one
+measurement there peaked at 3.7 frames (not yet explained: the tempo step
+between tracks, or the bars the skip replaces). A new set restarts the
+plan at Home with one seek, a visible cut, as planned. Phone width (390
+px) lays out without horizontal scroll. **Not measured:** iOS Safari and a
+real phone (the iOS check below is still open), and the in-app browser
+pane, which throttles animation frames when hidden.
+
+**Joins.** The Grok loops are 1.1–1.5 from the shared Home frame, the
+groove 3.4. Rendered the way the page joins them (the outgoing clip holds
+its last frame, the incoming starts at frame 0 and fades in over 6 frames)
+and measured frame to frame: every step through S1→L2, L2→S1 (the groove
+join), S2→S1 and S1→S1 is 0.3–1.1, inside the clips' own motion (median
+0.7, 95th percentile 1.6). So even the groove's 3.4 joins smoothly. The one
+artifact is a repeated frame at the join, where the outgoing clip has run
+out; a clip one frame longer, or starting the fade a frame early, removes
+it. This was measured offline on the encoded clips, not on screen
+captures of the page.
+
+**Open problems.**
+
+- A Home groove loop that starts and ends on the Home still (the
+  boomerang is a stopgap), then the Cue and Peak poses and transitions.
+- iOS Safari: `playbackRate` bending and seeks on muted inline video.
+- The spike after a skip, above.
+- The next track's sections are unknown until it starts, so a drop in its
+  first 16 bars (inside the mix-in, rare) can be missed.
+- Bars are counted by the page as they become audible; a link to a bar
+  starts at Home there rather than where an uninterrupted session would be.
+- The dev server's `clips/` mount points at a home folder; the R2 store
+  replaces it.
 
 ## Hosting the clips
 

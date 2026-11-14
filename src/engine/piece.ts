@@ -81,6 +81,8 @@ export interface Segment {
   /** First bar, counted from the start of the piece. */
   start: number;
   bars: number;
+  /** The section's intensity, 0..1, lift included (the ending's is its last section's). */
+  intensity: number;
 }
 
 const FRAME_LABELS = /^(intro|outro|ending|coda)/i;
@@ -233,8 +235,8 @@ export class Piece {
 
   /** The chunks a listener can jump between: each section, then the ending (its last bar and the gap) unless the piece is a set's track. */
   get segments(): Segment[] {
-    const sections = this.sections.map((s) => ({ label: s.label, start: s.startBar, bars: s.bars }));
-    return this.set ? sections : [...sections, { label: "ending", start: this.bodyBars, bars: this.totalBars - this.bodyBars }];
+    const sections = this.sections.map((s) => ({ label: s.label, start: s.startBar, bars: s.bars, intensity: s.intensity }));
+    return this.set ? sections : [...sections, { label: "ending", start: this.bodyBars, bars: this.totalBars - this.bodyBars, intensity: sections[sections.length - 1]?.intensity ?? 0.3 }];
   }
 
   get seconds(): number {
