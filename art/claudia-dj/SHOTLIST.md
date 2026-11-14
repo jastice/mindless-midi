@@ -14,8 +14,12 @@ frame options. Background and lessons: [PROMPTS.md](PROMPTS.md).
   fisheye, the room and the light stay identical. Never generate a pose from
   scratch.
 - **Camera locked**, no zoom, no cut, nobody else in the room, no text.
-- **6 s, 16:9, 720p.** At 128 BPM a 6.04 s clip becomes 3 bars when sped up
-  7.4%. Transitions may be trimmed to 1 or 2 bars.
+- **Lengths: 6 s or 10 s, 16:9, 720p.** At 128 BPM a 6.04 s clip is 3 bars
+  and a 10.04 s clip is 5 bars, each about 7% faster than generated, and
+  3 + 5 = 8, one phrase. So every phrase is 3+5 or 5+3 and ends on a pose
+  frame, ready for the next event. Transitions and flourishes are 6 s (3
+  bars); loops come in both lengths, ideally a 6 s and a 10 s loop per pose.
+  Never slow a 6 s clip to fill 4 bars (×0.8 reads as slow motion).
 - **Loops** use Grok's loop option (first frame = last frame = the pose).
 - **Transitions** set the first frame to the start pose and the last frame
   to the end pose.
