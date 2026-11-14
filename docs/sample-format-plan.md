@@ -61,6 +61,24 @@ scope here. Pinning by sha256 keeps that door open.
   free use itself; "royalty free" and "public domain or similar" are accepted
   for this project (decided 2026-11-14). The catalogue records what each source
   actually says.
+- **Choosing an instrument is data.** Which pack plays a GM program (today the
+  `instrumentFor` switch in `sampler.ts`, with the gleitz soundfont as the
+  fallback for every other program) becomes a checked-in table next to the
+  manifests. The runtime and the Bazel rules both read it, so a style's BUILD
+  and what the page actually loads cannot drift apart. The GM fallback is an
+  explicit group per program and font, not an implicit "anything else".
+  Instrument labels ("VCSL marimba (CC0)") come from the licence block, not
+  from strings in code.
+- **One implementation of "which files can sound".** The trim action and the
+  reach check run the same TypeScript `required()` the runtime uses (as
+  `requiredSamples` does today), pointed at the manifests and the fetched files
+  instead of upstream. No second version in Starlark.
+- **Kits carry their velocity variants and key aliases.** Touch swaps soft and
+  hard Sonic Pi hits (`HARD_SOFT`), and `required()` does not list the swapped
+  file today; this only works because the shipped set is the union of every
+  kit. Once the shipped set is trimmed, a kit has to declare its variants
+  (`{"default", "hard", "soft"}` per key) and the drum key aliases (35→36,
+  40→38, …), and the trim takes all of them.
 
 ## The format
 
@@ -89,9 +107,21 @@ scope here. Pinning by sha256 keeps that door open.
 
 - `kind: "oneshots"` has `samples` keyed by a stable id. `gm` is the General MIDI
   percussion key the sample is the natural default for; kits may override it.
-- `kind: "multisample"` has `regions` instead of `gm`: `file`, `root`, `lo`, `hi`,
-  `vel: [lo, hi]` and `loop` where the source has one. That is the SFZ subset
-  `sampler.ts` already reads.
+- `kind: "multisample"` has `regions` instead of `gm`. The generator resolves
+  websfz global, group and region opcodes (and a `<control>`
+  `prefix_sfz_path`, which applies to every later group) into flat regions,
+  each with everything `loadSfz` in `sampler.ts` reads today:
+  - `file`, `root`, `lo`, `hi`, `vel: [lo, hi]`;
+  - `tune` in cents (`tune` + 100 × `transpose`), `volume` in dB (`volume` +
+    `group_volume`), `offset`;
+  - `xfin: [lo, hi]` and `xfout: [lo, hi]` (velocity crossfades), or null;
+  - `seq: [length, position]` (round robin);
+  - `loop` where the source has one.
+
+  Regions `loadSfz` skips (CC conditions, keyswitches, release triggers) are
+  left out. A test compares, for every instrument, the zones the websfz
+  document gives with the zones the manifest gives, for every key and a few
+  velocities, so the conversion cannot change how anything sounds.
 - Sample ids are the public names. Upstream file names are an implementation
   detail of `file`.
 - `licence.spdx` uses a real SPDX id where one exists (`CC0-1.0`, `CC-BY-3.0`,
@@ -113,8 +143,14 @@ style: a plain type plus a validator and a test that loads every manifest).
 - Each target provides `SampleInfo` (id, file, licence). A group provides the
   manifest and its files.
 - `sample_kit(name, hits = {"36": "@samples//…:kick", …})` provides
-  `SampleKitInfo`. `music_style` takes `kit = ":techno_kit"` and the `KITS`
-  table is removed.
+  `SampleKitInfo`. A hit is a label or `{"default": …, "hard": …, "soft": …}`;
+  the kit also takes the key aliases. `music_style` takes `kit = ":techno_kit"`
+  and the `KITS`, `HARD_SOFT` and `TOUCH_SAMPLES` tables are removed. Agree
+  the shape with DJ Claudia's kits-with-patches (`docs/dj-set-plan.md`,
+  step 2) before building it.
+- File URLs are percent-encoded by the generator (VCSL paths have spaces, some
+  sample names have `#`), and pack and sample ids are turned into valid
+  repository names.
 - `style_samples` becomes an offline action: it takes the style's sound
   declaration, its kit and its instrument groups as inputs, runs the check, and
   writes the trimmed `samples/` tree and a credits file. The lock files, the
@@ -131,17 +167,27 @@ restored between runs and a cold cache is the only time all requests happen.
 - Add the manifest type, a validator and a test that loads every manifest.
 - Write the generator for `danigb/sampled` oneshots and run it for TR-909
   Detroit; hand-check the licence block.
+- Write the oneshot generator for `danigb/samples` too, and run it for the
+  packs `minimal_techno`'s kit also names: TR-808, LM-2 (ride) and Sonic Pi
+  drums (`bd_haus`). The kit then has no hit left on the old path.
 - Do the Bazel extension for oneshots only, `@samples` aliases and
-  `sample_kit`. Move `minimal_techno`'s drum kit to a `sample_kit` using
-  TR-909 plus the existing 808 hits.
-- Done when `minimal_techno` plays a 909 kit from `@samples` labels and its
-  site build no longer lists that kit in the lock file.
+  `sample_kit` with variants and aliases. Move `minimal_techno`'s drum kit to a
+  `sample_kit` using TR-909 plus those hits.
+- The other styles' kits stay on `KITS` and the lock files until step 3; the
+  loader accepts both a sample id and an upstream URL until then.
+- Done when `minimal_techno` plays a 909 kit from `@samples` labels and
+  `claudia_samples.lock.json` no longer lists any drum file.
 
 ### 2. Multisample groups and the packaging action (L)
 
 - Generators for the websfz documents (Splendid piano, VCSL, Smolken, Rhodes,
-  Wurlitzer) and for the GM soundfonts.
-- Group repositories, the offline trim action and the reach check.
+  Wurlitzer) and for the GM soundfonts, with the zone-equivalence test.
+- The program-to-pack table, read by `sampler.ts` and by the rules; one GM
+  group per program and font, about 88 files each.
+- Group repositories, the offline trim action and the reach check, both
+  running the runtime's `required()`.
+- The dev server and tests serve the fetched superset (no upstream fallback
+  once the loader is keyed by sample id).
 - Done when a style builds with no network action and a corpus change that
   widens a range fails the check with a clear message.
 
@@ -158,7 +204,11 @@ restored between runs and a cold cache is the only time all requests happen.
 - That thousands of `http_file` repositories from one extension stay quick to
   evaluate, and that the aliases in `@samples` resolve to repositories the same
   extension generated. Try it with two files in a scratch workspace first.
-  Fallback if evaluation is slow: group repositories for everything.
+  Fallback if evaluation is slow: group repositories for everything. Include
+  the GM soundfont groups in the count (about 88 files per program per font).
+- Whether danigb/samples keeps any folder in Git LFS. raw.githubusercontent
+  serves the pointer file, not the audio, for those; the hash check would
+  catch it, but the URL scheme would need `media.githubusercontent.com`.
 - **danigb/samples.** The converted files are on `main` under `audio/`; a
   workflow publishes that folder to GitHub Pages. One file was compared
   (TR-808 `clap/cp.m4a`: Pages and `main` hash the same, and match the lock
@@ -181,5 +231,9 @@ restored between runs and a cold cache is the only time all requests happen.
 - Whether manifests should be generated into `samples/` and checked in, or
   built. Checked in is assumed, so licence and hash changes show in review.
 - Whether `kit` belongs on `music_style` or on a separate rule the app picks.
+  Settle it together with DJ Claudia's kits-with-patches.
+- Whether the trim targets a style or a style pack. Today `samples` and
+  `claudia_samples` are each one union over a pack, so the site ships one
+  `samples/` per app; trimming per pack keeps that and dedupes shared files.
 - How a kit that mixes packs (techno: house kick, 808 snare, 909 hats) appears
   in the credits: one line per pack used, not per sample.
