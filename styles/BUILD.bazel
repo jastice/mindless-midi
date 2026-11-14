@@ -55,6 +55,38 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
+# DJ Claudia's styles: a pack of their own, so they do not appear in the other
+# apps (and the styles above do not appear in hers).
+CLAUDIA_STYLES = [
+    "minimal_techno",
+]
+
+style_pack(
+    name = "claudia",
+    styles = ["//styles/%s:style" % s for s in CLAUDIA_STYLES],
+    visibility = ["//visibility:public"],
+)
+
+# claudia_samples.lock.json pins them; bazel run //styles:claudia_samples_lock refreshes it.
+style_samples(
+    name = "claudia_samples",
+    lock = "claudia_samples.lock.json",
+    styles = ["//styles/%s:style" % s for s in CLAUDIA_STYLES],
+    visibility = ["//visibility:public"],
+)
+
+js_library(
+    name = "claudia_samples_lock_json",
+    srcs = ["claudia_samples.lock.json"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "claudia_corpora",
+    srcs = ["//styles/%s:corpus" % s for s in CLAUDIA_STYLES],
+    visibility = ["//visibility:public"],
+)
+
 # bazel run //styles:regen -- styles/metroid   (needs Claude API credentials)
 alias(
     name = "regen",

@@ -383,6 +383,12 @@ const KITS: Record<string, Record<number, string>> = {
     36: `${SP}kick/drum_bass_soft.m4a`, 37: `${LM2}stick-m.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
     45: `${SP}tom/drum_tom_lo_soft.m4a`, 70: `${LM2}cabasa.m4a`,
   },
+  // DJ Claudia. A house kick under an 808; her own kits come with patches (docs/dj-set-plan.md, step 2).
+  minimal_techno: {
+    36: `${SP}kick/bd_haus.m4a`, 38: `${TR808}snare/sd2525.m4a`, 37: `${TR808}rimshot/rs.m4a`, 39: `${TR808}clap/cp.m4a`,
+    42: `${TR808}hihat-close/ch.m4a`, 46: `${TR808}hihat-open/oh25.m4a`, 51: `${LM2}ride.m4a`,
+    49: `${TR808}cymbal/cy2525.m4a`, 45: `${TR808}tom-low/lt25.m4a`, 50: `${TR808}tom-hi/ht25.m4a`, 70: `${TR808}maraca/ma.m4a`,
+  },
 };
 
 /**

@@ -144,6 +144,14 @@ Object.assign(PRESETS, {
     reverb: { seconds: 1.35, predelay: 0.018, bright: 0.35, send: { lead: 0.22, counter: 0.18, comp: 0.12, bass: 0.04, drums: 0.06 } },
     highpass: { lead: 140, counter: 130, comp: 100 },
   },
+  // DJ Claudia. A dark room: dotted-eighth echoes on the stab and the bleep, everything breathing with the kick.
+  minimal_techno: {
+    reverb: { seconds: 2.4, predelay: 0.02, bright: 0.35, send: { arp: 0.22, comp: 0.3, pad: 0.4, drums: 0.05 } },
+    delay: { beats: 0.75, feedback: 0.45, send: { arp: 0.28, comp: 0.35 } },
+    chorus: ["pad"],
+    duck: { depth: { bass: 0.35, pad: 0.5, comp: 0.3, arp: 0.2 }, release: 0.18 },
+    highpass: { arp: 200, comp: 180, pad: 200 },
+  },
 } satisfies Record<string, MixPreset>);
 
 const DEFAULT_PRESET: MixPreset = { reverb: { seconds: 1.8, predelay: 0.02, bright: 0.5, send: { lead: 0.2, pad: 0.3 } }, highpass: {} };

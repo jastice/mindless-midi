@@ -459,6 +459,8 @@ const KITS: Record<string, Kit> = {
   courtyard_nine: { kick: { f0: 140, f1: 58, sweep: 0.02, decay: 0.16, drive: 1.15, click: 0.08 }, snare: { tone: 240, toneDecay: 0.03, noiseDecay: 0.07, noiseHp: 1800, mix: 0.45 }, hatScale: 0.7, hatDecay: 0.03, toms: [110, 160] },
   // Soft kick under a singing bass; the shaker is the only chatter.
   low_log: { kick: { f0: 125, f1: 44, sweep: 0.04, decay: 0.26, drive: 1.25, click: 0.1 }, snare: { tone: 170, toneDecay: 0.03, noiseDecay: 0.08, noiseHp: 1600, mix: 0.55 }, hatScale: 0.55, hatDecay: 0.025, toms: [95, 140] },
+  // DJ Claudia. A low, driven kick; her own kits come with patches (docs/dj-set-plan.md, step 2).
+  minimal_techno: { kick: { f0: 165, f1: 48, sweep: 0.035, decay: 0.26, drive: 2, click: 0.35 }, snare: { tone: 200, toneDecay: 0.06, noiseDecay: 0.14, noiseHp: 1800, mix: 0.7 }, hatScale: 1.15, hatDecay: 0.04, toms: [110, 165] },
 };
 
 const HAT_FREQS = [205.3, 304.4, 369.6, 522.7, 540, 800];

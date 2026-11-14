@@ -9,3 +9,4 @@ user.bazelrc
 .agents/
 .pi/
 .claude/skills/
+.claude/worktrees/

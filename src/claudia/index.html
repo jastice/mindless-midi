@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DJ Claudia</title>
+    <meta name="description" content="An endless DJ set, composed and mixed live in your browser: one track into the next on the phrase, in compatible keys, at a steady tempo." />
+    <meta name="theme-color" content="#07060a" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="fonts/ibm-plex-mono-normal-500.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <div class="booth">
+      <header class="top">
+        <h1><span class="dj">DJ</span> <em>Claudia</em></h1>
+        <p class="tagline">An endless set, written bar by bar in this tab. Nothing is streamed.</p>
+        <div class="session mono">
+          <label for="seed">Set</label>
+          <input id="seed" type="text" spellcheck="false" autocomplete="off" aria-label="Set seed" />
+          <button id="reseed" class="text" type="button" title="Start a new set with a random seed">New set</button>
+          <button id="share" class="text" type="button" title="Copy a link to this set and bar">Copy link</button>
+        </div>
+      </header>
+
+      <main>
+        <section class="deck" aria-label="Deck">
+          <div class="deck-head mono">
+            <span class="onair"><i aria-hidden="true"></i><span id="state">Standby</span></span>
+            <span id="track-no">Track –</span>
+            <span id="mix" class="mix" data-stage="">–</span>
+          </div>
+
+          <h2 id="title" aria-live="polite">Press play</h2>
+          <p class="section mono dim" id="section"></p>
+
+          <div class="readout">
+            <div><small class="mono">Key</small><b id="key">–</b></div>
+            <div><small class="mono">BPM</small><b id="bpm">–</b></div>
+            <div><small class="mono">Bar</small><b><span id="bar">–</span> <span class="of" id="bars"></span></b></div>
+            <div><small class="mono">Phrase</small><b><span id="phrase">–</span> <span class="of" id="phrases"></span></b></div>
+          </div>
+
+          <div class="meter-row">
+            <div class="pips" id="pips" aria-hidden="true" title="Bars of this phrase"></div>
+            <div class="beats" id="beats" aria-hidden="true" title="Beats of this bar"></div>
+          </div>
+          <div class="strip" id="strip" aria-hidden="true" title="The track in phrases: mix-in, body, mix-out"></div>
+          <div class="roles mono" id="roles" aria-label="Parts sounding in this bar"></div>
+
+          <div class="transport">
+            <button id="play" class="play" type="button" aria-label="Play"><span id="play-glyph" aria-hidden="true">▶</span></button>
+            <button id="skip" class="skip mono" type="button" title="Next track, on the next phrase (N)">Next track ▸▸</button>
+            <span class="skip-note mono dim" id="skip-note" aria-live="polite"></span>
+          </div>
+        </section>
+
+        <aside class="desk" aria-label="Mixer">
+          <h2 class="mono" id="sound-h">Sound</h2>
+          <div class="engines" id="engines" role="radiogroup" aria-labelledby="sound-h"></div>
+          <p class="dim small" id="engine-desc"></p>
+          <label class="fader mono">Master <input id="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume" /></label>
+        </aside>
+
+        <section class="tracklist" aria-labelledby="tracks-h">
+          <h2 class="mono" id="tracks-h">Tracklist</h2>
+          <div class="tl-head mono dim" aria-hidden="true"><span>Time</span><span>#</span><span>Style</span><span>Key</span><span>BPM</span></div>
+          <ol class="tracks" id="tracks"></ol>
+          <p class="dim small" id="tracks-empty">Tracks appear here as the set plays.</p>
+        </section>
+      </main>
+
+      <footer class="foot">
+        <p>
+          Every track is composed as it plays, from the same seeded arranger as
+          <a href="https://mindless-midi.pages.dev/">Mindless Midi</a>. Each one comes in drums first, then bass, then the rest, and goes out
+          the same way; the next starts on the phrase, in a compatible key, within a few percent of the tempo. The same set name always
+          plays the same set, and a link lands on the same track and bar.
+        </p>
+        <p class="mono dim">Space plays · N next track</p>
+        <p class="dim small" id="credits" hidden></p>
+        <!-- @BUILD@ -->
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,90 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//bazel:deploy.bzl", "gh_pages_deploy")
+load("//bazel:stamp.bzl", "stamp_build_info")
+load("//bazel:ts.bzl", "ts_lib")
+
+# DJ Claudia: an endless, seeded DJ set (//src/engine:set.ts) through the
+# shared Player, with her own style pack and page. Synth and Samples only.
+ts_lib(
+    name = "claudia",
+    srcs = ["app.ts"],
+    deps = [
+        "//src/app:player",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    config = {
+        "entryNames": "[name]",
+        "legalComments": "linked",
+    },
+    entry_points = [":app.js"],
+    format = "esm",
+    minify = True,
+    output_dir = True,
+    sourcemap = "linked",
+    target = "es2022",
+    deps = [":claudia"],
+)
+
+stamp_build_info(
+    name = "index_html",
+    src = "index.html",
+    out = "stamped/index.html",
+)
+
+# The complete static site. Her pack is served as styles.json and its samples
+# as samples/, where the page and the Player look for them.
+copy_to_directory(
+    name = "site",
+    srcs = [
+        "favicon.svg",
+        "styles.css",
+        ":bundle",
+        ":index_html",
+        "//src/app:fonts",
+        "//src/sound:render_worker",
+        "//src/sound:stem_worklet",
+        "//styles:claudia",
+        "//styles:claudia_samples",
+    ],
+    replace_prefixes = {
+        "claudia.json": "styles.json",
+        "claudia_samples": "samples",
+    },
+    root_paths = [
+        "src/claudia/bundle",
+        "src/claudia/stamped",
+        "src/claudia",
+        "src/app",
+        "src/sound",
+        "styles",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# bazel run //src/claudia:serve  ->  http://localhost:8082
+js_binary(
+    name = "serve",
+    args = ["src/claudia/site"],
+    data = [
+        ":site",
+        "//tools/serve:serve_lib",
+    ],
+    entry_point = "//tools/serve:serve.js",
+    env = {"PORT": "8082"},
+)
+
+# bazel run //src/claudia:deploy [-- --dry-run]
+gh_pages_deploy(
+    name = "deploy",
+    branch = "claudia-pages",
+    message = "Deploy DJ Claudia",
+    site = ":site",
+)
