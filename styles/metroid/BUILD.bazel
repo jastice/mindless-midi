@@ -7,6 +7,22 @@ music_style(
     brief = "brief.md",
     color = "#4fd1c5",
     corpus = "corpus.json",
+    packs = [
+        "@samples//danigb-samples/tr-808",
+        "@samples//danigb-samples/vcsl-vibraphone-soft-mallets",
+        "@samples//gleitz-musyngkite/french-horn",
+        "@samples//gleitz-musyngkite/fretless-bass",
+        "@samples//gleitz-musyngkite/fx-3-crystal",
+        "@samples//gleitz-musyngkite/fx-4-atmosphere",
+        "@samples//gleitz-musyngkite/lead-1-square",
+        "@samples//gleitz-musyngkite/lead-2-sawtooth",
+        "@samples//gleitz-musyngkite/ocarina",
+        "@samples//gleitz-musyngkite/pad-4-choir",
+        "@samples//gleitz-musyngkite/synth-bass-1",
+        "@samples//gleitz-musyngkite/synth-bass-2",
+        "@samples//gleitz-musyngkite/synth-brass-1",
+        "@samples//gleitz-musyngkite/whistle",
+    ],
     visibility = ["//visibility:public"],
 )
 

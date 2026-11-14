@@ -1,13 +1,26 @@
 load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("@samples//:packs.bzl", "MULTISAMPLE_PACKS")
+load("//bazel:samples.bzl", "sample_sources")
 
 # Sample pack manifests, one per pack: <source>/<pack>/pack.json, written by
-# //tools/packs and checked in. MODULE.bazel lists them for the `samples`
-# extension (//bazel:samples.bzl), which turns them into @samples labels.
-exports_files(glob(["**/pack.json"]))
+# //tools/packs and checked in, and the program table, instruments.json
+# (which pack plays each General MIDI program; read by the sampler and by
+# //bazel:samples.bzl). MODULE.bazel points the `samples` extension at the
+# table, which loads every pack it names; the drum packs are listed there too.
+exports_files(glob(["**/pack.json"]) + ["instruments.json"])
 
-# For tests that load every manifest from runfiles.
+# Every manifest and the table, for tests and the packaging action
+# (//tools/samples) to read from runfiles or the execroot.
 copy_to_bin(
     name = "manifests",
-    srcs = glob(["**/pack.json"]),
+    srcs = glob(["**/pack.json"]) + ["instruments.json"],
+    visibility = ["//visibility:public"],
+)
+
+# The upstream documents the multisample packs were generated from, for the
+# zone-equivalence test (//tools/packs:zones_test).
+sample_sources(
+    name = "sources",
+    packs = ["@samples//%s" % p for p in MULTISAMPLE_PACKS],
     visibility = ["//visibility:public"],
 )

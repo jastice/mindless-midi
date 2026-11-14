@@ -1,0 +1,63 @@
+{
+  "id": "danigb-samples/vcsl-tenor-saxophone-vibrato",
+  "kind": "multisample",
+  "description": "VCSL tenor sax",
+  "origin": {
+    "repo": "danigb/samples",
+    "commit": "eae8c5c7a10f4b0e06281211e704c36c30e25342",
+    "path": "audio/vcsl/Reed Aerophones/"
+  },
+  "licence": {
+    "spdx": "CC0-1.0",
+    "note": "vcsl/README.md: the Versilian Community Sample Library is under Creative Commons 0, 'essentially Public Domain', no credit required. danigb/samples' README says CC0 1.0 too.",
+    "attribution": null,
+    "share_alike": false,
+    "source": "https://github.com/danigb/samples/blob/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/README.md",
+    "read_on": "2026-11-14"
+  },
+  "source": {
+    "path": "audio/vcsl/Reed Aerophones/tenor-saxophone-vibrato.websfz.json",
+    "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/tenor-saxophone-vibrato.websfz.json",
+    "sha256": "b29031bfd0795f458a996938e0d9901b9bb4e891ac1c9ace20a74aa884fde2b4"
+  },
+  "samples": {
+    "bretttenor_vib_main_as1_var2": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_A#1_var2.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_A%231_var2.m4a","sha256":"caff14c7eea58befe32596955b02a025a137f2d0aecfadd052c8de6f21d92076","bytes":81758},
+    "bretttenor_vib_main_as2_var4": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_A#2_var4.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_A%232_var4.m4a","sha256":"14e6e324091fc55a22a4a1381a2279f95afa563d697986ebda6726c56ba449e4","bytes":126592},
+    "bretttenor_vib_main_as3_var3": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_A#3_var3.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_A%233_var3.m4a","sha256":"6983f3a90b536d3df6397812248e4bb33ad8c06238ad3887c4d6fe94b5b9bc6f","bytes":96430},
+    "bretttenor_vib_main_as4_var2": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_A#4_var2.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_A%234_var2.m4a","sha256":"0f7151cfac4e1ec131b54e648d6de52fb5d4892c230fa481456298cf4182c01e","bytes":104848},
+    "bretttenor_vib_main_c2_var4": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_C2_var4.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_C2_var4.m4a","sha256":"e0360dc4b9f7b4aa508758f31c0671b9b6381582f3cd95533e4a9bd198271df6","bytes":117475},
+    "bretttenor_vib_main_c3_var1": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_C3_var1.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_C3_var1.m4a","sha256":"c283c3d6f1f5740126f8f6fd29fa38a9f12b324756d0d451c948fbf0fce8fb0f","bytes":108224},
+    "bretttenor_vib_main_c4_var2": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_C4_var2.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_C4_var2.m4a","sha256":"205c3d2be569d49476289ea1ac79a67b4252d1c154f7c59f514132d41920aeb3","bytes":94942},
+    "bretttenor_vib_main_c5_var2": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_C5_var2.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_C5_var2.m4a","sha256":"aeb9bfeeeeca0620f343a38538f0b83804e0aa473010efd9e82f5318bccc5871","bytes":67248},
+    "bretttenor_vib_main_d2_var2": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_D2_var2.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_D2_var2.m4a","sha256":"0c17551ae7030d77e62c5a8a292e0dfa3eebd063596228751c8926d73c1fa4cc","bytes":130519},
+    "bretttenor_vib_main_d3_var1": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_D3_var1.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_D3_var1.m4a","sha256":"cafae19463856bcf8f7c9d2aa8d9faf37a5d2acc4be4ac14b7f85fd5b5edcaa7","bytes":123280},
+    "bretttenor_vib_main_d4_var1": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_D4_var1.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_D4_var1.m4a","sha256":"7c54fc17d9be13a971374f75cf576606066aa1afd989867d82ca23ab973266fc","bytes":98160},
+    "bretttenor_vib_main_e2_var2": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_E2_var2.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_E2_var2.m4a","sha256":"0866fba896706574cadde69c41e3bfe21ad4e1d09ce3f12618cc22c17ef5e035","bytes":107820},
+    "bretttenor_vib_main_e3_var3": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_E3_var3.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_E3_var3.m4a","sha256":"d4ae23fb103cfbad4f64302d14b9f89c4129f18c0f2f71661f2dcd2cd133430a","bytes":100261},
+    "bretttenor_vib_main_e4_var4": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_E4_var4.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_E4_var4.m4a","sha256":"b5815edcd88308214b8a7694f23cbb0a6b1bae997d54c9523813d487d0e30f4e","bytes":105813},
+    "bretttenor_vib_main_fs2_var3": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_F#2_var3.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_F%232_var3.m4a","sha256":"36129a9c59f1adb63f0f4ea188df072a1fde40a52fc35ddbb303aea6aee58c26","bytes":81123},
+    "bretttenor_vib_main_fs3_var2": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_F#3_var2.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_F%233_var2.m4a","sha256":"63ffe1b891844e2be4266ae64ff7ba8a24e5cfbff7fdc7568992b59dcc3d9390","bytes":122595},
+    "bretttenor_vib_main_g4_var3": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_G4_var3.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_G4_var3.m4a","sha256":"c51f95274eda1c5072df0e9ea2abed2650f5d4f15bc7a755c9c0dd79ce66a4dc","bytes":67138},
+    "bretttenor_vib_main_gs4_var3": {"file":"Tenor Saxophone/Vibrato/BrettTenor_Vib_Main_G#4_var3.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Reed%20Aerophones/Tenor%20Saxophone/Vibrato/BrettTenor_Vib_Main_G%234_var3.m4a","sha256":"73f26832d085ecf6d764da94ae856f3304bc7155dac1ee5feb0fd1635a594943","bytes":94233}
+  },
+  "regions": [
+    {"sample":"bretttenor_vib_main_as1_var2","root":46,"lo":44,"hi":47,"vel":[0,127],"tune":6,"volume":13,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_c2_var4","root":48,"lo":48,"hi":49,"vel":[0,127],"tune":0,"volume":17,"offset":15,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_d2_var2","root":50,"lo":50,"hi":51,"vel":[0,127],"tune":-2,"volume":17,"offset":45,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_e2_var2","root":52,"lo":52,"hi":53,"vel":[0,127],"tune":0,"volume":12,"offset":3903,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_fs2_var3","root":54,"lo":54,"hi":56,"vel":[0,127],"tune":3,"volume":14,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_as2_var4","root":58,"lo":57,"hi":59,"vel":[0,127],"tune":4,"volume":22,"offset":1901,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_c3_var1","root":60,"lo":60,"hi":61,"vel":[0,127],"tune":1,"volume":22,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_d3_var1","root":62,"lo":62,"hi":63,"vel":[0,127],"tune":-2,"volume":21,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_e3_var3","root":64,"lo":64,"hi":65,"vel":[0,127],"tune":-1,"volume":18,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_fs3_var2","root":66,"lo":66,"hi":68,"vel":[0,127],"tune":7,"volume":17,"offset":819,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_as3_var3","root":70,"lo":69,"hi":71,"vel":[0,127],"tune":4,"volume":14,"offset":1055,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_c4_var2","root":72,"lo":72,"hi":73,"vel":[0,127],"tune":0,"volume":15,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_d4_var1","root":74,"lo":74,"hi":75,"vel":[0,127],"tune":-4,"volume":20,"offset":284,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_e4_var4","root":76,"lo":76,"hi":77,"vel":[0,127],"tune":1,"volume":14,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_g4_var3","root":79,"lo":78,"hi":79,"vel":[0,127],"tune":3,"volume":13,"offset":114,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_gs4_var3","root":80,"lo":80,"hi":81,"vel":[0,127],"tune":0,"volume":19,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_as4_var2","root":82,"lo":82,"hi":83,"vel":[0,127],"tune":3,"volume":16,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"bretttenor_vib_main_c5_var2","root":84,"lo":84,"hi":85,"vel":[0,127],"tune":-2,"volume":18,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]}
+  ]
+}

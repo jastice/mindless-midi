@@ -25,7 +25,9 @@ sources:
    `bazel build //styles/<id>:style --output_groups=+calibration`. An
    instrument stuck at CC7 127 is too quiet in that bank.
 5. Add the id to `STYLES` in `styles/BUILD.bazel`.
-6. Refresh the samples pin: `bazel run //styles:samples_lock` ([samples](../build/samples.md)).
+6. Build `//styles:samples`. It fails if the style's ranges reach sample packs
+   it does not declare, and prints the `packs = [...]` labels to add to its
+   `music_style` ([samples](../build/samples.md)).
 7. `bazel test //...`, serve, listen.[^readme]
 
 Background: [styles and corpora](../concepts/styles-and-corpora.md).

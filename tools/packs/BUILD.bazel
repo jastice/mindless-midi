@@ -1,8 +1,34 @@
-load("//bazel:ts.bzl", "ts_binary")
+load("//bazel:ts.bzl", "ts_binary", "ts_lib", "ts_test")
+
+# How the sampler read websfz documents before sample packs; the generator
+# flattens with it and the zone-equivalence test compares against it.
+ts_lib(
+    name = "websfz",
+    srcs = ["websfz.ts"],
+)
 
 # Writes samples/<pack id>/pack.json from upstream, by hand: see packs.ts.
 ts_binary(
     name = "packs",
     src = "packs.ts",
-    deps = ["//src/corpus"],
+    deps = [
+        ":websfz",
+        "//src/corpus",
+    ],
+)
+
+# For every multisample manifest, the zones the sampler plays from it match
+# the ones it played from upstream's own document, key by key.
+ts_test(
+    name = "zones_test",
+    src = "zones.test.ts",
+    data = [
+        "//samples:manifests",
+        "//samples:sources",
+    ],
+    deps = [
+        ":websfz",
+        "//src/corpus",
+        "//src/sound",
+    ],
 )

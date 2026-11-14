@@ -1,0 +1,69 @@
+{
+  "id": "danigb-samples/vcsl-vibraphone-soft-mallets",
+  "kind": "multisample",
+  "description": "VCSL vibraphone",
+  "origin": {
+    "repo": "danigb/samples",
+    "commit": "eae8c5c7a10f4b0e06281211e704c36c30e25342",
+    "path": "audio/vcsl/Struck Idiophones/"
+  },
+  "licence": {
+    "spdx": "CC0-1.0",
+    "note": "vcsl/README.md: the Versilian Community Sample Library is under Creative Commons 0, 'essentially Public Domain', no credit required. danigb/samples' README says CC0 1.0 too.",
+    "attribution": null,
+    "share_alike": false,
+    "source": "https://github.com/danigb/samples/blob/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/README.md",
+    "read_on": "2026-11-14"
+  },
+  "source": {
+    "path": "audio/vcsl/Struck Idiophones/vibraphone-soft-mallets.websfz.json",
+    "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/vibraphone-soft-mallets.websfz.json",
+    "sha256": "df050b8735f2e9ae4b207cb22ef3c5b6c26516d877c67eda99f43a1f18b2e669"
+  },
+  "samples": {
+    "vibes_soft_a2_v1_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_A2_v1_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_A2_v1_rr1_Main.m4a","sha256":"ec5061e10a4181bc0ebf6c6ce4910d28c7ac6caa6a8f41acfbc9041e171e3092","bytes":160950},
+    "vibes_soft_a2_v2_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_A2_v2_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_A2_v2_rr1_Main.m4a","sha256":"e6a41df873e6d4c4340a3d93ff71e8c6c757828d896332d74840d17dae6f7ccf","bytes":214770},
+    "vibes_soft_a4_v1_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_A4_v1_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_A4_v1_rr1_Main.m4a","sha256":"892a8fc56036783517038fabb11f23956063c42c860d9efc460c745f965dce7f","bytes":130364},
+    "vibes_soft_a4_v2_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_A4_v2_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_A4_v2_rr1_Main.m4a","sha256":"5b3eccf5eff68e8ad2a7680214484a26b1776f69b43dd759f951f66ece381e88","bytes":212583},
+    "vibes_soft_b3_v1_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_B3_v1_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_B3_v1_rr1_Main.m4a","sha256":"45fbbde3a460442c2ba0fcb655964534cd130e94c7ee005e4489f0fc6266a320","bytes":164997},
+    "vibes_soft_b3_v2_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_B3_v2_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_B3_v2_rr1_Main.m4a","sha256":"f549db8e4443654d2b0000f10dcd4f19a6836ffb0886b59ddb7909e67f466f08","bytes":254017},
+    "vibes_soft_c3_v1_rr2_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_C3_v1_rr2_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_C3_v1_rr2_Main.m4a","sha256":"94627f0e4198001dbd919c3ef3eab375283c3e3c7a8236f3ca4ad404bab35495","bytes":161262},
+    "vibes_soft_c3_v2_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_C3_v2_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_C3_v2_rr1_Main.m4a","sha256":"ea6de313be44f0161ce178185472696a289f2e81fcc12849812b6cb1db243aeb","bytes":189138},
+    "vibes_soft_c5_v1_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_C5_v1_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_C5_v1_rr1_Main.m4a","sha256":"c68f93d36515bdc993f02aef35e2bb704349677b4dac426f873ce810143d1a49","bytes":58480},
+    "vibes_soft_c5_v2_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_C5_v2_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_C5_v2_rr1_Main.m4a","sha256":"375a4b3c01d586312a6903d7c3edb03ba0d877cc6cc52d066900426c72fdfef7","bytes":103682},
+    "vibes_soft_d4_v1_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_D4_v1_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_D4_v1_rr1_Main.m4a","sha256":"3b4e8244a76cf8a1592720b5df22aaf04b78edfd174d517db67b80d1e55902c0","bytes":175506},
+    "vibes_soft_d4_v2_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_D4_v2_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_D4_v2_rr1_Main.m4a","sha256":"397ee9141e988c783d46e8027615ea9c6d5f42fc7f297c5395530802ab9d7124","bytes":233387},
+    "vibes_soft_e3_v1_rr2_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_E3_v1_rr2_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_E3_v1_rr2_Main.m4a","sha256":"cd2f9c19323fbde709b23584e83ebaf448aeb1a2271975517cf2781047f34e55","bytes":186305},
+    "vibes_soft_e3_v2_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_E3_v2_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_E3_v2_rr1_Main.m4a","sha256":"2d7d7c1e3152ecf84708d7aea8aac206ab8eb3a43bfcc70cdcd3433bdc161aaa","bytes":237651},
+    "vibes_soft_e5_v1_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_E5_v1_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_E5_v1_rr1_Main.m4a","sha256":"8b1428911bea90fd84c2798ea65d0d41c22db0fd0e14d27bcef01d551a8005c0","bytes":90961},
+    "vibes_soft_f2_v1_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_F2_v1_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_F2_v1_rr1_Main.m4a","sha256":"c88c59bedc5e23f166bf3a8375c93bb9bc0ca2c9e81b72930f27f23fe9b79993","bytes":87076},
+    "vibes_soft_f2_v2_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_F2_v2_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_F2_v2_rr1_Main.m4a","sha256":"c6a884c75545796c0b0afcd07a963e7018b158a442dc8c7b0ec6ba1e18b2cfdb","bytes":139480},
+    "vibes_soft_f4_v1_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_F4_v1_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_F4_v1_rr1_Main.m4a","sha256":"1bcbadf35bc1069a3cc3957dc9d71d36e36d0480603d9b21269fb2a57e4fecf1","bytes":121641},
+    "vibes_soft_f4_v2_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_F4_v2_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_F4_v2_rr1_Main.m4a","sha256":"df687f776d504e1451f360021ccb15bbe69e66beeabfa0cb87f665e47eb66b6f","bytes":180377},
+    "vibes_soft_g3_v1_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_G3_v1_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_G3_v1_rr1_Main.m4a","sha256":"0f8340d60c109a4379176f5e8450760906007f279cf5f02097b2d7a1aeefbc6c","bytes":224313},
+    "vibes_soft_g3_v2_rr1_main": {"file":"Vibraphone/Soft Mallets/Vibes_soft_G3_v2_rr1_Main.m4a","url":"https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/vcsl/Struck%20Idiophones/Vibraphone/Soft%20Mallets/Vibes_soft_G3_v2_rr1_Main.m4a","sha256":"77db163598c3d7f02da686d90562f5db438ac2649887561aa930dc4998cf9532","bytes":289016}
+  },
+  "regions": [
+    {"sample":"vibes_soft_f2_v1_rr1_main","root":53,"lo":53,"hi":55,"vel":[0,83],"tune":0,"volume":31,"offset":90,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_f2_v2_rr1_main","root":53,"lo":53,"hi":55,"vel":[84,127],"tune":0,"volume":3,"offset":113,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_a2_v1_rr1_main","root":57,"lo":56,"hi":58,"vel":[0,83],"tune":0,"volume":25,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_a2_v2_rr1_main","root":57,"lo":56,"hi":58,"vel":[84,127],"tune":0,"volume":7,"offset":113,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_c3_v1_rr2_main","root":60,"lo":59,"hi":62,"vel":[0,83],"tune":0,"volume":15,"offset":135,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_c3_v2_rr1_main","root":60,"lo":59,"hi":62,"vel":[84,127],"tune":0,"volume":11,"offset":127,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_e3_v1_rr2_main","root":64,"lo":63,"hi":65,"vel":[0,83],"tune":0,"volume":14,"offset":152,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_e3_v2_rr1_main","root":64,"lo":63,"hi":65,"vel":[84,127],"tune":0,"volume":2,"offset":119,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_g3_v1_rr1_main","root":67,"lo":66,"hi":69,"vel":[0,83],"tune":0,"volume":20,"offset":134,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_g3_v2_rr1_main","root":67,"lo":66,"hi":69,"vel":[84,127],"tune":0,"volume":7,"offset":123,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_b3_v1_rr1_main","root":71,"lo":70,"hi":72,"vel":[0,83],"tune":0,"volume":24,"offset":93,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_b3_v2_rr1_main","root":71,"lo":70,"hi":72,"vel":[84,127],"tune":0,"volume":6,"offset":114,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_d4_v1_rr1_main","root":74,"lo":73,"hi":75,"vel":[0,83],"tune":0,"volume":20,"offset":100,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_d4_v2_rr1_main","root":74,"lo":73,"hi":75,"vel":[84,127],"tune":0,"volume":2,"offset":117,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_f4_v1_rr1_main","root":77,"lo":76,"hi":79,"vel":[0,83],"tune":0,"volume":22,"offset":55,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_f4_v2_rr1_main","root":77,"lo":76,"hi":79,"vel":[84,127],"tune":0,"volume":6,"offset":120,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_a4_v1_rr1_main","root":81,"lo":80,"hi":82,"vel":[0,83],"tune":0,"volume":29,"offset":0,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_a4_v2_rr1_main","root":81,"lo":80,"hi":82,"vel":[84,127],"tune":0,"volume":5,"offset":106,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_c5_v1_rr1_main","root":84,"lo":83,"hi":86,"vel":[0,83],"tune":0,"volume":22,"offset":115,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_c5_v2_rr1_main","root":84,"lo":83,"hi":86,"vel":[84,127],"tune":0,"volume":3,"offset":103,"xfin":null,"xfout":null,"seq":[1,1]},
+    {"sample":"vibes_soft_e5_v1_rr1_main","root":88,"lo":87,"hi":89,"vel":[0,83],"tune":0,"volume":28,"offset":90,"xfin":null,"xfout":null,"seq":[1,1]}
+  ]
+}

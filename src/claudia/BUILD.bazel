@@ -72,9 +72,13 @@ copy_to_directory(
 # bazel run //src/claudia:serve  ->  http://localhost:8082
 js_binary(
     name = "serve",
-    args = ["src/claudia/site"],
+    args = [
+        "src/claudia/site",
+        "samples=styles/claudia_samples_superset",
+    ],
     data = [
         ":site",
+        "//styles:claudia_samples_superset",
         "//tools/serve:serve_lib",
     ],
     entry_point = "//tools/serve:serve.js",

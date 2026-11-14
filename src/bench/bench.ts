@@ -12,7 +12,7 @@ import { matchLoudness, wav } from "./loudness.js";
 import { mixStems } from "../sound/bus.js";
 import { renderNeuralLead } from "./neural.js";
 import { renderOpl } from "./opl.js";
-import { SampleCache, SampleLibrary, type Soundfont } from "../sound/sampler.js";
+import { SampleCache, SampleLibrary, type Soundfont, isPackSample } from "../sound/sampler.js";
 import { renderSynthStems } from "../sound/synth.js";
 import { randomSeed } from "../theory/seed.js";
 import { renderSampleStems } from "./samples.js";
@@ -78,7 +78,8 @@ async function main(): Promise<void> {
   const byId = new Map(styles.map((s) => [s.id, s]));
   const ctx = new AudioContext({ latencyHint: "playback" });
   const sr = ctx.sampleRate;
-  const cache = new SampleCache(ctx);
+  // The program table and manifests are served beside the page; the audio comes from each manifest's pinned upstream URL.
+  const cache = new SampleCache(ctx, (ref, upstream) => upstream ?? (isPackSample(ref) ? new URL(`samples/${ref}`, document.baseURI).href : ref));
   const libraries = new Map<Soundfont, SampleLibrary>();
   const library = (font: Soundfont) => {
     let lib = libraries.get(font);

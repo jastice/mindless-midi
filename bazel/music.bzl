@@ -7,15 +7,17 @@
                  It also declares the instruments and key ranges the style can
                  play (`sound.json`), which the arranger is tested to stay within.
     style_pack   merges styles into the single styles.json the app fetches.
-    style_samples fetches the sample files those declarations name, so the
-                 site serves its own samples (see `--output_groups=report`).
-                 A style with its own `kit` (a `sample_kit`, //bazel:samples.bzl)
-                 gets its drums from @samples instead of the fetch.
+    style_samples packages the sample files the styles can play, offline:
+                 from the sample packs each style declares (`packs`, and its
+                 `kit`), it copies the files the declared key ranges reach
+                 and fails if a range reaches a pack the style does not
+                 declare (see `--output_groups=report`, and `superset` for
+                 every declared file, which the dev servers serve).
 
 Corpora are (re)written by Claude with `bazel run //tools/generate -- styles/<id>`.
 """
 
-load(":samples.bzl", "SampleKitInfo")
+load(":samples.bzl", "SampleKitInfo", "SamplePackInfo")
 
 StyleInfo = provider(
     doc = "A compiled music style.",
@@ -26,6 +28,8 @@ StyleInfo = provider(
         "corpus": "File: the source corpus.",
         "brief": "File or None: the prose brief the corpus was generated from.",
         "kit": "SampleKitInfo or None: the style's own drum kit.",
+        "packs": "List of SamplePackInfo: the sample packs the style's instruments (and older kit) play.",
+        "label": "Label of the style target.",
     },
 )
 
@@ -63,7 +67,16 @@ def _music_style_impl(ctx):
     return [
         DefaultInfo(files = depset([out])),
         OutputGroupInfo(calibration = depset([report])),
-        StyleInfo(id = style_id, bundle = out, sound = sound, corpus = ctx.file.corpus, brief = ctx.file.brief, kit = kit),
+        StyleInfo(
+            id = style_id,
+            bundle = out,
+            sound = sound,
+            corpus = ctx.file.corpus,
+            brief = ctx.file.brief,
+            kit = kit,
+            packs = [p[SamplePackInfo] for p in ctx.attr.packs],
+            label = ctx.label,
+        ),
     ]
 
 _TOOL = attr.label(default = "//tools/stylec", executable = True, cfg = "exec")
@@ -78,6 +91,12 @@ music_style = rule(
         "bank": attr.int(mandatory = True, doc = "libADLMIDI embedded FM bank number."),
         "color": attr.string(default = "#888888", doc = "UI accent colour."),
         "kit": attr.label(providers = [SampleKitInfo], doc = "The style's drum kit, a sample_kit. Without one the sampler's built-in kits apply."),
+        "packs": attr.label_list(
+            providers = [SamplePackInfo],
+            doc = "The sample packs the style plays (@samples//<pack id>): one per instrument program " +
+                  "(samples/instruments.json says which), and the drum packs of a built-in kit. " +
+                  "style_samples fails if a declared key range reaches outside them.",
+        ),
         "_stylec": _TOOL,
     },
     provides = [StyleInfo],
@@ -111,97 +130,80 @@ style_pack = rule(
     },
 )
 
+def _samples_params(ctx, styles):
+    """The packaging tool's params: the table, every manifest, and per style its sound and declared files."""
+    entries = []
+    inputs = [ctx.file._table] + ctx.files._manifests
+    for s in styles:
+        info = s[StyleInfo]
+        files = {}
+        for pack in info.packs:
+            files.update(pack.files)
+        if info.kit:
+            files.update(info.kit.samples)
+        entries.append({
+            "label": str(info.label),
+            "sound": info.sound.path,
+            "files": {path: f.path for path, f in files.items()},
+        })
+        inputs.append(info.sound)
+        inputs.extend(files.values())
+    params = ctx.actions.declare_file(ctx.label.name + ".params.json")
+    ctx.actions.write(params, json.encode({
+        "rule": str(ctx.label),
+        "table": ctx.file._table.path,
+        "manifests": [f.path for f in ctx.files._manifests if f.basename == "pack.json"],
+        "styles": entries,
+    }))
+    return params, depset([params] + inputs)
+
 def _style_samples_impl(ctx):
+    params, inputs = _samples_params(ctx, ctx.attr.styles)
     out = ctx.actions.declare_directory(ctx.label.name)
     report = ctx.actions.declare_file(ctx.label.name + ".txt")
-    hashes = ctx.actions.declare_file(ctx.label.name + ".hashes.json")
-    sounds = [s[StyleInfo].sound for s in ctx.attr.styles]
-    args = ctx.actions.args()
-    args.add("--out", out.path)
-    args.add("--report", report)
-    args.add("--emit-lock", hashes)
-    inputs = list(sounds)
-    # Kit samples come from @samples, already hash-pinned; the action copies the ones the styles can reach.
-    kit_files = {}
-    for s in ctx.attr.styles:
-        kit = s[StyleInfo].kit
-        if kit:
-            kit_files.update(kit.samples)
-    for path, f in sorted(kit_files.items()):
-        args.add("--kit-file", "%s=%s" % (path, f.path))
-        inputs.append(f)
-    if ctx.file.lock:
-        args.add("--lock", ctx.file.lock)
-        inputs.append(ctx.file.lock)
-    args.add_all(sounds)
     ctx.actions.run(
         executable = ctx.attr._samples[DefaultInfo].files_to_run,
-        arguments = [args],
+        arguments = ["--params", params.path, "--out", out.path, "--report", report.path],
         inputs = inputs,
-        outputs = [out, report, hashes],
+        outputs = [out, report],
         env = {"BAZEL_BINDIR": ctx.bin_dir.path},
-        # Downloads from the upstream sample hosts. The result is cached by the
-        # declarations, so it only runs again when a style's sound changes.
-        execution_requirements = {"requires-network": "1"},
         mnemonic = "StyleSamples",
-        progress_message = "Fetching the samples %d styles can play" % len(sounds),
+        progress_message = "Packaging the samples %d styles can play" % len(ctx.attr.styles),
+    )
+
+    # Every declared file, for the dev servers: a separate action, run only when asked for.
+    superset = ctx.actions.declare_directory(ctx.label.name + "_superset")
+    superset_report = ctx.actions.declare_file(ctx.label.name + "_superset.txt")
+    ctx.actions.run(
+        executable = ctx.attr._samples[DefaultInfo].files_to_run,
+        arguments = ["--params", params.path, "--out", superset.path, "--report", superset_report.path, "--superset"],
+        inputs = inputs,
+        outputs = [superset, superset_report],
+        env = {"BAZEL_BINDIR": ctx.bin_dir.path},
+        mnemonic = "StyleSamplesSuperset",
+        progress_message = "Laying out every sample %d styles declare" % len(ctx.attr.styles),
     )
     return [
         DefaultInfo(files = depset([out])),
-        OutputGroupInfo(report = depset([report]), hashes = depset([hashes])),
+        OutputGroupInfo(report = depset([report]), superset = depset([superset])),
     ]
 
-_style_samples = rule(
+style_samples = rule(
     implementation = _style_samples_impl,
+    doc = """The sample files the styles can play, as the site serves them (`samples/`).
+
+    Offline: the files come from the packs each style declares (`packs` on
+    music_style, and its `kit`), already downloaded and hash-checked by
+    //bazel:samples.bzl. The action runs the sampler's own reach over each
+    style's declared ranges, copies only the files that can sound (with the
+    program table, the used manifests and credits.json), and fails, naming
+    the style, keys and pack, if a range reaches outside the declared packs.
+    The `superset` output group holds every declared file instead.
+    """,
     attrs = {
         "styles": attr.label_list(providers = [StyleInfo], mandatory = True),
-        "lock": attr.label(allow_single_file = [".json"]),
         "_samples": attr.label(default = "//tools/samples", executable = True, cfg = "exec"),
+        "_table": attr.label(default = "//samples:instruments.json", allow_single_file = True),
+        "_manifests": attr.label(default = "//samples:manifests"),
     },
 )
-
-def _samples_lock_update_impl(ctx):
-    fresh = ctx.attr.fresh[OutputGroupInfo].hashes.to_list()[0]
-    script = ctx.actions.declare_file(ctx.label.name + ".sh")
-    ctx.actions.write(
-        output = script,
-        is_executable = True,
-        content = """#!/usr/bin/env bash
-set -euo pipefail
-src="${{RUNFILES_DIR:-$0.runfiles}}/_main/{src}"
-dest="${{BUILD_WORKSPACE_DIRECTORY:?run me with bazel run}}/{dest}"
-cp "$src" "$dest"
-chmod u+w "$dest"
-echo "pinned $(grep -c '": "' "$dest") files in {dest}"
-""".format(src = fresh.short_path, dest = ctx.attr.dest),
-    )
-    return [DefaultInfo(executable = script, runfiles = ctx.runfiles(files = [fresh]))]
-
-_samples_lock_update = rule(
-    implementation = _samples_lock_update_impl,
-    executable = True,
-    attrs = {
-        "fresh": attr.label(mandatory = True, providers = [OutputGroupInfo]),
-        "dest": attr.string(mandatory = True),
-    },
-)
-
-def style_samples(name, styles, lock, **kwargs):
-    """Fetches the sample files the styles' sound declarations name.
-
-    The output directory holds `danigb/...` and `gleitz/...`, which the page
-    serves as `samples/` and fetches instead of the upstream hosts.
-
-    `lock` is the checked-in pin: a JSON map of file path to sha256 that every
-    download must match, so a build can't pick up a changed or unlisted file.
-    `bazel run //<package>:<name>_lock` fetches afresh and rewrites the pin,
-    for when the styles (and so the file list) or upstream change on purpose.
-    """
-    _style_samples(name = name, styles = styles, lock = lock, **kwargs)
-    _style_samples(name = name + "_fresh", styles = styles, tags = ["manual"])
-    _samples_lock_update(
-        name = name + "_lock",
-        fresh = ":" + name + "_fresh",
-        dest = native.package_name() + "/" + lock.lstrip(":"),
-        tags = ["manual"],
-    )

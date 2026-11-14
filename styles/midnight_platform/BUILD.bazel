@@ -7,6 +7,14 @@ music_style(
     brief = "brief.md",
     color = "#c99777",
     corpus = "corpus.json",
+    packs = [
+        "@samples//danigb-samples/dsmolken-double-bass-pizz",
+        "@samples//danigb-samples/lm-2",
+        "@samples//danigb-samples/sample-pi-drums",
+        "@samples//danigb-samples/splendid-grand-piano",
+        "@samples//danigb-samples/vcsl-tenor-saxophone-vibrato",
+        "@samples//danigb-samples/vcsl-vibraphone-soft-mallets",
+    ],
     visibility = ["//visibility:public"],
 )
 

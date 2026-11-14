@@ -1,8 +1,8 @@
 # Sample packs: a unified format and Bazel dependencies
 
-Built so far: step 1 (2026-11-14), see "Built" under it. Written against
-`main` at `c6cbd10`. Steps 2 and 3 are not tried yet; see "To verify before
-starting" for what step 1 settled.
+Built so far: steps 1 and 2 (2026-11-14), see "Built" under each. Written
+against `main` at `c6cbd10`. Step 3 is not tried yet; see "To verify before
+starting" for what steps 1 and 2 settled.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
 
@@ -224,12 +224,69 @@ restored between runs and a cold cache is the only time all requests happen.
 - Done when a style builds with no network action and a corpus change that
   widens a range fails the check with a clear message.
 
+#### Built (2026-11-14)
+
+- `src/corpus/pack.ts`: `kind: "multisample"` with `samples` (file, url,
+  sha256, bytes) and flat `regions`. One change to the format above: a region
+  names its file by sample id (`sample`), so a file shared by regions is
+  hashed and served once, and served paths stay `<pack>/<sample id>.<ext>`
+  like one-shots. A `source` block pins the upstream document. The validator
+  checks every region's sample exists, every sample is played, and refuses
+  licences with non-commercial terms. The program table's type,
+  `InstrumentTable`, and `packCredit` (credit lines from licence blocks) live
+  there too.
+- `//tools/packs`: `websfz` and `gm` subcommands. `tools/packs/websfz.ts` is
+  the old `loadSfz`, kept as the reference. Region files are matched to the
+  commit's tree; where only the case differs the hosted name wins, which
+  handles the Splendid piano's `MF-`/`Mf-` (24 files) without
+  `UPSTREAM_RENAMES`. No region names a file upstream lacks.
+- Packs: the six SFZ instruments in use (Splendid piano, Wurlitzer EP200,
+  VCSL vibraphone, marimba and tenor sax, Smolken pizz bass), and 61 GM
+  programs per font from gleitz at `044fab8` (`gleitz-musyngkite/*`,
+  `gleitz-fluidr3-gm/*`, 88 files each, 120 MB and 117 MB). Casio RZ-1 as a
+  one-shot pack, so every drum the older kits play is in a pack.
+- **Rhodes:** jlearman's own LICENSE puts the samples under CC BY-NC 4.0
+  (danigb/samples' README says CC0). The generator converts it
+  (`websfz "jlearman/rhodes-mki/jrhodes3dst.websfz.json" ...`), but
+  validation refuses the licence, so no Rhodes pack is checked in. Needs a
+  decision (ask the author, or use another Rhodes) before it can ship.
+- `samples/instruments.json`: the program table, one pack per program and
+  font, with release, sustain and flat. It reproduces the old
+  `instrumentFor` switch for the 67 programs the styles and the bench use; a
+  program not listed plays nothing and cannot be declared. FluidR3 is now
+  credited CC BY 3.0, as gleitz's README says (the code said MIT).
+- `//tools/packs:zones_test`: every program in the table, both fonts, keys
+  0-127, eight velocities, four passes for round robins: the zones from the
+  manifest equal the zones the old loader computed from the pinned document
+  (`//samples:sources`). Passes for all 140 combinations.
+- `//bazel:samples.bzl`: `samples.table(file = ...)` loads every pack the
+  table names; one group repository per multisample (`ctx.download` with
+  `block = False`, then waited on); `@samples//<pack id>` is a `sample_pack`
+  (`SamplePackInfo`) for one-shots and multisamples alike.
+- `music_style(packs = [...])` declares a style's packs. `style_samples` is
+  offline: `//tools/samples` runs `reach()` from `sampler.ts` per style and
+  key, trims, and fails with the style, part, keys and pack (and the labels to
+  add). It also ships the older `KITS` drums at their `danigb/` mirror path,
+  found in the declared drum packs by file, so no style needs the network:
+  the lock files, `_lock` targets and `requires-network` are gone, a step
+  early. The trimmed main-site set equals the old lock's exactly (2,843
+  audio files, same hashes), plus the table, manifests and `credits.json`.
+- The dev servers mount `samples/` from the `superset` output group; tests read
+  manifests from `//samples:manifests` and shipped files from the trimmed
+  output. The bench serves the table and manifests and streams audio from each
+  manifest's pinned URL.
+- Left for step 3: the older `KITS`, `HARD_SOFT`, `TOUCH_SAMPLES`,
+  `mirrorPath` and `legacySample` in `//tools/samples`. Credits on the page
+  still come from the sampler's labels (now licence-derived), not from
+  `credits.json`.
+
 ### 3. Move the rest and remove the old path (M)
 
 - Generate manifests for the remaining danigb/samples drum machines and Sonic
   Pi.
-- Delete `tools/samples`, the lock files, `UPSTREAM_RENAMES` and `mirrorPath`.
-  The runtime loader is keyed by sample id.
+- Delete the legacy-URL handling in `tools/samples` and `mirrorPath` (the lock
+  files and `UPSTREAM_RENAMES` went in step 2). The runtime loader is keyed by
+  sample id.
 - Generate the credits list from the licence blocks.
 
 ## To verify before starting
@@ -259,8 +316,14 @@ restored between runs and a cold cache is the only time all requests happen.
   file). Compare a few more, especially the Splendid piano's `MF-`/`Mf-`
   naming that `UPSTREAM_RENAMES` works around.
 - **gleitz/midi-js-soundfonts.** Its default branch is `gh-pages`, so the pin
-  is a `gh-pages` commit. Not checked: whether its Pages files equal the repo's
-  files, and its 4.9 GB size means no whole-repo archive.
+  is a `gh-pages` commit. Its 4.9 GB size means no whole-repo archive.
+  **Checked 2026-11-14 at `044fab8`:** the generator lists each program's
+  folder tree (the recursive listing is too big) and every used program has
+  all 88 files. The packaged site's files hash the same from
+  raw.githubusercontent at the commit as the old lock pinned from Pages. A
+  cold cache downloads about 6,000 files from raw.githubusercontent; if that
+  hits rate limits in CI, add the Pages URL as a second `url` (the hash still
+  pins it).
 - **danigb/sampled.** The 909 sets are wav, and the app currently decodes
   `.m4a` and `.ogg` from the mirror. Check that the sampler path takes wav
   (the browser decodes it; sizes are larger) and what the 14 and 16 files add

@@ -1,61 +1,104 @@
 ---
 type: Build Pipeline
 title: Samples
-description: How the Samples engine's recordings are declared per style, fetched at build time, pinned by sha256 in styles/samples.lock.json, and served from the site itself.
-resource: ../../../styles/samples.lock.json
+description: How the Samples engine's recordings come from checked-in, hash-pinned sample packs, which pack plays each program, how a style declares its packs, and how an offline action trims what the site serves and checks the declared ranges.
+resource: ../../../samples/instruments.json
 tags: [samples, build, licensing]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-11-13T00:00:00Z }
+generated: { by: claude-code/claude-opus-5-5, at: 2026-11-14T00:00:00Z }
 sources:
-  - id: readme
-    resource: ../../../README.md
-    title: README
+  - id: plan
+    resource: ../../sample-format-plan.md
+    title: Sample packs plan
 ---
 
 # Samples
 
-1. Each style's [sound declaration](../modules/corpus.md) (`src/corpus/sound.ts`,
-   emitted as `sound.json` by `music_style`) lists the instruments it can play
-   and their key ranges.
-2. `style_samples` (`//styles:samples`) runs `tools/samples`, which works out
-   exactly which upstream files those need and downloads them. The action needs
-   network access and reruns only when a declaration changes.
-3. Files are pinned by sha256 in `styles/samples.lock.json`; a changed or
-   unlisted file fails the build. `bazel run //styles:samples_lock` refreshes
-   the pin after a style or upstream change. `--output_groups=+report` lists the files.
+Every recording the Samples engine plays comes from a **sample pack**: a
+checked-in manifest, `samples/<source>/<pack>/pack.json`, typed and validated
+by `src/corpus/pack.ts`. A manifest pins its files to an upstream commit, with
+a URL, sha256 and size each, and carries a mandatory licence block. See
+[the sample pack plan](../../sample-format-plan.md) for the design.
+
+- **One-shots** (`kind: "oneshots"`): drum hits, one per sample id.
+- **Multisamples** (`kind: "multisample"`): one instrument. `samples` lists its
+  files; `regions` are the flattened SFZ regions (key and velocity range, root,
+  tune, volume, offset, crossfades, round robin, loop), each naming a sample.
+  `source` pins the upstream document they were generated from.
+
+## Which pack plays a program
+
+`samples/instruments.json` maps each General MIDI program to a pack per
+soundfont (`MusyngKite`, `FluidR3_GM`), with its release, sustain and whether
+it is flat (one recording per note). SFZ libraries (Splendid piano, Wurlitzer,
+VCSL vibraphone, marimba and tenor sax, Smolken bass) play the same in both
+fonts; every other program has a soundfont group per font,
+`gleitz-musyngkite/<name>` and `gleitz-fluidr3-gm/<name>`. A program the table
+does not list plays nothing, and a style cannot declare it. The sampler
+(`src/sound/sampler.ts`) and the Bazel extension both read the table.
+
+## Build
+
+1. The `samples` extension (`//bazel:samples.bzl`) loads the table and every
+   pack it names, plus the drum packs `MODULE.bazel` lists. It declares one
+   `http_file` per one-shot and one repository per multisample that downloads
+   all its files at once (`ctx.download`, each checked against its hash), and
+   the `@samples` labels: `@samples//<pack id>:<sample id>` and
+   `@samples//<pack id>` for a whole pack.
+2. Each style names the packs it plays in `music_style(packs = [...])`, and its
+   drum kit in `kit` (a `sample_kit`) where it has one. Its
+   [sound declaration](../modules/corpus.md) (`sound.json`) lists the
+   instruments and key ranges it can play.
+3. `style_samples` (`//styles:samples`, `//styles:claudia_samples`) is offline.
+   It runs the sampler's own `reach()` over each style's declared ranges,
+   against the manifests, and copies only the files that can sound into
+   `samples/`, with the table, the used manifests and `credits.json`. If a
+   range reaches a pack the style does not declare, it fails and names the
+   style, part, keys and pack, with the labels to add.
+   `--output_groups=+report` lists the files.
 4. The site serves them under `samples/`, so the page makes no requests to
-   other hosts. A listener downloads only the slice a piece needs.
+   other hosts. A listener downloads only the slice a piece needs. The dev
+   servers (`bazel run //site:serve` and the others) serve `samples/` from the
+   `superset` output group instead: every file of every declared pack.
 
-About 2,800 files, 92 MB for all styles. Not checked in.[^readme]
+About 2,900 files, 95 MB for all styles; the declared superset is 6,500 files,
+175 MB. Not checked in. CI keeps the downloads in its Bazel repository cache.
 
-## Sample packs (being introduced)
+## Adding or bumping a pack
 
-[The sample pack plan](../../sample-format-plan.md) replaces the lock files
-step by step. Built so far (step 1, one-shots only):
+`bazel run //tools/packs -- <source> ...` writes a manifest from upstream at a
+commit (default: the branch head) and hashes every file:
 
-- Manifests under `samples/<source>/<pack>/pack.json`, typed and validated by
-  `src/corpus/pack.ts`: a commit-pinned URL, sha256 and size per file, and a
-  mandatory licence block. `bazel run //tools/packs -- (sampled|samples) <folder> <pack id>`
-  writes one; the licence, description, tags and GM keys are kept by hand.
-- The `samples` extension (`//bazel:samples.bzl`, listed in `MODULE.bazel`)
-  makes one `http_file` per sample and the labels
-  `@samples//<pack id>:<sample id>`.
-- `sample_kit` maps GM keys to samples, with optional `hard`/`soft` touch
-  variants and key aliases; `music_style(kit = ...)` puts it in the bundle.
-  `minimal_techno` uses one (TR-909 Detroit plus 808, LM-2 and Sonic Pi hits),
-  so `claudia_samples.lock.json` holds no drum file. Every other style still
-  uses the `KITS` table in `sampler.ts`.
-- The site serves pack samples as `samples/<pack id>/<sample id>.<ext>`; the
-  loader takes these paths as well as upstream URLs until step 3.
+- `sampled` and `samples`: one-shots from danigb/sampled and danigb/samples.
+- `websfz <document> <pack id> [--sample-path DIR]`: an SFZ instrument from a
+  danigb/samples websfz document. Where only the case of a file name differs
+  (the Splendid piano's `MF-` and the hosted `Mf-`), the hosted name wins.
+- `gm <font> <program>...`: soundfont programs from gleitz/midi-js-soundfonts.
+
+The licence block and description are kept from an existing manifest; a new
+pack gets a placeholder that fails validation until someone reads the source's
+terms. Licences with non-commercial terms fail validation. After a new
+instrument, add it to `samples/instruments.json`; `//tools/packs:zones_test`
+then checks, key by key, that it plays what the upstream document did.
+
+## Still on the old path
+
+Styles without their own `kit` use the `KITS` table in `sampler.ts`, which
+names danigb/samples files by their Pages URL. The packaging action finds the
+same file in a declared drum pack (LM-2, TR-808, Casio RZ-1, Sample Pi) and
+ships it at the old mirror path, `samples/danigb/<path>`. Step 3 of the plan
+moves those kits to `sample_kit`.
 
 ## Sources and licences
 
-From [danigb/samples](https://github.com/danigb/samples) and
+From [danigb/samples](https://github.com/danigb/samples),
+[danigb/sampled](https://github.com/danigb/sampled) and
 [gleitz/midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts):
 Splendid Grand Piano (public domain), VCSL (CC0), D. Smolken double bass
 (CC0), Greg Sullivan's Wurlitzer (CC BY 3.0), MusyngKite (CC BY-SA 3.0),
-drum-machine and Sonic Pi kits. The page credits whatever it has played. For
-every source considered, used or not, see [Sample sources](./sample-sources.md). The
-[bench](../apps/bench.md) still streams from upstream.
-
-[^readme]: README
+FluidR3 (CC BY 3.0), drum-machine and Sonic Pi kits. Each pack's licence block
+says what its source states; the page credits whatever it has played from it.
+For every source considered, used or not, see
+[Sample sources](./sample-sources.md). The [bench](../apps/bench.md) serves
+the table and manifests itself and streams the audio from each manifest's
+pinned upstream URL.

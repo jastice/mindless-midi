@@ -7,6 +7,13 @@ music_style(
     brief = "brief.md",
     color = "#8fb86a",
     corpus = "corpus.json",
+    packs = [
+        "@samples//danigb-samples/lm-2",
+        "@samples//danigb-samples/sample-pi-drums",
+        "@samples//danigb-samples/wurlitzer-ep200",
+        "@samples//gleitz-musyngkite/pad-2-warm",
+        "@samples//gleitz-musyngkite/synth-bass-1",
+    ],
     visibility = ["//visibility:public"],
 )
 

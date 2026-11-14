@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 import { ROLES, type Role } from "../corpus/constants.js";
 import type { StyleBundle } from "../corpus/schema.js";
@@ -365,6 +365,5 @@ test("a sampled note with a low-pass corner is duller, and the recordings touch 
   renderSampleNote(dull, note, { ...plan, lowpass: 900 }, () => data, SR);
   assert.ok(bandShare(dull, SR, 3000, Infinity) < bandShare(full, SR, 3000, Infinity) / 4);
 
-  const lock = JSON.parse(readFileSync("styles/samples.lock.json", "utf8")) as Record<string, string>;
-  for (const url of TOUCH_SAMPLES) assert.ok(mirrorPath(url)! in lock, `${url} is pinned in samples.lock.json`);
+  for (const url of TOUCH_SAMPLES) assert.ok(existsSync(`styles/samples/${decodeURIComponent(mirrorPath(url)!)}`), `${url} is among the samples the site serves`);
 });

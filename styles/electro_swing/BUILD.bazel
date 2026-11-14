@@ -7,6 +7,17 @@ music_style(
     brief = "brief.md",
     color = "#68d391",
     corpus = "corpus.json",
+    packs = [
+        "@samples//danigb-samples/dsmolken-double-bass-pizz",
+        "@samples//danigb-samples/lm-2",
+        "@samples//danigb-samples/sample-pi-drums",
+        "@samples//danigb-samples/tr-808",
+        "@samples//gleitz-musyngkite/acoustic-guitar-steel",
+        "@samples//gleitz-musyngkite/brass-section",
+        "@samples//gleitz-musyngkite/clarinet",
+        "@samples//gleitz-musyngkite/honkytonk-piano",
+        "@samples//gleitz-musyngkite/muted-trumpet",
+    ],
     visibility = ["//visibility:public"],
 )
 

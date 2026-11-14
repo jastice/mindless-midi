@@ -30,8 +30,9 @@ ts_test(
     name = "sampler_test",
     src = "sampler.test.ts",
     data = [
+        "//samples:manifests",
         "//styles:claudia",
-        "//styles:claudia_samples_lock_json",
+        "//styles:claudia_samples",
     ],
     deps = [
         ":sound",
@@ -45,7 +46,7 @@ ts_test(
     src = "weight.test.ts",
     data = [
         "//styles",
-        "//styles:samples_lock_json",
+        "//styles:samples",
     ],
     deps = [
         ":sound",

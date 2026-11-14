@@ -7,6 +7,21 @@ music_style(
     brief = "brief.md",
     color = "#38a169",
     corpus = "corpus.json",
+    packs = [
+        "@samples//danigb-samples/dsmolken-double-bass-pizz",
+        "@samples//danigb-samples/lm-2",
+        "@samples//danigb-samples/sample-pi-drums",
+        "@samples//danigb-samples/tr-808",
+        "@samples//gleitz-musyngkite/accordion",
+        "@samples//gleitz-musyngkite/acoustic-guitar-steel",
+        "@samples//gleitz-musyngkite/bagpipe",
+        "@samples//gleitz-musyngkite/banjo",
+        "@samples//gleitz-musyngkite/choir-aahs",
+        "@samples//gleitz-musyngkite/flute",
+        "@samples//gleitz-musyngkite/orchestral-harp",
+        "@samples//gleitz-musyngkite/piccolo",
+        "@samples//gleitz-musyngkite/violin",
+    ],
     visibility = ["//visibility:public"],
 )
 

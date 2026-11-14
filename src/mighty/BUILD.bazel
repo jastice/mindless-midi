@@ -78,9 +78,13 @@ copy_to_directory(
 # bazel run //src/mighty:serve  ->  http://localhost:8081
 js_binary(
     name = "serve",
-    args = ["src/mighty/site"],
+    args = [
+        "src/mighty/site",
+        "samples=styles/samples_superset",
+    ],
     data = [
         ":site",
+        "//styles:samples_superset",
         "//tools/serve:serve_lib",
     ],
     entry_point = "//tools/serve:serve.js",

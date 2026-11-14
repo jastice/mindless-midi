@@ -42,6 +42,12 @@ music_style(
     color = "#3fd0c9",
     corpus = "corpus.json",
     kit = ":kit",
+    packs = [
+        "@samples//gleitz-musyngkite/lead-1-square",
+        "@samples//gleitz-musyngkite/pad-2-warm",
+        "@samples//gleitz-musyngkite/pad-3-polysynth",
+        "@samples//gleitz-musyngkite/synth-bass-1",
+    ],
     visibility = ["//visibility:public"],
 )
 

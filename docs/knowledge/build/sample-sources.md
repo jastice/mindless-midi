@@ -2,7 +2,7 @@
 type: Catalogue
 title: Sample sources
 description: Where recordings can come from, what each source holds, and what its licence says. Used now are the sources the Samples engine already fetches; the rest are candidates.
-resource: ../../../styles/samples.lock.json
+resource: ../../../samples/instruments.json
 tags: [samples, licensing, catalogue]
 status: draft
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-14T00:00:00Z }
@@ -30,8 +30,8 @@ checked" means the claim comes from a search summary only.
 
 | Source | Holds | Licence | Notes |
 |---|---|---|---|
-| [danigb/samples](https://github.com/danigb/samples) | Compilation, converted to ogg and m4a: drum machines (808-mini, Casio-RZ1, Casio-SK1, LM-2, MFB-512, Micro-Rhythmer-12, Roland-CR-8000, Drumtraks, TR-808, Yamaha-MR10), Sample Pi, Splendid Grand Piano, VCSL, Smolken bass, jlearman Rhodes, Old Piano, Mellotron, Wurlitzer | "Permissive licensed", per folder. Piano, VCSL, Smolken, Rhodes, Old Piano and Sample Pi are CC0 or public domain; Wurlitzer is CC BY 3.0 | The drum-machine folders carry no licence text in `dm.json`. Only `TR-808` has a note, which calls the set "ABSOLUTELY FREE" |
-| [gleitz/midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts) | General MIDI sets as per-note files: FluidR3_GM, MusyngKite, FatBoy, a tabla set | FluidR3_GM CC BY 3.0; MusyngKite and FatBoy CC BY-SA 3.0; tabla not stated | The share-alike on MusyngKite is the one to watch |
+| [danigb/samples](https://github.com/danigb/samples) | Compilation, converted to ogg and m4a: drum machines (808-mini, Casio-RZ1, Casio-SK1, LM-2, MFB-512, Micro-Rhythmer-12, Roland-CR-8000, Drumtraks, TR-808, Yamaha-MR10), Sample Pi, Splendid Grand Piano, VCSL, Smolken bass, jlearman Rhodes, Old Piano, Mellotron, Wurlitzer | "Permissive licensed", per folder. Piano, VCSL, Smolken, Old Piano and Sample Pi are CC0 or public domain; Wurlitzer is CC BY 3.0. The README calls jlearman's Rhodes CC0, but its own LICENSE puts the samples under CC BY-NC 4.0 (checked 2026-11-14) | The drum-machine folders carry no licence text in `dm.json`. Only `TR-808` has a note, which calls the set "ABSOLUTELY FREE". The Rhodes' non-commercial terms are outside the licence policy, so it has no pack (the generator converts it; validation refuses it) |
+| [gleitz/midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts) | General MIDI sets as per-note files: FluidR3_GM, MusyngKite, FatBoy, a tabla set | FluidR3_GM CC BY 3.0; MusyngKite and FatBoy CC BY-SA 3.0; tabla not stated (README); the repo's LICENSE.txt is MIT, for its code | The share-alike on MusyngKite is the one to watch. The sampler used to credit FluidR3 as MIT; the packs now say CC BY 3.0 |
 | [VCSL](https://github.com/sgossner/VCSL) | Versilian Community Sample Library: orchestral, world and unusual instruments | CC0 | Reached through danigb/samples |
 
 ## 909 and other drum machines
@@ -74,5 +74,5 @@ checked" means the claim comes from a search summary only.
 2. Check the licence of each folder, not only the repo.
 3. Note what the licence needs on the page (attribution for CC BY, share-alike
    for CC BY-SA).
-4. Add its files to a style's sound declaration; the
-   [loader](./samples.md) and lock file take it from there.
+4. Write its pack manifest with `//tools/packs` and fill in the licence block,
+   then declare the pack on the styles that play it ([samples](./samples.md)).

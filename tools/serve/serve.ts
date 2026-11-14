@@ -3,6 +3,13 @@
  *
  *   bazel run //site:serve            # http://localhost:8080
  *   PORT=9000 bazel run //site:serve   (falls forward to the next free port if taken)
+ *
+ *   serve <site-dir> [<prefix>=<dir>]...
+ *
+ * A `<prefix>=<dir>` mount serves `/<prefix>/...` from that directory instead
+ * of the site's: the dev servers serve `samples/` from every file the styles'
+ * sample packs hold (//styles:samples_superset), not the trimmed slice the
+ * site ships, so a page that plays beyond the declared ranges still finds them.
  */
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
@@ -19,6 +26,8 @@ const TYPES: Record<string, string> = {
   ".png": "image/png",
   ".m4a": "audio/mp4",
   ".mp3": "audio/mpeg",
+  ".wav": "audio/wav",
+  ".ogg": "audio/ogg",
   ".map": "application/json",
   ".txt": "text/plain; charset=utf-8",
 };
@@ -34,6 +43,11 @@ function siteRoot(arg: string | undefined): string {
 }
 
 const root = siteRoot(process.argv[2]);
+const mounts = process.argv.slice(3).map((m) => {
+  const [prefix, dir] = m.split("=");
+  if (!prefix || !dir) throw new Error(`expected <prefix>=<dir>, not ${m}`);
+  return { prefix: `/${prefix.replace(/^\/+|\/+$/g, "")}/`, dir: siteRoot(dir) };
+});
 const requested = Number(process.env.PORT ?? 8080);
 
 const server = createServer((req, res) => {
@@ -52,8 +66,10 @@ const server = createServer((req, res) => {
   }
   let path = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, "");
   if (path.endsWith("/")) path += "index.html";
-  const file = join(root, path);
-  if (!file.startsWith(root) || !existsSync(file) || !statSync(file).isFile()) {
+  const mount = mounts.find((m) => path.startsWith(m.prefix));
+  const base = mount?.dir ?? root;
+  const file = mount ? join(base, path.slice(mount.prefix.length)) : join(root, path);
+  if (!file.startsWith(base) || !existsSync(file) || !statSync(file).isFile()) {
     res.writeHead(404, { "content-type": "text/plain" }).end("not found");
     return;
   }
@@ -76,6 +92,6 @@ server.on("error", (err: NodeJS.ErrnoException) => {
   }
 });
 server.on("listening", () => {
-  console.log(`Mindless Midi: http://localhost:${port}/  (serving ${root})`);
+  console.log(`Mindless Midi: http://localhost:${port}/  (serving ${root}${mounts.map((m) => `, ${m.prefix} from ${m.dir}`).join("")})`);
 });
 server.listen(port);

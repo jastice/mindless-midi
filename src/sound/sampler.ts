@@ -1,32 +1,42 @@
 /**
- * Approach 2: multi-sampled instruments. Piano, electric piano, mallets,
- * upright bass and tenor sax come from free SFZ libraries (velocity layers,
- * round robins, crossfades); everything else falls back to a General MIDI
- * soundfont with a sample per semitone; drums use per-style kits.
+ * Approach 2: multi-sampled instruments. Which pack plays a General MIDI
+ * program is data, `samples/instruments.json`: free SFZ libraries (velocity
+ * layers, round robins, crossfades) for piano, electric piano, mallets,
+ * upright bass and tenor sax, and a General MIDI soundfont group (a sample per
+ * semitone) for every other program the styles use. Drums use per-style kits.
  *
  * Split in two so playback can run in a worker: `SampleLibrary` (main thread:
  * resolves notes to sample zones, downloads and decodes them) and
  * `renderSampleNote` (pure: mixes decoded sample data into a Stereo).
  *
- * Files are named by their upstream URL, or, for drum kits built from sample
- * packs (//bazel:samples.bzl), by the path the site serves the pack sample at
- * (`<pack id>/<sample id>.<ext>`). The site serves its own copies of the ones
- * the styles can play (see `requiredSamples` and //tools/samples); the bench
- * reads upstream URLs from upstream directly.
+ * Files are named by the path the site serves them at: the table
+ * (`instruments.json`), each pack's manifest (`<pack id>/pack.json`, see
+ * //src/corpus:pack.ts) and its samples (`<pack id>/<sample id>.<ext>`). The
+ * drum kits that are not packs yet still name upstream URLs (until step 3 of
+ * docs/sample-format-plan.md). The site serves its own copies of what the
+ * styles can play (see `reach` and //tools/samples); the bench reads the
+ * audio from each manifest's pinned upstream URL.
  */
-import type { SampleKit } from "../corpus/pack.js";
+import { type InstrumentEntry, type InstrumentTable, type MultisamplePack, type PackManifest, type SampleKit, type Soundfont, packCredit, servedPath } from "../corpus/pack.js";
 import type { SoundDeclaration } from "../corpus/sound.js";
 import type { ScoreNote } from "./types.js";
 import type { Samples, Stereo } from "./dsp.js";
 import { renderShaped } from "./shape.js";
 
+export type { Soundfont };
+
 const DANIGB = "https://danigb.github.io/samples/";
 const GLEITZ = "https://gleitz.github.io/midi-js-soundfonts/";
 
+/** Where the program table is served, beside the packs. */
+export const INSTRUMENTS = "instruments.json";
+/** Where a pack's manifest is served. */
+export const manifestPath = (pack: string): string => `${pack}/pack.json`;
+
 /**
- * Instruments name their files by upstream URL. The site ships those files
- * itself (//tools/samples fetches the ones the styles can play at build time),
- * laid out as `danigb/<path>` and `gleitz/<path>` under one directory.
+ * The drum kits not yet moved to packs name their files by upstream URL. The
+ * site ships those files itself, laid out as `danigb/<path>` under the same
+ * directory as the packs.
  */
 export function mirrorPath(url: string): string | undefined {
   if (url.startsWith(DANIGB)) return `danigb/${url.slice(DANIGB.length)}`;
@@ -34,22 +44,20 @@ export function mirrorPath(url: string): string | undefined {
   return undefined;
 }
 
-/** A pack sample's served path rather than an upstream URL. Until step 3 of docs/sample-format-plan.md the loader takes both. */
+/** A path the site serves (a pack file or the table) rather than an upstream URL. Until step 3 of docs/sample-format-plan.md the loader takes both. */
 export function isPackSample(ref: string): boolean {
   return !/^https?:\/\//.test(ref);
 }
 
-/** Fetches from the mirror directory at `base` (ending in a slash) instead of upstream; pack samples sit there too. */
-export function mirroredAt(base: string): (url: string) => string {
-  return (url) => {
-    if (isPackSample(url)) return base + url;
-    const path = mirrorPath(url);
-    if (path === undefined) throw new Error(`not a mirrored sample: ${url}`);
+/** Fetches from the sample directory at `base` (ending in a slash) instead of upstream. */
+export function mirroredAt(base: string): (ref: string) => string {
+  return (ref) => {
+    if (isPackSample(ref)) return base + ref;
+    const path = mirrorPath(ref);
+    if (path === undefined) throw new Error(`not a mirrored sample: ${ref}`);
     return base + path;
   };
 }
-
-export type Soundfont = "MusyngKite" | "FluidR3_GM";
 
 /** Decoded audio, transferable to a worker. */
 export interface SampleData {
@@ -57,25 +65,35 @@ export interface SampleData {
   sampleRate: number;
 }
 
+/**
+ * Where to fetch a file: from its served path, or, for a pack sample, from
+ * `upstream`, the manifest's pinned URL (what the bench does).
+ */
+export type Locate = (ref: string, upstream?: string) => string;
+
 /** Downloads and decodes sample files once per page; tracks bytes for reports. */
 export class SampleCache {
   private readonly buffers = new Map<string, Promise<{ data: SampleData; bytes: number }>>();
   private readonly json = new Map<string, Promise<unknown>>();
+  /** Served path -> pinned upstream URL, for every pack sample of a manifest read so far. */
+  private readonly upstream = new Map<string, string>();
   /**
-   * `ctx` decodes audio (not needed to read sample documents); `locate` maps an
-   * upstream URL to where to fetch it from (default: upstream itself).
+   * `ctx` decodes audio (not needed to read the table and manifests);
+   * `locate` maps a served path or URL to where to fetch it from (default:
+   * as named); `get` fetches (the build reads from disk instead).
    */
   constructor(
     private readonly ctx?: BaseAudioContext,
-    private readonly locate: (url: string) => string = (url) => url,
+    private readonly locate: Locate = (ref) => ref,
+    private readonly get: (url: string) => Promise<Response> = (url) => fetch(url),
   ) {}
 
-  audio(url: string): Promise<{ data: SampleData; bytes: number }> {
-    let p = this.buffers.get(url);
+  audio(ref: string): Promise<{ data: SampleData; bytes: number }> {
+    let p = this.buffers.get(ref);
     if (!p) {
-      p = fetch(this.locate(url))
+      p = this.get(this.locate(ref, this.upstream.get(ref)))
         .then((r) => {
-          if (!r.ok) throw new Error(`${r.status} ${url}`);
+          if (!r.ok) throw new Error(`${r.status} ${ref}`);
           return r.arrayBuffer();
         })
         .then(async (raw) => {
@@ -85,21 +103,33 @@ export class SampleCache {
           const channels = Array.from({ length: b.numberOfChannels }, (_, c) => b.getChannelData(c).slice());
           return { bytes, data: { channels, sampleRate: b.sampleRate } };
         });
-      this.buffers.set(url, p);
+      this.buffers.set(ref, p);
     }
     return p;
   }
 
-  getJson<T>(url: string): Promise<T> {
-    let p = this.json.get(url);
+  getJson<T>(ref: string): Promise<T> {
+    let p = this.json.get(ref);
     if (!p) {
-      p = fetch(this.locate(url)).then((r) => {
-        if (!r.ok) throw new Error(`${r.status} ${url}`);
+      p = this.get(this.locate(ref)).then((r) => {
+        if (!r.ok) throw new Error(`${r.status} ${ref}`);
         return r.json();
       });
-      this.json.set(url, p);
+      this.json.set(ref, p);
     }
     return p as Promise<T>;
+  }
+
+  /** A pack's manifest; also records where each of its samples lives upstream. */
+  async pack<T extends PackManifest = PackManifest>(id: string): Promise<T> {
+    const pack = await this.getJson<T>(manifestPath(id));
+    for (const [sid, s] of Object.entries(pack.samples)) this.upstream.set(servedPath(pack.id, sid, s.file), s.url);
+    return pack;
+  }
+
+  /** The program table. */
+  instruments(): Promise<InstrumentTable> {
+    return this.getJson<InstrumentTable>(INSTRUMENTS);
   }
 }
 
@@ -126,7 +156,7 @@ export interface PlannedNote {
   lowpass?: number;
 }
 
-interface Instrument {
+export interface Instrument {
   label: string;
   release: number;
   sustain: boolean;
@@ -134,113 +164,35 @@ interface Instrument {
   flat: boolean;
   /** `touch`: let velocity choose between recordings where the set has a harder and a softer one. */
   zones(key: number, vel: number, touch?: boolean): Promise<Zone[]>;
-  /** Every upstream URL (sample documents and audio) that playing any of `keys` can need. */
+  /** Every served path (manifest and audio) that playing any of `keys` can need. */
   required(keys: readonly number[]): Promise<string[]>;
 }
 
-// --- websfz (SFZ as JSON, as published by danigb/samples) ---------------
+// --- Multisampled instruments (pack manifests) ----------------------------
 
-interface SfzRegion {
-  sample: string;
-  lokey: number;
-  hikey: number;
-  lovel: number;
-  hivel: number;
-  center: number;
-  tune: number;
-  volume: number;
-  offset: number;
-  xfin: [number, number] | null;
-  xfout: [number, number] | null;
-  seqLength: number;
-  seqPosition: number;
-  prefix: string;
-}
-
-const NOTE_INDEX: Record<string, number> = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
-
-function sfzKey(v: unknown): number | undefined {
-  if (typeof v === "number") return v;
-  if (typeof v !== "string") return undefined;
-  const m = /^([a-gA-G])([#b]?)(-?\d+)$/.exec(v.trim());
-  if (!m) return Number(v);
-  const acc = m[2] === "#" ? 1 : m[2] === "b" ? -1 : 0;
-  return 12 * (Number(m[3]) + 1) + NOTE_INDEX[m[1]!.toLowerCase()]! + acc;
-}
-
-type Opcodes = Record<string, unknown>;
-
-/** Conditions we don't model (pedal, CC switches, keyswitches, release triggers): skip the region. */
-function playable(o: Opcodes): boolean {
-  for (const k of Object.keys(o)) {
-    if (/^(lo|hi)cc\d+$/.test(k) || k.startsWith("sw_") || (k === "trigger" && o[k] !== "attack")) return false;
-  }
-  return true;
-}
-
-async function loadSfz(cache: SampleCache, url: string, samplePath = ""): Promise<{ base: string; regions: SfzRegion[] }> {
-  const doc = await cache.getJson<{ global?: Opcodes; groups: (Opcodes & { regions: Opcodes[]; control?: Opcodes })[] }>(url);
-  const regions: SfzRegion[] = [];
-  // A <control> header applies to every group after it, not just its own.
-  let prefix = "";
-  for (const g of doc.groups) {
-    const { regions: rs, control, ...groupOps } = g;
-    if (control?.prefix_sfz_path !== undefined) prefix = String(control.prefix_sfz_path);
-    for (const r of rs) {
-      const o: Opcodes = { ...(doc.global ?? {}), ...groupOps, ...r };
-      if (!playable(o) || typeof o.sample !== "string") continue;
-      const lokey = sfzKey(o.lokey ?? o.key) ?? 0;
-      const hikey = sfzKey(o.hikey ?? o.key) ?? 127;
-      const pair = (a: unknown, b: unknown): [number, number] | null => (a === undefined && b === undefined ? null : [Number(a ?? 0), Number(b ?? 127)]);
-      regions.push({
-        sample: o.sample,
-        lokey,
-        hikey,
-        lovel: Number(o.lovel ?? 0),
-        hivel: Number(o.hivel ?? 127),
-        center: sfzKey(o.pitch_keycenter ?? o.key) ?? lokey,
-        tune: Number(o.tune ?? 0) + 100 * Number(o.transpose ?? 0),
-        volume: Number(o.volume ?? 0) + Number(o.group_volume ?? 0),
-        offset: Number(o.offset ?? 0),
-        xfin: pair(o.xfin_lovel, o.xfin_hivel),
-        xfout: pair(o.xfout_lovel, o.xfout_hivel),
-        seqLength: Number(o.seq_length ?? 1),
-        seqPosition: Number(o.seq_position ?? 1),
-        prefix: samplePath + prefix,
-      });
-    }
-  }
-  // Samples sit beside the document (upstream's meta.baseUrl says the same, but would defeat a mirror).
-  return { base: url.slice(0, url.lastIndexOf("/") + 1), regions };
-}
-
-function regionUrl(base: string, r: SfzRegion): string {
-  return encodeURI(`${base}${r.prefix}${r.sample}.m4a`).replace(/#/g, "%23");
-}
-
-function sfzInstrument(cache: SampleCache, label: string, url: string, release: number, sustain = false, samplePath = ""): Instrument {
-  const loaded = loadSfz(cache, url, samplePath);
+/** An instrument from a multisample pack, as the program table describes it. */
+export function packInstrument(pack: MultisamplePack, entry: Pick<InstrumentEntry, "release" | "sustain" | "flat">): Instrument {
   const rr = new Map<number, number>();
+  const url = (sample: string) => servedPath(pack.id, sample, pack.samples[sample]!.file);
   return {
-    label,
-    release,
-    sustain,
-    flat: false,
+    label: packCredit(pack),
+    release: entry.release,
+    sustain: entry.sustain,
+    flat: entry.flat,
     async zones(key, vel) {
-      const { base, regions } = await loaded;
       const counter = rr.get(key) ?? 0;
       rr.set(key, counter + 1);
       const out: Zone[] = [];
-      for (const r of regions) {
-        if (key < r.lokey || key > r.hikey || vel < r.lovel || vel > r.hivel) continue;
-        if (r.seqLength > 1 && (counter % r.seqLength) + 1 !== r.seqPosition) continue;
+      for (const r of pack.regions) {
+        if (key < r.lo || key > r.hi || vel < r.vel[0] || vel > r.vel[1]) continue;
+        if (r.seq[0] > 1 && (counter % r.seq[0]) + 1 !== r.seq[1]) continue;
         let w = 1;
         if (r.xfin) w *= ramp(vel, r.xfin[0], r.xfin[1]);
         if (r.xfout) w *= 1 - ramp(vel, r.xfout[0], r.xfout[1]);
         if (w < 0.02) continue;
         out.push({
-          url: regionUrl(base, r),
-          rate: Math.pow(2, (key - r.center + r.tune / 100) / 12),
+          url: url(r.sample),
+          rate: Math.pow(2, (key - r.root + r.tune / 100) / 12),
           gain: Math.sqrt(w) * Math.pow(10, r.volume / 20),
           offset: r.offset,
         });
@@ -248,10 +200,9 @@ function sfzInstrument(cache: SampleCache, label: string, url: string, release: 
       return out;
     },
     async required(keys) {
-      const { base, regions } = await loaded;
       // Any velocity layer or round robin can sound, so take every region the keys reach.
-      const urls = regions.filter((r) => keys.some((k) => k >= r.lokey && k <= r.hikey)).map((r) => regionUrl(base, r));
-      return [url, ...new Set(urls)];
+      const urls = pack.regions.filter((r) => keys.some((k) => k >= r.lo && k <= r.hi)).map((r) => url(r.sample));
+      return [manifestPath(pack.id), ...new Set(urls)];
     },
   };
 }
@@ -261,31 +212,33 @@ function ramp(x: number, lo: number, hi: number): number {
   return Math.max(0, Math.min(1, (x - lo) / (hi - lo)));
 }
 
-// --- General MIDI soundfont (one file per semitone) ---------------------
-
-const FLAT_NAMES = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-
-function gmInstrument(cache: SampleCache, font: Soundfont, program: number, sustain: boolean, release: number): Instrument {
-  const namesUrl = `${GLEITZ}${font}/names.json`;
-  const names = cache.getJson<string[]>(namesUrl);
-  const fileKey = (key: number) => Math.max(21, Math.min(108, key));
-  const file = async (key: number) => {
-    const name = (await names)[program] ?? "acoustic_grand_piano";
-    const k = fileKey(key);
-    return `${GLEITZ}${font}/${name}-mp3/${FLAT_NAMES[k % 12]}${Math.floor(k / 12) - 1}.mp3`;
-  };
+/** A program the table does not list: silent, and not something a style can declare. */
+function unlisted(program: number): Instrument {
+  const why = `program ${program} has no entry in samples/${INSTRUMENTS}`;
+  let warned = false;
   return {
-    label: font === "MusyngKite" ? "MusyngKite GM soundfont (CC BY-SA 3.0)" : "FluidR3 GM soundfont (MIT)",
-    release,
-    sustain,
+    label: "",
+    release: 0.2,
+    sustain: false,
     flat: true,
-    async zones(key) {
-      return [{ url: await file(key), rate: Math.pow(2, (key - fileKey(key)) / 12), gain: 1, offset: 0 }];
+    async zones() {
+      if (!warned) console.warn(why);
+      warned = true;
+      return [];
     },
-    async required(keys) {
-      return [namesUrl, ...new Set(await Promise.all(keys.map(file)))];
+    async required() {
+      throw new Error(why);
     },
   };
+}
+
+/** The instrument the program table names for a program in this soundfont. */
+export async function instrumentFor(cache: SampleCache, font: Soundfont, program: number): Promise<Instrument> {
+  const entry = (await cache.instruments()).programs[String(program)];
+  if (!entry) return unlisted(program);
+  const pack = await cache.pack(entry.packs[font]);
+  if (pack.kind !== "multisample") throw new Error(`${pack.id}: program ${program} names a ${pack.kind} pack`);
+  return packInstrument(pack, entry);
 }
 
 // --- Drum kits ----------------------------------------------------------
@@ -463,24 +416,11 @@ function drumKit(styleId: string, own?: SampleKit): Instrument {
   };
 }
 
-// --- Instrument choice --------------------------------------------------
-
-const SUSTAINED = (p: number) => (p >= 16 && p <= 23) || (p >= 40 && p <= 95 && p !== 45 && p !== 46 && p !== 47);
-
-function instrumentFor(cache: SampleCache, font: Soundfont, program: number): Instrument {
-  const p = program;
-  if (p <= 2) return sfzInstrument(cache, "Splendid Grand Piano (public domain)", `${DANIGB}splendid-grand-piano/websfz.json`, 0.35);
-  if (p === 4 || p === 5) return sfzInstrument(cache, "Greg Sullivan Wurlitzer EP200 (CC BY 3.0)", `${DANIGB}gs-e-pianos/Wurlitzer EP200/wurlitzer-ep200.websfz.json`, 0.25, false, "Samples/");
-  if (p === 11) return sfzInstrument(cache, "VCSL vibraphone (CC0)", `${DANIGB}vcsl/Struck Idiophones/vibraphone-soft-mallets.websfz.json`, 0.6);
-  if (p === 12) return sfzInstrument(cache, "VCSL marimba (CC0)", `${DANIGB}vcsl/Struck Idiophones/marimba.websfz.json`, 0.4);
-  if (p === 32) return sfzInstrument(cache, "D. Smolken double bass (CC0)", `${DANIGB}dsmolken/double-bass/dsmolkenrubnerbasspizz.websfz.json`, 0.15);
-  if (p === 66) return sfzInstrument(cache, "VCSL tenor sax (CC0)", `${DANIGB}vcsl/Reed Aerophones/tenor-saxophone-vibrato.websfz.json`, 0.12, true);
-  return gmInstrument(cache, font, p, SUSTAINED(p), SUSTAINED(p) ? 0.4 : 0.2);
-}
-
 /** Resolves notes to zones and makes sure their samples are downloaded. */
 export class SampleLibrary {
-  private readonly instruments = new Map<string, Instrument>();
+  private readonly instruments = new Map<string, Promise<Instrument>>();
+  /** The ones that have loaded, for their labels. */
+  private readonly ready = new Map<string, Instrument>();
   private readonly loaded = new Map<string, SampleData>();
   private readonly failed = new Set<string>();
   /** Download size per sample URL. */
@@ -497,16 +437,20 @@ export class SampleLibrary {
     private readonly touch = false,
   ) {}
 
-  private instrument(n: ScoreNote, styleId: string, kit?: SampleKit): Instrument {
+  private instrument(n: ScoreNote, styleId: string, kit?: SampleKit): Promise<Instrument> {
     const id = n.role === "drums" ? `kit:${styleId}` : `${n.program}`;
     let inst = this.instruments.get(id);
-    if (!inst) this.instruments.set(id, (inst = n.role === "drums" ? drumKit(styleId, kit) : instrumentFor(this.cache, this.font, n.program)));
+    if (!inst) {
+      inst = n.role === "drums" ? Promise.resolve(drumKit(styleId, kit)) : instrumentFor(this.cache, this.font, n.program);
+      this.instruments.set(id, inst);
+      inst.then((i) => this.ready.set(id, i)).catch(() => {});
+    }
     return inst;
   }
 
   /** Labels of every instrument used so far (for credits and reports). */
   get labels(): string[] {
-    return [...new Set([...this.instruments.values()].map((i) => i.label))];
+    return [...new Set([...this.ready.values()].map((i) => i.label).filter((l) => l))];
   }
 
   /** Fraction of the current burst of downloads that has finished (1 when idle). */
@@ -526,7 +470,7 @@ export class SampleLibrary {
   async prepare(notes: ScoreNote[], styleId: string, kit?: SampleKit, concurrency = 8): Promise<{ plans: PlannedNote[]; fresh: Map<string, SampleData> }> {
     const plans: PlannedNote[] = [];
     for (const n of notes) {
-      const inst = this.instrument(n, styleId, kit);
+      const inst = await this.instrument(n, styleId, kit);
       const plan: PlannedNote = { zones: await inst.zones(n.key, n.vel, this.touch), release: inst.release, sustain: inst.sustain, drum: n.role === "drums" };
       const lowpass = this.touch && inst.flat ? brightness(n.vel) : undefined;
       if (lowpass !== undefined) plan.lowpass = lowpass;
@@ -561,27 +505,52 @@ export class SampleLibrary {
   }
 }
 
+export interface StyleSound {
+  id: string;
+  sound: SoundDeclaration;
+  kit?: SampleKit;
+}
+
+/** What one declared key of a style can need: the instrument, the key, and the served paths or URLs. */
+export interface Reach {
+  /** "lead, program 24" or "drums". */
+  part: string;
+  program?: number;
+  key: number;
+  files: string[];
+}
+
 /**
- * Every file the styles can play, given what they declare: each program's
- * keys across all styles, and each style's drum kit (its own `kit` where it
- * has one, whose files are pack sample paths rather than URLs). Sorted.
+ * Every file each key a style declares can sound, through the same
+ * instruments `SampleLibrary` plays: each instrument's whole range, and the
+ * drum keys through the style's kit (its own `kit` where it has one, with
+ * every touch variant). The packaging action trims the site's samples and
+ * checks them against the style's declared packs with this.
  */
-export async function requiredSamples(cache: SampleCache, styles: { id: string; sound: SoundDeclaration; kit?: SampleKit }[], font: Soundfont = "MusyngKite"): Promise<string[]> {
-  const keysByProgram = new Map<number, Set<number>>();
-  for (const { sound } of styles) {
-    for (const inst of sound.instruments) {
-      const keys = keysByProgram.get(inst.program) ?? new Set<number>();
-      for (let k = inst.range[0]; k <= inst.range[1]; k++) keys.add(k);
-      keysByProgram.set(inst.program, keys);
+export async function reach(cache: SampleCache, style: StyleSound, font: Soundfont = "MusyngKite"): Promise<Reach[]> {
+  const out: Reach[] = [];
+  for (const inst of style.sound.instruments) {
+    const instrument = await instrumentFor(cache, font, inst.program);
+    const part = `${inst.role}, program ${inst.program}`;
+    for (let key = inst.range[0]; key <= inst.range[1]; key++) {
+      let files: string[];
+      try {
+        files = await instrument.required([key]);
+      } catch (e) {
+        throw new Error(`${style.id}: ${part}, key ${key}: ${e instanceof Error ? e.message : e}`);
+      }
+      out.push({ part, program: inst.program, key, files });
     }
   }
-  const urls = new Set<string>();
-  for (const [program, keys] of keysByProgram) {
-    for (const url of await instrumentFor(cache, font, program).required([...keys])) urls.add(url);
-  }
-  for (const { id, sound, kit } of styles) {
-    for (const url of await drumKit(id, kit).required(sound.drums)) urls.add(url);
-  }
+  const kit = drumKit(style.id, style.kit);
+  for (const key of style.sound.drums) out.push({ part: "drums", key, files: await kit.required([key]) });
+  return out;
+}
+
+/** Every file the styles can play (see `reach`), with the program table. Sorted. */
+export async function requiredSamples(cache: SampleCache, styles: StyleSound[], font: Soundfont = "MusyngKite"): Promise<string[]> {
+  const urls = new Set<string>([INSTRUMENTS]);
+  for (const style of styles) for (const r of await reach(cache, style, font)) for (const f of r.files) urls.add(f);
   return [...urls].sort();
 }
 

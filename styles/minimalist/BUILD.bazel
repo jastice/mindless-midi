@@ -7,6 +7,12 @@ music_style(
     brief = "brief.md",
     color = "#90cdf4",
     corpus = "corpus.json",
+    packs = [
+        "@samples//danigb-samples/lm-2",
+        "@samples//danigb-samples/splendid-grand-piano",
+        "@samples//danigb-samples/vcsl-marimba",
+        "@samples//gleitz-musyngkite/string-ensemble-2",
+    ],
     visibility = ["//visibility:public"],
 )
 

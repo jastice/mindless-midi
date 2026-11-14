@@ -7,6 +7,15 @@ music_style(
     brief = "brief.md",
     color = "#76c9d6",
     corpus = "corpus.json",
+    packs = [
+        "@samples//danigb-samples/lm-2",
+        "@samples//danigb-samples/vcsl-vibraphone-soft-mallets",
+        "@samples//gleitz-musyngkite/celesta",
+        "@samples//gleitz-musyngkite/fx-3-crystal",
+        "@samples//gleitz-musyngkite/music-box",
+        "@samples//gleitz-musyngkite/pad-2-warm",
+        "@samples//gleitz-musyngkite/synth-bass-1",
+    ],
     visibility = ["//visibility:public"],
 )
 
