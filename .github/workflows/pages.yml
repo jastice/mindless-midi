@@ -1,11 +1,11 @@
 # Build and test with Bazel on every push/PR. The real site lives on Cloudflare
-# Pages (cloudflare.yml); from main this publishes only a redirect to it on
+# Pages (cloudflare.yml); from prod this publishes only a redirect to it on
 # GitHub Pages. One-time setup: repo Settings -> Pages -> Source: "GitHub Actions".
 name: Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, prod]
   pull_request:
   workflow_dispatch:
 
@@ -38,7 +38,7 @@ jobs:
         run: bazel build --config=stamp //site
 
   deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/prod'
     needs: build
     runs-on: ubuntu-latest
     permissions:

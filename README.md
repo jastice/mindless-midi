@@ -190,17 +190,17 @@ the generation tool replaces the selected corpus with an API-generated one.
 ## Deploying
 
 The workflow in `.github/workflows/pages.yml` runs `bazel test //...` and
-`bazel build --config=stamp //site` on every push and PR. From `main` it
+`bazel build --config=stamp //site` on every push to `main` or `prod` and every PR. From `prod` it
 publishes only a small redirect (`.github/pages-redirect/`) to GitHub Pages,
 which forwards old links, with their path and session query, to Cloudflare.
 This needs **Settings → Pages → Source: GitHub Actions**.
 
 `.github/workflows/cloudflare.yml` deploys the real site: it builds `//site`
-and publishes to Cloudflare Pages (production from `main`, a preview URL per
+and publishes to Cloudflare Pages (production from a push to the `prod` branch, a preview URL per
 same-repo PR). It does nothing until you set it up once:
 
 1. Create the project: `npx wrangler pages project create <name>
-   --production-branch main` (or Workers & Pages → Create → Pages → Direct
+   --production-branch prod` (or Workers & Pages → Create → Pages → Direct
    Upload in the dashboard).
 2. Create an API token with the **Cloudflare Pages: Edit** permission, and note
    your account ID.
@@ -211,6 +211,9 @@ same-repo PR). It does nothing until you set it up once:
 
 The same workflow deploys the synthesis bench (`//src/bench:site`) as a
 separate Pages project, `<project>-bench`, which it creates on first run.
+
+A push to `main` only builds and tests. To release, fast-forward `prod`:
+`git push origin main:prod`.
 
 To publish by hand to a `gh-pages` branch instead:
 

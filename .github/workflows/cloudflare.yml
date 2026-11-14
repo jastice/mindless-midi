@@ -1,12 +1,12 @@
 # Alternative deploy target: publish //site to Cloudflare Pages. Pull requests
-# from this repo get a preview URL; main goes to production. Tests run in
+# from this repo get a preview URL; a push to the prod branch goes to production. Tests run in
 # pages.yml, so this only builds. Inactive until the repo variable
 # CLOUDFLARE_PAGES_PROJECT is set (see README, "Deploying").
 name: Cloudflare Pages
 
 on:
   push:
-    branches: [main]
+    branches: [prod]
   pull_request:
   workflow_dispatch:
 
@@ -99,7 +99,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           packageManager: npm
-          command: pages project create ${{ env.PROJECT }} --production-branch main
+          command: pages project create ${{ env.PROJECT }} --production-branch prod
 
       - uses: cloudflare/wrangler-action@v3
         with:
