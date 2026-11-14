@@ -147,12 +147,15 @@ function main(): void {
   let problems = 0;
   for (const sel of cfg.clips) {
     let frames = framesOf(sel.take);
+    // Grok's takes: a 6 s take is 3 bars, a 10 s take 5 bars (3 + 5 = a phrase); never 4.
+    const takeBars = sel.bars ?? (frames.length / FPS < 8 ? 3 : 5);
+    const barsOpt = { ...DEFAULT_LOOP, bars: [takeBars] };
     let start: number;
     let count: number;
     let bars: number;
     let turn: number | undefined;
     if (sel.boomerang) {
-      const b = findBoomerang(frames, sel.range?.[0] ?? 0, sel.bars ? { ...DEFAULT_LOOP, bars: [sel.bars] } : DEFAULT_LOOP);
+      const b = findBoomerang(frames, sel.range?.[0] ?? 0, barsOpt);
       if (!b) throw new Error(`${sel.id}: no boomerang fits`);
       ({ turn, bars } = b);
       // Analyse the clip as it will play, from 0.
@@ -163,9 +166,9 @@ function main(): void {
       console.log(`${sel.id}: boomerang ${b.start}..${b.turn}, turn motion ${b.turnMotion.toFixed(2)}× the median`);
     } else if (sel.range) {
       [start, count] = [sel.range[0], sel.range[1] - sel.range[0]];
-      bars = sel.bars ?? Math.max(1, Math.round((count / FPS) * (DEFAULT_LOOP.targetBpm / 60 / 4)));
+      bars = takeBars;
     } else {
-      const loop = findLoop(frames, sel.bars ? { ...DEFAULT_LOOP, bars: [sel.bars] } : DEFAULT_LOOP);
+      const loop = findLoop(frames, barsOpt);
       if (!loop) throw new Error(`${sel.id}: no loop found in ${frames.length} frames`);
       ({ start, frames: count, bars } = loop);
     }

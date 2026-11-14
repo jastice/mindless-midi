@@ -33,7 +33,7 @@ export interface LoopOptions {
   bars: number[];
 }
 
-export const DEFAULT_LOOP: LoopOptions = { fps: 24, beatsPerBar: 4, targetBpm: 129, minRate: 0.92, maxRate: 1.08, bars: [2, 3, 4, 5, 6] };
+export const DEFAULT_LOOP: LoopOptions = { fps: 24, beatsPerBar: 4, targetBpm: 129, minRate: 0.92, maxRate: 1.08, bars: [3, 5] };
 
 export interface Loop {
   /** First frame of the loop. */

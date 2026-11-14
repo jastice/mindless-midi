@@ -9,6 +9,11 @@
  * that the drop clip starts exactly on its section's first bar, and if no
  * combination of clips gets there, the drop is skipped and she stays put.
  *
+ * Phrases are filled exactly: with 3- and 5-bar clips (Grok's 6 s and 10 s
+ * takes) an 8-bar phrase is 3 + 5 or 5 + 3, so every phrase starts on a pose
+ * frame. A plan that starts mid-phrase (after a seek) runs to the end of the
+ * next phrase instead when the gap cannot be filled.
+ *
  * Seeded by the set seed and the bar the plan starts on, so the same set from
  * the same bar gives the same booth cam. See docs/visualizer-plan.md.
  */
@@ -58,7 +63,10 @@ export interface ClipSet {
 
 /** Rates a clip may play at; outside them it is not used. */
 export const MIN_RATE = 0.9;
-export const MAX_RATE = 1.1;
+/** 1.11, not 1.10: Grok's 6 s and 10 s takes as 3 and 5 bars play at about ×1.06–1.11 across 126–132 BPM. */
+export const MAX_RATE = 1.11;
+/** Bars in a phrase (as `PHRASE_BARS` in the set conductor). Every phrase starts on a clip boundary, on a pose frame. */
+export const PHRASE = 8;
 /** A section at least this much more intense than the one before is a drop. */
 export const DROP_RISE = 0.2;
 /** Bars of a track's start and end the director treats as a blend zone. */
@@ -173,7 +181,7 @@ export class Director {
     let w = 1;
     const blendZone = cue.mix !== "body";
     if (clip.scene === "drop") w *= 0.06; // a drop scene away from a drop: a rare flourish
-    if (clip.scene === "blend") w *= blendZone ? 2 : 0.08;
+    if (clip.scene === "blend") w *= blendZone ? 8 : 0.08;
     if (clip.kind === "flourish") w *= 0.25;
     if (clip.energy && !clip.scene) {
       const d = Math.abs(ENERGY_STEP[clip.energy] - ENERGY_STEP[energyOf(cue.intensity)]);
@@ -211,8 +219,9 @@ export class Director {
     let skipBefore = 0; // drops before this cue index have been given up on
     while (b < until) {
       const cue = cues[b]!;
+      const phrases = this.phraseStarts(cues, b);
       const target = this.nextDrop(cues, b, skipBefore);
-      if (target) {
+      if (target && target.at <= (phrases[0] ?? Infinity)) {
         const path = this.pathTo(start + b, at, cues.slice(b, target.at), target.clip.from, last);
         if (path) {
           for (const c of path) place(c);
@@ -223,11 +232,30 @@ export class Director {
         skipBefore = target.at + 1;
         continue;
       }
+      // Fill to the next phrase start, or the one after if the gap cannot be filled.
+      let filled = false;
+      for (const t of phrases) {
+        if (target && target.at <= t) break; // reach the drop instead
+        const path = this.pathTo(start + b, at, cues.slice(b, t), null, last);
+        if (path) {
+          for (const c of path) place(c);
+          filled = true;
+          break;
+        }
+      }
+      if (filled) continue;
       const rng = new Rng(`${this.seed}/booth/${start + b}`);
       const options = this.candidates(at, cue.bpm);
       if (!options.length) throw new Error(`no clip from ${at}`);
       place(rng.weighted(options, (c) => this.weight(c, cue, last) || 1e-6));
     }
+    return out;
+  }
+
+  /** The next few phrase starts after cue `b`. */
+  private phraseStarts(cues: readonly Cue[], b: number): number[] {
+    const out: number[] = [];
+    for (let i = b + 1; i < cues.length && out.length < 3; i++) if (cues[i]!.barInPiece % PHRASE === 0) out.push(i);
     return out;
   }
 
@@ -245,17 +273,17 @@ export class Director {
   }
 
   /**
-   * A seeded path of clips that fills `cues` exactly and ends in `to`, or null.
+   * A seeded path of clips that fills `cues` exactly and ends in `to` (any pose when null), or null.
    * Counts the weighted paths from each bar and pose backwards, then walks
    * forwards choosing each clip in proportion to the paths it leaves open.
    */
-  private pathTo(start: number, from: Pose, cues: readonly Cue[], to: Pose, prev?: Clip): Clip[] | null {
+  private pathTo(start: number, from: Pose, cues: readonly Cue[], to: Pose | null, prev?: Clip): Clip[] | null {
     const d = cues.length;
-    if (d === 0) return from === to ? [] : null;
+    if (d === 0) return to === null || from === to ? [] : null;
     const poses = [...this.poses];
     // ways[k][pose]: weighted number of ways to get from bar k in `pose` to bar d in `to`
     const ways: Map<Pose, number>[] = Array.from({ length: d + 1 }, () => new Map());
-    ways[d]!.set(to, 1);
+    for (const p of to === null ? poses : [to]) ways[d]!.set(p, 1);
     for (let k = d - 1; k >= 0; k--) {
       for (const p of poses) {
         let sum = 0;

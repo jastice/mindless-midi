@@ -12,42 +12,42 @@
       "from": "home",
       "to": "home",
       "energy": "mid",
-      "file": "a39f6e349bd4d74952e2d9a918b099d933e067a0d33c963f9e7d769a67d5a47e.mp4",
-      "frames": 188,
-      "bars": 4,
-      "bpm": 122.553,
-      "beatPhase": 11,
+      "file": "21e14a5208ac354f11cca0bd23c43fdabc1e91541b06ad23829eeebe9f1d243c.mp4",
+      "frames": 224,
+      "bars": 5,
+      "bpm": 128.571,
+      "beatPhase": 4.5,
       "fadeFrames": 6,
       "source": {
         "take": "generated_video (2).mp4",
         "start": 0,
-        "boomerangTurn": 94,
+        "boomerangTurn": 112,
         "closeDiff": 0,
         "fromDiff": 3.37,
         "toDiff": 3.37,
-        "beatStrength": 1.15
+        "beatStrength": 1.05
       }
     },
     {
-      "id": "L2b-home-mid",
+      "id": "L2s-home-mid",
       "kind": "loop",
       "from": "home",
       "to": "home",
       "energy": "mid",
-      "file": "073735eb072a97d01dadf3b055669f5dccd5bf1d5c9891e89005f49fe386c205.mp4",
-      "frames": 96,
-      "bars": 2,
-      "bpm": 120,
-      "beatPhase": 11,
+      "file": "db299ba4cccee16041f0cad266f8be13e83bcdb878ac75b52d747374802d087a.mp4",
+      "frames": 140,
+      "bars": 3,
+      "bpm": 123.429,
+      "beatPhase": 10.7,
       "fadeFrames": 6,
       "source": {
         "take": "generated_video (2).mp4",
         "start": 0,
-        "boomerangTurn": 48,
+        "boomerangTurn": 70,
         "closeDiff": 0,
         "fromDiff": 3.37,
         "toDiff": 3.37,
-        "beatStrength": 1.23
+        "beatStrength": 1.11
       }
     },
     {

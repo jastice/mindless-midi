@@ -57,7 +57,17 @@ interface ClipSet { fps: number; clips: Clip[] }
 
 `bpm` is `bars * beats * 60 * fps / frames`; a clip plays at
 `rate = setBpm / clip.bpm`. A clip is usable only when the rate is within
-0.9–1.1. Outside that range the director stays on the Home loop that comes
+0.9–1.11 (raised from 1.10: see clip lengths below).
+
+**Clip lengths: 3 and 5 bars.** Grok makes 6.04 s and 10.04 s takes. At
+128 BPM those become 3 bars (5.625 s, ×1.074) and 5 bars (9.375 s,
+×1.071), and 3 + 5 = 8. So a 6 s take is always 3 bars and a 10 s take 5
+bars, never slowed to 4. A phrase is 3 + 5 or 5 + 3 (loop + loop,
+transition + loop, loop + transition), 16 bars is 3 + 5 + 3 + 5, and every
+phrase starts on a pose frame. Transitions and flourishes are 6 s, so they
+pair with a 5-bar loop in the same phrase. Each pose should get a 6 s and
+a 10 s loop, which also gives variety. Across 126–132 BPM the rates stay
+within about 1.06–1.11, hence the 1.11 limit. Outside that range the director stays on the Home loop that comes
 closest, until a second batch of clips exists for another tempo band.
 
 ## Parts
@@ -108,7 +118,10 @@ inputs so it works before and after.
 
 **Planning rules:**
 
-- Plans in whole bars, a phrase (8 bars) at a time, at least 4 bars ahead.
+- Plans in whole bars, a phrase (8 bars) at a time, at least 4 bars ahead;
+  every phrase start is a clip boundary. After a seek mid-phrase, the gap
+  to the next phrase start is filled if 3s and 5s can fill it, else the
+  plan runs to the start of the phrase after.
 - A transition that must land on a downbeat (Build → Peak on a drop) starts
   `clip.bars` before it.
 - If the next event is too close for its transition, it is skipped: she
@@ -139,7 +152,8 @@ Tests (`node:test`, as in `set.test.ts`): over long seeded sets,
 - every clip starts on a bar line and fills whole bars;
 - Build → Peak ends exactly on the section start it was planned for;
 - the same seed and starting bar give the same plan;
-- rates stay within 0.9–1.1 at the styles' tempos.
+- rates stay within 0.9–1.11 at the styles' tempos;
+- every phrase starts on a clip boundary.
 
 ### 3. Player for clips (M)
 
@@ -217,8 +231,8 @@ Branch `claude/booth-cam-prototype-ce2cc9`. What exists:
 
 | Clip | Take | Range | Bars, bpm | Close | Off Home |
 |---|---|---|---|---|---|
-| L2-home-mid | groove, 1280×720 | boomerang 0→94→0 | 4 at 122.6 | 0 | 3.37 |
-| L2b-home-mid | groove | boomerang 0→48→0 | 2 at 120.0 | 0 | 3.37 |
+| L2-home-mid | groove, 10 s, 1280×720 | boomerang 0→112→0 | 5 at 128.6 | 0 | 3.37 |
+| L2s-home-mid | groove | boomerang 0→70→0 | 3 at 123.4 | 0 | 3.37 |
 | S1-home-cue | cue gesture loop | 11–144 | 3 at 129.9 | 0.98 | 1.32 / 1.43 |
 | S2-home-peak | hands-up loop | 2–140 | 3 at 125.2 | 1.37 | 1.07 / 1.54 |
 
@@ -235,11 +249,16 @@ Branch `claude/booth-cam-prototype-ce2cc9`. What exists:
 - The search prefers trimming the Grok loops by a few frames (frames 11–144
   and 2–140) over their own first/last frames: they close better there
   (0.98 vs 1.43) and land nearer 128 bpm.
-- Clip lengths must not all share a factor. With only 3-bar clips, drops on
-  8-bar sections are unreachable; the 4- and 2-bar groove cuts make every
-  gap of 2 bars or more fillable, and the tests land over 80% of drops on
-  their downbeat (the rest are too close to the previous drop or the track
-  start).
+- Clip lengths are 3 and 5 bars (see the model). A first version used 4-
+  and 2-bar groove cuts; that filled any gap but let joins fall anywhere
+  in a phrase. With 3 + 5 every phrase starts on a clip boundary, and the
+  tests land over 80% of drops on their downbeat (the rest are too close
+  to the previous drop or the track start).
+- Each phrase needs a 3-bar clip, and the only plain 3-bar Home clip was
+  the cue gesture, which then played in every phrase. The 3-bar groove
+  boomerang (L2s) is a stopgap for the 6 s Home loop. For the same reason
+  the cue can fill at most 3 of every 8 blend bars (about 30% measured)
+  until there is a 10 s cue loop.
 - **Beat phase** from motion is weak on these takes (comb strength
   1.15–1.25, where 1 is no beat): her nods are not steady at a tempo. The
   groove nods about every 20 frames (72 per minute), not on our beats. The
@@ -256,7 +275,9 @@ synthetic full shot list too.
 **Sync, measured** in headless Chrome on a MacBook (desktop Chrome, 60 s
 of a set, drift of each presented frame against `player.now` via
 `requestVideoFrameCallback`): mean 0.25 frames (10 ms), worst 1.1 frames,
-bias under 0.05 frames, no seeks after the first, 12 joins. Pause holds the
+bias under 0.05 frames, no seeks after the first, 12 joins. With the 3/5
+clips, 45 s: mean 0.17, worst 0.91, no seeks, joins on bars 8, 16, 24, 32
+and 40 of the track. Pause holds the
 frame and resume continues without a seek. A skip replans after the clip
 on screen and the cue gesture starts on the new track's mix-in; one
 measurement there peaked at 3.7 frames (not yet explained: the tempo step

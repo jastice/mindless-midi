@@ -4,7 +4,7 @@ import { test } from "node:test";
 import type { StyleBundle } from "../corpus/schema.js";
 import { SetConductor } from "../engine/set.js";
 import type { Bar } from "../engine/types.js";
-import { type Clip, type ClipSet, type Cue, Director, MAX_RATE, MIN_RATE, type Placement, RollingPlan, cuesFor, rateOf } from "./director.js";
+import { type Clip, type ClipSet, type Cue, Director, MAX_RATE, MIN_RATE, PHRASE, type Placement, RollingPlan, cuesFor, rateOf } from "./director.js";
 
 const clips = JSON.parse(readFileSync("src/claudia/clips.json", "utf8")) as ClipSet;
 const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles;
@@ -18,16 +18,20 @@ const FULL: ClipSet = {
   stills: {},
   clips: (
     [
-      ["L1", "loop", "home", "home", 3, "low"],
-      ["L2", "loop", "home", "home", 3, "mid"],
-      ["L3", "loop", "home", "home", 4, "high"],
-      ["L4", "loop", "cue", "cue", 2],
-      ["L6", "loop", "peak", "peak", 2],
-      ["T1", "transition", "home", "cue", 1],
-      ["T2", "transition", "cue", "home", 1],
-      ["T5", "transition", "home", "peak", 1],
-      ["T6", "transition", "peak", "home", 2],
-      ["F1", "flourish", "home", "home", 2],
+      // Each pose has a 6 s (3-bar) and a 10 s (5-bar) loop; transitions and flourishes are 6 s.
+      ["L1", "loop", "home", "home", 5, "low"],
+      ["L2", "loop", "home", "home", 5, "mid"],
+      ["L2s", "loop", "home", "home", 3, "mid"],
+      ["L3", "loop", "home", "home", 3, "high"],
+      ["L4", "loop", "cue", "cue", 5],
+      ["L4s", "loop", "cue", "cue", 3],
+      ["L6", "loop", "peak", "peak", 5],
+      ["L6s", "loop", "peak", "peak", 3],
+      ["T1", "transition", "home", "cue", 3],
+      ["T2", "transition", "cue", "home", 3],
+      ["T5", "transition", "home", "peak", 3],
+      ["T6", "transition", "peak", "home", 3],
+      ["F1", "flourish", "home", "home", 3],
     ] as const
   ).map(([id, kind, from, to, bars, energy]) => ({
     id,
@@ -86,6 +90,31 @@ test("every clip starts on the pose the one before ended on, on a bar line, back
   }
 });
 
+test("clips are 3 or 5 bars, and every phrase starts on a clip boundary", () => {
+  for (const set of [clips, FULL]) {
+    for (const seed of ["a", "b"]) {
+      const { cues, plan } = run(set, `phrase-${seed}`, 3000);
+      const starts = new Set(plan.map((p) => p.bar));
+      for (const p of plan) assert.ok(p.clip.bars === 3 || p.clip.bars === 5, `${p.clip.id}: ${p.clip.bars} bars`);
+      let missed = 0;
+      cues.forEach((cue, b) => {
+        if (cue.barInPiece % PHRASE === 0 && !starts.has(b)) missed++;
+      });
+      assert.equal(missed, 0, `${missed} phrase starts fall inside a clip`);
+    }
+  }
+});
+
+test("a plan starting mid-phrase is on the phrase grid by the end of the next phrase", () => {
+  const director = new Director(clips, "mid");
+  for (let from = 1; from < PHRASE; from++) {
+    const cues = cuesFor({ pieceIndex: 0, barInPiece: from, pieceBars: 160, intensity: 0.6 }, 128, null);
+    const plan = director.plan(0, "home", cues, undefined, true);
+    const starts = new Set(plan.map((p) => p.bar + from));
+    for (let phrase = 2 * PHRASE; phrase < 150; phrase += PHRASE) assert.ok(starts.has(phrase), `from bar ${from}: phrase at ${phrase}`);
+  }
+});
+
 test("drops land on the section's first bar, and most drops get one", () => {
   for (const set of [clips, FULL]) {
     let drops = 0;
@@ -111,9 +140,10 @@ test("drops land on the section's first bar, and most drops get one", () => {
 });
 
 test("blend zones get the cue: scenes at Home now, the Cue pose with the full set", () => {
-  for (const [set, inBlend] of [
-    [clips, (p: Placement) => p.clip.scene === "blend"],
-    [FULL, (p: Placement) => p.clip.from === "cue" || p.clip.to === "cue"],
+  // With only a 3-bar cue scene, a phrase (3 + 5) can cue for at most 3 of its 8 bars.
+  for (const [set, inBlend, least] of [
+    [clips, (p: Placement) => p.clip.scene === "blend", 0.28],
+    [FULL, (p: Placement) => p.clip.from === "cue" || p.clip.to === "cue", 0.35],
   ] as const) {
     const { cues, plan } = run(set, "blend", 3000);
     let blendBars = 0;
@@ -131,7 +161,7 @@ test("blend zones get the cue: scenes at Home now, the Cue pose with the full se
         if (inBlend(p)) bodyCue += p.clip.bars;
       }
     }
-    assert.ok(cueBars / blendBars > 0.35, `${cueBars} of ${blendBars} blend bars cueing`);
+    assert.ok(cueBars / blendBars > least, `${cueBars} of ${blendBars} blend bars cueing`);
     assert.ok(bodyCue / bodyBars < 0.15, `${bodyCue} of ${bodyBars} body bars cueing`);
   }
 });

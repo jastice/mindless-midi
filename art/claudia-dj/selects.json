@@ -5,8 +5,8 @@
     "home": { "take": "generated_video.mp4", "frame": 0 }
   },
   "clips": [
-    { "id": "L2-home-mid", "take": "generated_video (2).mp4", "kind": "loop", "from": "home", "to": "home", "energy": "mid", "boomerang": true, "bars": 4 },
-    { "id": "L2b-home-mid", "take": "generated_video (2).mp4", "kind": "loop", "from": "home", "to": "home", "energy": "mid", "boomerang": true, "bars": 2 },
+    { "id": "L2-home-mid", "take": "generated_video (2).mp4", "kind": "loop", "from": "home", "to": "home", "energy": "mid", "boomerang": true },
+    { "id": "L2s-home-mid", "take": "generated_video (2).mp4", "kind": "loop", "from": "home", "to": "home", "energy": "mid", "boomerang": true, "bars": 3 },
     { "id": "S1-home-cue", "take": "generated_video.mp4", "kind": "loop", "from": "home", "to": "home", "energy": "mid", "scene": "blend" },
     { "id": "S2-home-peak", "take": "generated_video (1).mp4", "kind": "loop", "from": "home", "to": "home", "energy": "high", "scene": "drop" }
   ]
