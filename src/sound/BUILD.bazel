@@ -36,6 +36,13 @@ ts_test(
 )
 
 ts_test(
+    name = "baseline_test",
+    size = "medium",
+    src = "baseline.test.ts",
+    deps = [":sound"],
+)
+
+ts_test(
     name = "weight_test",
     size = "medium",
     src = "weight.test.ts",
