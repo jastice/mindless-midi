@@ -9,7 +9,7 @@ Courtyard Nine, Low Log) and it plays forever, never repeating, without streamin
 is arranged and synthesized live in the
 page.
 
-**Live:** https://mindless-midi.pages.dev/ (the old GitHub Pages address redirects here)
+**Live:** https://mindless-midi.trurl.systems/ (the old GitHub Pages address redirects here)
 
 - **LLM-seeded.** Claude, Astra, and Grok author each style's checked-in *corpus*: chord
   progressions, motifs, bass and arpeggio ostinatos, comping rhythms, drum
