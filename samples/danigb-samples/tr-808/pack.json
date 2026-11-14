@@ -1,0 +1,1165 @@
+{
+  "id": "danigb-samples/tr-808",
+  "kind": "oneshots",
+  "description": "Roland TR-808, Michael Fischer's sample set (knob positions in the names)",
+  "origin": {
+    "repo": "danigb/samples",
+    "commit": "eae8c5c7a10f4b0e06281211e704c36c30e25342",
+    "path": "audio/drum-machines/TR-808/"
+  },
+  "licence": {
+    "spdx": "LicenseRef-free-use-claimed",
+    "note": "Michael Fischer's TR-808 sample set (1994). Its TR808.TXT, kept in the folder, says the samples 'are ABSOLUTELY FREE' and gives no further terms; danigb/samples' README calls its drum machines permissively licensed and points to each folder. Accepted for this project as stated free use.",
+    "attribution": null,
+    "share_alike": false,
+    "source": "https://github.com/danigb/samples/blob/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/TR808.TXT",
+    "read_on": "2026-11-14"
+  },
+  "samples": {
+    "bd0000": {
+      "file": "kick/bd0000.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd0000.m4a",
+      "sha256": "d7fc16c2ac878e918e73b2c2405201339e117b6a3fbb050de0a8a6d8b171c57a",
+      "bytes": 4921,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd0010": {
+      "file": "kick/bd0010.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd0010.m4a",
+      "sha256": "fdad2f4e023ea6f04ae254158888ab3e6f5f5f1754f9a7a479b9994c1d6e1116",
+      "bytes": 48674,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd0025": {
+      "file": "kick/bd0025.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd0025.m4a",
+      "sha256": "d0a86946b00dd49f1f498429fd97162fbc5da162bc1d5b5d8e494a723cc07b5f",
+      "bytes": 8584,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd0050": {
+      "file": "kick/bd0050.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd0050.m4a",
+      "sha256": "bfa72b19923d2d5dc8e53b48dd3d4d550124959788a5888fb031b4c69c2b8548",
+      "bytes": 24156,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd0075": {
+      "file": "kick/bd0075.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd0075.m4a",
+      "sha256": "7e8cb4bc742b60850c2d7b33daa8f60f004c71fbf6ac4bfe04e3e85c9ba27592",
+      "bytes": 32281,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd1000": {
+      "file": "kick/bd1000.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd1000.m4a",
+      "sha256": "5be86c89ec7907f17851f8d0758ae17e311e20bc39735144795aae27dc3171aa",
+      "bytes": 4927,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd1010": {
+      "file": "kick/bd1010.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd1010.m4a",
+      "sha256": "4497d6b052649c72ba14f7e9ef93aad4875c04a59ce0f235135c1352ed933064",
+      "bytes": 48777,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd1025": {
+      "file": "kick/bd1025.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd1025.m4a",
+      "sha256": "2b294e76245bda6806332adc8e44c22a0d183cfd5ebebd57f85ccd5950e238d5",
+      "bytes": 8504,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd1050": {
+      "file": "kick/bd1050.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd1050.m4a",
+      "sha256": "eeda3f1a192a17a4f47158ba885d8a36c9881232914413f4e2d4334e66aade9d",
+      "bytes": 24281,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd1075": {
+      "file": "kick/bd1075.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd1075.m4a",
+      "sha256": "cf8ca1bcca5fd3be60e640bac9c61fc82cc4971efc4d6499b92e6b42ec082f2b",
+      "bytes": 32207,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd2500": {
+      "file": "kick/bd2500.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd2500.m4a",
+      "sha256": "1b54553e60e2eaf23dfa939f98f530eab5258fb98d8fb48ff81ab3ad381a9891",
+      "bytes": 4964,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd2510": {
+      "file": "kick/bd2510.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd2510.m4a",
+      "sha256": "603a0930687bc12dc2f84de8a0d2ed1338865450157bf94ec498f427b310a67d",
+      "bytes": 48144,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd2525": {
+      "file": "kick/bd2525.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd2525.m4a",
+      "sha256": "cc119b56f3e1ef8ed93c4bd3245d849a43ea13cd351e7f575f86a452cfa30c22",
+      "bytes": 8550,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd2550": {
+      "file": "kick/bd2550.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd2550.m4a",
+      "sha256": "750dfaabbc1083c0fb47e9e265f8f1f3f7c05fe665d68aa6d899b5c25bc759e1",
+      "bytes": 23866,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd2575": {
+      "file": "kick/bd2575.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd2575.m4a",
+      "sha256": "acb0845c366905157c3a0ff82a78dcf7ea6f332d8196012d4504f706e73a7cb9",
+      "bytes": 32076,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd5000": {
+      "file": "kick/bd5000.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd5000.m4a",
+      "sha256": "994a2b3981a4292b7bb92a7dabe425486d92d137856aed4d26c98aa48fbaec92",
+      "bytes": 5004,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd5010": {
+      "file": "kick/bd5010.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd5010.m4a",
+      "sha256": "c61594c13fac8b7c4fdd4b6d845bfc87402cd404df15a10286a9ebf55b582367",
+      "bytes": 48556,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd5025": {
+      "file": "kick/bd5025.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd5025.m4a",
+      "sha256": "c12a334ed5ecd249c83ed6d81e61285af9dccf3ccfa952be537650b306e205f9",
+      "bytes": 8564,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd5050": {
+      "file": "kick/bd5050.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd5050.m4a",
+      "sha256": "48536d30de51ac6502cfaad927f06faaa8c7494f7d37ba760dc17f345a22799e",
+      "bytes": 23681,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd5075": {
+      "file": "kick/bd5075.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd5075.m4a",
+      "sha256": "12fc73a3bb6e8ee497419ad2399bfe62f1c427cb63b5b9198a6a67171adc1ea8",
+      "bytes": 32009,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd7500": {
+      "file": "kick/bd7500.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd7500.m4a",
+      "sha256": "eedc692bcf657cb937d901c4b37794abc03b0ebaa2bf0fe41273ffc9296099dc",
+      "bytes": 4938,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd7510": {
+      "file": "kick/bd7510.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd7510.m4a",
+      "sha256": "7fda07853b858ca4feba298cc984e5fd89744a0a0a68b4e42b8c18bc1992215b",
+      "bytes": 48596,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd7525": {
+      "file": "kick/bd7525.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd7525.m4a",
+      "sha256": "77c208c48982ca725c0cc85309a7057603fd50b5995efd5151683aee243762c5",
+      "bytes": 8583,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd7550": {
+      "file": "kick/bd7550.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd7550.m4a",
+      "sha256": "d321b544448f1eaa4aa30b11e940e2f18c34b3a2b7d18a9f2e380b806347a0f3",
+      "bytes": 24018,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd7575": {
+      "file": "kick/bd7575.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/kick/bd7575.m4a",
+      "sha256": "9b94e74d4a087223db1d5172840cb257c2396dbef95a9da91f857e821291049d",
+      "bytes": 32053,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "cb": {
+      "file": "cowbell/cb.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cowbell/cb.m4a",
+      "sha256": "0927f07c8d1184d41c79df2ac4bcdc48876ee8527032a8b827d5d439d080ac25",
+      "bytes": 23544,
+      "tags": [
+        "cowbell"
+      ],
+      "gm": 56
+    },
+    "ch": {
+      "file": "hihat-close/ch.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/hihat-close/ch.m4a",
+      "sha256": "d8db1056802a59bec2711681ddb060b1caa6107df58ad18e1f0916c10921f9f5",
+      "bytes": 4961,
+      "tags": [
+        "hat-closed"
+      ],
+      "gm": 42
+    },
+    "cl": {
+      "file": "clave/cl.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/clave/cl.m4a",
+      "sha256": "518984f53e4790f82b3aa1ca89f002d97f177ae6b1bd86aa355d0e2a80fb3779",
+      "bytes": 4969,
+      "tags": [
+        "clave"
+      ],
+      "gm": 75
+    },
+    "cp": {
+      "file": "clap/cp.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/clap/cp.m4a",
+      "sha256": "a06da4283558f8b153219c18bdfc8c12d9a53fdb3ad9b432c3f1d8a984ac80ff",
+      "bytes": 32217,
+      "tags": [
+        "clap"
+      ],
+      "gm": 39
+    },
+    "cy0000": {
+      "file": "cymbal/cy0000.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy0000.m4a",
+      "sha256": "4a7c4ba98730ae924b06e654400d89ceb03f8cd5986a8bb9ce0cfef7bd171e65",
+      "bytes": 24051,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy0010": {
+      "file": "cymbal/cy0010.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy0010.m4a",
+      "sha256": "47fd8048f7f94fae0595d14b3826ef7bea5301a6d4f439149935f3225367fbe1",
+      "bytes": 64310,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy0025": {
+      "file": "cymbal/cy0025.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy0025.m4a",
+      "sha256": "07735233d6fe517521afc4d4bf73a27bdb0535d2d15a87c98ca209b1049e4d8a",
+      "bytes": 31789,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy0050": {
+      "file": "cymbal/cy0050.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy0050.m4a",
+      "sha256": "a078d9541d189bcedab868b888ecd3bf1a94fb281cd72cf153466a2ba3e5cc2d",
+      "bytes": 39762,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy0075": {
+      "file": "cymbal/cy0075.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy0075.m4a",
+      "sha256": "3d7348ed6f58a4b457541fa08cec42244c7f98e94ef28aabc8eb9473a0003d98",
+      "bytes": 55877,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy1000": {
+      "file": "cymbal/cy1000.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy1000.m4a",
+      "sha256": "9293c8e36d2897544f5d6fa564390a81dc40db942b9c4e7f3021c57213c52ecd",
+      "bytes": 24126,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy1010": {
+      "file": "cymbal/cy1010.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy1010.m4a",
+      "sha256": "1645ea7352634d382fe7777a7b5261f8a965de2c9e59d9ac593acba7f335ddbf",
+      "bytes": 63783,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy1025": {
+      "file": "cymbal/cy1025.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy1025.m4a",
+      "sha256": "4492092eeb6ea0ebfa6e26433ef568b505ac55696ec11eca154b84636968f9b6",
+      "bytes": 31657,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy1050": {
+      "file": "cymbal/cy1050.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy1050.m4a",
+      "sha256": "85eb686a9616aa34b6e39b0001b4c642a9df20a8df0ce6e48f6d9e6c7312b0b3",
+      "bytes": 39557,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy1075": {
+      "file": "cymbal/cy1075.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy1075.m4a",
+      "sha256": "5323b0cbe18b128a29988fd690bdc6640713ba4909e2427b79cf75ad76263a41",
+      "bytes": 55740,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy2500": {
+      "file": "cymbal/cy2500.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy2500.m4a",
+      "sha256": "3fab521c3d726d7d05117f0e06f7a3f1f087e49041b8882fbd3cb0942405eab8",
+      "bytes": 23721,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy2510": {
+      "file": "cymbal/cy2510.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy2510.m4a",
+      "sha256": "e4475fe871dc915b7be2d21b55a440f72b6213c0baf595b793c43f515c5f72ef",
+      "bytes": 64154,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy2525": {
+      "file": "cymbal/cy2525.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy2525.m4a",
+      "sha256": "55b97c705cfb279c41dbeec921baad840d54b6cdd7934121e7aa9a81c20270ac",
+      "bytes": 31663,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy2550": {
+      "file": "cymbal/cy2550.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy2550.m4a",
+      "sha256": "48d446ce52549f951436273704cdd3df8ebbbe33c07ebc3c01f36844d72a24bc",
+      "bytes": 39505,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy2575": {
+      "file": "cymbal/cy2575.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy2575.m4a",
+      "sha256": "f32607a151e719d29a5f832ef956639502cd85a6d8c0d431058fb41ff5f943be",
+      "bytes": 55880,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy5000": {
+      "file": "cymbal/cy5000.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy5000.m4a",
+      "sha256": "fb41b405b7da81d573e20abe6eab2231cf8af059fbc386020c8373db0e595e1a",
+      "bytes": 24149,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy5010": {
+      "file": "cymbal/cy5010.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy5010.m4a",
+      "sha256": "062f2eb2a819826fb8e63e6c4a8e0e48dd9bfd8c1e1baad2d7bc78080877794f",
+      "bytes": 64148,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy5025": {
+      "file": "cymbal/cy5025.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy5025.m4a",
+      "sha256": "aa7369f9390f929b685f74e4f223ab4f9e6748e84256966825a11d26199982a6",
+      "bytes": 31818,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy5050": {
+      "file": "cymbal/cy5050.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy5050.m4a",
+      "sha256": "3df17719d1d077123c88c3c3c9d066b472dfef7937b7235467554f47589c7dbe",
+      "bytes": 39857,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy5075": {
+      "file": "cymbal/cy5075.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy5075.m4a",
+      "sha256": "3fd0724555f1f3cbe0661ed96a4b6a5eeddcb311312fdcbd84ba138b591f0e54",
+      "bytes": 55939,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy7500": {
+      "file": "cymbal/cy7500.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy7500.m4a",
+      "sha256": "3e511d3699c6ac9291bcbdd91bec759890377d8579427da04a9b0b2d4511823e",
+      "bytes": 24205,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy7510": {
+      "file": "cymbal/cy7510.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy7510.m4a",
+      "sha256": "a1536e1ba99a279b2f31c56712d25de631dffac0c3777b6bb28404e95b382050",
+      "bytes": 63910,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy7525": {
+      "file": "cymbal/cy7525.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy7525.m4a",
+      "sha256": "8d80e788b7adf227ba67b5297b5dbbed2957e6229df9f119e57b61a7a60a7bad",
+      "bytes": 31535,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy7550": {
+      "file": "cymbal/cy7550.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy7550.m4a",
+      "sha256": "0e0355dd8d04814ea53a6cc0c81de8690d541c539f6c56b5233bbdf8351fd218",
+      "bytes": 39580,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "cy7575": {
+      "file": "cymbal/cy7575.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/cymbal/cy7575.m4a",
+      "sha256": "fb006531da6ea8ea64d7af4d0b81d0efb59f11a7bcae3f310c1dd3e2d117ee1c",
+      "bytes": 55758,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "hc00": {
+      "file": "conga-hi/hc00.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-hi/hc00.m4a",
+      "sha256": "be665096efe6d1bc0e6a1ee3185ce26f922ea4beef02eb78cab7a20948e3d90b",
+      "bytes": 8564,
+      "tags": [
+        "conga"
+      ]
+    },
+    "hc10": {
+      "file": "conga-hi/hc10.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-hi/hc10.m4a",
+      "sha256": "b5d1ecfa73ec44bee046093760d06cdb9f6a1f450fc73ceac8b2bb14d93b8403",
+      "bytes": 8551,
+      "tags": [
+        "conga"
+      ]
+    },
+    "hc25": {
+      "file": "conga-hi/hc25.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-hi/hc25.m4a",
+      "sha256": "97914f3664d548af481de9dd4ddcefa424661db456add4da8fab6dfe85a819ea",
+      "bytes": 8497,
+      "tags": [
+        "conga"
+      ]
+    },
+    "hc50": {
+      "file": "conga-hi/hc50.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-hi/hc50.m4a",
+      "sha256": "b1caecbb0b868bbbf68c86d741bb9d503a2fc8199ca5bdec30cfd03e6e4ad853",
+      "bytes": 8617,
+      "tags": [
+        "conga"
+      ]
+    },
+    "hc75": {
+      "file": "conga-hi/hc75.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-hi/hc75.m4a",
+      "sha256": "6c6ee02a71f5d8aad3de0a33e2d9c88c1452f46660c70991ceca7206011e8226",
+      "bytes": 8512,
+      "tags": [
+        "conga"
+      ]
+    },
+    "ht00": {
+      "file": "tom-hi/ht00.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/tom-hi/ht00.m4a",
+      "sha256": "83af1fa09bc4b13b726ddcdcbf7272bfb733a4716949c3a64b53575831d86df0",
+      "bytes": 16009,
+      "tags": [
+        "tom-high"
+      ],
+      "gm": 50
+    },
+    "ht10": {
+      "file": "tom-hi/ht10.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/tom-hi/ht10.m4a",
+      "sha256": "67353e0a44dc1fa25531b2dd42f7698faf8bdb82c1818e6d1ce0c6ccdacf933a",
+      "bytes": 16327,
+      "tags": [
+        "tom-high"
+      ],
+      "gm": 50
+    },
+    "ht25": {
+      "file": "tom-hi/ht25.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/tom-hi/ht25.m4a",
+      "sha256": "a044809cff40fe1b19ba97ea753d9c8a23199a418e646a858e749e2720af8e02",
+      "bytes": 15694,
+      "tags": [
+        "tom-high"
+      ],
+      "gm": 50
+    },
+    "ht50": {
+      "file": "tom-hi/ht50.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/tom-hi/ht50.m4a",
+      "sha256": "881287d6574592516806e57f8568498917dde3314adafe9ec6755760884b077e",
+      "bytes": 16167,
+      "tags": [
+        "tom-high"
+      ],
+      "gm": 50
+    },
+    "ht75": {
+      "file": "tom-hi/ht75.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/tom-hi/ht75.m4a",
+      "sha256": "74a2537cd81965df00f438d8e10549791b49fbf3ef783e4750fe829c085121dd",
+      "bytes": 15792,
+      "tags": [
+        "tom-high"
+      ],
+      "gm": 50
+    },
+    "lc00": {
+      "file": "conga-low/lc00.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-low/lc00.m4a",
+      "sha256": "44f02aa021973010e2d557b3346d53e4cf7e1602b9b97e911675ca1fd057113a",
+      "bytes": 8780,
+      "tags": [
+        "conga"
+      ]
+    },
+    "lc10": {
+      "file": "conga-low/lc10.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-low/lc10.m4a",
+      "sha256": "94fb481fd19dc7d56062598b6148f243edb5db5f333a7452af31e5661c7173d2",
+      "bytes": 8533,
+      "tags": [
+        "conga"
+      ]
+    },
+    "lc25": {
+      "file": "conga-low/lc25.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-low/lc25.m4a",
+      "sha256": "9258dfaac2c0a59a7b8f6865a03c834589e6b670877f604b0bc729e8e356ffb7",
+      "bytes": 8719,
+      "tags": [
+        "conga"
+      ]
+    },
+    "lc50": {
+      "file": "conga-low/lc50.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-low/lc50.m4a",
+      "sha256": "31977a313d93b9101effe9e5f0f9a891fe3d6cfd93b90ab69fb3f9feda36e197",
+      "bytes": 8569,
+      "tags": [
+        "conga"
+      ]
+    },
+    "lc75": {
+      "file": "conga-low/lc75.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-low/lc75.m4a",
+      "sha256": "162e26dc3ad49cc02ea1d9a3834014ed75a89e10e93c31abd50d655e5ff27dde",
+      "bytes": 8504,
+      "tags": [
+        "conga"
+      ]
+    },
+    "lt00": {
+      "file": "tom-low/lt00.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/tom-low/lt00.m4a",
+      "sha256": "4060b687b1238bd42f50359d9d9e7f9ad80fcf0fdc851fee4f6640b2efa2d497",
+      "bytes": 16103,
+      "tags": [
+        "tom-low"
+      ],
+      "gm": 45
+    },
+    "lt10": {
+      "file": "tom-low/lt10.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/tom-low/lt10.m4a",
+      "sha256": "5ae052c363b6089f6503b532e62093698382ce8eb7ccd952d1c91bd346117552",
+      "bytes": 15897,
+      "tags": [
+        "tom-low"
+      ],
+      "gm": 45
+    },
+    "lt25": {
+      "file": "tom-low/lt25.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/tom-low/lt25.m4a",
+      "sha256": "794db54db81bfd2962cdf715c43f33506b3850f0455a4f3a8d888ec397d957bd",
+      "bytes": 15789,
+      "tags": [
+        "tom-low"
+      ],
+      "gm": 45
+    },
+    "lt50": {
+      "file": "tom-low/lt50.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/tom-low/lt50.m4a",
+      "sha256": "693dbbebe6fe815cc92b1e3c4e7357dd50497bbb1939616f64956678d20f1fa3",
+      "bytes": 16168,
+      "tags": [
+        "tom-low"
+      ],
+      "gm": 45
+    },
+    "lt75": {
+      "file": "tom-low/lt75.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/tom-low/lt75.m4a",
+      "sha256": "c1c47bc11027a4a60d2c75f300c45b2bacaee1fc8bf20c1bfc2c1862bd96705e",
+      "bytes": 16184,
+      "tags": [
+        "tom-low"
+      ],
+      "gm": 45
+    },
+    "ma": {
+      "file": "maraca/ma.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/maraca/ma.m4a",
+      "sha256": "92a1d22431924a6b61a0c2aa99638fe7656906e1d349fe300b13a2dcbf1ff3c9",
+      "bytes": 4955,
+      "tags": [
+        "shaker"
+      ],
+      "gm": 70
+    },
+    "mc00": {
+      "file": "conga-mid/mc00.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-mid/mc00.m4a",
+      "sha256": "03ac36b8500e2185cb8679862c33267ecb86ff80c41b6bcbafccc98accc1cef4",
+      "bytes": 8604,
+      "tags": [
+        "conga"
+      ]
+    },
+    "mc10": {
+      "file": "conga-mid/mc10.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-mid/mc10.m4a",
+      "sha256": "a468c2efba949e8baaa3ad1198285380985c70d5f9e8c0a1e9189d3b20e80f33",
+      "bytes": 8558,
+      "tags": [
+        "conga"
+      ]
+    },
+    "mc25": {
+      "file": "conga-mid/mc25.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-mid/mc25.m4a",
+      "sha256": "75fbd4411e4772edcc57d2740a7120713c58c1dadd9aaa34733c582d5ca55239",
+      "bytes": 8560,
+      "tags": [
+        "conga"
+      ]
+    },
+    "mc50": {
+      "file": "conga-mid/mc50.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-mid/mc50.m4a",
+      "sha256": "21a4f98ad0fb4036b6414a87548f69dee3eec0f2afb900a917e6add21e74ddd5",
+      "bytes": 8537,
+      "tags": [
+        "conga"
+      ]
+    },
+    "mc75": {
+      "file": "conga-mid/mc75.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/conga-mid/mc75.m4a",
+      "sha256": "26f0bf842d58a8a6f85e2cd74d9f08e4edd1788d3fae83effaef98448a4285b5",
+      "bytes": 8528,
+      "tags": [
+        "conga"
+      ]
+    },
+    "mt00": {
+      "file": "mid-tom/mt00.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/mid-tom/mt00.m4a",
+      "sha256": "66c1351c85060618708493641ad48fc0505fffb0dbb98b1fc0a4d07917920f76",
+      "bytes": 15799,
+      "tags": [
+        "tom-mid"
+      ],
+      "gm": 47
+    },
+    "mt10": {
+      "file": "mid-tom/mt10.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/mid-tom/mt10.m4a",
+      "sha256": "fb5b39bc0e48df5d287d6809f7e7a60fe644216bc7329211539459b017ee1465",
+      "bytes": 15964,
+      "tags": [
+        "tom-mid"
+      ],
+      "gm": 47
+    },
+    "mt25": {
+      "file": "mid-tom/mt25.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/mid-tom/mt25.m4a",
+      "sha256": "8f6440ed44613b58127d36f8f3809378932cf17dce8a3f4be774fed920f41508",
+      "bytes": 15928,
+      "tags": [
+        "tom-mid"
+      ],
+      "gm": 47
+    },
+    "mt50": {
+      "file": "mid-tom/mt50.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/mid-tom/mt50.m4a",
+      "sha256": "3204a2b45001baa94259f3f5a1703a4eafa5e8779b7e23ce70dabae4122d09e3",
+      "bytes": 16396,
+      "tags": [
+        "tom-mid"
+      ],
+      "gm": 47
+    },
+    "mt75": {
+      "file": "mid-tom/mt75.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/mid-tom/mt75.m4a",
+      "sha256": "0918f0896a50bc77935edc13d3c0ec4e83bf53644e213f4f23c9a43aead92384",
+      "bytes": 15917,
+      "tags": [
+        "tom-mid"
+      ],
+      "gm": 47
+    },
+    "oh00": {
+      "file": "hihat-open/oh00.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/hihat-open/oh00.m4a",
+      "sha256": "a4f7ffcc972c810d19a1103bb5256c5fde5a17b27de82727a7cb4f60f9443ab5",
+      "bytes": 4955,
+      "tags": [
+        "hat-open"
+      ],
+      "gm": 46
+    },
+    "oh10": {
+      "file": "hihat-open/oh10.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/hihat-open/oh10.m4a",
+      "sha256": "c5d093db9ae9ea2c270a795632a1120ce8d1500b112890445255f8821d42f031",
+      "bytes": 12533,
+      "tags": [
+        "hat-open"
+      ],
+      "gm": 46
+    },
+    "oh25": {
+      "file": "hihat-open/oh25.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/hihat-open/oh25.m4a",
+      "sha256": "d76cbe49409bdd2f292c775b6a83dd15fe10f2fcfdf34a6034143ac3c0abd237",
+      "bytes": 4969,
+      "tags": [
+        "hat-open"
+      ],
+      "gm": 46
+    },
+    "oh50": {
+      "file": "hihat-open/oh50.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/hihat-open/oh50.m4a",
+      "sha256": "66c6c4dadcde412b42518bb790e2645d5e96d4c5f411fb386945de64ad0c0ac6",
+      "bytes": 8620,
+      "tags": [
+        "hat-open"
+      ],
+      "gm": 46
+    },
+    "oh75": {
+      "file": "hihat-open/oh75.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/hihat-open/oh75.m4a",
+      "sha256": "300d4330dcdf81876bad435ff7e7458f123671991baca1d6cde6f6d9071a20d3",
+      "bytes": 12348,
+      "tags": [
+        "hat-open"
+      ],
+      "gm": 46
+    },
+    "rs": {
+      "file": "rimshot/rs.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/rimshot/rs.m4a",
+      "sha256": "048b1d42082c1120bedd1a50c344c397338b8a934749bf5c1eedf9f2fb6eb317",
+      "bytes": 4967,
+      "tags": [
+        "rim"
+      ],
+      "gm": 37
+    },
+    "sd0000": {
+      "file": "snare/sd0000.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd0000.m4a",
+      "sha256": "c148b8672f1b1dbb607de4f67fca5e0b9559375c15ac072093ed1d63b6bb669f",
+      "bytes": 4973,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd0010": {
+      "file": "snare/sd0010.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd0010.m4a",
+      "sha256": "058789d0e78f965f6f28e1c10891e88eac9b6f251f60827704dc44a77e791ddc",
+      "bytes": 8811,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd0025": {
+      "file": "snare/sd0025.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd0025.m4a",
+      "sha256": "e8d72074edd4f479bc23571568e6c87ee6439079202ed13ca13e62233fa1a1d2",
+      "bytes": 4980,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd0050": {
+      "file": "snare/sd0050.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd0050.m4a",
+      "sha256": "dce65355be4ff251236bf3d95f934fdffdda8afd1b54cf54ef71375b0c7d4499",
+      "bytes": 8548,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd0075": {
+      "file": "snare/sd0075.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd0075.m4a",
+      "sha256": "059fece5a805c6859a29157cb6cb64bc9328d9b2a3fbea4b2a007cf3845f7484",
+      "bytes": 8524,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd1000": {
+      "file": "snare/sd1000.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd1000.m4a",
+      "sha256": "b521c8d2768cb11d9979973cdbe1288b3b9700c62ae8d3c6e4d68e4e58dda7dc",
+      "bytes": 4924,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd1010": {
+      "file": "snare/sd1010.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd1010.m4a",
+      "sha256": "6e0ae3ccc543642e5fb69ead8a9d98dc5db70d0747f73d99f9fdf0ebbaf1c97c",
+      "bytes": 8615,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd1025": {
+      "file": "snare/sd1025.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd1025.m4a",
+      "sha256": "e4a80b08fb657c6ead9c942b6879962850b9336ebf4560af9e8de2728658a615",
+      "bytes": 4958,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd1050": {
+      "file": "snare/sd1050.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd1050.m4a",
+      "sha256": "abd96036bc41e66436db99e71d205ce0c87b1dc3f9d5c8d732ad2ecfec6cab30",
+      "bytes": 8606,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd1075": {
+      "file": "snare/sd1075.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd1075.m4a",
+      "sha256": "2e77473a7b06f7b151dff55bcecb1e260a6437f657501d29ad76b727a3086c04",
+      "bytes": 8815,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd2500": {
+      "file": "snare/sd2500.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd2500.m4a",
+      "sha256": "f91be4d43d1224cdac5f006fe73f13a15c070d560d384f05026d29c9dfa2bbab",
+      "bytes": 4966,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd2510": {
+      "file": "snare/sd2510.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd2510.m4a",
+      "sha256": "1a3c665c817934a961579c2699f32f277a6a9c51b25d8ba664154e6020a65ca6",
+      "bytes": 8532,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd2525": {
+      "file": "snare/sd2525.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd2525.m4a",
+      "sha256": "f2112e187a11bc3760838d8d12f608820e2d1ccd24cc548d996a1ebcf733a75d",
+      "bytes": 4947,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd2550": {
+      "file": "snare/sd2550.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd2550.m4a",
+      "sha256": "f761095c4c29cd068e271e95bb2e056c409c0f49e0b97abc74e09bb97cefc20d",
+      "bytes": 8639,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd2575": {
+      "file": "snare/sd2575.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd2575.m4a",
+      "sha256": "c0bd88eb6b609cebbeaf29b945ab8e0b61eec5ab0fb18b2dd7d844b9815934ff",
+      "bytes": 8581,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd5000": {
+      "file": "snare/sd5000.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd5000.m4a",
+      "sha256": "7efc47f3cedf57c77c108f950437c3e18b194da6a3de93f55da09cbf5d642fdb",
+      "bytes": 4925,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd5010": {
+      "file": "snare/sd5010.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd5010.m4a",
+      "sha256": "8a32dc518236d40661c1062a42922a1a1842826a6be63318af6bf24b8dc10f6e",
+      "bytes": 8605,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd5025": {
+      "file": "snare/sd5025.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd5025.m4a",
+      "sha256": "085739755e6a8ad922fd5ee691d26ed775cdcdc77b355de15d78644ca6eb5c51",
+      "bytes": 4949,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd5050": {
+      "file": "snare/sd5050.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd5050.m4a",
+      "sha256": "f494ac71f1efeaa17cdbc41bd7ed66c55059d0953823cbea1aa1e6827c714b9f",
+      "bytes": 8545,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd5075": {
+      "file": "snare/sd5075.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd5075.m4a",
+      "sha256": "2bfc14f0aa0fd84d48a8618237723edad57688ff901dadbfc18c631ee058936d",
+      "bytes": 8535,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd7500": {
+      "file": "snare/sd7500.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd7500.m4a",
+      "sha256": "f24dd5aa0c1ef41d2f2ef862077198117948683afcadaf4e9d0fc108aba24498",
+      "bytes": 4973,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd7510": {
+      "file": "snare/sd7510.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd7510.m4a",
+      "sha256": "0e521bb6f3d14fdadbd0a92b9db0f5070a410517d53259530d8cd46120ff2a23",
+      "bytes": 8593,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd7525": {
+      "file": "snare/sd7525.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd7525.m4a",
+      "sha256": "35a0af401509603f17b24176460f95b0bc8b89e29d6fed415fa8b778fbffc89a",
+      "bytes": 5000,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd7550": {
+      "file": "snare/sd7550.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd7550.m4a",
+      "sha256": "6b40460f6d9606e4303ee55fe414b6d454740e2a63097e981abbcf697a7ca196",
+      "bytes": 8548,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sd7575": {
+      "file": "snare/sd7575.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/TR-808/snare/sd7575.m4a",
+      "sha256": "24423ac87324c881a431e31baecd390c6cf0349cc52d41fa3d0893f01301b6dc",
+      "bytes": 8568,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    }
+  }
+}

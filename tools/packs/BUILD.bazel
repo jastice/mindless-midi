@@ -1,0 +1,8 @@
+load("//bazel:ts.bzl", "ts_binary")
+
+# Writes samples/<pack id>/pack.json from upstream, by hand: see packs.ts.
+ts_binary(
+    name = "packs",
+    src = "packs.ts",
+    deps = ["//src/corpus"],
+)

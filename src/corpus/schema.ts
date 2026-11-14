@@ -9,6 +9,7 @@ import { z } from "zod";
 import { CHORD_SUFFIXES, MODE_NAMES, TONIC_NAMES, VOICINGS } from "../theory/theory.js";
 
 import { DRUM_LANES, type DrumLane, GESTURES, type Gesture, ROLES, type Role } from "./constants.js";
+import type { SampleKit } from "./pack.js";
 
 export { DRUM_LANES, GESTURES, ROLES, type DrumLane, type Gesture, type Role };
 
@@ -221,4 +222,6 @@ export interface StyleBundle extends StyleMeta {
   formMixers?: Record<string, Partial<Record<Role, number>>>;
   /** Linear output gain that brings the style to the common loudness target. */
   gain?: number;
+  /** The style's own drum kit from sample packs (`sample_kit`); without one the sampler uses its built-in kits. */
+  kit?: SampleKit;
 }

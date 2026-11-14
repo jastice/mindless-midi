@@ -1,0 +1,13 @@
+load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+
+# Sample pack manifests, one per pack: <source>/<pack>/pack.json, written by
+# //tools/packs and checked in. MODULE.bazel lists them for the `samples`
+# extension (//bazel:samples.bzl), which turns them into @samples labels.
+exports_files(glob(["**/pack.json"]))
+
+# For tests that load every manifest from runfiles.
+copy_to_bin(
+    name = "manifests",
+    srcs = glob(["**/pack.json"]),
+    visibility = ["//visibility:public"],
+)

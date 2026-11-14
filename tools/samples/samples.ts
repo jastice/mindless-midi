@@ -2,7 +2,7 @@
  * Build-time sample fetcher, driven by the `style_samples` rule in
  * //bazel:music.bzl.
  *
- *   samples --out DIR [--report FILE] [--lock FILE] [--emit-lock FILE] SOUND.json...
+ *   samples --out DIR [--report FILE] [--lock FILE] [--emit-lock FILE] [--kit-file PATH=FILE]... SOUND.json...
  *
  * Each SOUND.json is a style's `{ id, sound }` declaration (what instruments
  * and keys it can play). Works out which upstream sample files that needs,
@@ -12,12 +12,16 @@
  * --lock pins the downloads: a JSON map of file path to sha256 that every
  * file must match (a changed or unlisted file fails the build).
  * --emit-lock writes the map for what was downloaded, to refresh the pin.
+ * --kit-file names a pack sample a style's own kit uses, already fetched and
+ * hash-pinned by Bazel (@samples). The ones the styles can reach are copied to
+ * PATH in DIR; they are not downloaded and not in the lock.
  */
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
+import type { SampleKit } from "../../src/corpus/pack.js";
 import type { SoundDeclaration } from "../../src/corpus/sound.js";
-import { SampleCache, mirrorPath, requiredSamples } from "../../src/sound/sampler.js";
+import { SampleCache, isPackSample, mirrorPath, requiredSamples } from "../../src/sound/sampler.js";
 
 // js_binary runs actions from the output tree; inputs are execroot-relative.
 const execroot = process.env.JS_BINARY__EXECROOT ?? process.cwd();
@@ -56,16 +60,31 @@ async function main(): Promise<void> {
   const argv = process.argv.slice(2);
   const opts: Record<string, string> = {};
   const inputs: string[] = [];
+  const kitFiles = new Map<string, string>();
   for (let i = 0; i < argv.length; i++) {
-    if (argv[i]!.startsWith("--")) opts[argv[i]!.slice(2)] = argv[++i] ?? "";
+    if (argv[i] === "--kit-file") {
+      const [path, file] = (argv[++i] ?? "").split("=");
+      kitFiles.set(path!, file!);
+    } else if (argv[i]!.startsWith("--")) opts[argv[i]!.slice(2)] = argv[++i] ?? "";
     else inputs.push(argv[i]!);
   }
   if (!opts.out) throw new Error("missing --out");
   const out = p(opts.out);
   mkdirSync(out, { recursive: true });
 
-  const styles = inputs.map((f) => JSON.parse(readFileSync(p(f), "utf8")) as { id: string; sound: SoundDeclaration });
-  const urls = await requiredSamples(new SampleCache(), styles);
+  const styles = inputs.map((f) => JSON.parse(readFileSync(p(f), "utf8")) as { id: string; sound: SoundDeclaration; kit?: SampleKit });
+  const all = await requiredSamples(new SampleCache(), styles);
+  const urls = all.filter((u) => !isPackSample(u));
+
+  const kitSizes = new Map<string, number>();
+  for (const path of all.filter(isPackSample)) {
+    const from = kitFiles.get(path);
+    if (from === undefined) throw new Error(`${path}: a style's kit needs it, but no --kit-file provides it`);
+    const file = join(out, path);
+    mkdirSync(dirname(file), { recursive: true });
+    copyFileSync(p(from), file);
+    kitSizes.set(path, readFileSync(file).byteLength);
+  }
 
   const sizes = new Map<string, number>();
   const hashes = new Map<string, string>();
@@ -116,9 +135,10 @@ async function main(): Promise<void> {
     }
   }
 
+  for (const [rel, n] of kitSizes) sizes.set(rel, n);
   const total = [...sizes.values()].reduce((a, b) => a + b, 0);
   const lines = [
-    `${sizes.size} files, ${(total / 1e6).toFixed(1)} MB, for ${styles.map((s) => s.id).join(", ")}`,
+    `${sizes.size} files (${kitSizes.size} from kits), ${(total / 1e6).toFixed(1)} MB, for ${styles.map((s) => s.id).join(", ")}`,
     ...(missing.length ? [`${missing.length} named by upstream's documents but not hosted: ${missing.sort().join(", ")}`] : []),
     ...[...sizes].sort(([a], [b]) => a.localeCompare(b)).map(([rel, n]) => `${String(n).padStart(9)}  ${rel}`),
   ];

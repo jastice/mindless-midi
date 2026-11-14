@@ -8,10 +8,13 @@
  * resolves notes to sample zones, downloads and decodes them) and
  * `renderSampleNote` (pure: mixes decoded sample data into a Stereo).
  *
- * Files are named by their upstream URL. The site serves its own copies of the
- * ones the styles can play (see `requiredSamples` and //tools/samples); the
- * bench reads from upstream directly.
+ * Files are named by their upstream URL, or, for drum kits built from sample
+ * packs (//bazel:samples.bzl), by the path the site serves the pack sample at
+ * (`<pack id>/<sample id>.<ext>`). The site serves its own copies of the ones
+ * the styles can play (see `requiredSamples` and //tools/samples); the bench
+ * reads upstream URLs from upstream directly.
  */
+import type { SampleKit } from "../corpus/pack.js";
 import type { SoundDeclaration } from "../corpus/sound.js";
 import type { ScoreNote } from "./types.js";
 import type { Samples, Stereo } from "./dsp.js";
@@ -31,9 +34,15 @@ export function mirrorPath(url: string): string | undefined {
   return undefined;
 }
 
-/** Fetches from the mirror directory at `base` (ending in a slash) instead of upstream. */
+/** A pack sample's served path rather than an upstream URL. Until step 3 of docs/sample-format-plan.md the loader takes both. */
+export function isPackSample(ref: string): boolean {
+  return !/^https?:\/\//.test(ref);
+}
+
+/** Fetches from the mirror directory at `base` (ending in a slash) instead of upstream; pack samples sit there too. */
 export function mirroredAt(base: string): (url: string) => string {
   return (url) => {
+    if (isPackSample(url)) return base + url;
     const path = mirrorPath(url);
     if (path === undefined) throw new Error(`not a mirrored sample: ${url}`);
     return base + path;
@@ -383,12 +392,6 @@ const KITS: Record<string, Record<number, string>> = {
     36: `${SP}kick/drum_bass_soft.m4a`, 37: `${LM2}stick-m.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
     45: `${SP}tom/drum_tom_lo_soft.m4a`, 70: `${LM2}cabasa.m4a`,
   },
-  // DJ Claudia. A house kick under an 808; her own kits come with patches (docs/dj-set-plan.md, step 2).
-  minimal_techno: {
-    36: `${SP}kick/bd_haus.m4a`, 38: `${TR808}snare/sd2525.m4a`, 37: `${TR808}rimshot/rs.m4a`, 39: `${TR808}clap/cp.m4a`,
-    42: `${TR808}hihat-close/ch.m4a`, 46: `${TR808}hihat-open/oh25.m4a`, 51: `${LM2}ride.m4a`,
-    49: `${TR808}cymbal/cy2525.m4a`, 45: `${TR808}tom-low/lt25.m4a`, 50: `${TR808}tom-hi/ht25.m4a`, 70: `${TR808}maraca/ma.m4a`,
-  },
 };
 
 /**
@@ -419,7 +422,29 @@ function brightness(vel: number): number | undefined {
   return hz < 16000 ? hz : undefined;
 }
 
-function drumKit(styleId: string): Instrument {
+/** A kit from sample packs (`sample_kit`), with its own touch variants and key aliases. */
+function sampleKit(kit: SampleKit): Instrument {
+  const hit = (key: number) => kit.hits[String(key)] ?? kit.hits[String(kit.aliases[String(key)] ?? key)];
+  return {
+    label: "drum machine kits",
+    release: 0.05,
+    sustain: false,
+    flat: true,
+    async zones(key, vel, touch) {
+      const h = hit(key);
+      if (!h) return [];
+      const s = (touch && vel >= HARD_FROM ? h.hard : touch && vel <= SOFT_TO ? h.soft : undefined) ?? h.default;
+      return [{ url: s.path, rate: 1, gain: 1, offset: 0 }];
+    },
+    async required(keys) {
+      // Every variant touch can pick, so the shipped set never depends on another kit having it.
+      return [...new Set(keys.flatMap((k) => { const h = hit(k); return h ? [h.default, h.hard, h.soft].flatMap((v) => (v ? [v.path] : [])) : []; }))];
+    },
+  };
+}
+
+function drumKit(styleId: string, own?: SampleKit): Instrument {
+  if (own) return sampleKit(own);
   const kit = KITS[styleId] ?? KITS.synthwave!;
   const alias: Record<number, number> = { 35: 36, 40: 38, 44: 42, 57: 49, 59: 51, 47: 45, 48: 50 };
   return {
@@ -472,10 +497,10 @@ export class SampleLibrary {
     private readonly touch = false,
   ) {}
 
-  private instrument(n: ScoreNote, styleId: string): Instrument {
+  private instrument(n: ScoreNote, styleId: string, kit?: SampleKit): Instrument {
     const id = n.role === "drums" ? `kit:${styleId}` : `${n.program}`;
     let inst = this.instruments.get(id);
-    if (!inst) this.instruments.set(id, (inst = n.role === "drums" ? drumKit(styleId) : instrumentFor(this.cache, this.font, n.program)));
+    if (!inst) this.instruments.set(id, (inst = n.role === "drums" ? drumKit(styleId, kit) : instrumentFor(this.cache, this.font, n.program)));
     return inst;
   }
 
@@ -495,12 +520,13 @@ export class SampleLibrary {
 
   /**
    * Plan notes (in order: round robins advance) and download what they need.
+   * `kit` is the style's own drum kit, where its bundle has one.
    * Resolves with the plans and the samples that were new to this call.
    */
-  async prepare(notes: ScoreNote[], styleId: string, concurrency = 8): Promise<{ plans: PlannedNote[]; fresh: Map<string, SampleData> }> {
+  async prepare(notes: ScoreNote[], styleId: string, kit?: SampleKit, concurrency = 8): Promise<{ plans: PlannedNote[]; fresh: Map<string, SampleData> }> {
     const plans: PlannedNote[] = [];
     for (const n of notes) {
-      const inst = this.instrument(n, styleId);
+      const inst = this.instrument(n, styleId, kit);
       const plan: PlannedNote = { zones: await inst.zones(n.key, n.vel, this.touch), release: inst.release, sustain: inst.sustain, drum: n.role === "drums" };
       const lowpass = this.touch && inst.flat ? brightness(n.vel) : undefined;
       if (lowpass !== undefined) plan.lowpass = lowpass;
@@ -536,10 +562,11 @@ export class SampleLibrary {
 }
 
 /**
- * Upstream URL of every file the styles can play, given what they declare:
- * each program's keys across all styles, and each style's drum kit. Sorted.
+ * Every file the styles can play, given what they declare: each program's
+ * keys across all styles, and each style's drum kit (its own `kit` where it
+ * has one, whose files are pack sample paths rather than URLs). Sorted.
  */
-export async function requiredSamples(cache: SampleCache, styles: { id: string; sound: SoundDeclaration }[], font: Soundfont = "MusyngKite"): Promise<string[]> {
+export async function requiredSamples(cache: SampleCache, styles: { id: string; sound: SoundDeclaration; kit?: SampleKit }[], font: Soundfont = "MusyngKite"): Promise<string[]> {
   const keysByProgram = new Map<number, Set<number>>();
   for (const { sound } of styles) {
     for (const inst of sound.instruments) {
@@ -552,8 +579,8 @@ export async function requiredSamples(cache: SampleCache, styles: { id: string; 
   for (const [program, keys] of keysByProgram) {
     for (const url of await instrumentFor(cache, font, program).required([...keys])) urls.add(url);
   }
-  for (const { id, sound } of styles) {
-    for (const url of await drumKit(id).required(sound.drums)) urls.add(url);
+  for (const { id, sound, kit } of styles) {
+    for (const url of await drumKit(id, kit).required(sound.drums)) urls.add(url);
   }
   return [...urls].sort();
 }

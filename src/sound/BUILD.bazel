@@ -29,6 +29,10 @@ ts_lib(
 ts_test(
     name = "sampler_test",
     src = "sampler.test.ts",
+    data = [
+        "//styles:claudia",
+        "//styles:claudia_samples_lock_json",
+    ],
     deps = [
         ":sound",
         "//src/corpus",

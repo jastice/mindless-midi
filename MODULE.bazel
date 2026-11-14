@@ -28,6 +28,15 @@ typescript.deps(
 )
 use_repo(typescript, "npm_typescript")
 
+# Sample packs: one hash-pinned download per sample, as @samples//<pack id>:<sample id>.
+# Each manifest is checked in under samples/ and written by //tools/packs.
+samples = use_extension("//bazel:samples.bzl", "samples")
+samples.pack(manifest = "//samples:danigb-sampled/tr909-detroit/pack.json")
+samples.pack(manifest = "//samples:danigb-samples/lm-2/pack.json")
+samples.pack(manifest = "//samples:danigb-samples/sample-pi-drums/pack.json")
+samples.pack(manifest = "//samples:danigb-samples/tr-808/pack.json")
+use_repo(samples, "samples")
+
 # Agent skills, managed by rules_agents (https://github.com/jastice/rules_agents).
 bazel_dep(name = "rules_agents", version = "0.1.0")
 

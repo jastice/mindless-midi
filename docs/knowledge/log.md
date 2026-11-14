@@ -1,6 +1,7 @@
 # Update Log
 
 ## 2026-11-14
+- **Update**: `build/samples.md` describes the sample packs from step 1 of the sample pack plan (manifests, `@samples`, `sample_kit`, minimal_techno's 909 kit).
 - **Addition**: `docs/sample-format-plan.md`, a plan for a unified sample pack format and Bazel dependencies, linked from the plans index.
 - **Addition**: `build/sample-sources.md`, a catalogue of sample sources and licences, including the 909 sets in danigb/sampled.
 

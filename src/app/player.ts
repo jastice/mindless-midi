@@ -1053,7 +1053,7 @@ export class Player {
     }
     try {
       const t0 = performance.now();
-      const { plans, fresh } = await lib.prepare(entry.notes, entry.bar.info.styleId);
+      const { plans, fresh } = await lib.prepare(entry.notes, entry.bar.info.styleId, this.styleById.get(entry.bar.info.styleId)?.kit);
       // Connection speed from real downloads; demand from what the music needed.
       const bytes = [...fresh.keys()].reduce((a, u) => a + (lib.sizes.get(u) ?? 0), 0);
       const seconds = (performance.now() - t0) / 1000;

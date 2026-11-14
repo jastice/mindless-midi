@@ -4,20 +4,38 @@
     {
       "name": "site",
       "runtimeExecutable": "bazel",
-      "runtimeArgs": ["run", "//site:serve"],
+      "runtimeArgs": [
+        "run",
+        "//site:serve"
+      ],
       "port": 8080
     },
     {
       "name": "bench",
       "runtimeExecutable": "bazel",
-      "runtimeArgs": ["run", "//src/bench:serve"],
+      "runtimeArgs": [
+        "run",
+        "//src/bench:serve"
+      ],
       "port": 8090
     },
     {
       "name": "mighty",
       "runtimeExecutable": "bazel",
-      "runtimeArgs": ["run", "//src/mighty:serve"],
+      "runtimeArgs": [
+        "run",
+        "//src/mighty:serve"
+      ],
       "port": 8081
+    },
+    {
+      "name": "claudia",
+      "runtimeExecutable": "bazel",
+      "runtimeArgs": [
+        "run",
+        "//src/claudia:serve"
+      ],
+      "port": 8082
     }
   ]
 }

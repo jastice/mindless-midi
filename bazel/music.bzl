@@ -9,9 +9,13 @@
     style_pack   merges styles into the single styles.json the app fetches.
     style_samples fetches the sample files those declarations name, so the
                  site serves its own samples (see `--output_groups=report`).
+                 A style with its own `kit` (a `sample_kit`, //bazel:samples.bzl)
+                 gets its drums from @samples instead of the fetch.
 
 Corpora are (re)written by Claude with `bazel run //tools/generate -- styles/<id>`.
 """
+
+load(":samples.bzl", "SampleKitInfo")
 
 StyleInfo = provider(
     doc = "A compiled music style.",
@@ -21,6 +25,7 @@ StyleInfo = provider(
         "sound": "File: the instruments and key ranges the style can play, JSON.",
         "corpus": "File: the source corpus.",
         "brief": "File or None: the prose brief the corpus was generated from.",
+        "kit": "SampleKitInfo or None: the style's own drum kit.",
     },
 )
 
@@ -41,10 +46,15 @@ def _music_style_impl(ctx):
     args.add("--out", out)
     args.add("--report", report)
     args.add("--sound", sound)
+    inputs = [ctx.file.corpus]
+    kit = ctx.attr.kit[SampleKitInfo] if ctx.attr.kit else None
+    if kit:
+        args.add("--kit", kit.json)
+        inputs.append(kit.json)
     ctx.actions.run(
         executable = _stylec(ctx),
         arguments = [args],
-        inputs = [ctx.file.corpus],
+        inputs = inputs,
         outputs = [out, report, sound],
         env = {"BAZEL_BINDIR": ctx.bin_dir.path},
         mnemonic = "StyleCompile",
@@ -53,7 +63,7 @@ def _music_style_impl(ctx):
     return [
         DefaultInfo(files = depset([out])),
         OutputGroupInfo(calibration = depset([report])),
-        StyleInfo(id = style_id, bundle = out, sound = sound, corpus = ctx.file.corpus, brief = ctx.file.brief),
+        StyleInfo(id = style_id, bundle = out, sound = sound, corpus = ctx.file.corpus, brief = ctx.file.brief, kit = kit),
     ]
 
 _TOOL = attr.label(default = "//tools/stylec", executable = True, cfg = "exec")
@@ -67,6 +77,7 @@ music_style = rule(
         "style_id": attr.string(doc = "Defaults to the package's directory name."),
         "bank": attr.int(mandatory = True, doc = "libADLMIDI embedded FM bank number."),
         "color": attr.string(default = "#888888", doc = "UI accent colour."),
+        "kit": attr.label(providers = [SampleKitInfo], doc = "The style's drum kit, a sample_kit. Without one the sampler's built-in kits apply."),
         "_stylec": _TOOL,
     },
     provides = [StyleInfo],
@@ -110,6 +121,15 @@ def _style_samples_impl(ctx):
     args.add("--report", report)
     args.add("--emit-lock", hashes)
     inputs = list(sounds)
+    # Kit samples come from @samples, already hash-pinned; the action copies the ones the styles can reach.
+    kit_files = {}
+    for s in ctx.attr.styles:
+        kit = s[StyleInfo].kit
+        if kit:
+            kit_files.update(kit.samples)
+    for path, f in sorted(kit_files.items()):
+        args.add("--kit-file", "%s=%s" % (path, f.path))
+        inputs.append(f)
     if ctx.file.lock:
         args.add("--lock", ctx.file.lock)
         inputs.append(ctx.file.lock)

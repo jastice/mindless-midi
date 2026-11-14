@@ -1,0 +1,160 @@
+{
+  "id": "danigb-sampled/tr909-detroit",
+  "kind": "oneshots",
+  "description": "TR-909 Detroit: Roland TR-909 recorder via API and Neve",
+  "origin": {
+    "repo": "danigb/sampled",
+    "commit": "84d3405e107ad52986e7ca99af6a4ed3efe205de",
+    "path": "DM/TR-909/Detroit/samples/"
+  },
+  "licence": {
+    "spdx": "LicenseRef-public-domain-claimed",
+    "note": "danigb/sampled's README says the repo collects instruments 'with public domain or similar license' and that 'each instrument has its own license'; this set states none of its own. Its README and sampled.json name the source as http://www.flstudiomusic.com/2016/09/download-free-909-kits-stems-f9-audio.html, which no longer loads (404 on 2026-11-14), so the provenance cannot be traced past the repo's claim. Accepted for this project on that claim (decided 2026-11-14).",
+    "attribution": null,
+    "share_alike": false,
+    "source": "https://github.com/danigb/sampled/blob/84d3405e107ad52986e7ca99af6a4ed3efe205de/README.md",
+    "read_on": "2026-11-14"
+  },
+  "samples": {
+    "clap-1": {
+      "file": "clap-1.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/clap-1.wav",
+      "sha256": "d416c0f1db1bf01db19cc70323e803c4a23bbb7b8488cb0429d27485f0cd15b2",
+      "bytes": 137628,
+      "tags": [
+        "clap"
+      ],
+      "gm": 39
+    },
+    "clap-2": {
+      "file": "clap-2.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/clap-2.wav",
+      "sha256": "0aadfe88a66ce31eef56ad08efe79fddd2fec229eeb7099895648c30bb7ca4cd",
+      "bytes": 146146,
+      "tags": [
+        "clap"
+      ],
+      "gm": 39
+    },
+    "cymbal": {
+      "file": "cymbal.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/cymbal.wav",
+      "sha256": "2153f1cb7a08a7eb1d66d801039e077474832d1df9bb114e69493aaa97e65616",
+      "bytes": 341696,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "hihat-close": {
+      "file": "hihat-close.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/hihat-close.wav",
+      "sha256": "2603a92cb2e3a2532908747c005a8ce8e0eb82d9dcdfdf05659d4f478c886bee",
+      "bytes": 58270,
+      "tags": [
+        "hat-closed"
+      ],
+      "gm": 42
+    },
+    "hihat-closed": {
+      "file": "hihat-closed.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/hihat-closed.wav",
+      "sha256": "8f67165b4fdf6ce6f1a73e5157ebc36522838659dd7424777e90209c79aea36a",
+      "bytes": 32034,
+      "tags": [
+        "hat-closed"
+      ],
+      "gm": 42
+    },
+    "hihat-open-1": {
+      "file": "hihat-open-1.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/hihat-open-1.wav",
+      "sha256": "e09b1ec288407b3dd4a9eb5688af32618f5c011a6b09f6641370f9634494d515",
+      "bytes": 95242,
+      "tags": [
+        "hat-open"
+      ],
+      "gm": 46
+    },
+    "hihat-open-2": {
+      "file": "hihat-open-2.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/hihat-open-2.wav",
+      "sha256": "3fdd97ed57ae0c389094f93ce011d5cfb3a50c4ac77e68ecd88c2d6b61cd8f3e",
+      "bytes": 108268,
+      "tags": [
+        "hat-open"
+      ],
+      "gm": 46
+    },
+    "kick": {
+      "file": "kick.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/kick.wav",
+      "sha256": "7b0a75441ffbbef5e9ccb38bec43e8dfe86ba070621fbe5ac623e52b6fd9f4a1",
+      "bytes": 160260,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "kick-short": {
+      "file": "kick-short.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/kick-short.wav",
+      "sha256": "f2f3b938f92e1d8d04bdaeac6a2bcbb4b03ac449759847ff9f0ce8b26ed5d11d",
+      "bytes": 109192,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "ride": {
+      "file": "ride.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/ride.wav",
+      "sha256": "1422a672cf4a9b59b4fac480fb2f85ca54c7b0205ddbf3be8a1f6f420bfa2771",
+      "bytes": 2119618,
+      "tags": [
+        "ride"
+      ],
+      "gm": 51
+    },
+    "rim": {
+      "file": "rim.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/rim.wav",
+      "sha256": "2f8a399daf050dcb30c80ffb84906153014b76e65348b7dbf3a98cdd2c110618",
+      "bytes": 356962,
+      "tags": [
+        "rim"
+      ],
+      "gm": 37
+    },
+    "snare": {
+      "file": "snare.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/snare.wav",
+      "sha256": "e33f9949b5ef498cb505c5ba0bc59aee11ecca98fb89a51531d1584e65cb7b2e",
+      "bytes": 133764,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "tom-h": {
+      "file": "tom-h.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/tom-h.wav",
+      "sha256": "6fc4a813ca6a9eda965173f0142ce917140917d35409ba899bf9fd2266a9d47e",
+      "bytes": 114324,
+      "tags": [
+        "tom-high"
+      ],
+      "gm": 50
+    },
+    "tom-l": {
+      "file": "tom-l.wav",
+      "url": "https://raw.githubusercontent.com/danigb/sampled/84d3405e107ad52986e7ca99af6a4ed3efe205de/DM/TR-909/Detroit/samples/tom-l.wav",
+      "sha256": "597314222a40c9e63d74b35c0dc3aa3b9c58429b3c10e6350a2e77d533aecbe6",
+      "bytes": 2119618,
+      "tags": [
+        "tom-low"
+      ],
+      "gm": 45
+    }
+  }
+}

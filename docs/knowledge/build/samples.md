@@ -28,6 +28,26 @@ sources:
 
 About 2,800 files, 92 MB for all styles. Not checked in.[^readme]
 
+## Sample packs (being introduced)
+
+[The sample pack plan](../../sample-format-plan.md) replaces the lock files
+step by step. Built so far (step 1, one-shots only):
+
+- Manifests under `samples/<source>/<pack>/pack.json`, typed and validated by
+  `src/corpus/pack.ts`: a commit-pinned URL, sha256 and size per file, and a
+  mandatory licence block. `bazel run //tools/packs -- (sampled|samples) <folder> <pack id>`
+  writes one; the licence, description, tags and GM keys are kept by hand.
+- The `samples` extension (`//bazel:samples.bzl`, listed in `MODULE.bazel`)
+  makes one `http_file` per sample and the labels
+  `@samples//<pack id>:<sample id>`.
+- `sample_kit` maps GM keys to samples, with optional `hard`/`soft` touch
+  variants and key aliases; `music_style(kit = ...)` puts it in the bundle.
+  `minimal_techno` uses one (TR-909 Detroit plus 808, LM-2 and Sonic Pi hits),
+  so `claudia_samples.lock.json` holds no drum file. Every other style still
+  uses the `KITS` table in `sampler.ts`.
+- The site serves pack samples as `samples/<pack id>/<sample id>.<ext>`; the
+  loader takes these paths as well as upstream URLs until step 3.
+
 ## Sources and licences
 
 From [danigb/samples](https://github.com/danigb/samples) and

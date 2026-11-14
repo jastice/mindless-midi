@@ -1,8 +1,8 @@
 # Sample packs: a unified format and Bazel dependencies
 
-Built so far: nothing. Written against `main` at `c6cbd10`. The design below
-is checked against the current code and upstream repos, but none of the Bazel
-parts has been tried; see "To verify before starting".
+Built so far: step 1 (2026-11-14), see "Built" under it. Written against
+`main` at `c6cbd10`. Steps 2 and 3 are not tried yet; see "To verify before
+starting" for what step 1 settled.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
 
@@ -178,6 +178,39 @@ restored between runs and a cold cache is the only time all requests happen.
 - Done when `minimal_techno` plays a 909 kit from `@samples` labels and
   `claudia_samples.lock.json` no longer lists any drum file.
 
+#### Built (2026-11-14)
+
+- `src/corpus/pack.ts`: the manifest type (zod), `validatePack`, `fileUrl`
+  and the `SampleKit` shape the bundle carries; `pack_test` loads every
+  manifest. Two additions to the format above: each sample records its `url`
+  (the generator percent-encodes it once, the validator checks it equals
+  `origin` + `file`, and Starlark never encodes), and the licence block has a
+  `source` URL for where its terms were read.
+- `//tools/packs`: one generator with a subcommand per source (`sampled`,
+  `samples`). It keeps the hand-written parts of an existing manifest
+  (licence, description, tags, GM keys) and gives a new pack a placeholder
+  licence that fails validation. It refuses Git LFS pointers.
+- Packs: `danigb-sampled/tr909-detroit` (14 wav, 6.0 MB), and from
+  danigb/samples `tr-808` (116), `lm-2` (29) and `sample-pi-drums` (117), all
+  m4a. Licences read and written by hand; the 909's notes the dead source link.
+- `//bazel:samples.bzl`: the extension, the `@samples` hub (one `sample`
+  target per sample, providing `SampleInfo`), and `sample_kit`
+  (`SampleKitInfo`, `kit.json`). Hits are a label or
+  `{"default", "hard", "soft"}`; aliases default to the GM table the sampler
+  used, and a kit's own hit wins over an alias.
+- `music_style(kit = ...)` passes the kit to `stylec`, which puts it in the
+  bundle and `sound.json`. `style_samples` hands the kit's files to
+  `tools/samples`, which copies the ones the runtime's `required()` reaches
+  (every touch variant of every reachable key) and does not lock them.
+- `minimal_techno`'s kit: 909 kick (hard: Sonic Pi `bd_haus`, soft:
+  `kick-short`), snare, rim, claps, hats, cymbal and high tom; LM-2 ride; 808
+  low tom and maraca, since the 909's low tom and ride are 2 MB each. The
+  kit's files add 1.7 MB to Claudia's site (15 files; the corpus never plays the high tom).
+- Refreshing `claudia_samples.lock.json` also fixed a stale pin: the
+  committed one was written for an older corpus (lead files an octave higher).
+- Not done in step 1: the instrument table, credits from licence blocks, and
+  removing `KITS`, `HARD_SOFT`, `TOUCH_SAMPLES` (other styles still use them).
+
 ### 2. Multisample groups and the packaging action (L)
 
 - Generators for the websfz documents (Splendid piano, VCSL, Smolken, Rhodes,
@@ -206,9 +239,20 @@ restored between runs and a cold cache is the only time all requests happen.
   extension generated. Try it with two files in a scratch workspace first.
   Fallback if evaluation is slow: group repositories for everything. Include
   the GM soundfont groups in the count (about 88 files per program per font).
+  **Checked 2026-11-14 (Bazel 9.2.0):** aliases in a hub repo resolve to
+  `http_file` repos of the same extension. With 6,001 repos, a cold
+  `bazel query` of the hub took 1.2 s including server start, re-evaluation
+  after a manifest change 0.27 s, and building all 6,001 from the repository
+  cache 6.1 s. One-shot repos are fine at that scale; group repositories for
+  multisamples remain the plan for other reasons (one label per instrument).
 - Whether danigb/samples keeps any folder in Git LFS. raw.githubusercontent
   serves the pointer file, not the audio, for those; the hash check would
   catch it, but the URL scheme would need `media.githubusercontent.com`.
+  **Checked 2026-11-14 at `eae8c5c`:** no `.gitattributes` with LFS filters
+  anywhere (the only one, in `jlearman/rhodes-mki`, sets line endings), and no
+  audio blob under 200 bytes; TR-808, LM-2 and Sample Pi drums all hash as
+  real audio. The 48 drum files the lock files pinned hash the same from
+  `raw.githubusercontent.com` at the commit as from Pages.
 - **danigb/samples.** The converted files are on `main` under `audio/`; a
   workflow publishes that folder to GitHub Pages. One file was compared
   (TR-808 `clap/cp.m4a`: Pages and `main` hash the same, and match the lock
@@ -221,8 +265,12 @@ restored between runs and a cold cache is the only time all requests happen.
   `.m4a` and `.ogg` from the mirror. Check that the sampler path takes wav
   (the browser decodes it; sizes are larger) and what the 14 and 16 files add
   to the page's download.
+  **Checked 2026-11-14:** Claudia plays the Detroit set's wav files in the
+  browser. All 14 are 6.0 MB; the kit reaches 11 of them (1.7 MB) and leaves out
+  the 2 MB low tom and ride. Its default branch is `master`.
 - **Where the 909's provenance goes.** Its README names a blog post that no
   longer loads. The licence note should say so.
+  **Done 2026-11-14:** the link returns 404, and the licence note says so.
 - Whether to key the extension's cache on the manifest hashes in CI, and how
   `setup-bazel` keys the repository cache today.
 

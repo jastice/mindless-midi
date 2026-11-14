@@ -15,7 +15,7 @@ export async function renderSampleStems(score: Score, sr: number, lib: SampleLib
   const frames = Math.ceil((score.seconds + TAIL_SECONDS) * sr);
   const notes = score.notes.filter((n) => !skip.includes(n.role));
   onProgress?.(0.1);
-  const { plans } = await lib.prepare(notes, score.style.id);
+  const { plans } = await lib.prepare(notes, score.style.id, score.style.kit);
   onProgress?.(0.8);
   const stems = new Map<Role, Stereo>();
   notes.forEach((n, i) => {

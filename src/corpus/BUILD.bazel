@@ -4,6 +4,7 @@ ts_lib(
     name = "corpus",
     srcs = [
         "constants.ts",
+        "pack.ts",
         "schema.ts",
         "sound.ts",
         "validate.ts",
@@ -19,5 +20,12 @@ ts_test(
     name = "validate_test",
     src = "validate.test.ts",
     data = ["//styles:corpora"],
+    deps = [":corpus"],
+)
+
+ts_test(
+    name = "pack_test",
+    src = "pack.test.ts",
+    data = ["//samples:manifests"],
     deps = [":corpus"],
 )
