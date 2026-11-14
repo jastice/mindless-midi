@@ -1,9 +1,9 @@
 # DJ Claudia: design and implementation plan
 
-Built so far: the engine half of step 1 (see "Step 1", "Built"). Nothing else.
-This is written against `main` at `b4dabe6`; the
-transitions and backlog work done in another session is not in that checkout,
-so where this plan says "new", check first whether that work already has it.
+Built so far: all of step 1, and the first of step 6's conductor rules (legs
+with a target tempo, energy waves through `lift`). Step 2's patch engine is in
+progress in its own worktree. This was first written against `main` at
+`b4dabe6`; where it says "new", check first whether later work already has it.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
 
@@ -213,22 +213,24 @@ Decisions made where the plan was silent:
   not considered.
 - Only 4/4 styles are accepted. Tracks run 180 to 360 seconds by default.
 
-Known gaps:
+The app shell (`src/claudia`, its page and Bazel targets), the
+`//styles:claudia` pack and the `minimal_techno` corpus followed in `4ddd415`.
+The app passes `(styles, seed, pieces) => new SetConductor(...)` as `Player`'s
+`source`.
 
-- `Player` takes a `source` option (a factory for its `BarSource`), so the app
-  shell can pass `(styles, seed, pieces) => new SetConductor(...)`. Not yet
-  tried in a browser; `Player` has no tests and it still calls each track a
-  piece.
-- `skip()` cuts mid-track, so the track after a skip does not start on a
-  phrase boundary of the set.
-- A track shorter than 32 bars has its mix-in and mix-out overlap.
-- `lift` exists but the set conductor does not use it yet.
-- Tests use synthwave, disco, funk, electro swing and retro as stand-ins.
+Gaps closed afterwards (2026-11-14):
 
-### Left in step 1
+- Skipping: the app's next-track control calls `Player.nextPieceOnPhrase`, so
+  the track plays to the end of its phrase before the next one comes in.
+  `SetConductor.skip()` itself still cuts, for callers that want that.
+- Short tracks: the mix at each end is `mixBars(totalBars)`: 16 bars, or 8 for
+  a track of under 40 bars, or none under 24, so at least one phrase plays
+  whole and the ends never overlap. Minimal techno's forms are never under 112
+  bars, so this only matters for other styles.
+- `set.test.ts` uses `minimal_techno`; the stand-in styles stay for choosing
+  between styles, which needs more than one.
 
-- The app shell: `src/claudia`, its page and Bazel targets (Opus).
-- The `//styles:claudia` pack and the `minimal_techno` corpus (Fable).
+Still open: `Player` has no tests and calls each track a piece.
 
 ## Step 2: patches (L)
 
@@ -459,6 +461,24 @@ A set is a walk, not a room.
 - **Style neighbours.** A style's `set` block says its tempo range and which
   transition types suit it. Two styles are neighbours if their tempo ranges
   are within drift of each other or a bridge exists.
+
+**Built (2026-11-14), in `src/engine/set.ts`:**
+
+- Legs of 30 to 45 minutes, each with a target tempo drawn as a share of the
+  pool's whole tempo span. The first track is anywhere in its style; each next
+  one takes the style that gets nearest the target in one 3% step (weighted,
+  not certain) and the tempo nearest it, within a beat and a half.
+- Energy: `lift` is the leg's offset (up to 0.15 either way), plus a sine wave
+  of 0.12 with a period of 10 to 20 minutes, minus a warm-up of 0.15 easing to
+  nothing over the first 15 minutes; clamped to 0.3. It is the track's `lift`
+  for `Piece`.
+- Set time is nominal: the tracks' lengths end to end, so skips do not move
+  the plan and a link still lands on the same track.
+- `trackPlan(i)` gives each started track's style, tempo, lift, target, start
+  and length, for the page and tests.
+
+Not yet: drift inside a track (tempo is per track), style neighbours and
+bridges (one style so far), and a smooth step in energy where legs meet.
 
 **Styles to write**, each a corpus with parts, patches and a kit:
 

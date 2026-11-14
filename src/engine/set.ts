@@ -6,6 +6,13 @@
  * a track bring its parts in and take them out (drums first in and last out),
  * so even a cut sounds like one track handing over to the next.
  *
+ * The set travels. It is laid out in legs of 30 to 45 minutes, each with a
+ * tempo to head for: every next track takes the style and tempo that move
+ * toward it within the 3% step. Its energy rises and falls in a slow wave,
+ * offset per leg and cooler in the first minutes, carried by `lift`. Set time
+ * is nominal (the sum of the tracks' lengths as written), so it does not
+ * depend on skips, and a link lands on the same track.
+ *
  * Like the conductor it is a pure, deterministic bar generator.
  */
 import type { Role, StyleBundle } from "../corpus/schema.js";
@@ -22,6 +29,19 @@ export const MIX_BARS = 16;
 /** Most a track's tempo may differ from the one before, as a share of it. */
 export const MAX_TEMPO_STEP = 0.03;
 
+/** A leg's length, in seconds. */
+export const LEG_SECONDS = { min: 30 * 60, max: 45 * 60 } as const;
+/** Most a leg's energy offset moves `lift`, either way. */
+export const LEG_ENERGY = 0.15;
+/** Depth of the energy wave, and its period range in seconds. */
+export const WAVE_DEPTH = 0.12;
+export const WAVE_SECONDS = { min: 10 * 60, max: 20 * 60 } as const;
+/** The set starts this much cooler, easing to nothing over `WARMUP_SECONDS`. */
+export const WARMUP = 0.15;
+export const WARMUP_SECONDS = 15 * 60;
+/** `lift` stays within this, either way. */
+export const MAX_LIFT = 0.3;
+
 export const DEFAULT_SET_OPTIONS: PieceOptions = { minSeconds: 180, maxSeconds: 360 };
 
 /** What plays in each stretch of a mix-in, in order (and of a mix-out, in reverse). Then everything. */
@@ -35,18 +55,56 @@ interface Track {
   key: Key;
   previousForm: string | undefined;
   formId: string;
+  /** Added to every section's intensity. */
+  lift: number;
+  /** The tempo the set was heading for when the track was chosen. */
+  target: number;
+  /** Nominal seconds into the set the track starts, and how long it runs (0 until built). */
+  start: number;
+  seconds: number;
+}
+
+/** A stretch of the set with a tempo and an energy to head for. */
+interface Leg {
+  start: number;
+  end: number;
+  /** Where the target tempo lies in the pool's tempo span, 0 to 1. */
+  tempo: number;
+  energy: number;
+}
+
+/** What the set planned for a track, for tests and the page. */
+export interface TrackPlan {
+  styleId: string;
+  bpm: number;
+  lift: number;
+  target: number;
+  start: number;
+  seconds: number;
 }
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(Math.max(Math.floor(n), lo), hi);
 
 /**
- * The roles left out of a bar of a track: in its first and last `MIX_BARS`,
+ * Bars at each end of a track of `totalBars` that mix it in and out:
+ * `MIX_BARS`, or a phrase less at a time for a track too short to play at
+ * least one phrase whole between them; none for a track of under three phrases.
+ */
+export function mixBars(totalBars: number): number {
+  for (let m = MIX_BARS; m > 0; m -= PHRASE_BARS) if (2 * m + PHRASE_BARS <= totalBars) return m;
+  return 0;
+}
+
+/**
+ * The roles left out of a bar of a track: in its first and last `mixBars`,
  * all but the tier that has come in so far (or not yet gone out). A tier the
  * bar's section does not play is passed over, so a mix-in is never silent
  * just because the track opens without drums.
  */
 export function mixLeaveOut(piece: Piece, barInPiece: number): ReadonlySet<Role> | undefined {
-  const stageBars = MIX_BARS / MIX_TIERS.length;
+  const mix = mixBars(piece.totalBars);
+  if (!mix) return undefined;
+  const stageBars = mix / MIX_TIERS.length;
   let stage = Math.floor(Math.min(barInPiece, piece.totalBars - 1 - barInPiece) / stageBars);
   const roles = piece.sectionAt(barInPiece)?.roles ?? [];
   while (stage < MIX_TIERS.length && !MIX_TIERS[stage]!.some((r) => roles.includes(r))) stage++;
@@ -70,12 +128,47 @@ export class SetConductor implements BarSource {
   private carry: ControlEvent[] = [];
   /** The latest seek, redone if the pool changes before any bar has been played. */
   private start: (() => Landing) | null = null;
+  /** The set's legs so far, drawn as far as needed. */
+  private readonly legs: Leg[] = [];
+  private readonly wave: { period: number; phase: number };
 
   /** Only styles in 4/4 are played; a set is 4/4. `opts` sets track lengths and expression; the frame, tempo and key are the set's. */
   constructor(styles: StyleBundle[], seed: string, opts: PieceOptions = DEFAULT_SET_OPTIONS) {
     this.styles = playable(styles);
     this.seed = seed;
     this.opts = opts;
+    const w = new Rng(`${seed}/wave`);
+    this.wave = { period: w.float(WAVE_SECONDS.min, WAVE_SECONDS.max), phase: w.float(0, 2 * Math.PI) };
+  }
+
+  /** What was planned for track `i`, once it has been started (null before). */
+  trackPlan(i: number): TrackPlan | null {
+    const t = this.chosen[i];
+    if (!t) return null;
+    return { styleId: t.style.id, bpm: t.bpm, lift: t.lift, target: t.target, start: t.start, seconds: t.seconds };
+  }
+
+  /** The `lift` the set's energy gives a track starting `seconds` in. */
+  liftAt(seconds: number): number {
+    const leg = this.legAt(seconds);
+    const wave = WAVE_DEPTH * Math.sin((2 * Math.PI * seconds) / this.wave.period + this.wave.phase);
+    const warmup = WARMUP * Math.max(0, 1 - seconds / WARMUP_SECONDS);
+    return Math.min(Math.max(leg.energy + wave - warmup, -MAX_LIFT), MAX_LIFT);
+  }
+
+  private legAt(seconds: number): Leg {
+    while (!this.legs.length || this.legs[this.legs.length - 1]!.end <= seconds) {
+      const k = this.legs.length;
+      const rng = new Rng(`${this.seed}/leg/${k}`);
+      const start = this.legs[k - 1]?.end ?? 0;
+      this.legs.push({
+        start,
+        end: start + rng.fork("length").float(LEG_SECONDS.min, LEG_SECONDS.max),
+        tempo: rng.fork("tempo").float(0, 1),
+        energy: rng.fork("energy").float(-LEG_ENERGY, LEG_ENERGY),
+      });
+    }
+    return this.legs.find((l) => l.end > seconds)!;
   }
 
   /** Change the style pool, as `Conductor.setStyles` does. */
@@ -138,7 +231,7 @@ export class SetConductor implements BarSource {
   }
 
   private build(track: Track, i: number): Piece {
-    const opts: PieceOptions = { ...this.opts, frame: "set", fixed: { bpm: track.bpm, tonic: track.key.tonic, mode: track.key.mode } };
+    const opts: PieceOptions = { ...this.opts, frame: "set", fixed: { bpm: track.bpm, tonic: track.key.tonic, mode: track.key.mode }, lift: track.lift };
     return new Piece(track.style, `${this.seed}/track/${i}/${track.style.id}`, i, opts, track.previousForm);
   }
 
@@ -171,6 +264,7 @@ export class SetConductor implements BarSource {
     const track = this.chosen[i] ?? this.choose(i);
     this.piece = this.build(track, i);
     track.formId = this.piece.formId;
+    track.seconds = this.piece.seconds;
     this.chosen[i] = track;
     this.trackIndex = i + 1;
     this.barInPiece = 0;
@@ -181,16 +275,32 @@ export class SetConductor implements BarSource {
     const rng = new Rng(`${this.seed}/set/${i}`);
     const before = this.chosen[i - 1];
     const pool = this.styles.length > 1 ? this.styles.filter((s) => s.id !== before?.style.id) : this.styles;
-    const style = rng.fork("style").pick(pool);
-    const c = style.corpus;
-    let bpm = Math.round(rng.fork("tempo").float(c.tempo.min, c.tempo.max));
-    if (before) bpm = Math.min(Math.max(bpm, Math.ceil(before.bpm * (1 - MAX_TEMPO_STEP))), Math.floor(before.bpm * (1 + MAX_TEMPO_STEP)));
+    const start = before ? before.start + before.seconds : 0;
+    const leg = this.legAt(start);
+    const lo = Math.min(...this.styles.map((s) => s.corpus.tempo.min));
+    const hi = Math.max(...this.styles.map((s) => s.corpus.tempo.max));
+    const target = lo + leg.tempo * (hi - lo);
+    const step = (bpm: number) =>
+      before ? Math.min(Math.max(bpm, Math.ceil(before.bpm * (1 - MAX_TEMPO_STEP))), Math.floor(before.bpm * (1 + MAX_TEMPO_STEP))) : bpm;
+    const within = (s: StyleBundle, bpm: number) => Math.min(Math.max(bpm, s.corpus.tempo.min), s.corpus.tempo.max);
+    let style: StyleBundle;
+    let bpm: number;
+    if (!before) {
+      // The first track is anywhere in its style; the set heads for the target from there.
+      style = rng.fork("style").pick(pool);
+      bpm = Math.round(rng.fork("tempo").float(style.corpus.tempo.min, style.corpus.tempo.max));
+    } else {
+      // The style that gets nearest the target in one step is the likeliest.
+      style = rng.fork("style").weighted(pool, (s) => 1 / (1 + Math.abs(step(within(s, target)) - target)));
+      bpm = step(Math.round(within(style, target + rng.fork("tempo").float(-1.5, 1.5))));
+    }
     const key = chooseKey(style, before?.key, rng.fork("key"));
     let previousForm: string | undefined;
     for (let k = i - 1; k >= 0 && previousForm === undefined; k--) {
       if (this.chosen[k]!.style.id === style.id) previousForm = this.chosen[k]!.formId;
     }
-    return { style, bpm, key, previousForm, formId: "" };
+    const lift = Math.round(this.liftAt(start) * 1000) / 1000;
+    return { style, bpm, key, previousForm, formId: "", lift, target, start, seconds: 0 };
   }
 }
 

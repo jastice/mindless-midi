@@ -22,7 +22,10 @@ ts_lib(
 ts_test(
     name = "set_test",
     src = "set.test.ts",
-    data = ["//styles"],
+    data = [
+        "//styles",
+        "//styles:claudia",
+    ],
     deps = [
         ":engine",
         "//src/corpus",
