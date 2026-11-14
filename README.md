@@ -246,7 +246,8 @@ localhost) for AudioWorklet.
   piece needs). The files are not checked in. The recordings: Splendid Grand
   Piano (public domain), VCSL (CC0), D. Smolken double bass (CC0), Greg
   Sullivan's Wurlitzer (CC BY 3.0), MusyngKite (CC BY-SA 3.0), plus
-  drum-machine and Sonic Pi kits. The page credits whatever it has played. The
+  drum-machine and Sonic Pi kits (each style's `sample_kit`). The page credits
+  the packs it has played, from the licence blocks (`samples/credits.json`). The
   bench streams the audio from each manifest's pinned upstream URL, and
   additionally loads the Magenta DDSP checkpoints (Apache 2.0).
 - Dev console: `mindlessMidi.player` and `mindlessMidi.styles` are exposed for tinkering.

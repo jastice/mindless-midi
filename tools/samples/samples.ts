@@ -17,8 +17,8 @@
  * against the manifests, and fails, naming the style, the keys and the pack,
  * when a declared key needs a file outside the style's packs. Then it writes
  * the files any style can reach to DIR as the page asks for them: the table,
- * each used pack's manifest and samples (`<pack id>/<sample id>.<ext>`), the
- * older kits' drums at `danigb/<path>`, and `credits.json`.
+ * each used pack's manifest and samples (`<pack id>/<sample id>.<ext>`), and
+ * `credits.json` (one entry per pack, from its licence block).
  *
  * With --superset it skips the trim and the check, and writes every declared
  * file instead: what the dev servers and tests serve.

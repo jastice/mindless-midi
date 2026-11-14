@@ -1,5 +1,23 @@
 load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": {"default": "@samples//danigb-samples/sample-pi-drums:drum_bass_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_bass_soft"},
+        "38": {"default": "@samples//danigb-samples/sample-pi-drums:drum_snare_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_snare_soft"},
+        "37": "@samples//danigb-samples/lm-2:stick-h",
+        "39": "@samples//danigb-samples/lm-2:clap",
+        "42": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_closed",
+        "46": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_open",
+        "51": "@samples//danigb-samples/lm-2:ride",
+        "49": {"default": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_soft"},
+        "45": {"default": "@samples//danigb-samples/sample-pi-drums:drum_tom_lo_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_tom_lo_soft"},
+        "50": {"default": "@samples//danigb-samples/sample-pi-drums:drum_tom_hi_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_tom_hi_soft"},
+        "70": "@samples//danigb-samples/lm-2:tambourine",
+    },
+)
 
 music_style(
     name = "style",
@@ -7,9 +25,8 @@ music_style(
     brief = "brief.md",
     color = "#dd6b20",
     corpus = "corpus.json",
+    kit = ":kit",
     packs = [
-        "@samples//danigb-samples/lm-2",
-        "@samples//danigb-samples/sample-pi-drums",
         "@samples//danigb-samples/vcsl-tenor-saxophone-vibrato",
         "@samples//danigb-samples/wurlitzer-ep200",
         "@samples//gleitz-musyngkite/brass-section",

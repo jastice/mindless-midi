@@ -1,5 +1,18 @@
 load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": {"default": "@samples//danigb-samples/sample-pi-drums:drum_bass_soft", "hard": "@samples//danigb-samples/sample-pi-drums:drum_bass_hard"},
+        "38": {"default": "@samples//danigb-samples/sample-pi-drums:drum_snare_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_snare_soft"},
+        "37": "@samples//danigb-samples/lm-2:stick-m",
+        "45": "@samples//danigb-samples/sample-pi-drums:drum_tom_mid_soft",
+        "50": {"default": "@samples//danigb-samples/sample-pi-drums:drum_tom_hi_soft", "hard": "@samples//danigb-samples/sample-pi-drums:drum_tom_hi_hard"},
+        "70": "@samples//danigb-samples/tr-808:ma",
+    },
+)
 
 music_style(
     name = "style",
@@ -7,11 +20,9 @@ music_style(
     brief = "brief.md",
     color = "#38a169",
     corpus = "corpus.json",
+    kit = ":kit",
     packs = [
         "@samples//danigb-samples/dsmolken-double-bass-pizz",
-        "@samples//danigb-samples/lm-2",
-        "@samples//danigb-samples/sample-pi-drums",
-        "@samples//danigb-samples/tr-808",
         "@samples//gleitz-musyngkite/accordion",
         "@samples//gleitz-musyngkite/acoustic-guitar-steel",
         "@samples//gleitz-musyngkite/bagpipe",

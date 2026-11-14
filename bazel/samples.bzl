@@ -311,7 +311,7 @@ _sample_kit = rule(
     provides = [SampleKitInfo],
 )
 
-def sample_kit(name, hits, aliases = GM_ALIASES, **kwargs):
+def sample_kit(name, hits, aliases = None, **kwargs):
     """A drum kit for a style: General MIDI percussion keys to samples.
 
     Args:
@@ -320,8 +320,12 @@ def sample_kit(name, hits, aliases = GM_ALIASES, **kwargs):
         where "hard" and "soft" are optional: with touch, a hard hit plays the
         hard recording and a light one the soft recording.
       aliases: key -> key it is played as, for keys the kit has no hit of its own.
+        Defaults to GM_ALIASES, less the ones whose target the kit has no hit for
+        (a kit with no snare leaves the electric snare silent too).
       **kwargs: passed to the rule.
     """
+    if aliases == None:
+        aliases = {k: v for k, v in GM_ALIASES.items() if str(v) in hits}
     slots = {}
     for key, hit in hits.items():
         variants = hit if type(hit) == "dict" else {"default": hit}

@@ -1,12 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { test } from "node:test";
-import type { SampleKit } from "../corpus/pack.js";
+import { type PackCredit, type SampleKit, creditLines } from "../corpus/pack.js";
 import type { SoundDeclaration } from "../corpus/sound.js";
 import type { ScoreNote } from "./types.js";
-import { SampleCache, SampleLibrary, mirrorPath, mirroredAt, requiredSamples } from "./sampler.js";
+import { SampleCache, SampleLibrary, requiredSamples, servedAt } from "./sampler.js";
 
-const DANIGB = "https://danigb.github.io/samples/";
 const GUITAR = "gleitz-musyngkite/acoustic-guitar-nylon";
 
 // The table and manifests from //samples:manifests; audio is never fetched (nothing here plays).
@@ -21,12 +20,10 @@ const disk = () => new SampleCache(undefined, (ref) => ref, async (ref) => {
 const sound = (instruments: SoundDeclaration["instruments"], drums: number[] = []): SoundDeclaration => ({ instruments, drums });
 const inst = (program: number, range: [number, number]) => ({ role: "lead" as const, program, octave: 4, range });
 
-test("a mirror maps the older kits' upstream URLs onto the sample directory, beside the packs", () => {
-  assert.equal(mirrorPath(`${DANIGB}drum-machines/LM-2/kick.m4a`), "danigb/drum-machines/LM-2/kick.m4a");
-  assert.equal(mirrorPath("https://example.com/a.m4a"), undefined);
-  assert.throws(() => mirroredAt("http://site/samples/")("https://example.com/a.m4a"));
-  assert.equal(mirroredAt("http://site/samples/")("danigb-sampled/tr909-detroit/kick.wav"), "http://site/samples/danigb-sampled/tr909-detroit/kick.wav", "pack samples sit in the same directory");
-  assert.equal(mirroredAt("http://site/samples/")("instruments.json"), "http://site/samples/instruments.json");
+test("the site serves every file by its path in the sample directory: the table, manifests and samples", () => {
+  const at = servedAt("http://site/samples/");
+  assert.equal(at("danigb-sampled/tr909-detroit/kick.wav"), "http://site/samples/danigb-sampled/tr909-detroit/kick.wav");
+  assert.equal(at("instruments.json"), "http://site/samples/instruments.json");
 });
 
 test("soundfont instruments need one file per key, within the font's range, and their manifest", async () => {
@@ -70,26 +67,24 @@ test("a program the table does not list cannot be declared, and plays nothing", 
   }
 });
 
-test("instrument credits come from the packs' licence blocks", async () => {
-  const lib = new SampleLibrary(disk());
+/** Reads the table and manifests from disk, and "decodes" any audio file to a frame of silence. */
+const decoding = () => {
+  const ctx = { decodeAudioData: async () => ({ numberOfChannels: 1, sampleRate: 48000, getChannelData: () => new Float32Array(1) }) } as unknown as ConstructorParameters<typeof SampleCache>[0];
+  return new SampleCache(ctx, (ref) => ref, async (ref) => (ref.endsWith(".json") ? new Response(readFileSync(`samples/${ref}`)) : new Response(new ArrayBuffer(8))));
+};
+
+test("the page credits the packs it has played, one line per credit, from the site's credits.json", async () => {
+  const lib = new SampleLibrary(decoding());
   const note = (program: number): ScoreNote => ({ t: 0, dur: 0.1, key: 60, vel: 80, ch: 0, role: "lead", program });
-  const warn = console.warn;
-  console.warn = () => {};
-  try {
-    await lib.prepare([note(12), note(24), note(25), note(4)], "x", undefined, 1);
-  } finally {
-    console.warn = warn;
-  }
-  assert.deepEqual(lib.labels.sort(), ["Greg Sullivan Wurlitzer EP200 (CC BY 3.0)", "MusyngKite GM soundfont (CC BY-SA 3.0)", "VCSL marimba (CC0)"]);
+  await lib.prepare([note(12), note(24), note(25), note(4)], "x", undefined, 1);
+  assert.deepEqual(lib.packs, ["danigb-samples/vcsl-marimba", "danigb-samples/wurlitzer-ep200", "gleitz-musyngkite/acoustic-guitar-nylon", "gleitz-musyngkite/acoustic-guitar-steel"]);
+  const credits = JSON.parse(readFileSync("styles/samples/credits.json", "utf8")) as PackCredit[];
+  // Two soundfont programs share their font's credit.
+  assert.deepEqual(creditLines(credits, lib.packs), ["VCSL marimba (CC0)", "Greg Sullivan Wurlitzer EP200 (CC BY 3.0)", "MusyngKite GM soundfont (CC BY-SA 3.0)"]);
 });
 
-test("drum kits need the declared keys, through the aliases the sampler plays them by", async () => {
-  const urls = await requiredSamples(disk(), [{ id: "lofi", sound: sound([], [36, 40]) }]);
-  assert.deepEqual(urls, [
-    `${DANIGB}sample-pi/drums/one-shots/kick/drum_bass_hard.m4a`,
-    `${DANIGB}sample-pi/drums/one-shots/snare/drum_snare_soft.m4a`,
-    "instruments.json",
-  ]);
+test("a style that declares drum keys needs a kit", async () => {
+  await assert.rejects(requiredSamples(disk(), [{ id: "x", sound: sound([], [36]) }]), /x: drums, key 36: the style has no drum kit/);
 });
 
 const s909 = (id: string) => ({ id: `danigb-sampled/tr909-detroit:${id}`, path: `danigb-sampled/tr909-detroit/${id}.wav` });
@@ -138,6 +133,27 @@ test("with touch, a kit's hard and soft recordings play at the ends of the veloc
   }
 });
 
+test("lofi's Sonic Pi kit swaps in the hard and soft recordings with touch, and its LM-2 cabasa has none", async () => {
+  const { styles } = JSON.parse(readFileSync("styles/styles.json", "utf8")) as { styles: { id: string; kit?: SampleKit }[] };
+  const lofi = styles.find((s) => s.id === "lofi")!.kit!;
+  const drum = (key: number, vel: number): ScoreNote => ({ t: 0, dur: 0.1, key, vel, ch: 9, role: "drums", program: 0 });
+  const SP = "danigb-samples/sample-pi-drums/";
+  const notes = [drum(36, 127), drum(36, 30), drum(38, 127), drum(40, 30), drum(70, 127), drum(70, 1)];
+  const played = async (touch: boolean) => {
+    const { plans } = await new SampleLibrary(decoding(), "MusyngKite", touch).prepare(notes, "lofi", lofi, 1);
+    return plans.map((p) => p.zones.map((z) => z.url).join());
+  };
+  assert.deepEqual(await played(true), [
+    `${SP}drum_bass_hard.m4a`,
+    `${SP}drum_bass_soft.m4a`,
+    `${SP}drum_snare_hard.m4a`,
+    `${SP}drum_snare_soft.m4a`, // 40 plays as 38
+    "danigb-samples/lm-2/cabasa.m4a",
+    "danigb-samples/lm-2/cabasa.m4a",
+  ]);
+  assert.deepEqual(await played(false), [`${SP}drum_bass_hard.m4a`, `${SP}drum_bass_hard.m4a`, `${SP}drum_snare_soft.m4a`, `${SP}drum_snare_soft.m4a`, "danigb-samples/lm-2/cabasa.m4a", "danigb-samples/lm-2/cabasa.m4a"]);
+});
+
 test("minimal_techno plays its own kit from sample packs, and Claudia's site ships no older-kit drum file", () => {
   const { styles } = JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: { id: string; kit?: SampleKit }[] };
   const techno = styles.find((s) => s.id === "minimal_techno");
@@ -149,4 +165,13 @@ test("minimal_techno plays its own kit from sample packs, and Claudia's site shi
   assert.deepEqual(shipped.filter((f) => f === "danigb" || f.startsWith("danigb/")), []);
   const credits = JSON.parse(readFileSync("styles/claudia_samples/credits.json", "utf8")) as { pack: string }[];
   assert.ok(credits.some((c) => c.pack === "danigb-sampled/tr909-detroit"));
+});
+
+test("the main site ships every file under its pack, with no upstream mirror directory, and credits each pack once", () => {
+  const shipped = readdirSync("styles/samples", { withFileTypes: true });
+  const dirs = shipped.filter((d) => d.isDirectory()).map((d) => d.name).sort();
+  assert.deepEqual(dirs, ["danigb-samples", "gleitz-musyngkite"]);
+  const credits = JSON.parse(readFileSync("styles/samples/credits.json", "utf8")) as PackCredit[];
+  const packs = new Set((readdirSync("styles/samples", { recursive: true }) as string[]).filter((f) => f.endsWith("/pack.json")).map((f) => f.slice(0, -"/pack.json".length)));
+  assert.deepEqual(credits.map((c) => c.pack), [...packs].sort());
 });

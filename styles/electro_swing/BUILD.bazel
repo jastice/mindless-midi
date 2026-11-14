@@ -1,5 +1,23 @@
 load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": "@samples//danigb-samples/sample-pi-drums:bd_haus",
+        "38": "@samples//danigb-samples/sample-pi-drums:sn_generic",
+        "37": "@samples//danigb-samples/lm-2:stick-h",
+        "39": "@samples//danigb-samples/lm-2:clap",
+        "42": "@samples//danigb-samples/tr-808:ch",
+        "46": "@samples//danigb-samples/tr-808:oh25",
+        "51": "@samples//danigb-samples/lm-2:ride",
+        "49": "@samples//danigb-samples/lm-2:crash",
+        "45": "@samples//danigb-samples/lm-2:tom-l",
+        "50": "@samples//danigb-samples/lm-2:tom-h",
+        "70": "@samples//danigb-samples/lm-2:tambourine",
+    },
+)
 
 music_style(
     name = "style",
@@ -7,11 +25,9 @@ music_style(
     brief = "brief.md",
     color = "#68d391",
     corpus = "corpus.json",
+    kit = ":kit",
     packs = [
         "@samples//danigb-samples/dsmolken-double-bass-pizz",
-        "@samples//danigb-samples/lm-2",
-        "@samples//danigb-samples/sample-pi-drums",
-        "@samples//danigb-samples/tr-808",
         "@samples//gleitz-musyngkite/acoustic-guitar-steel",
         "@samples//gleitz-musyngkite/brass-section",
         "@samples//gleitz-musyngkite/clarinet",

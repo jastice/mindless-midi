@@ -25,7 +25,7 @@ Audio graph) → speakers.
 | File | Role |
 | --- | --- |
 | `synth.ts` | "Approach 1": hand-written synthesis, no downloads. Modal piano, FM e-piano, modal mallets, Karplus-Strong plucks, PolyBLEP subtractive voices, analog-style kit. Renders a whole note at once. |
-| `sampler.ts` | "Approach 2": multi-sampled instruments from SFZ libraries and GM soundfonts, per-style drum kits. `SampleLibrary` (main thread, downloads/decodes) is split from playback (worker). |
+| `sampler.ts` | "Approach 2": multi-sampled instruments from SFZ libraries and GM soundfonts, per-style drum kits (`sample_kit`, carried in the bundle). `SampleLibrary` (main thread, downloads/decodes) is split from playback (worker). |
 | `bus.ts` | Per-style mix bus: high-pass, chorus, kick ducking, pan, ping-pong delay and reverb sends; master tape/vinyl, glue compression, limiter. Style changes are scheduled AudioParam changes so they land on a piece boundary. |
 | `weight.ts` | Stem-level "weight" before the bus: driven kick, envelope-following ducking, driven bass kept out of the kick's octave, parallel drum compression, mono low end. |
 | `leveler.ts` | `RoleLeveler`: causal per-stem loudness matching to a role target. |

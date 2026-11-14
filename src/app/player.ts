@@ -20,7 +20,8 @@ import { DEFAULT_PIECE_OPTIONS, type Expression, type PieceOptions } from "../en
 import { type Bar, barSeconds } from "../engine/types.js";
 import { Bus } from "../sound/bus.js";
 import { type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../sound/protocol.js";
-import { type PlannedNote, SampleCache, SampleLibrary, mirroredAt } from "../sound/sampler.js";
+import { creditLines, type PackCredit } from "../corpus/pack.js";
+import { type PlannedNote, SampleCache, SampleLibrary, servedAt } from "../sound/sampler.js";
 import { barScore } from "../sound/score.js";
 import type { ScoreNote } from "../sound/types.js";
 
@@ -146,6 +147,8 @@ export class Player {
   private worker: Worker | null = null;
   private bus: Bus | null = null;
   private library: SampleLibrary | null = null;
+  /** The site's credits.json, once read (see `sampleCredits`). */
+  private credits: PackCredit[] | null = null;
   private wasm: Promise<ArrayBuffer> | null = null;
   private workerHasWasm = false;
   private conductor: BarSource;
@@ -316,9 +319,9 @@ export class Player {
     return { bytes: this.library?.bytes ?? 0, rate: this.rate };
   }
 
-  /** Credits for the sampled instruments heard so far. */
+  /** Credits for the sample packs heard so far, from the site's credits.json. */
   get sampleCredits(): string[] {
-    return this.library?.labels ?? [];
+    return this.library && this.credits ? creditLines(this.credits, this.library.packs) : [];
   }
 
   /** Seconds between the audio clock and the speaker, as the browser reports it. */
@@ -777,7 +780,11 @@ export class Player {
       this.workerHasWasm = true;
     }
     // The site ships the samples its styles can play (//styles:samples) next to the page.
-    if (engine === "samples") this.library ??= new SampleLibrary(new SampleCache(ctx, mirroredAt(new URL("samples/", document.baseURI).href)), undefined, this.opts.weighted);
+    if (engine === "samples" && !this.library) {
+      const cache = new SampleCache(ctx, servedAt(new URL("samples/", document.baseURI).href));
+      this.library = new SampleLibrary(cache, undefined, this.opts.weighted);
+      cache.credits().then((c) => (this.credits = c), (e: unknown) => console.warn("no sample credits", e));
+    }
   }
 
   /**

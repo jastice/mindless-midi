@@ -1,5 +1,23 @@
 load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": "@samples//danigb-samples/tr-808:bd2525",
+        "38": "@samples//danigb-samples/tr-808:sd2525",
+        "37": "@samples//danigb-samples/tr-808:rs",
+        "39": "@samples//danigb-samples/tr-808:cp",
+        "42": "@samples//danigb-samples/tr-808:ch",
+        "46": "@samples//danigb-samples/tr-808:oh25",
+        "51": "@samples//danigb-samples/tr-808:cy2525",
+        "49": "@samples//danigb-samples/tr-808:cy2525",
+        "45": "@samples//danigb-samples/tr-808:lt25",
+        "50": "@samples//danigb-samples/tr-808:ht25",
+        "70": "@samples//danigb-samples/tr-808:ma",
+    },
+)
 
 music_style(
     name = "style",
@@ -7,8 +25,8 @@ music_style(
     brief = "brief.md",
     color = "#4fd1c5",
     corpus = "corpus.json",
+    kit = ":kit",
     packs = [
-        "@samples//danigb-samples/tr-808",
         "@samples//danigb-samples/vcsl-vibraphone-soft-mallets",
         "@samples//gleitz-musyngkite/french-horn",
         "@samples//gleitz-musyngkite/fretless-bass",

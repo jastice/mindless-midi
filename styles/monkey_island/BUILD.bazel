@@ -1,5 +1,20 @@
 load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": {"default": "@samples//danigb-samples/sample-pi-drums:drum_bass_soft", "hard": "@samples//danigb-samples/sample-pi-drums:drum_bass_hard"},
+        "38": "@samples//danigb-samples/tr-808:hc25",
+        "37": "@samples//danigb-samples/tr-808:cl",
+        "70": "@samples//danigb-samples/tr-808:ma",
+        "45": "@samples//danigb-samples/tr-808:lc25",
+        "50": "@samples//danigb-samples/tr-808:mc25",
+        "42": "@samples//danigb-samples/lm-2:cabasa",
+        "49": "@samples//danigb-samples/lm-2:crash",
+    },
+)
 
 music_style(
     name = "style",
@@ -7,11 +22,9 @@ music_style(
     brief = "brief.md",
     color = "#f6e05e",
     corpus = "corpus.json",
+    kit = ":kit",
     packs = [
         "@samples//danigb-samples/dsmolken-double-bass-pizz",
-        "@samples//danigb-samples/lm-2",
-        "@samples//danigb-samples/sample-pi-drums",
-        "@samples//danigb-samples/tr-808",
         "@samples//danigb-samples/vcsl-marimba",
         "@samples//gleitz-musyngkite/acoustic-guitar-steel",
         "@samples//gleitz-musyngkite/church-organ",

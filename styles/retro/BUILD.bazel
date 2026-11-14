@@ -1,5 +1,23 @@
 load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": "@samples//danigb-samples/casio-rz1:kick",
+        "38": "@samples//danigb-samples/casio-rz1:snare",
+        "37": "@samples//danigb-samples/casio-rz1:clave",
+        "39": "@samples//danigb-samples/casio-rz1:clap",
+        "42": "@samples//danigb-samples/casio-rz1:hihat-closed",
+        "46": "@samples//danigb-samples/casio-rz1:hihat-open",
+        "51": "@samples//danigb-samples/casio-rz1:ride",
+        "49": "@samples//danigb-samples/casio-rz1:crash",
+        "45": "@samples//danigb-samples/casio-rz1:tom-3",
+        "50": "@samples//danigb-samples/casio-rz1:tom-1",
+        "70": "@samples//danigb-samples/lm-2:cabasa",
+    },
+)
 
 music_style(
     name = "style",
@@ -7,9 +25,8 @@ music_style(
     brief = "brief.md",
     color = "#f6ad55",
     corpus = "corpus.json",
+    kit = ":kit",
     packs = [
-        "@samples//danigb-samples/casio-rz1",
-        "@samples//danigb-samples/lm-2",
         "@samples//gleitz-musyngkite/lead-1-square",
         "@samples//gleitz-musyngkite/lead-2-sawtooth",
         "@samples//gleitz-musyngkite/pad-3-polysynth",

@@ -1,5 +1,18 @@
 load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+# Soft kick, a stick for the rare tick, cabasa for the shaker.
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": {"default": "@samples//danigb-samples/sample-pi-drums:drum_bass_soft", "hard": "@samples//danigb-samples/sample-pi-drums:drum_bass_hard"},
+        "37": "@samples//danigb-samples/lm-2:stick-m",
+        "49": {"default": "@samples//danigb-samples/sample-pi-drums:drum_splash_soft", "hard": "@samples//danigb-samples/sample-pi-drums:drum_splash_hard"},
+        "45": {"default": "@samples//danigb-samples/sample-pi-drums:drum_tom_lo_soft", "hard": "@samples//danigb-samples/sample-pi-drums:drum_tom_lo_hard"},
+        "70": "@samples//danigb-samples/lm-2:cabasa",
+    },
+)
 
 music_style(
     name = "style",
@@ -7,9 +20,8 @@ music_style(
     brief = "brief.md",
     color = "#8fb86a",
     corpus = "corpus.json",
+    kit = ":kit",
     packs = [
-        "@samples//danigb-samples/lm-2",
-        "@samples//danigb-samples/sample-pi-drums",
         "@samples//danigb-samples/wurlitzer-ep200",
         "@samples//gleitz-musyngkite/pad-2-warm",
         "@samples//gleitz-musyngkite/synth-bass-1",

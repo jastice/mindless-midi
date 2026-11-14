@@ -222,6 +222,6 @@ export interface StyleBundle extends StyleMeta {
   formMixers?: Record<string, Partial<Record<Role, number>>>;
   /** Linear output gain that brings the style to the common loudness target. */
   gain?: number;
-  /** The style's own drum kit from sample packs (`sample_kit`); without one the sampler uses its built-in kits. */
+  /** The style's drum kit from sample packs (`sample_kit`); without one its drums are silent and it cannot declare drum keys. */
   kit?: SampleKit;
 }

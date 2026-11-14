@@ -20,7 +20,9 @@ sources:
 3. Add `styles/<id>/BUILD.bazel` by copying another style's. Pick an FM
    `bank` (libADLMIDI embedded bank number, e.g. 1 = Bisqwit, 14 = Doom's
    Bobby Prince set, 58 = The Fat Man, 68 = Nguyen/Wohlstand 4-op GM,
-   72 = DMXOPL3) and a UI `color`.
+   72 = DMXOPL3) and a UI `color`. Give it a drum kit: a `sample_kit` passed
+   as `kit = ":kit"` (copy one; every style needs one, since the ending plays
+   kick, crash and low tom).
 4. Check calibration:
    `bazel build //styles/<id>:style --output_groups=+calibration`. An
    instrument stuck at CC7 127 is too quiet in that bank.

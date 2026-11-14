@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 import { ROLES, type Role } from "../corpus/constants.js";
 import type { StyleBundle } from "../corpus/schema.js";
+import { declareSound } from "../corpus/sound.js";
 import { Conductor } from "../engine/conductor.js";
 import { velocityScale } from "../engine/parts.js";
 import { DEFAULT_PIECE_OPTIONS } from "../engine/piece.js";
@@ -11,7 +12,7 @@ import { STEM_REF } from "./bus.js";
 import { StemWindow, type Stereo, stereo } from "./dsp.js";
 import { RoleLeveler } from "./leveler.js";
 import { bandShare, lowCorrelation, measureWeight } from "./measure.js";
-import { type PlannedNote, type SampleData, TOUCH_SAMPLES, mirrorPath, renderSampleNote } from "./sampler.js";
+import { type PlannedNote, type SampleData, renderSampleNote } from "./sampler.js";
 import { barScore } from "./score.js";
 import { renderSynthNote } from "./synth.js";
 import type { ScoreNote } from "./types.js";
@@ -365,5 +366,14 @@ test("a sampled note with a low-pass corner is duller, and the recordings touch 
   renderSampleNote(dull, note, { ...plan, lowpass: 900 }, () => data, SR);
   assert.ok(bandShare(dull, SR, 3000, Infinity) < bandShare(full, SR, 3000, Infinity) / 4);
 
-  for (const url of TOUCH_SAMPLES) assert.ok(existsSync(`styles/samples/${decodeURIComponent(mirrorPath(url)!)}`), `${url} is among the samples the site serves`);
+  // Every variant of every hit a style's declared drum keys reach, through the kit's aliases.
+  for (const style of styles) {
+    const kit = style.kit;
+    assert.ok(kit, `${style.id} has a kit`);
+    const keys = declareSound(style.corpus).drums;
+    for (const key of keys) {
+      const hit = kit.hits[String(key)] ?? kit.hits[String(kit.aliases[String(key)] ?? key)];
+      for (const v of hit ? [hit.default, hit.hard, hit.soft] : []) if (v) assert.ok(existsSync(`styles/samples/${v.path}`), `${style.id}: key ${key}: ${v.path} is among the samples the site serves`);
+    }
+  }
 });

@@ -1,5 +1,23 @@
 load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": "@samples//danigb-samples/lm-2:kick",
+        "38": "@samples//danigb-samples/lm-2:snare-m",
+        "37": "@samples//danigb-samples/lm-2:stick-m",
+        "39": "@samples//danigb-samples/lm-2:clap",
+        "42": "@samples//danigb-samples/lm-2:hhclosed",
+        "46": "@samples//danigb-samples/lm-2:hhopen",
+        "51": "@samples//danigb-samples/lm-2:ride",
+        "49": "@samples//danigb-samples/lm-2:crash",
+        "45": "@samples//danigb-samples/lm-2:tom-l",
+        "50": "@samples//danigb-samples/lm-2:tom-h",
+        "70": "@samples//danigb-samples/lm-2:cabasa",
+    },
+)
 
 music_style(
     name = "style",
@@ -7,8 +25,8 @@ music_style(
     brief = "brief.md",
     color = "#ed64a6",
     corpus = "corpus.json",
+    kit = ":kit",
     packs = [
-        "@samples//danigb-samples/lm-2",
         "@samples//gleitz-musyngkite/lead-1-square",
         "@samples//gleitz-musyngkite/lead-2-sawtooth",
         "@samples//gleitz-musyngkite/pad-2-warm",

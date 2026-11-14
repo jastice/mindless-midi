@@ -1,9 +1,9 @@
 /** The packaging step behind samples.ts; see there. */
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { type PackManifest, type SampleKit, licenceName, packCredit, servedPath } from "../../src/corpus/pack.js";
+import { type PackCredit, type PackManifest, type SampleKit, licenceName, packCredit } from "../../src/corpus/pack.js";
 import type { SoundDeclaration } from "../../src/corpus/sound.js";
-import { INSTRUMENTS, type Reach, SampleCache, isPackSample, manifestPath, mirrorPath, reach } from "../../src/sound/sampler.js";
+import { CREDITS, INSTRUMENTS, type Reach, SampleCache, manifestPath, reach } from "../../src/sound/sampler.js";
 
 export interface Params {
   rule: string;
@@ -12,23 +12,8 @@ export interface Params {
   styles: { label: string; sound: string; files: Record<string, string> }[];
 }
 
-const DANIGB = "https://danigb.github.io/samples/";
-
-/** Older kits name danigb/samples files by their Pages URL: the pack sample that is the same file at the pin. */
-function legacySample(packs: Map<string, PackManifest>, url: string): { pack: string; path: string } | undefined {
-  if (!url.startsWith(DANIGB)) return undefined;
-  const repoPath = `audio/${decodeURIComponent(url.slice(DANIGB.length))}`;
-  for (const pack of packs.values()) {
-    if (pack.kind !== "oneshots" || pack.origin.repo !== "danigb/samples" || !repoPath.startsWith(pack.origin.path)) continue;
-    const file = repoPath.slice(pack.origin.path.length);
-    for (const [sid, s] of Object.entries(pack.samples)) if (s.file === file) return { pack: pack.id, path: servedPath(pack.id, sid, s.file) };
-  }
-  return undefined;
-}
-
-/** Which pack a served path or URL belongs to, for messages. */
+/** Which pack a served path belongs to. */
 function packOf(packs: Map<string, PackManifest>, ref: string): string | undefined {
-  if (!isPackSample(ref)) return legacySample(packs, ref)?.pack;
   const m = /^([^/]+\/[^/]+)\//.exec(ref);
   return m && packs.has(m[1]!) ? m[1] : undefined;
 }
@@ -78,16 +63,6 @@ export async function packageSamples(params: Params, out: string | null, superse
 
   if (superset) {
     for (const s of params.styles) for (const [served, from] of Object.entries(s.files)) add(served, from, packOf(packs, served));
-    // The older kits' paths too, so a page asking for danigb/... finds them.
-    for (const s of params.styles) {
-      for (const [served, from] of Object.entries(s.files)) {
-        const pack = packs.get(packOf(packs, served) ?? "");
-        if (pack?.kind !== "oneshots" || pack.origin.repo !== "danigb/samples") continue;
-        const sid = served.slice(pack.id.length + 1).replace(/\.[^.]+$/, "");
-        const file = pack.samples[sid]?.file;
-        if (file) add(`danigb/${pack.origin.path.slice("audio/".length)}${file}`, from, pack.id);
-      }
-    }
   } else {
     const problems: { style: string; part: string; keys: number[]; pack: string }[] = [];
     for (const s of params.styles) {
@@ -102,19 +77,17 @@ export async function packageSamples(params: Params, out: string | null, superse
       for (const r of reached) {
         for (const ref of r.files) {
           if (ref.endsWith("/pack.json")) continue; // Comes with the pack's samples.
-          const legacy = isPackSample(ref) ? undefined : legacySample(packs, ref);
-          const path = legacy?.path ?? ref;
-          const from = s.files[path];
+          const from = s.files[ref];
           const pack = packOf(packs, ref);
           if (from === undefined) {
-            const name = pack ?? (isPackSample(ref) ? ref : `no pack has ${ref}`);
+            const name = pack ?? ref;
             const k = `${r.part}|${name}`;
             const m = missing.get(k) ?? { part: r.part, keys: new Set<number>(), pack: name };
             m.keys.add(r.key);
             missing.set(k, m);
             continue;
           }
-          add(legacy ? decodeURIComponent(mirrorPath(ref)!) : path, from, pack);
+          add(ref, from, pack);
         }
       }
       for (const m of missing.values()) problems.push({ style: style.id, part: m.part, keys: [...m.keys].sort((a, b) => a - b), pack: m.pack });
@@ -147,11 +120,11 @@ export async function packageSamples(params: Params, out: string | null, superse
     bytes += n;
     sizes.push([served, n]);
   }
-  const credits = [...used].sort().map((id) => {
+  const credits = [...used].sort().map((id): PackCredit => {
     const pack = packs.get(id)!;
     return { pack: id, credit: packCredit(pack), licence: licenceName(pack.licence.spdx), spdx: pack.licence.spdx, attribution: pack.licence.attribution, share_alike: pack.licence.share_alike, source: pack.licence.source };
   });
-  writeFileSync(join(out, "credits.json"), JSON.stringify(credits, null, 1) + "\n");
+  writeFileSync(join(out, CREDITS), JSON.stringify(credits, null, 1) + "\n");
   const summary = summaryOf(sizes.length, bytes);
   return { summary, report: [summary, ...sizes.map(([rel, n]) => `${String(n).padStart(9)}  ${rel}`)].join("\n") + "\n", written };
 }

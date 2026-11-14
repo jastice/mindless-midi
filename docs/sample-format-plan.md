@@ -1,8 +1,8 @@
 # Sample packs: a unified format and Bazel dependencies
 
-Built so far: steps 1 and 2 (2026-11-14), see "Built" under each. Written
-against `main` at `c6cbd10`. Step 3 is not tried yet; see "To verify before
-starting" for what steps 1 and 2 settled.
+Built: steps 1, 2 and 3 (2026-11-14), see "Built" under each. Written
+against `main` at `c6cbd10`; "To verify before starting" records what the
+steps settled, and "Open" what is left.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
 
@@ -287,12 +287,60 @@ restored between runs and a cold cache is the only time all requests happen.
 
 ### 3. Move the rest and remove the old path (M)
 
-- Generate manifests for the remaining danigb/samples drum machines and Sonic
-  Pi.
-- Delete the legacy-URL handling in `tools/samples` and `mirrorPath` (the lock
-  files and `UPSTREAM_RENAMES` went in step 2). The runtime loader is keyed by
-  sample id.
-- Generate the credits list from the licence blocks.
+- Every drum pack the older kits play is already a manifest (step 2 added
+  TR-808, LM-2, Casio RZ-1 and Sonic Pi), so no generator run is needed.
+- Move every style's kit from `KITS` in `sampler.ts` to a `sample_kit` in its
+  BUILD file, the Sonic Pi touch swaps (`HARD_SOFT`) as
+  `{"default", "hard", "soft"}` hits. Each style plays the same file for
+  every key and touch velocity as before.
+- Delete `KITS`, `HARD_SOFT`, `TOUCH_SAMPLES`, `mirrorPath`, `mirroredAt` and
+  the legacy-URL handling in `tools/samples` (the lock files and
+  `UPSTREAM_RENAMES` went in step 2). The runtime loader is keyed by served
+  path (`<pack id>/<sample id>.<ext>`) only.
+- The page's credits come from the generated `credits.json`.
+- Done when no code refers to upstream URLs or `danigb/` and `gleitz/` mirror
+  paths outside `//tools/packs` and the manifests, every style builds offline,
+  and the trimmed site ships the same audio as before.
+
+#### Built (2026-11-14)
+
+- Every style in `//styles` has a `sample_kit` named `kit` in its BUILD file,
+  generated once from the old `KITS` table: each hit is the pack sample with
+  the same upstream file, and a hit whose recording had a `HARD_SOFT` partner
+  gets it as its `hard` (default soft) or `soft` (default hard) variant.
+  `minimalist` and `orbital_glass` have no drum patterns but used to fall
+  back to the synthwave kit, and every style declares the ending's kick,
+  crash and low tom (`drumKeys` in `src/corpus/sound.ts`), so they get the
+  synthwave LinnDrum kit. The drum packs left the styles' `packs`; a kit
+  brings its own samples.
+- Checked with a one-off script over all 22 styles: the old lookup (`KITS`,
+  the alias table, the `HARD_SOFT` swaps at velocity ≥ 100 and ≤ 52, the
+  synthwave fallback) and the new one (the bundle's kit) name the same
+  upstream file for every key 0-127, velocity 1-127, touch on and off: 715,264
+  cases, no difference. `sampler_test` keeps lofi's swaps as a test.
+- `sample_kit`'s default aliases are now the GM ones whose target the kit has
+  a hit for. The old table aliased to a missing key silently (baroque has no
+  snare, so 40 played nothing), and an explicit alias still fails if its
+  target is missing.
+- `sampler.ts` has no upstream URLs: `KITS`, `HARD_SOFT`, `TOUCH_SAMPLES`,
+  `mirrorPath`, `mirroredAt` and `isPackSample` are gone, and the page
+  locates every file with `servedAt(base)`. A style with no kit plays silent
+  drums and fails `reach()` if it declares a drum key. `//tools/samples` has no
+  `legacySample` or mirror layout. `Instrument.label` and
+  `SampleLibrary.labels` are gone too; the library reports the `packs` it has
+  played.
+- Credits: `credits.json` entries are typed (`PackCredit` in
+  `src/corpus/pack.ts`). The three pages read `samples/credits.json` and show
+  `creditLines()`: one line per distinct credit among the packs played (a
+  soundfont's programs share one line). The bench reports pack ids.
+- The trimmed main-site set: the same 2,843 audio files (same hashes) and the
+  same JSON (table, manifests and `credits.json` byte for byte). The only
+  difference is the 55 drum files' paths, from `danigb/<upstream path>` to
+  `<pack id>/<sample id>.m4a`. Claudia's set is unchanged. No touch variant
+  was missing: every `HARD_SOFT` file was already some kit's default.
+- Checked in the browser: lofi on the Samples engine loads its drums from
+  `samples/danigb-samples/sample-pi-drums/`, with no off-site or mirror-path
+  requests. All six hard/soft swaps plan the right file and decode. The credits line reads from `credits.json`.
 
 ## To verify before starting
 
@@ -347,9 +395,12 @@ restored between runs and a cold cache is the only time all requests happen.
 - Whether manifests should be generated into `samples/` and checked in, or
   built. Checked in is assumed, so licence and hash changes show in review.
 - Whether `kit` belongs on `music_style` or on a separate rule the app picks.
-  Settle it together with DJ Claudia's kits-with-patches.
+  Settle it together with DJ Claudia's kits-with-patches. Since step 3 every
+  style has one on `music_style`; nothing in step 3 depended on the choice.
 - Whether the trim targets a style or a style pack. Today `samples` and
   `claudia_samples` are each one union over a pack, so the site ships one
   `samples/` per app; trimming per pack keeps that and dedupes shared files.
-- How a kit that mixes packs (techno: house kick, 808 snare, 909 hats) appears
-  in the credits: one line per pack used, not per sample.
+- ~~How a kit that mixes packs appears in the credits.~~ Settled in step 3:
+  `credits.json` has one entry per shipped pack, and the page shows one line
+  per distinct credit among the packs it has played, whichever kit or program
+  played them.

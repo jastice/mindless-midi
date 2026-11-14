@@ -28,7 +28,7 @@ StyleInfo = provider(
         "corpus": "File: the source corpus.",
         "brief": "File or None: the prose brief the corpus was generated from.",
         "kit": "SampleKitInfo or None: the style's own drum kit.",
-        "packs": "List of SamplePackInfo: the sample packs the style's instruments (and older kit) play.",
+        "packs": "List of SamplePackInfo: the sample packs the style's instruments play.",
         "label": "Label of the style target.",
     },
 )
@@ -90,11 +90,11 @@ music_style = rule(
         "style_id": attr.string(doc = "Defaults to the package's directory name."),
         "bank": attr.int(mandatory = True, doc = "libADLMIDI embedded FM bank number."),
         "color": attr.string(default = "#888888", doc = "UI accent colour."),
-        "kit": attr.label(providers = [SampleKitInfo], doc = "The style's drum kit, a sample_kit. Without one the sampler's built-in kits apply."),
+        "kit": attr.label(providers = [SampleKitInfo], doc = "The style's drum kit, a sample_kit. Every style declares the ending's drum keys, so style_samples fails without one."),
         "packs": attr.label_list(
             providers = [SamplePackInfo],
             doc = "The sample packs the style plays (@samples//<pack id>): one per instrument program " +
-                  "(samples/instruments.json says which), and the drum packs of a built-in kit. " +
+                  "(samples/instruments.json says which); the kit brings its own samples. " +
                   "style_samples fails if a declared key range reaches outside them.",
         ),
         "_stylec": _TOOL,

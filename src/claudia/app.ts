@@ -140,7 +140,7 @@ async function main(): Promise<void> {
     $("engine-desc").textContent = desc;
     const credits = player.sampleCredits;
     $("credits").hidden = !credits.length;
-    if (credits.length) $("credits").textContent = `Sampled instruments (from danigb/samples, danigb/sampled and gleitz/midi-js-soundfonts): ${credits.join(", ")}.`;
+    if (credits.length) $("credits").textContent = `Sampled instruments: ${credits.join(", ")}.`;
   }
   $("engines").addEventListener("keydown", (ev) => {
     if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") return;

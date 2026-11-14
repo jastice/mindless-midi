@@ -46,14 +46,22 @@ does not list plays nothing, and a style cannot declare it. The sampler
    all its files at once (`ctx.download`, each checked against its hash), and
    the `@samples` labels: `@samples//<pack id>:<sample id>` and
    `@samples//<pack id>` for a whole pack.
-2. Each style names the packs it plays in `music_style(packs = [...])`, and its
-   drum kit in `kit` (a `sample_kit`) where it has one. Its
+2. Each style names the packs its instruments play in
+   `music_style(packs = [...])`, and its drum kit in `kit`: a `sample_kit` in
+   the same BUILD file, mapping General MIDI keys to `@samples` labels. A hit
+   is a label or `{"default", "hard", "soft"}`; with touch, a hard hit plays
+   the hard recording and a light one the soft (the Sonic Pi kits' hard and
+   soft drums). Key aliases (35 as 36, 40 as 38, ...) default to the GM ones
+   whose target the kit has. Every style needs a kit: each declares at least
+   the ending's kick, crash and low tom. Its
    [sound declaration](../modules/corpus.md) (`sound.json`) lists the
    instruments and key ranges it can play.
 3. `style_samples` (`//styles:samples`, `//styles:claudia_samples`) is offline.
    It runs the sampler's own `reach()` over each style's declared ranges,
    against the manifests, and copies only the files that can sound into
-   `samples/`, with the table, the used manifests and `credits.json`. If a
+   `samples/` (each at `<pack id>/<sample id>.<ext>`, every touch variant of
+   every reachable drum key included), with the table, the used manifests and
+   `credits.json`, one entry per pack from its licence block. If a
    range reaches a pack the style does not declare, it fails and names the
    style, part, keys and pack, with the labels to add.
    `--output_groups=+report` lists the files.
@@ -83,14 +91,6 @@ accepted ([Sample sources](./sample-sources.md) says how). After a new
 instrument, add it to `samples/instruments.json`; `//tools/packs:zones_test`
 then checks, key by key, that it plays what the upstream document did.
 
-## Still on the old path
-
-Styles without their own `kit` use the `KITS` table in `sampler.ts`, which
-names danigb/samples files by their Pages URL. The packaging action finds the
-same file in a declared drum pack (LM-2, TR-808, Casio RZ-1, Sample Pi) and
-ships it at the old mirror path, `samples/danigb/<path>`. Step 3 of the plan
-moves those kits to `sample_kit`.
-
 ## Sources and licences
 
 From [danigb/samples](https://github.com/danigb/samples),
@@ -99,7 +99,9 @@ From [danigb/samples](https://github.com/danigb/samples),
 Splendid Grand Piano (public domain), VCSL (CC0), D. Smolken double bass
 (CC0), Greg Sullivan's Wurlitzer (CC BY 3.0), MusyngKite (CC BY-SA 3.0),
 FluidR3 (CC BY 3.0), drum-machine and Sonic Pi kits. Each pack's licence block
-says what its source states; the page credits whatever it has played from it.
+says what its source states. The page reads `samples/credits.json` and shows
+one line per credit among the packs it has played (a soundfont's programs
+share one).
 For every source considered, used or not, see
 [Sample sources](./sample-sources.md). The [bench](../apps/bench.md) serves
 the table and manifests itself and streams the audio from each manifest's

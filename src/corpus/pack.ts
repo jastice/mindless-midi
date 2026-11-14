@@ -185,6 +185,34 @@ export function packCredit(pack: Pick<PackManifest, "description" | "licence">):
   return `${pack.licence.attribution ?? pack.description} (${licenceName(pack.licence.spdx)})`;
 }
 
+/**
+ * One line of `credits.json`, which //tools/samples writes beside the samples
+ * it ships, one per pack. The page credits the packs it has played from it.
+ */
+export interface PackCredit {
+  pack: string;
+  /** `packCredit`: what the page shows. */
+  credit: string;
+  /** `licenceName` of `spdx`. */
+  licence: string;
+  spdx: string;
+  attribution: string | null;
+  share_alike: boolean;
+  /** Where the licence terms were read. */
+  source: string;
+}
+
+/** The pack a served path (`<source>/<pack>/<file>`) belongs to. */
+export function packOfPath(path: string): string {
+  return path.split("/").slice(0, 2).join("/");
+}
+
+/** The credit lines for the packs in `used`, from `credits.json`: one per distinct credit (a soundfont's programs share one), in order. */
+export function creditLines(credits: readonly PackCredit[], used: Iterable<string>): string[] {
+  const want = new Set(used);
+  return [...new Set(credits.filter((c) => want.has(c.pack)).map((c) => c.credit))];
+}
+
 // --- Instruments --------------------------------------------------------------
 
 export const FONTS = ["MusyngKite", "FluidR3_GM"] as const;
