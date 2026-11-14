@@ -572,6 +572,10 @@ Sound, in Node through the synth:
   the set "permissive licensed" and points to each folder for the licence;
   the folders hold only a `dm.json`, which was not read. Licences are still
   open.
+  **Update 2026-11-14:** a 909 exists in a sibling repo, `danigb/sampled`
+  (`DM/TR-909/Detroit` and `/SP`, wav), which claims public domain or similar
+  licences; accepted for this project. See
+  [sample sources](knowledge/build/sample-sources.md).
 - That `sub()` can take modulation synced to the bar clock without changing
   its output when there is none.
   **Read 2026-11-13, not tried.** A voice gets the note's onset in seconds

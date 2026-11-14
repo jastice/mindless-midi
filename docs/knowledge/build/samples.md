@@ -34,7 +34,8 @@ From [danigb/samples](https://github.com/danigb/samples) and
 [gleitz/midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts):
 Splendid Grand Piano (public domain), VCSL (CC0), D. Smolken double bass
 (CC0), Greg Sullivan's Wurlitzer (CC BY 3.0), MusyngKite (CC BY-SA 3.0),
-drum-machine and Sonic Pi kits. The page credits whatever it has played. The
+drum-machine and Sonic Pi kits. The page credits whatever it has played. For
+every source considered, used or not, see [Sample sources](./sample-sources.md). The
 [bench](../apps/bench.md) still streams from upstream.
 
 [^readme]: README
