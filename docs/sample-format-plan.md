@@ -1,0 +1,185 @@
+# Sample packs: a unified format and Bazel dependencies
+
+Built so far: nothing. Written against `main` at `c6cbd10`. The design below
+is checked against the current code and upstream repos, but none of the Bazel
+parts has been tried; see "To verify before starting".
+
+Sizes are rough: S is a day or two, M about a week, L several weeks.
+
+## Why
+
+Samples reach the build and the page in an ad hoc way:
+
+- A sample is named by its **upstream URL**. `src/sound/sampler.ts` hard-codes
+  the two prefixes it mirrors (`danigb/`, `gleitz/`).
+- Drum kits are a TypeScript table (`KITS`) keyed by style id.
+- Licences are prose in `docs/knowledge/build/sample-sources.md` and in a few
+  code comments. Nothing checks that a source has one.
+- Integrity is a lock file per app (`styles/samples.lock.json`,
+  `claudia_samples.lock.json`) written by a refresh step.
+- Fetching is one network-using action (`tools/samples`, 16 requests at a time)
+  that works out which files a style needs by downloading each instrument's
+  region document and filtering by the style's key ranges.
+- URLs point at live GitHub Pages sites, so upstream can change under the pin.
+
+The goal is one format for every sample source, each sample or group
+addressable as a Bazel label, fetched lazily and hash-pinned to an upstream
+commit, with the licence carried by the data.
+
+CAS (content-addressed storage of samples outside the upstream hosts) is out of
+scope here. Pinning by sha256 keeps that door open.
+
+## Decided
+
+- **One manifest per pack**, checked in, `samples/<source>/<pack>/pack.json`.
+  Every source is converted to it once, by a generator run by hand. The app and
+  the build never read upstream's `dm.json`, websfz document or `names.json`
+  after that.
+- **Commit pinning.** A pack records its upstream repo and commit; file URLs are
+  built from them (for danigb/samples,
+  `https://raw.githubusercontent.com/danigb/samples/<commit>/audio/<path>`).
+  Bumping a pack means a new commit and a generator run, and the hash check
+  flags any file that changed.
+- **Granularity.** One Bazel target per sample for one-shots (drum hits, which
+  kits name individually). One group per instrument for multisamples (a piano's
+  196 files are never referenced one by one).
+- **Bazel depends on a static superset; the shipped site is a trimmed slice.**
+  A style's `BUILD` names the packs or instrument groups it uses, and all of
+  those are fetched. A packaging action (no network) reads the style's
+  `sound.json` and the manifests and copies only the files the key ranges can
+  reach into `samples/`. The superset is the cost of fetching, the slice is
+  what ships.
+- **A check replaces discovery.** If a style's declared key range reaches a
+  region outside the packs it depends on, the action fails and names the style,
+  the key and the pack. The BUILD file stays authoritative; a corpus change
+  cannot silently drop a sample.
+- **Keep each file's original codec** (wav, m4a, ogg). Hashes then match
+  upstream. Transcoding to one codec belongs with the CAS work.
+- **Licence is mandatory data.** Packs without a licence block fail validation.
+  The credits the page shows are generated from it.
+- **Licence policy for now:** a source counts when it states a free licence or
+  free use itself; "royalty free" and "public domain or similar" are accepted
+  for this project (decided 2026-11-14). The catalogue records what each source
+  actually says.
+
+## The format
+
+```json
+{
+  "id": "danigb-sampled/tr909-detroit",
+  "kind": "oneshots",
+  "origin": {
+    "repo": "danigb/sampled",
+    "commit": "<40-hex>",
+    "path": "DM/TR-909/Detroit/samples/"
+  },
+  "licence": {
+    "spdx": "LicenseRef-public-domain-claimed",
+    "note": "The repo claims public domain or similar; accepted 2026-11-14.",
+    "attribution": null,
+    "share_alike": false,
+    "read_on": "2026-11-14"
+  },
+  "samples": {
+    "kick": { "file": "kick.wav", "sha256": "...", "bytes": 0, "tags": ["kick"], "gm": 36 },
+    "hihat-open-1": { "file": "hihat-open-1.wav", "sha256": "...", "bytes": 0, "tags": ["hat", "open"], "gm": 46 }
+  }
+}
+```
+
+- `kind: "oneshots"` has `samples` keyed by a stable id. `gm` is the General MIDI
+  percussion key the sample is the natural default for; kits may override it.
+- `kind: "multisample"` has `regions` instead of `gm`: `file`, `root`, `lo`, `hi`,
+  `vel: [lo, hi]` and `loop` where the source has one. That is the SFZ subset
+  `sampler.ts` already reads.
+- Sample ids are the public names. Upstream file names are an implementation
+  detail of `file`.
+- `licence.spdx` uses a real SPDX id where one exists (`CC0-1.0`, `CC-BY-3.0`,
+  `CC-BY-SA-3.0`) and a `LicenseRef-` id for informal claims.
+
+A TypeScript schema and validator live beside the corpus schema (`src/corpus`
+style: a plain type plus a validator and a test that loads every manifest).
+
+## The Bazel side
+
+- A module extension (`//bazel:samples.bzl`) reads the manifests listed in
+  `MODULE.bazel` and generates:
+  - one `http_file` per one-shot sample, with its sha256;
+  - one repository per multisample instrument that downloads its files in a
+    single repository rule (`ctx.download`, started concurrently, each checked
+    against its hash);
+  - a visible `@samples` repository of aliases, so a label reads
+    `@samples//danigb-sampled/tr909-detroit:kick`.
+- Each target provides `SampleInfo` (id, file, licence). A group provides the
+  manifest and its files.
+- `sample_kit(name, hits = {"36": "@samples//…:kick", …})` provides
+  `SampleKitInfo`. `music_style` takes `kit = ":techno_kit"` and the `KITS`
+  table is removed.
+- `style_samples` becomes an offline action: it takes the style's sound
+  declaration, its kit and its instrument groups as inputs, runs the check, and
+  writes the trimmed `samples/` tree and a credits file. The lock files, the
+  refresh step and the network requirement go away.
+
+CI already caches the Bazel repository cache (`setup-bazel` with
+`repository-cache: true` in both workflows), so hash-pinned downloads are
+restored between runs and a cold cache is the only time all requests happen.
+
+## Steps
+
+### 1. Schema, validator and the 909 kit (M)
+
+- Add the manifest type, a validator and a test that loads every manifest.
+- Write the generator for `danigb/sampled` oneshots and run it for TR-909
+  Detroit; hand-check the licence block.
+- Do the Bazel extension for oneshots only, `@samples` aliases and
+  `sample_kit`. Move `minimal_techno`'s drum kit to a `sample_kit` using
+  TR-909 plus the existing 808 hits.
+- Done when `minimal_techno` plays a 909 kit from `@samples` labels and its
+  site build no longer lists that kit in the lock file.
+
+### 2. Multisample groups and the packaging action (L)
+
+- Generators for the websfz documents (Splendid piano, VCSL, Smolken, Rhodes,
+  Wurlitzer) and for the GM soundfonts.
+- Group repositories, the offline trim action and the reach check.
+- Done when a style builds with no network action and a corpus change that
+  widens a range fails the check with a clear message.
+
+### 3. Move the rest and remove the old path (M)
+
+- Generate manifests for the remaining danigb/samples drum machines and Sonic
+  Pi.
+- Delete `tools/samples`, the lock files, `UPSTREAM_RENAMES` and `mirrorPath`.
+  The runtime loader is keyed by sample id.
+- Generate the credits list from the licence blocks.
+
+## To verify before starting
+
+- That thousands of `http_file` repositories from one extension stay quick to
+  evaluate, and that the aliases in `@samples` resolve to repositories the same
+  extension generated. Try it with two files in a scratch workspace first.
+  Fallback if evaluation is slow: group repositories for everything.
+- **danigb/samples.** The converted files are on `main` under `audio/`; a
+  workflow publishes that folder to GitHub Pages. One file was compared
+  (TR-808 `clap/cp.m4a`: Pages and `main` hash the same, and match the lock
+  file). Compare a few more, especially the Splendid piano's `MF-`/`Mf-`
+  naming that `UPSTREAM_RENAMES` works around.
+- **gleitz/midi-js-soundfonts.** Its default branch is `gh-pages`, so the pin
+  is a `gh-pages` commit. Not checked: whether its Pages files equal the repo's
+  files, and its 4.9 GB size means no whole-repo archive.
+- **danigb/sampled.** The 909 sets are wav, and the app currently decodes
+  `.m4a` and `.ogg` from the mirror. Check that the sampler path takes wav
+  (the browser decodes it; sizes are larger) and what the 14 and 16 files add
+  to the page's download.
+- **Where the 909's provenance goes.** Its README names a blog post that no
+  longer loads. The licence note should say so.
+- Whether to key the extension's cache on the manifest hashes in CI, and how
+  `setup-bazel` keys the repository cache today.
+
+## Open
+
+- Whether manifests should be generated into `samples/` and checked in, or
+  built. Checked in is assumed, so licence and hash changes show in review.
+- Whether `kit` belongs on `music_style` or on a separate rule the app picks.
+- How a kit that mixes packs (techno: house kick, 808 snare, 909 hats) appears
+  in the credits: one line per pack used, not per sample.
