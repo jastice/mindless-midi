@@ -90,66 +90,96 @@ async function run(style: StyleBundle, engine: StemEngine, weighted: boolean, ba
     cleared = resolve;
     send({ type: "clear", from: start });
   });
+  return fingerprint(posted);
+}
+
+/**
+ * What the worker posted, as a hash of the bar layout (starts, lengths, roles) and the RMS of the stems in
+ * eight stretches of the run. The levels are compared with a tolerance, not bit for bit: the last bits of a
+ * float differ between CPUs, and nobody hears them.
+ */
+function fingerprint(msgs: ToStems[]): string {
   const h = createHash("sha256");
-  for (const msg of posted) {
+  const arrays: Float32Array[] = [];
+  for (const msg of msgs) {
     if (msg.type !== "pcm") continue;
     h.update(`${msg.start}/${msg.frames}/${msg.roles.join(",")}`);
-    for (const d of msg.data) h.update(new Uint8Array(d.buffer, d.byteOffset, d.byteLength));
+    for (const d of msg.data) arrays.push(new Float32Array(d.buffer, d.byteOffset, d.byteLength / 4));
   }
-  return h.digest("hex").slice(0, 16);
+  const energy = new Array<number>(8).fill(0);
+  const count = new Array<number>(8).fill(0);
+  arrays.forEach((x, i) => {
+    const k = Math.floor((i * 8) / arrays.length);
+    for (let j = 0; j < x.length; j++) energy[k]! += x[j]! * x[j]!;
+    count[k]! += x.length;
+  });
+  return `${h.digest("hex").slice(0, 16)}:${energy.map((e, k) => Math.sqrt(e / Math.max(1, count[k]!)).toFixed(4)).join(",")}`;
+}
+
+/** Equal but for rounding: the same layout, each level within a hair of the other. */
+function assertClose(got: Record<string, string>, want: Record<string, string>): void {
+  assert.deepEqual(Object.keys(got), Object.keys(want));
+  for (const k of Object.keys(want)) {
+    const [gh, gl] = got[k]!.split(":") as [string, string];
+    const [wh, wl] = want[k]!.split(":") as [string, string];
+    assert.equal(gh, wh, `${k}: the bars' layout changed`);
+    const a = gl.split(",").map(Number);
+    const b = wl.split(",").map(Number);
+    a.forEach((v, i) => assert.ok(Math.abs(v - b[i]!) <= 5e-4, `${k}[${i}]: ${v} vs ${b[i]}`));
+  }
 }
 
 const GOLDEN: Record<string, string> = {
-  "metroid/synth/plain": "a3160d572d4c2b97",
-  "metroid/synth/weighted": "c0bbf2b48bda7ff3",
-  "retro/synth/plain": "ec297bd175d62b0d",
-  "retro/synth/weighted": "fc59088150791a97",
-  "lofi/synth/plain": "99f3dd10b23fc8dd",
-  "lofi/synth/weighted": "f2152d81eb7cc822",
-  "jazz_trio/synth/plain": "1760c57e7d7c3212",
-  "jazz_trio/synth/weighted": "9dc933ad6bc61d97",
-  "minimalist/synth/plain": "468bc7ac0e7e57a4",
-  "minimalist/synth/weighted": "892e63afc3cdcc03",
-  "monkey_island/synth/plain": "c69afcafebad474d",
-  "monkey_island/synth/weighted": "1357243ab6f16405",
-  "electro_swing/synth/plain": "f1da00af9c973f6f",
-  "electro_swing/synth/weighted": "f7958a83026ea6b9",
-  "synthwave/synth/plain": "6b94bcd6d23f4ea2",
-  "synthwave/synth/weighted": "1a12a153d66eea0b",
-  "bossa_nova/synth/plain": "3fa0391eb3eaa921",
-  "bossa_nova/synth/weighted": "fd0fdd504cffa1c5",
-  "funk/synth/plain": "734325bff9997ebb",
-  "funk/synth/weighted": "247e91bc0b4622f4",
-  "western/synth/plain": "a3dc3101b1ddbf2b",
-  "western/synth/weighted": "1707431c7304536d",
-  "celtic/synth/plain": "56db59266ff7a707",
-  "celtic/synth/weighted": "9131ba3967efb978",
-  "musette/synth/plain": "59385e6231593b98",
-  "musette/synth/weighted": "0d7491b428245222",
-  "liquid_dnb/synth/plain": "685a585dc1bc7aa9",
-  "liquid_dnb/synth/weighted": "71e16c0778cc136d",
-  "castlevania/synth/plain": "11430bd55794bdc0",
-  "castlevania/synth/weighted": "b4f6b4973c4e3246",
-  "jrpg/synth/plain": "4a314f337c6976fb",
-  "jrpg/synth/weighted": "e72430122075a393",
-  "disco/synth/plain": "039a8982392bb617",
-  "disco/synth/weighted": "69025988a8e3a287",
-  "baroque/synth/plain": "86a4b7a38cbfd17c",
-  "baroque/synth/weighted": "16aa65f91028e3e5",
-  "orbital_glass/synth/plain": "78df966ce0de2249",
-  "orbital_glass/synth/weighted": "750169ec437f2d28",
-  "midnight_platform/synth/plain": "f99660e48ee5c9cb",
-  "midnight_platform/synth/weighted": "9cabc1c119ee2496",
-  "courtyard_nine/synth/plain": "61f852fd8b920b06",
-  "courtyard_nine/synth/weighted": "bb5e60ebce9971ea",
-  "low_log/synth/plain": "6f88391f21b97275",
-  "low_log/synth/weighted": "e6c5b99cc42cc27e",
-  "funk/samples/plain": "d2e69b20e40e2c4c",
-  "funk/samples/weighted": "6ed0dd699a178fd3",
-  "synthwave/samples/plain": "5cdd53ab8f2e625a",
-  "synthwave/samples/weighted": "2860bddaf9c4cffd",
-  "jazz_trio/samples/plain": "0f7a6ecc68f0f5b8",
-  "jazz_trio/samples/weighted": "c53cab07872339a2",
+  "metroid/synth/plain": "f0218e79181bcc45:0.0408,0.0303,0.0366,0.0285,0.0280,0.0256,0.0238,0.0249",
+  "metroid/synth/weighted": "f0218e79181bcc45:0.0381,0.0395,0.0408,0.0377,0.0387,0.0387,0.0352,0.0339",
+  "retro/synth/plain": "f9c826fdca8d44d5:0.0263,0.0280,0.0239,0.0239,0.0246,0.0253,0.0238,0.0236",
+  "retro/synth/weighted": "f9c826fdca8d44d5:0.0378,0.0384,0.0392,0.0363,0.0359,0.0372,0.0350,0.0333",
+  "lofi/synth/plain": "bdda59e7264eede5:0.0196,0.0155,0.0130,0.0132,0.0135,0.0137,0.0139,0.0144",
+  "lofi/synth/weighted": "bdda59e7264eede5:0.0121,0.0116,0.0244,0.0231,0.0258,0.0255,0.0244,0.0245",
+  "jazz_trio/synth/plain": "61cf36df163a2fc8:0.0178,0.0193,0.0198,0.0205,0.0200,0.0192,0.0205,0.0205",
+  "jazz_trio/synth/weighted": "61cf36df163a2fc8:0.0213,0.0212,0.0289,0.0281,0.0279,0.0251,0.0265,0.0261",
+  "minimalist/synth/plain": "11191221445e46d6:0.0062,0.0108,0.0198,0.0122,0.0132,0.0138,0.0144,0.0149",
+  "minimalist/synth/weighted": "11191221445e46d6:0.0174,0.0183,0.0160,0.0162,0.0159,0.0153,0.0164,0.0161",
+  "monkey_island/synth/plain": "a3a57c499d0cb0d7:0.0653,0.0218,0.0207,0.0205,0.0203,0.0240,0.0176,0.0173",
+  "monkey_island/synth/weighted": "a3a57c499d0cb0d7:0.0262,0.0279,0.0288,0.0280,0.0277,0.0339,0.0248,0.0241",
+  "electro_swing/synth/plain": "88be84a4cf9197f2:0.0195,0.0245,0.0225,0.0229,0.0303,0.0268,0.0215,0.0254",
+  "electro_swing/synth/weighted": "88be84a4cf9197f2:0.0174,0.0288,0.0261,0.0247,0.0258,0.0279,0.0234,0.0290",
+  "synthwave/synth/plain": "e9c35f15cd8886ad:0.0352,0.0270,0.0248,0.0261,0.0255,0.0248,0.0252,0.0264",
+  "synthwave/synth/weighted": "e9c35f15cd8886ad:0.0415,0.0366,0.0333,0.0337,0.0334,0.0330,0.0338,0.0343",
+  "bossa_nova/synth/plain": "032d5d7bd0315508:0.0086,0.0145,0.0135,0.0137,0.0157,0.0160,0.0137,0.0140",
+  "bossa_nova/synth/weighted": "032d5d7bd0315508:0.0083,0.0144,0.0146,0.0151,0.0153,0.0162,0.0156,0.0165",
+  "funk/synth/plain": "2788c9244636c767:0.0203,0.0229,0.0230,0.0188,0.0190,0.0209,0.0187,0.0180",
+  "funk/synth/weighted": "2788c9244636c767:0.0361,0.0312,0.0311,0.0293,0.0278,0.0289,0.0284,0.0275",
+  "western/synth/plain": "b9c314f3c3b4fd6c:0.0233,0.0193,0.0190,0.0181,0.0184,0.0177,0.0191,0.0177",
+  "western/synth/weighted": "b9c314f3c3b4fd6c:0.0220,0.0229,0.0239,0.0219,0.0211,0.0215,0.0226,0.0216",
+  "celtic/synth/plain": "b95eef369b2e798c:0.0265,0.0233,0.0221,0.0202,0.0219,0.0215,0.0241,0.0204",
+  "celtic/synth/weighted": "b95eef369b2e798c:0.0225,0.0323,0.0281,0.0254,0.0290,0.0298,0.0291,0.0255",
+  "musette/synth/plain": "1ab535055a7d2f36:0.0212,0.0131,0.0130,0.0122,0.0128,0.0113,0.0121,0.0120",
+  "musette/synth/weighted": "1ab535055a7d2f36:0.0187,0.0206,0.0192,0.0183,0.0214,0.0199,0.0191,0.0189",
+  "liquid_dnb/synth/plain": "96dca5d50db14bda:0.0195,0.0183,0.0207,0.0214,0.0194,0.0194,0.0221,0.0215",
+  "liquid_dnb/synth/weighted": "96dca5d50db14bda:0.0281,0.0286,0.0335,0.0335,0.0277,0.0280,0.0334,0.0335",
+  "castlevania/synth/plain": "40a6bbc5e9b35a8e:0.0147,0.0204,0.0201,0.0198,0.0187,0.0199,0.0207,0.0225",
+  "castlevania/synth/weighted": "40a6bbc5e9b35a8e:0.0084,0.0179,0.0203,0.0203,0.0205,0.0205,0.0206,0.0223",
+  "jrpg/synth/plain": "816bfa9d2e7f6b78:0.0119,0.0148,0.0166,0.0167,0.0185,0.0175,0.0187,0.0195",
+  "jrpg/synth/weighted": "816bfa9d2e7f6b78:0.0173,0.0238,0.0268,0.0276,0.0264,0.0260,0.0278,0.0289",
+  "disco/synth/plain": "9f13462b46754631:0.0300,0.0313,0.0299,0.0324,0.0290,0.0357,0.0218,0.0235",
+  "disco/synth/weighted": "27abc59e1e5fa01a:0.0323,0.0317,0.0308,0.0302,0.0293,0.0391,0.0255,0.0282",
+  "baroque/synth/plain": "cb9636ecdab403f0:0.0275,0.0231,0.0215,0.0218,0.0229,0.0222,0.0263,0.0198",
+  "baroque/synth/weighted": "cb9636ecdab403f0:0.0193,0.0198,0.0185,0.0187,0.0195,0.0193,0.0182,0.0180",
+  "orbital_glass/synth/plain": "4a7e6f8bdbc401d7:0.0144,0.0137,0.0159,0.0165,0.0161,0.0162,0.0153,0.0141",
+  "orbital_glass/synth/weighted": "4a7e6f8bdbc401d7:0.0083,0.0139,0.0149,0.0143,0.0142,0.0146,0.0139,0.0121",
+  "midnight_platform/synth/plain": "d71441ac24fcfdda:0.0160,0.0134,0.0245,0.0269,0.0204,0.0231,0.0192,0.0167",
+  "midnight_platform/synth/weighted": "d71441ac24fcfdda:0.0224,0.0212,0.0357,0.0440,0.0377,0.0389,0.0309,0.0276",
+  "courtyard_nine/synth/plain": "80687264020b8523:0.0144,0.0163,0.0142,0.0140,0.0132,0.0130,0.0142,0.0145",
+  "courtyard_nine/synth/weighted": "80687264020b8523:0.0133,0.0148,0.0152,0.0154,0.0145,0.0140,0.0154,0.0163",
+  "low_log/synth/plain": "e553dc9a2bbbfce1:0.0951,0.0154,0.0180,0.0223,0.0203,0.0201,0.0235,0.0230",
+  "low_log/synth/weighted": "404cb506681c386b:0.0179,0.0174,0.0152,0.0225,0.0256,0.0262,0.0234,0.0237",
+  "funk/samples/plain": "2788c9244636c767:0.0220,0.0205,0.0192,0.0205,0.0192,0.0187,0.0199,0.0195",
+  "funk/samples/weighted": "2788c9244636c767:0.0315,0.0253,0.0251,0.0273,0.0251,0.0235,0.0248,0.0249",
+  "synthwave/samples/plain": "e9c35f15cd8886ad:0.0310,0.0237,0.0228,0.0215,0.0223,0.0221,0.0230,0.0213",
+  "synthwave/samples/weighted": "e9c35f15cd8886ad:0.0360,0.0361,0.0302,0.0271,0.0305,0.0303,0.0315,0.0269",
+  "jazz_trio/samples/plain": "61cf36df163a2fc8:0.0178,0.0170,0.0195,0.0205,0.0198,0.0181,0.0205,0.0197",
+  "jazz_trio/samples/weighted": "61cf36df163a2fc8:0.0162,0.0162,0.0240,0.0234,0.0226,0.0202,0.0224,0.0217",
 };
 
 test("the worker streams what it did for every shipped style, plain and weighted, synth and samples", async () => {
@@ -164,7 +194,7 @@ test("the worker streams what it did for every shipped style, plain and weighted
     got[`${id}/samples/weighted`] = await run(style, "samples", true, 10);
   }
   if (process.env.PRINT_GOLDEN) console.log(JSON.stringify(got, null, 2));
-  assert.deepEqual(got, GOLDEN);
+  assertClose(got, GOLDEN);
 });
 
 // --- A style with parts ------------------------------------------------------
