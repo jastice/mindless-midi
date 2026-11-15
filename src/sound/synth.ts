@@ -68,11 +68,11 @@ export function playsDeclared(n: ScoreNote, sound: SoundSet | undefined): boolea
 }
 
 /** A style's declared sounds as the synth takes them. Undefined for a style with none, which is every style of the other apps. */
-export function styleSound(corpus: { patches?: (Patch & { id: string })[] | undefined; kit?: Kit | undefined }): SoundSet | undefined {
-  if (!corpus.patches?.length && !corpus.kit) return undefined;
+export function styleSound(corpus: { patches?: (Patch & { id: string })[] | undefined; synthKit?: Kit | undefined }): SoundSet | undefined {
+  if (!corpus.patches?.length && !corpus.synthKit) return undefined;
   return {
     ...(corpus.patches?.length && { patches: Object.fromEntries(corpus.patches.map((p) => [p.id, p])) }),
-    ...(corpus.kit && { kit: corpus.kit }),
+    ...(corpus.synthKit && { kit: corpus.synthKit }),
   };
 }
 

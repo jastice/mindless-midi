@@ -35,7 +35,7 @@ export const Instrument = z
       .string()
       .optional()
       .describe(
-        "Id of one of the style's `patches`: the designed sound this instrument plays in the synth, instead of the stock sound of `program`. Not for drums (they play the style's `kit`). " +
+        "Id of one of the style's `patches`: the designed sound this instrument plays in the synth, instead of the stock sound of `program`. Not for drums (they play the style's `synthKit`). " +
           "Still give a `program` of the same family: players without patches use it, and it decides which gestures the arranger writes (38 or 39, synth bass, for a patch that should get slides and accents).",
       ),
     volume: unit.describe("Mix level 0..1."),
@@ -213,7 +213,9 @@ export const StyleCorpus = z.object({
     .array(NamedPatch)
     .optional()
     .describe("The style's own synth sounds, which instruments name in `patch`. Omit to play General MIDI programs only."),
-  kit: Kit.optional().describe("The style's own drum machine, played by the drums role in the synth. Omit for the stock kit."),
+  synthKit: Kit.optional().describe(
+    "The style's own modelled drum machine, played by the drums role in the synth. Omit for the stock kit. (The sampled kit is not written here: it is a `sample_kit` in the style's BUILD file.)",
+  ),
 });
 export type StyleCorpus = z.infer<typeof StyleCorpus>;
 

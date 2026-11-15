@@ -1,6 +1,6 @@
 /**
  * Hand-written sounds for minimal techno, in the shape a corpus declares them
- * (`patches` and `kit`): a 909-like kick with its rumble and noise hats in the
+ * (`patches` and `synthKit`): a 909-like kick with its rumble and noise hats in the
  * kit, and a stab, a bass and a pad as patches. A style copies these into its
  * corpus.json; nothing reads this file at run time.
  *
@@ -69,4 +69,4 @@ const patches: NamedPatch[] = [
   },
 ];
 
-export const MINIMAL_TECHNO = { patches, kit };
+export const MINIMAL_TECHNO = { patches, synthKit: kit };

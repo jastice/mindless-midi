@@ -94,7 +94,7 @@ export function validateCorpus(input: unknown): ValidationResult {
     else if (inst.role === "drums") warnings.push(`${where}: drums play the kit; patch "${inst.patch}" is ignored`);
   };
   c.instruments.forEach((inst, i) => checkPatch(`instruments[${i}]`, inst));
-  if (c.kit) for (const w of kitWarnings(c.kit)) warnings.push(`kit: ${w}`);
+  if (c.synthKit) for (const w of kitWarnings(c.synthKit)) warnings.push(`synthKit: ${w}`);
 
   c.progressions.forEach((p, i) => {
     uniq("progression", p.id);

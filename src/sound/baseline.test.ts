@@ -42,7 +42,7 @@ function program(p: number): string {
 
 const KIT_STYLES = [
   "no_such_style", "lofi", "synthwave", "electro_swing", "jazz_trio", "retro", "metroid", "monkey_island", "bossa_nova", "funk", "western",
-  "celtic", "musette", "liquid_dnb", "castlevania", "jrpg", "disco", "baroque", "midnight_platform", "courtyard_nine", "low_log",
+  "celtic", "musette", "minimal_techno", "liquid_dnb", "castlevania", "jrpg", "disco", "baroque", "midnight_platform", "courtyard_nine", "low_log",
 ];
 const DRUM_KEYS = [35, 36, 37, 38, 39, 40, 42, 44, 45, 46, 47, 48, 49, 50, 51, 57, 59, 70];
 
@@ -105,6 +105,8 @@ const KITS: Record<string, string> = {
   midnight_platform: "dd16857400b5c97b",
   courtyard_nine: "3624e77315dddf8e",
   low_log: "6321eec60dfa37aa",
+  // Added on main after the others were taken; from main's code at 58d22a6, before it met this branch.
+  minimal_techno: "8262271860d5b482",
 };
 
 test("every program renders the samples it did before patches", () => {

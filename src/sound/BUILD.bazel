@@ -13,6 +13,7 @@ ts_lib(
         "measure.ts",
         "patches/gm.ts",
         "patches/kits.ts",
+        "patches/minimal_techno.ts",
         "protocol.ts",
         "sampler.ts",
         "score.ts",
@@ -110,4 +111,14 @@ esbuild(
     target = "es2022",
     visibility = ["//visibility:public"],
     deps = [":worker"],
+)
+
+ts_test(
+    name = "patch_test",
+    size = "medium",
+    src = "patch.test.ts",
+    deps = [
+        ":sound",
+        "//src/corpus",
+    ],
 )
