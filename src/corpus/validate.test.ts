@@ -217,3 +217,35 @@ test("parts that are valid but odd are warnings", () => {
     assert.ok(r.warnings.some((x) => re.test(x)), `${name}: ${r.warnings.join(" | ")}`);
   }
 });
+
+// --- Moves -------------------------------------------------------------------
+
+const MOVES = { sweep: 0.4, drift: 0.3, build: 1, long: 0.5, stutter: 0.05, throw: 0.2 };
+
+test("a corpus may declare moves and a roll part, and a roll reads no patterns", () => {
+  const r = withParts((c) => {
+    c.parts.push({ id: "roll", role: "drums", lanes: ["rim"], roll: true });
+    for (const d of c.drums) d.lanes.rim = "";
+    c.moves = { ...MOVES };
+  });
+  assert.ok(r.ok, r.ok ? "" : r.errors.join("\n"));
+  assert.equal(r.corpus.moves!.build, 1);
+  assert.ok(!r.warnings.some((w) => /roll|moves/.test(w)), r.warnings.join("\n"));
+  const bad = withParts((c) => c.parts.push({ id: "roll", role: "bass", roll: true }));
+  assert.ok(!bad.ok && bad.errors.some((e) => /"roll": a roll is a drums part/.test(e)), bad.ok ? "" : bad.errors.join(" | "));
+  const range = withParts((c) => (c.moves = { ...MOVES, stutter: 2 }));
+  assert.ok(!range.ok && range.errors.some((e) => /moves\.stutter/.test(e)));
+});
+
+test("moves that are valid but odd are warnings", () => {
+  const cases: Array<[string, (c: any) => void, RegExp]> = [
+    ["a roll without builds", (c) => c.parts.push({ id: "roll", role: "drums", lanes: ["rim"], roll: true }), /a roll plays only in builds/],
+    ["builds without a roll", (c) => (c.moves = { ...MOVES }), /builds have no roll/],
+    ["moves without parts", (c) => (delete c.parts, delete c.motifs.find((m: any) => m.material).material, (c.moves = { ...MOVES })), /moves: do nothing without parts/],
+  ];
+  for (const [name, mutate, re] of cases) {
+    const r = withParts(mutate);
+    assert.ok(r.ok, `${name}: ${r.ok ? "" : r.errors.join(" | ")}`);
+    assert.ok(r.warnings.some((x) => re.test(x)), `${name}: ${r.warnings.join(" | ")}`);
+  }
+});

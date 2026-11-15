@@ -20,7 +20,8 @@ import { DEFAULT_PIECE_OPTIONS, Piece, type PieceOptions } from "../engine/piece
 import { SetConductor } from "../engine/set.js";
 import type { Bar } from "../engine/types.js";
 import { type Stereo, stereo } from "./dsp.js";
-import { measureWeight } from "./measure.js";
+import { bandShare, measureWeight } from "./measure.js";
+import { stemMoves } from "./moves.js";
 import type { StemEngine, ToStems, ToWorker } from "./protocol.js";
 import type { PlannedNote, SampleData } from "./sampler.js";
 import { barScore } from "./score.js";
@@ -65,6 +66,7 @@ async function run(style: StyleBundle, engine: StemEngine, weighted: boolean, ba
     const bar = conductor.nextBar();
     const frames = Math.round(((bar.beats * 60) / bar.bpm) * SR);
     const notes = barScore(bar, programs, weighted ? { legato: true, gestures: true, patches } : { patches }).map((n) => ({ ...n, t: n.t + start / SR }));
+    const moves = stemMoves(bar);
     const plans: PlannedNote[] | undefined =
       engine === "samples" ? notes.map((n) => ({ zones: [{ url: "x", rate: n.role === "drums" ? 1 : Math.pow(2, (n.key - 60) / 12), gain: 1, offset: 0 }], release: 0.08, sustain: false, drum: n.role === "drums" })) : undefined;
     send({
@@ -80,6 +82,7 @@ async function run(style: StyleBundle, engine: StemEngine, weighted: boolean, ba
       ...(plans && { plans }),
       ...(weighted && { mix: { intensity: bar.info.intensity, lean: velocityScale(bar.info.intensity, FLOOR) }, touch: true }),
       ...(sound && { sound }),
+      ...(moves && { moves }),
     });
     start += frames;
   }
@@ -172,7 +175,7 @@ const SET: PieceOptions = { minSeconds: 180, maxSeconds: 360, expression: { gest
 
 /** The same style as it was before it had parts: one part per role. */
 function withoutParts(style: StyleBundle): StyleBundle {
-  const { parts: _, arrangement: __, ...corpus } = style.corpus;
+  const { parts: _, arrangement: __, moves: ___, ...corpus } = style.corpus;
   const own = <T extends { material?: string | undefined }>(items: T[]) => items.filter((x) => x.material === undefined);
   return { ...style, corpus: { ...corpus, motifs: own(corpus.motifs), comping: own(corpus.comping), drums: own(corpus.drums) } };
 }
@@ -212,9 +215,13 @@ test("a style with parts streams one stem per role, whatever its parts, and the 
   const bars = 144;
   const c = new SetConductor([TECHNO], "worker-parts", SET);
   const seen = new Set<string>();
+  const builds = new Set<number>();
+  let at = 0;
   const source = {
     nextBar() {
       const bar = c.nextBar();
+      if (bar.info.build) builds.add(at);
+      at++;
       for (const id of bar.info.parts ?? []) seen.add(id);
       return bar;
     },
@@ -243,7 +250,8 @@ test("a style with parts streams one stem per role, whatever its parts, and the 
   console.log(`minimal techno, one track through the worker (weighted mix, synth, ${SR} Hz):\n  with parts    ${line(m)}\n  without parts ${line(was)}`);
   // A role's level where it plays hardest: its loudest bar. (Over a whole track a role that plays less reads quieter, which says nothing about its level.)
   const frames = Math.round(barSeconds * SR);
-  const loudest = (s: Stereo) => Math.max(...Array.from({ length: bars - 1 }, (_, b) => rms(s, b * frames, (b + 1) * frames)));
+  // (Outside builds: there the pad's stem carries the riser.)
+  const loudest = (s: Stereo) => Math.max(...Array.from({ length: bars - 1 }, (_, b) => (builds.has(b) ? 0 : rms(s, b * frames, (b + 1) * frames))));
   console.log(`  loudest bar per role with parts: ${[...roles].map(([r, s]) => `${r} ${db(loudest(s)).toFixed(1)} dB`).join(", ")}`);
   console.log(`  loudest bar per role without:    ${[...before.roles].map(([r, s]) => `${r} ${db(loudest(s)).toFixed(1)} dB`).join(", ")}`);
   console.log(`render time per bar: ${withParts.toFixed(1)} ms with parts, ${withoutThem.toFixed(1)} ms without (a bar is ${(barSeconds * 1000).toFixed(0)} ms: ${(barSeconds * 1000 / withParts).toFixed(0)}x and ${(barSeconds * 1000 / withoutThem).toFixed(0)}x real time at ${SR} Hz)`);
@@ -279,4 +287,71 @@ test("a style with parts streams one stem per role, whatever its parts, and the 
   const hotPlain = await hot(plain);
   console.log(`at lift 0.3: ${hotParts.ms.toFixed(1)} ms per bar with parts (${hotParts.mean.toFixed(1)} parts in on average, ${hotParts.most} at most, ${hotParts.bars} bars), ${hotPlain.ms.toFixed(1)} ms without`);
   assert.ok(hotParts.ms < barSeconds * 1000 / 4, `${hotParts.ms} ms per bar`);
+});
+
+// --- Moves -------------------------------------------------------------------
+
+test("moves through the worker: a build thins the low end and rises, the drop lands on an impact", async () => {
+  const c = new SetConductor([TECHNO], "worker-moves", SET);
+  const bars: Bar[] = [];
+  const source = {
+    nextBar() {
+      const bar = c.nextBar();
+      bars.push(bar);
+      return bar;
+    },
+  };
+  const n = 150;
+  const first = await run(TECHNO, "synth", true, n, source);
+  const { roles, mix } = heard();
+  const frames = Math.round(((bars[0]!.beats * 60) / bars[0]!.bpm) * SR);
+  const bar = (s: Stereo | undefined, b: number, from = 0, to = frames): Stereo => (s ? { l: s.l.slice(b * frames + from, b * frames + to), r: s.r.slice(b * frames + from, b * frames + to) } : stereo(to - from));
+  const start = bars.findIndex((b) => b.info.build?.bar === 0);
+  assert.ok(start > 0 && bars[start]!.info.pieceIndex === 0, "a build in the first track");
+  const len = bars[start]!.info.build!.bars;
+  const drop = start + len;
+  assert.equal(bars[drop]!.info.turn, "drop");
+  // Against the same bars without the high-pass and the riser: the high-pass takes the lows out of every stem
+  // but the pad's (which carries the riser), and the riser is what the pad's stem gained.
+  let i = 0;
+  const plain = {
+    nextBar(): Bar {
+      const b = bars[i++]!;
+      return { ...b, moves: b.moves?.filter((m) => !(m.scope === "master" && m.target === "lowCut") && m.target !== "riser") };
+    },
+  };
+  await run(TECHNO, "synth", true, n, plain);
+  const was = heard().roles;
+  const sum = (rs: Map<Role, Stereo>, keep: (r: Role) => boolean) => {
+    const out = stereo(mix.l.length);
+    for (const [r, s] of rs) {
+      if (!keep(r)) continue;
+      for (let k = 0; k < s.l.length; k++) {
+        out.l[k]! += s.l[k]!;
+        out.r[k]! += s.r[k]!;
+      }
+    }
+    return out;
+  };
+  const rest = sum(roles, (r) => r !== "pad");
+  const open = sum(was, (r) => r !== "pad");
+  const gained = sum(new Map([["pad", roles.get("pad")!], ["lead", { l: (was.get("pad") ?? stereo(mix.l.length)).l.map((x) => -x), r: (was.get("pad") ?? stereo(mix.l.length)).r.map((x) => -x) }]]), () => true);
+  const low = (s: Stereo, b: number) => bandShare(bar(s, b), SR, 0, 150) * rms(bar(s, b)) ** 2;
+  const cut = Array.from({ length: len }, (_, k) => db(Math.sqrt(low(rest, start + k) / low(open, start + k))));
+  const riser = Array.from({ length: len }, (_, k) => rms(bar(gained, start + k)));
+  const level = Array.from({ length: len + 1 }, (_, k) => db(rms(bar(mix, start - 1 + k))));
+  console.log(`a ${len}-bar build at bar ${start}: below 150 Hz, per bar, ${cut.map((x) => x.toFixed(1)).join(" ")} dB against no high-pass; the mix ${level.map((x) => x.toFixed(1)).join(" ")} dB from the bar before; pad stem (the riser) ${riser.map((x) => db(x).toFixed(1)).join(" ")} dB`);
+  assert.ok(cut[0]! > -1.5, "it starts open");
+  for (let k = 1; k < len; k++) assert.ok(cut[k]! < cut[k - 1]! + 0.5, `and closes, bar ${k}`);
+  assert.ok(cut.at(-1)! < -12, "by its last bar the lows are 12 dB down");
+  assert.ok(riser.at(-1)! > riser[0]! * 4, "the riser climbs more than 12 dB");
+  // The drop: the kick and an impact, heavy below 120 Hz.
+  const hit = bar(roles.get("drums"), drop, 0, Math.round(0.3 * SR));
+  const last = bar(roles.get("drums"), drop - 1, 0, Math.round(0.3 * SR));
+  console.log(`the drop: drums ${db(rms(hit)).toFixed(1)} dB in its first 300 ms (${(bandShare(hit, SR, 0, 120) * 100).toFixed(0)}% below 120 Hz) against ${db(rms(last)).toFixed(1)} dB on the build's last downbeat`);
+  assert.ok(rms(hit) > rms(last) * 2 && bandShare(hit, SR, 0, 120) > 0.5);
+  for (let i = 0; i < mix.l.length; i++) assert.ok(Number.isFinite(mix.l[i]) && Math.abs(mix.l[i]!) < 4, `sample ${i}`);
+  // (Two runs here cannot be compared by hash: the worker's levellers remember earlier runs. The bars' moves are
+  // the same however they are reached (src/engine/moves.test.ts), and the runner holds nothing a bar did not state.)
+  assert.ok(first.length > 0);
 });

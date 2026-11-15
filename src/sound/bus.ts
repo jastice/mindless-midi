@@ -9,6 +9,7 @@
  * renders offline clips in the bench.
  */
 import { ROLES, type Role } from "../corpus/constants.js";
+import type { Move } from "../engine/types.js";
 import { Noise, type Stereo, activeRms } from "./dsp.js";
 
 type PerRole = Partial<Record<Role, number>>;
@@ -206,6 +207,9 @@ export class Bus {
   private readonly irCache = new Map<string, AudioBuffer>();
   /** The style whose sends are set, and how far `setSendScale` has them from the preset. */
   private preset: MixPreset | null = null;
+  private sendScale = 1;
+  /** Send throws scheduled, by role and target, with the time the last one ends. */
+  private readonly thrown = new Map<string, number>();
 
   constructor(
     private readonly ctx: BaseAudioContext,
@@ -397,7 +401,61 @@ export class Bus {
   setSendScale(scale: number, at: number): void {
     const p = this.preset;
     if (!p) return;
+    this.sendScale = scale;
     for (const [role, c] of this.roles) c.reverb.gain.setTargetAtTime((p.reverb.send[role] ?? 0) * scale, at, 0.15);
+  }
+
+  /**
+   * A bar's send throws (its reverbSend and delaySend moves), as ramps from
+   * the bar's start `at`, `spb` seconds a beat. A send thrown in an earlier
+   * bar and not in this one goes back to the style's level from `at`, so a
+   * throw never sticks. Does nothing for a bar without throws when none are out.
+   */
+  throws(moves: readonly Move[] | undefined, at: number, spb: number): void {
+    const list = moves?.filter((m) => m.target === "reverbSend" || m.target === "delaySend") ?? [];
+    if (!list.length && !this.thrown.size) return;
+    const now = new Set<string>();
+    for (const m of list) {
+      const roles = m.scope === "master" ? ROLES : m.scope.role !== undefined ? [m.scope.role] : [];
+      for (const role of roles) {
+        const key = `${role}:${m.target}`;
+        const param = this.send(key);
+        const t0 = at + (m.at ?? 0) * spb;
+        const t1 = t0 + m.beats * spb;
+        param.cancelScheduledValues(at);
+        param.setValueAtTime(m.from, t0);
+        param.linearRampToValueAtTime(m.to, t1);
+        this.thrown.set(key, t1);
+        now.add(key);
+      }
+    }
+    for (const key of [...this.thrown.keys()]) {
+      if (now.has(key)) continue;
+      this.restore(key, at);
+      this.thrown.delete(key);
+    }
+  }
+
+  /** A seek: every throw not yet over is called off, and its send goes back to the style's level from `at`. */
+  clearThrows(at: number): void {
+    for (const [key, end] of this.thrown) if (end > at) {
+      this.send(key).cancelScheduledValues(at);
+      this.restore(key, at);
+    }
+    this.thrown.clear();
+  }
+
+  private send(key: string): AudioParam {
+    const [role, target] = key.split(":") as [Role, string];
+    const c = this.roles.get(role)!;
+    return target === "reverbSend" ? c.reverb.gain : c.delay.gain;
+  }
+
+  private restore(key: string, at: number): void {
+    const [role, target] = key.split(":") as [Role, string];
+    const p = this.preset;
+    const level = target === "reverbSend" ? (p?.reverb.send[role] ?? 0) * this.sendScale : (p?.delay?.send[role] ?? 0);
+    this.send(key).setTargetAtTime(level, at, 0.05);
   }
 
   /** Duck the style's ducked roles under each kick (context times). */

@@ -15,7 +15,7 @@ const byId = (id: string) => [...claudia, ...styles].find((s) => s.id === id)!;
 const TECHNO = [byId("minimal_techno")];
 /** The same style as it was before it had parts, for the conductor's mix by role (see grid.test.ts for the mix by part). */
 function withoutParts(style: StyleBundle): StyleBundle {
-  const { parts: _, arrangement: __, ...corpus } = style.corpus;
+  const { parts: _, arrangement: __, moves: ___, ...corpus } = style.corpus;
   const own = <T extends { material?: string | undefined }>(items: T[]) => items.filter((x) => x.material === undefined);
   return { ...style, corpus: { ...corpus, motifs: own(corpus.motifs), comping: own(corpus.comping), drums: own(corpus.drums) } };
 }

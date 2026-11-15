@@ -44,9 +44,9 @@ interface Planned {
 }
 
 /** Where a build's high-pass ends: higher for a longer build. */
-const BUILD_CUT = { 4: 500, 8: 800 } as Record<number, number>;
+const BUILD_CUT = { 4: 600, 8: 1000 } as Record<number, number>;
 const RISER = { from: 200, to: 6000 };
-const IMPACT = { from: 110, to: 38 };
+const IMPACT = { from: 90, to: 38 };
 /** A sweep's closed end. */
 const SWEEP = { highCut: 300, lowCut: 1500 };
 
@@ -126,7 +126,7 @@ export class MovePlan {
       if (!at || at.bar !== 0) return;
       const n = at.bars;
       const cut = BUILD_CUT[n] ?? BUILD_CUT[4]!;
-      this.planned.push({ scope: "master", target: "lowCut", start: b, bars: n, value: (x) => octaves(OPEN_LOW, cut, x * x) });
+      this.planned.push({ scope: "master", target: "lowCut", start: b, bars: n, value: (x) => octaves(OPEN_LOW, cut, Math.pow(x, 1.5)) });
       this.planned.push({ scope: { role: "pad" }, target: "riser", start: b, bars: n, value: (x) => octaves(RISER.from, RISER.to, x) });
       this.planned.push({ scope: { role: "drums" }, target: "impact", start: b + n, bars: 1, value: () => 0, once: { scope: { role: "drums" }, target: "impact", from: IMPACT.from, to: IMPACT.to, beats: 0.5 } });
     });

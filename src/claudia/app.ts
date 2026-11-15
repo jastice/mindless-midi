@@ -360,7 +360,9 @@ async function main(): Promise<void> {
     $("bars").textContent = `/ ${i.pieceBars}`;
     $("phrase").textContent = `${Math.floor(i.barInPiece / PHRASE_BARS) + 1}`;
     $("phrases").textContent = `/ ${Math.ceil(i.pieceBars / PHRASE_BARS)}`;
-    $("section").textContent = `Section ${i.section}`;
+    // A build in progress, counted down to its drop, from the bar's own data.
+    const build = i.build ? ` · Build, ${i.build.bars} bars (${i.build.bars - i.build.bar} to go)` : i.turn === "drop" ? " · Drop" : "";
+    $("section").textContent = `Section ${i.section}${build}`;
     const mix = $("mix");
     mix.textContent = STAGE_LABEL[stage];
     mix.dataset.stage = stage;

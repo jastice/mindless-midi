@@ -11,6 +11,7 @@ ts_lib(
         "dsp.ts",
         "leveler.ts",
         "measure.ts",
+        "moves.ts",
         "patches/gm.ts",
         "patches/kits.ts",
         "patches/minimal_techno.ts",
@@ -155,6 +156,16 @@ ts_test(
     deps = [
         ":sound",
         "//src/corpus",
+        "//src/engine",
+    ],
+)
+
+ts_test(
+    name = "moves_test",
+    size = "medium",
+    src = "moves.test.ts",
+    deps = [
+        ":sound",
         "//src/engine",
     ],
 )

@@ -6,6 +6,7 @@ import type { Role } from "../corpus/constants.js";
 import type { Bar } from "../engine/types.js";
 import type { PlannedNote, SampleData } from "./sampler.js";
 import type { SoundSet } from "./sound_set.js";
+import type { StemMoves } from "./moves.js";
 import type { ScoreNote } from "./types.js";
 
 /** "fm" is the default OPL3 worklet path; the others render stems in the worker. */
@@ -51,6 +52,8 @@ export type ToWorker =
        * the kit is the synth engine's (the samples engine has the style's sampled kit).
        */
       sound?: SoundSet;
+      /** The bar's moves that run on the stems (see moves.ts). Only for a bar that has any. */
+      moves?: StemMoves;
     }
   | { type: "clear"; from: number };
 

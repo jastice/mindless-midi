@@ -8,6 +8,11 @@
  * part except that a kit's parts share one, as its kick and the rest already
  * do. The parts of a role are summed into its stem before the mix, so the
  * worklet and the bus still see one stem per role.
+ *
+ * A bar with moves (a style with corpus `moves`) has them run on the stems:
+ * a part's after its levelling, a role's and everything's on the role stems,
+ * then risers and impacts added from windows of their own (see moves.ts). A
+ * bar without moves skips all of it.
  */
 // @ts-expect-error: untyped Emscripten ES module from libadlmidi-js
 import createADLMIDIUntyped from "libadlmidi-js/dist/libadlmidi.nuked.browser.js";
@@ -15,11 +20,14 @@ import type { AdlModule, CreateAdlModule } from "../audio/adlmidi_wasm.js";
 import { EV_CC, EventQueue, type SynthSink, barEvents } from "../audio/events.js";
 import { ROLES, type Role } from "../corpus/constants.js";
 import { BodyLeveler } from "./body_leveler.js";
+import { covers, moveValue } from "../engine/moves.js";
 import { STEM_REF } from "./bus.js";
 import { StemWindow, type Stereo } from "./dsp.js";
 import { RoleLeveler } from "./leveler.js";
+import { MoveRunner, type StemMoves, impact, movesOn } from "./moves.js";
 import type { StemEngine, ToStems, ToWorker } from "./protocol.js";
 import { MAX_SAMPLE_SECONDS, type SampleData, renderSampleNote } from "./sampler.js";
+import type { SoundSet } from "./sound_set.js";
 import { MAX_VOICE_SECONDS, playsPatch, renderSynthNote } from "./synth.js";
 import type { ScoreNote } from "./types.js";
 import { type StemId, WeightedMix, weightFor } from "./weight.js";
@@ -54,6 +62,10 @@ const stemOf = (n: { role: Role; key: number }, split: boolean): StemId => (spli
 const prev = new Map<string, ScoreNote>();
 let wasm: ArrayBuffer | null = null;
 let fm: Promise<FmStems> | null = null;
+/** Moves: their state, made on the first bar that has any. */
+let runner: MoveRunner | null = null;
+/** Risers and impacts, per role they join, with the frame where each window falls silent. */
+const fx = new Map<Role, { w: StemWindow; until: number }>();
 
 /** One libADLMIDI instance per role, so each role gets its own stem. */
 class FmStems {
@@ -153,6 +165,8 @@ function resetAll(): void {
   windows.clear();
   partRole.clear();
   prev.clear();
+  runner?.clear();
+  fx.clear();
   fm?.then((f) => f.clear());
 }
 
@@ -168,6 +182,10 @@ async function renderBar(msg: Extract<ToWorker, { type: "bar" }>): Promise<void>
     for (const l of bodies.values()) l.reset();
   }
   const split = msg.mix !== undefined;
+  const mv = msg.moves;
+  if (mv) (runner ??= new MoveRunner(sr)).begin();
+  else if (runner?.holding) runner.clear();
+  const fpb = mv ? msg.frames / mv.beats : 0;
   let stems: Map<string, Stereo>;
   if (msg.engine === "fm_bus") {
     stems = (await loadFm()).render(msg, split);
@@ -178,7 +196,8 @@ async function renderBar(msg: Extract<ToWorker, { type: "bar" }>): Promise<void>
       if (n.part !== undefined && id !== "kick") partRole.set((id = n.part), n.role);
       const w = windowFor(id, msg.start);
       const line = n.part ?? n.role;
-      if (msg.engine === "synth" || playsPatch(n, msg.sound)) renderSynthNote(w, n, sr, msg.styleId, prev.get(line), msg.touch, msg.sound);
+      const sound = mv && n.patch !== undefined ? patched(msg.sound, n, mv, msg.start, fpb) : msg.sound;
+      if (msg.engine === "synth" || playsPatch(n, msg.sound)) renderSynthNote(w, n, sr, msg.styleId, prev.get(line), msg.touch, sound);
       else if (msg.plans?.[i]) renderSampleNote(w, n, msg.plans[i]!, (u) => samples.get(u), sr);
       prev.set(line, n);
     });
@@ -188,14 +207,18 @@ async function renderBar(msg: Extract<ToWorker, { type: "bar" }>): Promise<void>
       stems.set(role, w.take(msg.frames));
     }
   }
+  const extra = mv || fx.size ? effects(msg, mv) : undefined;
   const roles: number[] = [];
   const data: Float32Array[] = [];
   if (msg.mix) {
-    for (const s of weigh(stems, msg, msg.mix)) {
+    let out = weigh(stems, msg, msg.mix);
+    if (extra) out = finish(out, mv, extra);
+    for (const s of out) {
       roles.push(ROLES.indexOf(s[0]));
       data.push(s[1].l, s[1].r);
     }
   } else {
+    if (mv && partRole.size) partMoves(stems, mv);
     // With parts: a kit's parts are summed and levelled as one, the others each at their own level, then summed by role.
     const kit = (id: string) => (partRole.get(id) === "drums" ? "drums" : id);
     const groups = partRole.size ? summed(stems, kit) : stems;
@@ -205,13 +228,81 @@ async function renderBar(msg: Extract<ToWorker, { type: "bar" }>): Promise<void>
       lv.target = levelOf(msg, id) * STEM_REF;
       lv.process(s);
     }
-    for (const [role, s] of (partRole.size ? summed(groups, roleOf) : groups) as Map<Role, Stereo>) {
+    let out = (partRole.size ? summed(groups, roleOf) : groups) as Map<Role, Stereo>;
+    if (extra) out = finish(out, mv, extra);
+    for (const [role, s] of out) {
       roles.push(ROLES.indexOf(role));
       data.push(s.l, s.r);
     }
   }
+  if (mv) runner!.end();
   const out: ToStems = { type: "pcm", start: msg.start, frames: msg.frames, roles, data };
   port?.postMessage(out, data.map((d) => d.buffer));
+}
+
+/** A note's sound with the bar's patch move on its part applied at its onset (the acid line's drifting cutoff). */
+function patched(sound: SoundSet | undefined, n: ScoreNote, mv: StemMoves, barStart: number, fpb: number): SoundSet | undefined {
+  const base = sound?.patches?.[n.patch!];
+  const m = base && mv.list.find((x) => x.target === "patch" && x.scope !== "master" && covers(x, { part: n.part, role: n.role }));
+  if (!m) return sound;
+  const v = moveValue(m, (n.t * sr - barStart) / fpb);
+  const p = { ...base, filter: { ...base.filter } };
+  if (m.param === "cutoff") p.filter.cutoff = v;
+  else if (m.param === "q") p.filter.q = v;
+  else if (m.param === "env") p.filter.env = v;
+  else if (m.param === "drive") p.drive = v;
+  return { ...sound, patches: { ...sound!.patches, [n.patch!]: p } };
+}
+
+/** Risers and impacts for this bar: rendered into their windows, this bar's frames taken out. */
+function effects(msg: Extract<ToWorker, { type: "bar" }>, mv: StemMoves | undefined): Map<Role, Stereo> {
+  const fpb = mv ? msg.frames / mv.beats : 0;
+  for (const m of mv?.list ?? []) {
+    if (m.target !== "riser" && m.target !== "impact") continue;
+    const role = (m.scope !== "master" && m.scope.role) || (m.target === "riser" ? "pad" : "drums");
+    let f = fx.get(role);
+    if (!f) fx.set(role, (f = { w: new StemWindow(msg.start, Math.ceil(8 * sr)), until: 0 }));
+    if (f.w.base < msg.start) f.w.take(msg.start - f.w.base);
+    const until = m.target === "riser" ? runner!.riser(f.w, role, m, msg.start, fpb) : impact(f.w, m, msg.start, fpb, sr);
+    f.until = Math.max(f.until, until);
+  }
+  const out = new Map<Role, Stereo>();
+  for (const [role, f] of fx) {
+    if (f.w.base < msg.start) f.w.take(msg.start - f.w.base);
+    out.set(role, f.w.take(msg.frames));
+    if (f.w.base >= f.until) fx.delete(role);
+  }
+  return out;
+}
+
+/** A part's own moves, on its stem. */
+function partMoves(stems: Map<string, Stereo>, mv: StemMoves): void {
+  const fpb = (stems.values().next().value?.l.length ?? 0) / mv.beats;
+  for (const [id, s] of stems) {
+    if (!partRole.has(id)) continue;
+    const list = movesOn(mv.list, { part: id, role: roleOf(id) as Role });
+    if (list.length) runner!.apply(s, `part:${id}`, list, fpb);
+  }
+}
+
+/** The role stems with the moves on roles and everything run on them, and the risers and impacts added. */
+function finish(out: Map<Role, Stereo>, mv: StemMoves | undefined, extra: Map<Role, Stereo>): Map<Role, Stereo> {
+  if (mv) {
+    for (const [role, s] of out) {
+      const list = movesOn(mv.list, { role });
+      if (list.length) runner!.apply(s, `role:${role}`, list, s.l.length / mv.beats);
+    }
+  }
+  for (const [role, e] of extra) {
+    const s = out.get(role);
+    if (!s) out.set(role, e);
+    else
+      for (let i = 0; i < s.l.length; i++) {
+        s.l[i]! += e.l[i]!;
+        s.r[i]! += e.r[i]!;
+      }
+  }
+  return out;
 }
 
 /** The stem a window's audio belongs to: a part's role, or the window's own id. */
@@ -261,6 +352,8 @@ function weigh(stems: Map<string, Stereo>, msg: Extract<ToWorker, { type: "bar" 
       if (id === "kick" || roleOf(id) === "drums") continue;
       level(id, [s], msg.notes.some((n) => (n.part ?? n.role) === id));
     }
+    // A part's moves after its levelling, so the leveller never works against a fade or a sweep.
+    if (msg.moves) partMoves(stems, msg.moves);
     stems = summed(stems, roleOf);
   }
   weighted ??= new WeightedMix(sr);

@@ -23,6 +23,7 @@ import { type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../s
 import { creditLines, type PackCredit } from "../corpus/pack.js";
 import { type PlannedNote, SampleCache, SampleLibrary, servedAt } from "../sound/sampler.js";
 import { barScore } from "../sound/score.js";
+import { stemMoves } from "../sound/moves.js";
 import { partLevels, styleSound } from "../sound/sound_set.js";
 import type { ScoreNote } from "../sound/types.js";
 
@@ -594,6 +595,7 @@ export class Player {
     const now = ctx.currentTime;
     if (this.engineName === "fm") this.post({ type: "clear" });
     else this.toWorker({ type: "clear", from: Math.round(now * sr) });
+    this.bus?.clearThrows(now);
     this.timeline = this.timeline.filter((t) => t.start <= now);
     const last = this.timeline[this.timeline.length - 1];
     if (last) last.end = Math.min(last.end, now);
@@ -1132,6 +1134,9 @@ export class Player {
     // The style's own patches and synth kit, if it declares any.
     const sound = style && styleSound(style.corpus);
     const parts = style && partLevels(style.corpus);
+    // Moves: the bus throws the sends at the bar's time, the worker runs the rest.
+    this.bus?.throws(bar.moves, at, 60 / bar.bpm);
+    const moves = stemMoves(bar);
     this.toWorker({
       type: "bar",
       engine,
@@ -1146,6 +1151,7 @@ export class Player {
       bar: engine === "fm_bus" ? bar : undefined,
       ...(weighted && { mix: { intensity: info.intensity, lean: velocityScale(info.intensity, this.opts.expression?.velocityFloor) }, touch: true }),
       ...(sound && { sound }),
+      ...(moves && { moves }),
     });
   }
 }
