@@ -18,6 +18,7 @@ ts_lib(
         "sampler.ts",
         "score.ts",
         "shape.ts",
+        "sound_set.ts",
         "synth.ts",
         "types.ts",
         "weight.ts",
@@ -120,5 +121,20 @@ ts_test(
     deps = [
         ":sound",
         "//src/corpus",
+    ],
+)
+
+ts_test(
+    name = "patch_library_test",
+    size = "medium",
+    src = "patch_library.test.ts",
+    data = [
+        "//styles",
+        "//styles/minimal_techno:corpus",
+    ],
+    deps = [
+        ":sound",
+        "//src/corpus",
+        "//src/engine",
     ],
 )

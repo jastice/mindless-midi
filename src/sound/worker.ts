@@ -15,7 +15,7 @@ import { StemWindow, type Stereo } from "./dsp.js";
 import { RoleLeveler } from "./leveler.js";
 import type { StemEngine, ToStems, ToWorker } from "./protocol.js";
 import { MAX_SAMPLE_SECONDS, type SampleData, renderSampleNote } from "./sampler.js";
-import { MAX_VOICE_SECONDS, playsDeclared, renderSynthNote } from "./synth.js";
+import { MAX_VOICE_SECONDS, playsPatch, renderSynthNote } from "./synth.js";
 import type { ScoreNote } from "./types.js";
 import { type StemId, WeightedMix, weightFor } from "./weight.js";
 
@@ -165,7 +165,7 @@ async function renderBar(msg: Extract<ToWorker, { type: "bar" }>): Promise<void>
     // Notes ring on in each role's window; hand out this bar's frames.
     msg.notes.forEach((n, i) => {
       const w = windowFor(stemOf(n, split), msg.start);
-      if (msg.engine === "synth" || playsDeclared(n, msg.sound)) renderSynthNote(w, n, sr, msg.styleId, prev.get(n.role), msg.touch, msg.sound);
+      if (msg.engine === "synth" || playsPatch(n, msg.sound)) renderSynthNote(w, n, sr, msg.styleId, prev.get(n.role), msg.touch, msg.sound);
       else if (msg.plans?.[i]) renderSampleNote(w, n, msg.plans[i]!, (u) => samples.get(u), sr);
       prev.set(n.role, n);
     });

@@ -23,6 +23,7 @@ import { type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../s
 import { creditLines, type PackCredit } from "../corpus/pack.js";
 import { type PlannedNote, SampleCache, SampleLibrary, servedAt } from "../sound/sampler.js";
 import { barScore } from "../sound/score.js";
+import { styleSound } from "../sound/sound_set.js";
 import type { ScoreNote } from "../sound/types.js";
 
 export type { Engine };
@@ -203,6 +204,8 @@ export class Player {
   private slowTimer: ReturnType<typeof setTimeout> | null = null;
   /** Programs per channel as of the last generated bar. */
   private readonly programs = new Map<number, number>();
+  /** The patch per channel, for styles that declare their own sounds (see corpus/patch.ts); empty for the rest. */
+  private readonly patches = new Map<number, string>();
   /** The next bar sent to an engine must carry its piece's setup (bank, programs, levels). */
   private needsSetup = false;
   private busStyle: string | null = null;
@@ -1046,7 +1049,7 @@ export class Player {
 
   /** The bar's notes in seconds from its start, with the program sounding on each channel. */
   private notesOf(bar: Bar): ScoreNote[] {
-    return barScore(bar, this.programs, this.opts.weighted ? { legato: true, gestures: true } : {});
+    return barScore(bar, this.programs, this.opts.weighted ? { legato: true, gestures: true, patches: this.patches } : { patches: this.patches });
   }
 
   /** Samples engine: resolve and download what the bar needs, hand new samples to the worker. */
@@ -1126,6 +1129,8 @@ export class Player {
     if (!weighted) this.bus?.duck(info.styleId, notes.filter((n) => n.role === "drums" && (n.key === 35 || n.key === 36)).map((n) => n.t));
     else if (!info.gap) this.bus?.setSendScale(1.3 - 0.6 * info.intensity, Math.max(at, ctx.currentTime));
     const levels = Object.fromEntries((style?.corpus.instruments ?? []).map((i) => [i.role, i.volume])) as Partial<Record<Role, number>>;
+    // The style's own patches and synth kit, if it declares any.
+    const sound = style && styleSound(style.corpus);
     this.toWorker({
       type: "bar",
       engine,
@@ -1138,6 +1143,7 @@ export class Player {
       plans: plans?.map((p) => (p.cut === undefined ? p : { ...p, cut: p.cut + at })),
       bar: engine === "fm_bus" ? bar : undefined,
       ...(weighted && { mix: { intensity: info.intensity, lean: velocityScale(info.intensity, this.opts.expression?.velocityFloor) }, touch: true }),
+      ...(sound && { sound }),
     });
   }
 }

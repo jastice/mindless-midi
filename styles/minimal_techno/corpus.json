@@ -85,6 +85,7 @@
       "name": "Dark pad",
       "program": 89,
       "octave": 4,
+      "patch": "pad",
       "volume": 0.28,
       "pan": 0.1
     },
@@ -93,6 +94,7 @@
       "name": "Chord stab",
       "program": 90,
       "octave": 4,
+      "patch": "stab",
       "volume": 0.4,
       "pan": -0.15
     },
@@ -101,6 +103,7 @@
       "name": "Sub bass",
       "program": 38,
       "octave": 2,
+      "patch": "bass",
       "volume": 0.75,
       "pan": 0
     },
@@ -2760,5 +2763,214 @@
   },
   "ending": {
     "ritardando": 0
+  },
+  "patches": [
+    {
+      "id": "stab",
+      "osc": {
+        "wave": "saw",
+        "voices": 3,
+        "detune": 12,
+        "spread": 0.6
+      },
+      "filter": {
+        "type": "band",
+        "cutoff": 500,
+        "q": 2.5,
+        "keytrack": 1,
+        "env": 3800,
+        "a": 0.002,
+        "d": 0.09,
+        "s": 0,
+        "r": 0.08
+      },
+      "amp": {
+        "a": 0.002,
+        "d": 0.22,
+        "s": 0,
+        "r": 0.12
+      },
+      "drive": 0.6,
+      "mod": [
+        {
+          "target": "cutoff",
+          "shape": "sine",
+          "beats": 32,
+          "depth": 0.6
+        }
+      ],
+      "hp": 180,
+      "level": 0.5
+    },
+    {
+      "id": "bass",
+      "osc": {
+        "wave": "saw",
+        "voices": 1,
+        "detune": 0
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 90,
+        "q": 3,
+        "keytrack": 1.5,
+        "env": 900,
+        "a": 0.002,
+        "d": 0.14,
+        "s": 0.15,
+        "r": 0.06
+      },
+      "amp": {
+        "a": 0.003,
+        "d": 0.2,
+        "s": 0.75,
+        "r": 0.06
+      },
+      "drive": 0.8,
+      "mod": [
+        {
+          "target": "cutoff",
+          "shape": "sine",
+          "beats": 16,
+          "depth": 0.4
+        }
+      ],
+      "glide": 0.05,
+      "accent": {
+        "cutoff": 2200,
+        "q": 3
+      },
+      "level": 0.55
+    },
+    {
+      "id": "pad",
+      "osc": {
+        "wave": "saw",
+        "voices": 5,
+        "detune": 16,
+        "spread": 0.65
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 500,
+        "q": 1,
+        "keytrack": 1,
+        "env": 600,
+        "a": 1.5,
+        "d": 2,
+        "s": 0.7,
+        "r": 2
+      },
+      "amp": {
+        "a": 1.2,
+        "d": 1,
+        "s": 1,
+        "r": 2.2
+      },
+      "mod": [
+        {
+          "target": "cutoff",
+          "shape": "sine",
+          "beats": 64,
+          "depth": 0.8
+        },
+        {
+          "target": "width",
+          "shape": "sine",
+          "beats": 24,
+          "depth": 0.4
+        },
+        {
+          "target": "pan",
+          "shape": "sine",
+          "beats": 12,
+          "depth": 0.15
+        }
+      ],
+      "hp": 150,
+      "level": 0.3
+    }
+  ],
+  "synthKit": {
+    "kick": {
+      "f0": 190,
+      "f1": 47,
+      "sweep": 0.028,
+      "decay": 0.1,
+      "drive": 2.2,
+      "click": 0.35,
+      "sub": {
+        "level": 0.9,
+        "decay": 0.2
+      }
+    },
+    "rumble": {
+      "level": 0.36,
+      "cutoff": 95,
+      "decay": 1.6,
+      "duck": 0.09
+    },
+    "snare": {
+      "tone": 200,
+      "toneDecay": 0.07,
+      "noiseDecay": 0.16,
+      "noiseHp": 1800,
+      "mix": 0.7
+    },
+    "hatScale": 1.2,
+    "hatDecay": 0.04,
+    "hat": {
+      "tone": 9500,
+      "q": 1.2,
+      "hp": 7000,
+      "decay": 0.022,
+      "open": 0.13,
+      "metal": 0.5
+    },
+    "clap": {
+      "tone": 1150,
+      "q": 2,
+      "bursts": 4,
+      "decay": 0.11
+    },
+    "ride": {
+      "hp": 6000,
+      "decay": 0.22,
+      "level": 0.28
+    },
+    "perc": [
+      {
+        "lane": "tomLow",
+        "freq": 110,
+        "bend": 5,
+        "sweep": 0.03,
+        "decay": 0.18,
+        "pan": -0.3,
+        "level": 0.6
+      },
+      {
+        "lane": "tomHigh",
+        "freq": 440,
+        "bend": 2,
+        "sweep": 0.01,
+        "decay": 0.09,
+        "fm": {
+          "ratio": 1.48,
+          "amount": 2
+        },
+        "pan": 0.3,
+        "level": 0.45
+      },
+      {
+        "lane": "rim",
+        "freq": 1800,
+        "bend": 12,
+        "sweep": 0.004,
+        "decay": 0.02,
+        "noise": 0.3,
+        "pan": 0.15,
+        "level": 0.5
+      }
+    ]
   }
 }

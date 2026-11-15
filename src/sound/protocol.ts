@@ -5,7 +5,7 @@
 import type { Role } from "../corpus/constants.js";
 import type { Bar } from "../engine/types.js";
 import type { PlannedNote, SampleData } from "./sampler.js";
-import type { SoundSet } from "./synth.js";
+import type { SoundSet } from "./sound_set.js";
 import type { ScoreNote } from "./types.js";
 
 /** "fm" is the default OPL3 worklet path; the others render stems in the worker. */
@@ -44,9 +44,9 @@ export type ToWorker =
       /** synth: velocity shapes the tone, not only the level. */
       touch?: boolean;
       /**
-       * The style's own patches and kit (see `styleSound`). Sent with every bar, so the worker keeps
-       * nothing per style. Notes that name a patch, and the drums when there is a kit, are played by
-       * the synth whichever stem engine is on.
+       * The style's own patches and synth kit (see `styleSound`). Sent with every bar, so the worker keeps
+       * nothing per style. Notes that name a patch are played by the synth whichever stem engine is on;
+       * the kit is the synth engine's (the samples engine has the style's sampled kit).
        */
       sound?: SoundSet;
     }

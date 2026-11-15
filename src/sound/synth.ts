@@ -18,15 +18,12 @@ import { Noise, OnePole, Osc, type Stereo, Svf, adsr, mtof, stereo, yieldToUi } 
 import { GM_PATCHES as GM } from "./patches/gm.js";
 import { KITS } from "./patches/kits.js";
 import { renderShaped } from "./shape.js";
+import type { SoundSet } from "./sound_set.js";
+
+export { type SoundSet, playsPatch, styleSound } from "./sound_set.js";
 
 /** Longest a synth note can ring past its onset, seconds (window sizing). */
 export const MAX_VOICE_SECONDS = 9;
-
-/** A style's own sounds: patches by name (a note names one in `patch`), and its drum kit. */
-export interface SoundSet {
-  patches?: Record<string, Patch>;
-  kit?: Kit;
-}
 
 type Voice = (out: Stereo, n: ScoreNote, sr: number, prev: ScoreNote | undefined, touch: boolean) => void;
 
@@ -59,21 +56,6 @@ function renderPatched(out: Stereo, n: ScoreNote, sr: number, patch: Patch, prev
   if (!curves || (!curves.level && (glides || !curves.bend))) return voice(out, n, sr, prev, touch);
   const shaped: ScoreNote = glides ? { ...n, curves: { ...(curves.level && { level: curves.level }) } } : n;
   renderShaped(out, shaped, sr, (o) => voice(o, n, sr, glides || !curves.bend ? prev : undefined, touch));
-}
-
-/** Whether a note plays one of the style's own sounds: only the synth has those, so it plays the note under the samples engine too. */
-export function playsDeclared(n: ScoreNote, sound: SoundSet | undefined): boolean {
-  if (!sound) return false;
-  return n.role === "drums" ? sound.kit !== undefined : n.patch !== undefined && sound.patches?.[n.patch] !== undefined;
-}
-
-/** A style's declared sounds as the synth takes them. Undefined for a style with none, which is every style of the other apps. */
-export function styleSound(corpus: { patches?: (Patch & { id: string })[] | undefined; synthKit?: Kit | undefined }): SoundSet | undefined {
-  if (!corpus.patches?.length && !corpus.synthKit) return undefined;
-  return {
-    ...(corpus.patches?.length && { patches: Object.fromEntries(corpus.patches.map((p) => [p.id, p])) }),
-    ...(corpus.synthKit && { kit: corpus.synthKit }),
-  };
 }
 
 /** Offline: every note of a clip, one stem per role. */

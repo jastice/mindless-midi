@@ -212,7 +212,7 @@ export const Kit = z
       .object({
         level: z.number().min(0).max(1.5).describe("Level against the kick. 0.3-0.5 is felt more than heard, 0.7+ is a wall."),
         cutoff: z.number().min(40).max(400).describe("Low-pass on the reverb, Hz. 70-110 keeps it a sub drone; 150-250 lets some growl through."),
-        decay: seconds(0.1, 3).describe("Reverb time, seconds to die away. About one beat (0.4-0.6 at 125-135 BPM) so it breathes between kicks; longer runs into a constant drone."),
+        decay: seconds(0.1, 3).describe("Reverb time: seconds for the rumble to die away completely (60 dB). 1.2-2 keeps it sounding until the next kick at 125-135 BPM, a drone that breathes with the beat; under 0.6 is only a thump after each kick; 3 smears into a constant hum."),
         duck: seconds(0.01, 0.5)
           .optional()
           .describe("Seconds the rumble takes to swell in behind each kick, so the kick's punch stays clear. 0.06-0.12. Omit for 0.08."),
