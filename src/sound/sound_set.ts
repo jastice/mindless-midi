@@ -21,6 +21,12 @@ export function styleSound(corpus: { patches?: (Patch & { id: string })[] | unde
   };
 }
 
+/** The mix level of each part that sets its own (see corpus `parts`). Undefined for a style without parts. */
+export function partLevels(corpus: { parts?: { id: string; role: string; volume?: number | undefined }[] | undefined }): Record<string, number> | undefined {
+  if (!corpus.parts?.length) return undefined;
+  return Object.fromEntries(corpus.parts.filter((p) => p.volume !== undefined && p.role !== "drums").map((p) => [p.id, p.volume!]));
+}
+
 /**
  * Whether a note plays one of the style's patches. Only the synth has those, so it plays the note
  * under the samples engine too. (Drums stay with the engine: sampled there, the declared kit in the synth.)

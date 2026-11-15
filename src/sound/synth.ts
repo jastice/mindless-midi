@@ -61,13 +61,14 @@ function renderPatched(out: Stereo, n: ScoreNote, sr: number, patch: Patch, prev
 /** Offline: every note of a clip, one stem per role. */
 export async function renderSynthStems(notes: ScoreNote[], frames: number, styleId: string, sr: number, onProgress?: (f: number) => void, sound?: SoundSet): Promise<Map<Role, Stereo>> {
   const stems = new Map<Role, Stereo>();
-  const prevByRole = new Map<Role, ScoreNote>();
+  // The previous note of each line: a part's, or a role's.
+  const prevByRole = new Map<string, ScoreNote>();
   let done = 0;
   for (const n of notes) {
     let out = stems.get(n.role);
     if (!out) stems.set(n.role, (out = stereo(frames)));
-    renderSynthNote(out, n, sr, styleId, prevByRole.get(n.role), false, sound);
-    prevByRole.set(n.role, n);
+    renderSynthNote(out, n, sr, styleId, prevByRole.get(n.part ?? n.role), false, sound);
+    prevByRole.set(n.part ?? n.role, n);
     if (++done % 64 === 0) {
       onProgress?.(done / notes.length);
       await yieldToUi();

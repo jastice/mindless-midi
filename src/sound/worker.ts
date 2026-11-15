@@ -3,6 +3,11 @@
  * plus sample plans or the raw bar for libADLMIDI); this renders each role's
  * audio for the bar, levels it, and streams it straight to the stem worklet
  * through a MessagePort. Notes ring into later bars through per-role windows.
+ *
+ * A style with parts (corpus `parts`) has a window per part, and a leveller per
+ * part except that a kit's parts share one, as its kick and the rest already
+ * do. The parts of a role are summed into its stem before the mix, so the
+ * worklet and the bus still see one stem per role.
  */
 // @ts-expect-error: untyped Emscripten ES module from libadlmidi-js
 import createADLMIDIUntyped from "libadlmidi-js/dist/libadlmidi.nuked.browser.js";
@@ -26,10 +31,13 @@ let sr = 48000;
 let port: MessagePort | null = null;
 let engine: StemEngine | null = null;
 const samples = new Map<string, SampleData>();
-const windows = new Map<StemId, StemWindow>();
-const levelers = new Map<Role, RoleLeveler>();
-/** The weighted mix's levellers (one per role; the kick shares the kit's) and its stem processing. */
-const bodies = new Map<Role, BodyLeveler>();
+/** Keyed by stem, or by part id for a note that names its part. */
+const windows = new Map<string, StemWindow>();
+/** The role of each part that has a window. Empty unless a style with parts has played: then the code for parts below runs. */
+const partRole = new Map<string, Role>();
+const levelers = new Map<string, RoleLeveler>();
+/** The weighted mix's levellers (one per role, or per part; the kick shares the kit's) and its stem processing. */
+const bodies = new Map<string, BodyLeveler>();
 let weighted: WeightedMix | null = null;
 /** Roughly how amplitude follows velocity in each engine (`velocity^law`), for reading a stem's level apart from how hard its section is played. */
 const LAW: Record<StemEngine, number> = { synth: 1.3, samples: 1.8, fm_bus: 1.5 };
@@ -42,7 +50,8 @@ const FULL_STRENGTH = 1.4;
 
 /** The stem a note is rendered into: its role, or the kick's own stem when the mix wants it apart. */
 const stemOf = (n: { role: Role; key: number }, split: boolean): StemId => (split && n.role === "drums" && (n.key === 35 || n.key === 36) ? "kick" : n.role);
-const prev = new Map<Role, ScoreNote>();
+/** The previous note of each line: a part's, or a role's. */
+const prev = new Map<string, ScoreNote>();
 let wasm: ArrayBuffer | null = null;
 let fm: Promise<FmStems> | null = null;
 
@@ -134,7 +143,7 @@ function loadFm(): Promise<FmStems> {
   return fm;
 }
 
-function windowFor(role: StemId, start: number): StemWindow {
+function windowFor(role: string, start: number): StemWindow {
   let w = windows.get(role);
   if (!w) windows.set(role, (w = new StemWindow(start, Math.ceil((Math.max(MAX_VOICE_SECONDS, MAX_SAMPLE_SECONDS) + 8) * sr))));
   return w;
@@ -142,6 +151,7 @@ function windowFor(role: StemId, start: number): StemWindow {
 
 function resetAll(): void {
   windows.clear();
+  partRole.clear();
   prev.clear();
   fm?.then((f) => f.clear());
 }
@@ -158,16 +168,19 @@ async function renderBar(msg: Extract<ToWorker, { type: "bar" }>): Promise<void>
     for (const l of bodies.values()) l.reset();
   }
   const split = msg.mix !== undefined;
-  let stems: Map<StemId, Stereo>;
+  let stems: Map<string, Stereo>;
   if (msg.engine === "fm_bus") {
     stems = (await loadFm()).render(msg, split);
   } else {
     // Notes ring on in each role's window; hand out this bar's frames.
     msg.notes.forEach((n, i) => {
-      const w = windowFor(stemOf(n, split), msg.start);
-      if (msg.engine === "synth" || playsPatch(n, msg.sound)) renderSynthNote(w, n, sr, msg.styleId, prev.get(n.role), msg.touch, msg.sound);
+      let id: string = stemOf(n, split);
+      if (n.part !== undefined && id !== "kick") partRole.set((id = n.part), n.role);
+      const w = windowFor(id, msg.start);
+      const line = n.part ?? n.role;
+      if (msg.engine === "synth" || playsPatch(n, msg.sound)) renderSynthNote(w, n, sr, msg.styleId, prev.get(line), msg.touch, msg.sound);
       else if (msg.plans?.[i]) renderSampleNote(w, n, msg.plans[i]!, (u) => samples.get(u), sr);
-      prev.set(n.role, n);
+      prev.set(line, n);
     });
     stems = new Map();
     for (const [role, w] of windows) {
@@ -183,11 +196,16 @@ async function renderBar(msg: Extract<ToWorker, { type: "bar" }>): Promise<void>
       data.push(s[1].l, s[1].r);
     }
   } else {
-    for (const [role, s] of stems as Map<Role, Stereo>) {
-      let lv = levelers.get(role);
-      if (!lv) levelers.set(role, (lv = new RoleLeveler(sr, STEM_REF)));
-      lv.target = (msg.levels[role] ?? 0.5) * STEM_REF;
+    // With parts: a kit's parts are summed and levelled as one, the others each at their own level, then summed by role.
+    const kit = (id: string) => (partRole.get(id) === "drums" ? "drums" : id);
+    const groups = partRole.size ? summed(stems, kit) : stems;
+    for (const [id, s] of groups) {
+      let lv = levelers.get(id);
+      if (!lv) levelers.set(id, (lv = new RoleLeveler(sr, STEM_REF)));
+      lv.target = levelOf(msg, id) * STEM_REF;
       lv.process(s);
+    }
+    for (const [role, s] of (partRole.size ? summed(groups, roleOf) : groups) as Map<Role, Stereo>) {
       roles.push(ROLES.indexOf(role));
       data.push(s.l, s.r);
     }
@@ -196,20 +214,57 @@ async function renderBar(msg: Extract<ToWorker, { type: "bar" }>): Promise<void>
   port?.postMessage(out, data.map((d) => d.buffer));
 }
 
+/** The stem a window's audio belongs to: a part's role, or the window's own id. */
+const roleOf = (id: string): string => partRole.get(id) ?? id;
+
+/** The mix level of a stem or a part: the part's own if the bar gives one, else its role's. */
+const levelOf = (msg: Extract<ToWorker, { type: "bar" }>, id: string): number => msg.partLevels?.[id] ?? msg.levels[roleOf(id) as Role] ?? 0.5;
+
+/** Stems added together by `key`, in place into the first of each group. */
+function summed(stems: Map<string, Stereo>, key: (id: string) => string): Map<string, Stereo> {
+  const out = new Map<string, Stereo>();
+  for (const [id, s] of stems) {
+    const into = out.get(key(id));
+    if (!into) {
+      out.set(key(id), s);
+      continue;
+    }
+    for (let i = 0; i < s.l.length; i++) {
+      into.l[i]! += s.l[i]!;
+      into.r[i]! += s.r[i]!;
+    }
+  }
+  return out;
+}
+
 /** The weighted mix: level each instrument without following the performance, then mix the stems (the kick joins the kit). */
-function weigh(stems: Map<StemId, Stereo>, msg: Extract<ToWorker, { type: "bar" }>, mix: { intensity: number; lean: number }): Map<Role, Stereo> {
+function weigh(stems: Map<string, Stereo>, msg: Extract<ToWorker, { type: "bar" }>, mix: { intensity: number; lean: number }): Map<Role, Stereo> {
   // The section's velocity scale as amplitude, by this engine's velocity law.
   const lean = Math.pow(Math.max(0.05, Math.min(1, mix.lean)), LAW[msg.engine]);
-  for (const role of ROLES) {
-    const group = [stems.get(role), role === "drums" ? stems.get("kick") : undefined].filter((s): s is Stereo => s !== undefined);
-    if (!group.length) continue;
-    let lv = bodies.get(role);
-    if (!lv) bodies.set(role, (lv = new BodyLeveler(sr, STEM_REF)));
-    lv.target = (msg.levels[role] ?? 0.5) * STEM_REF * FULL_STRENGTH;
-    lv.process(group, msg.notes.some((n) => n.role === role) ? lean : undefined);
+  const level = (id: string, group: Stereo[], playing: boolean) => {
+    if (!group.length) return;
+    let lv = bodies.get(id);
+    if (!lv) bodies.set(id, (lv = new BodyLeveler(sr, STEM_REF)));
+    lv.target = levelOf(msg, id) * STEM_REF * FULL_STRENGTH;
+    lv.process(group, playing ? lean : undefined);
+  };
+  if (!partRole.size) {
+    for (const role of ROLES) {
+      const group = [stems.get(role), role === "drums" ? stems.get("kick") : undefined].filter((s): s is Stereo => s !== undefined);
+      level(role, group, msg.notes.some((n) => n.role === role));
+    }
+  } else {
+    // A kit is one instrument, whatever its parts: they share a leveller with the kick. Every other part is its own.
+    const kit = [...stems].filter(([id]) => id === "kick" || roleOf(id) === "drums").map(([, s]) => s);
+    level("drums", kit, msg.notes.some((n) => n.role === "drums"));
+    for (const [id, s] of stems) {
+      if (id === "kick" || roleOf(id) === "drums") continue;
+      level(id, [s], msg.notes.some((n) => (n.part ?? n.role) === id));
+    }
+    stems = summed(stems, roleOf);
   }
   weighted ??= new WeightedMix(sr);
-  return weighted.process(stems, weightFor(msg.styleId), mix.intensity);
+  return weighted.process(stems as Map<StemId, Stereo>, weightFor(msg.styleId), mix.intensity);
 }
 
 // Bars must be rendered in order even when one awaits the FM module.

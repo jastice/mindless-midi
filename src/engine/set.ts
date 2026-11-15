@@ -4,7 +4,8 @@
  * bar after the last, on a phrase boundary. Each track's tempo is within 3% of
  * the one before and its key compatible with it. The first and last 16 bars of
  * a track bring its parts in and take them out (drums first in and last out),
- * so even a cut sounds like one track handing over to the next.
+ * so even a cut sounds like one track handing over to the next: by role, or
+ * for a style with parts one part every 4 bars, in its arrangement grid.
  *
  * The set travels. It is laid out in legs of 30 to 45 minutes, each with a
  * tempo to head for: every next track takes the style and tempo that move
@@ -19,13 +20,11 @@ import type { Role, StyleBundle } from "../corpus/schema.js";
 import { Rng } from "../theory/rng.js";
 import { type Key, type ModeName, keysCompatible, pitchClass } from "../theory/theory.js";
 import { type BarSource, type Landing, MAX_SEEK_PIECE } from "./conductor.js";
+import { MIX_BARS, PHRASE_BARS, mixBars } from "./grid.js";
 import { Piece, type PieceOptions, type Segment } from "./piece.js";
 import { type Bar, CHANNELS, type ControlEvent } from "./types.js";
 
-/** Bars in a phrase; tracks are whole phrases. */
-export const PHRASE_BARS = 8;
-/** Bars at each end of a track that mix it in and out. */
-export const MIX_BARS = 16;
+export { MIX_BARS, PHRASE_BARS, mixBars };
 /** Most a track's tempo may differ from the one before, as a share of it. */
 export const MAX_TEMPO_STEP = 0.03;
 
@@ -86,22 +85,16 @@ export interface TrackPlan {
 const clamp = (n: number, lo: number, hi: number) => Math.min(Math.max(Math.floor(n), lo), hi);
 
 /**
- * Bars at each end of a track of `totalBars` that mix it in and out:
- * `MIX_BARS`, or a phrase less at a time for a track too short to play at
- * least one phrase whole between them; none for a track of under three phrases.
- */
-export function mixBars(totalBars: number): number {
-  for (let m = MIX_BARS; m > 0; m -= PHRASE_BARS) if (2 * m + PHRASE_BARS <= totalBars) return m;
-  return 0;
-}
-
-/**
  * The roles left out of a bar of a track: in its first and last `mixBars`,
  * all but the tier that has come in so far (or not yet gone out). A tier the
  * bar's section does not play is passed over, so a mix-in is never silent
  * just because the track opens without drums.
+ *
+ * A style with parts leaves nothing out here: its arrangement grid brings the
+ * parts in and out one at a time over the same bars (see grid.ts).
  */
 export function mixLeaveOut(piece: Piece, barInPiece: number): ReadonlySet<Role> | undefined {
+  if (piece.grid) return undefined;
   const mix = mixBars(piece.totalBars);
   if (!mix) return undefined;
   const stageBars = mix / MIX_TIERS.length;

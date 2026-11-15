@@ -2,15 +2,18 @@
  * A piece: one style, one key and tempo, one form, a few minutes long.
  * Planning happens up front (cheap); notes are rendered lazily bar by bar.
  */
-import type { CompPattern, DrumPattern, Instrument, Motif, Progression, Role, StyleBundle, StyleCorpus } from "../corpus/schema.js";
+import type { CompPattern, DrumPattern, Instrument, Motif, Part, Progression, Role, StyleBundle, StyleCorpus } from "../corpus/schema.js";
 import { melodicRange, pitchRange } from "../corpus/sound.js";
 import { Rng } from "../theory/rng.js";
 import { MODES, type ModeName, foldIntoRange, keyLabel, mod, parseRoman, pitchClass } from "../theory/theory.js";
 import { bendRangeControls, gestureControls, gestureCurve } from "./gestures.js";
+import { DEFAULT_RATES, type Grid, type GridPart, PHRASE_BARS, type Turn, mixBars, planGrid } from "./grid.js";
 import { Harmony } from "./harmony.js";
 import {
   type BarContext,
   composePhrase,
+  evolveLanes,
+  evolveMotif,
   hasCymbals,
   holdChord,
   newMemory,
@@ -21,7 +24,7 @@ import {
   writeMelody,
   writeOstinato,
 } from "./parts.js";
-import { type Bar, CHANNELS, type ControlEvent, type NoteEvent } from "./types.js";
+import { type Bar, type BarInfo, CHANNELS, type ControlEvent, type NoteEvent } from "./types.js";
 
 export interface PieceOptions {
   minSeconds: number;
@@ -34,6 +37,7 @@ export interface PieceOptions {
    * "set": a track in a DJ set. No ending chord, no gap, no ritardando and no
    * transposing on later passes (a track is in one key); sections are padded to
    * a multiple of 4 bars and the last one so the piece is whole 8-bar phrases.
+   * A style with parts mixes itself in and out in its arrangement grid.
    */
   frame?: "piece" | "set";
   /** Added to every section's intensity (clamped to 0..1), to play the same form hotter or cooler. */
@@ -75,6 +79,17 @@ interface PlannedSection {
   fill: DrumPattern | undefined;
 }
 
+/** What a part plays in a section: its own pick from its pool, or the section's material for a part without a tag. */
+interface PartMaterial {
+  motifs: Motif[];
+  comp: CompPattern | undefined;
+  grooves: DrumPattern[];
+  fill: DrumPattern | undefined;
+}
+
+/** Chance per phrase that a part's pattern takes one small step, where the style does not say. */
+const DEFAULT_EVOLVE = 0.2;
+
 /** A stretch of a piece: a section, or the ending. */
 export interface Segment {
   label: string;
@@ -107,6 +122,16 @@ export class Piece {
   private readonly bodyBars: number;
   private readonly expression: Expression;
   private readonly set: boolean;
+  /** The style's parts; undefined for a style without, which is one part per role. */
+  private readonly parts: Part[] | undefined;
+  /** Which parts play in each bar (see grid.ts), for a style with parts. */
+  readonly grid: Grid | undefined;
+  private readonly partMaterials = new Map<string, PartMaterial>();
+  private readonly evolved = new Map<string, unknown>();
+  /** The low end: parts whose patterns keep their place. */
+  private readonly steady = new Set<string>();
+  /** Parts whose patch slides or accents, so their notes take gestures like a line's. */
+  private readonly glides = new Set<string>();
 
   constructor(
     style: StyleBundle,
@@ -124,6 +149,7 @@ export class Piece {
     this.expression = opts.expression ?? {};
     this.set = opts.frame === "set";
     const c = this.corpus;
+    this.parts = c.parts?.length ? c.parts : undefined;
     for (const inst of c.instruments) this.instruments.set(inst.role, inst);
 
     const plan = this.rng.fork("plan");
@@ -187,9 +213,9 @@ export class Piece {
       const material = materialFor(s.label, s.progression);
       const harmony = new Harmony(material.progression, bars * c.beatsPerBar);
       const grooveRng = vary.fork("groove");
-      const grooves = this.inPalette(c.drums.filter((d) => d.kind === "groove"));
+      const grooves = this.inPalette(this.untagged(c.drums).filter((d) => d.kind === "groove"));
       const byFit = grooveRng.shuffle(grooves).sort((a, b) => Math.abs(a.intensity - intensity) - Math.abs(b.intensity - intensity));
-      const fills = this.inPalette(c.drums.filter((d) => d.kind === "fill"));
+      const fills = this.inPalette(this.untagged(c.drums).filter((d) => d.kind === "fill"));
       sections.push({
         index: sections.length,
         label: s.label,
@@ -225,6 +251,36 @@ export class Piece {
     this.sections = sections;
     this.bodyBars = bar;
     this.totalBars = this.set ? bar : bar + 2;
+    if (this.parts) this.grid = this.planParts(this.parts, bar);
+  }
+
+  /** The arrangement grid for a style with parts, from its own random stream. */
+  private planParts(parts: Part[], bars: number): Grid {
+    const c = this.corpus;
+    const kick = parts.find((p) => p.role === "drums" && p.lanes?.includes("kick"));
+    const bass = parts.find((p) => p.role === "bass");
+    for (const p of [kick, bass]) if (p) this.steady.add(p.id);
+    const list: GridPart[] = [];
+    for (const p of parts) {
+      const inst = this.instruments.get(p.role);
+      if (!inst) continue;
+      const patch = c.patches?.find((x) => x.id === (p.patch ?? inst.patch));
+      if (p.role !== "drums" && patch && (patch.glide !== undefined || patch.accent !== undefined)) this.glides.add(p.id);
+      list.push({
+        id: p.id,
+        role: p.role,
+        enters: p.enters ?? 0,
+        ...(p === kick && { anchor: "kick" as const }),
+        ...(p === bass && { anchor: "bass" as const }),
+        ...(p.role === "drums" && p !== kick && { rests: true }),
+      });
+    }
+    return planGrid(list, this.sections, c.arrangement ?? DEFAULT_RATES, this.rng.fork("grid"), this.set ? mixBars(bars) : 0);
+  }
+
+  /** Material a part without a tag may use: with parts, everything not tagged for another. (Without parts nothing is tagged.) */
+  private untagged<T extends { material?: string | undefined }>(items: T[]): T[] {
+    return this.parts ? items.filter((x) => x.material === undefined) : items;
   }
 
   get keyName(): string {
@@ -248,16 +304,18 @@ export class Piece {
     const bound = c.progressions.find((p) => p.id === progressionId);
     const progression = bound ?? rng.pick(fresh.length ? fresh : progressions);
     used.add(progression.id);
+    const allMotifs = this.untagged(c.motifs);
+    const allComping = this.untagged(c.comping);
     const motifsFor = (role: Motif["role"], n: number) =>
-      rng.shuffle(this.inPalette(c.motifs.filter((m) => m.role === role))).slice(0, n);
+      rng.shuffle(this.inPalette(allMotifs.filter((m) => m.role === role))).slice(0, n);
     let counter = motifsFor("counter", 2);
     const lead = motifsFor("lead", 2);
     if (!counter.length) {
-      counter = rng.shuffle(this.inPalette(c.motifs.filter((m) => m.role === "lead")).filter((m) => !lead.includes(m))).slice(0, 2);
+      counter = rng.shuffle(this.inPalette(allMotifs.filter((m) => m.role === "lead")).filter((m) => !lead.includes(m))).slice(0, 2);
     }
     if (!counter.length) counter = lead.slice().reverse();
     const pickComp = (role: CompPattern["role"]) => {
-      const options = this.inPalette(c.comping.filter((p) => p.role === role));
+      const options = this.inPalette(allComping.filter((p) => p.role === role));
       return options.length ? rng.pick(options) : undefined;
     };
     return {
@@ -325,7 +383,7 @@ export class Piece {
     const controls: ControlEvent[] = barInPiece === 0 ? this.setupControls() : [];
     const section = this.sectionAt(barInPiece);
     const last = this.sections[this.sections.length - 1]!;
-    const info = {
+    const info: BarInfo = {
       pieceIndex: this.index,
       pieceSeed: this.seed,
       styleId: this.style.id,
@@ -342,7 +400,7 @@ export class Piece {
       barInPiece,
       pieceBars: this.totalBars,
       intensity: section?.intensity ?? 0.3,
-      chords: [] as string[],
+      chords: [],
       gap: barInPiece > this.bodyBars,
     };
 
@@ -351,24 +409,40 @@ export class Piece {
       const barStart = barInSection * bpb;
       info.chords = section.harmony.between(barStart, barStart + bpb).map((s) => s.chord.symbol);
       const rng = this.rng.fork(`bar:${barInPiece}`);
-      for (const role of section.roles) {
-        const instrument = this.instruments.get(role);
-        if (!instrument) continue;
-        const ctx: BarContext = {
-          rng: rng.fork(role),
-          tonic: mod(this.tonic + section.transpose, 12),
-          mode: this.mode,
-          harmony: section.harmony,
-          beatsPerBar: bpb,
-          beatGroups: c.beatGroups,
-          barStart,
-          barInSection,
-          sectionBars: section.bars,
-          intensity: section.intensity,
-          instrument,
-          velocityFloor: this.expression.velocityFloor,
-        };
-        notes.push(...this.renderRole(role, ctx, section));
+      const context = (stream: string, instrument: Instrument): BarContext => ({
+        rng: rng.fork(stream),
+        tonic: mod(this.tonic + section.transpose, 12),
+        mode: this.mode,
+        harmony: section.harmony,
+        beatsPerBar: bpb,
+        beatGroups: c.beatGroups,
+        barStart,
+        barInSection,
+        sectionBars: section.bars,
+        intensity: section.intensity,
+        instrument,
+        velocityFloor: this.expression.velocityFloor,
+      });
+      if (this.grid && this.parts) {
+        // The grid says which parts are in; the section only shaped the grid.
+        const on = this.grid.parts[barInPiece] ?? [];
+        const thin = this.grid.thin[barInPiece];
+        const turn = this.grid.turn[barInPiece];
+        info.parts = on;
+        if (thin) info.thin = thin;
+        if (turn) info.turn = turn;
+        for (const part of this.parts) {
+          const instrument = this.instruments.get(part.role);
+          if (!instrument || !on.includes(part.id) || thin?.includes(part.id)) continue;
+          const ctx = context(`part:${part.id}`, part.octave === undefined ? instrument : { ...instrument, octave: part.octave });
+          notes.push(...this.renderPart(part, ctx, section, turn));
+        }
+      } else {
+        for (const role of section.roles) {
+          const instrument = this.instruments.get(role);
+          if (!instrument) continue;
+          notes.push(...this.renderRole(role, context(role, instrument), section));
+        }
       }
     } else if (barInPiece === this.bodyBars) {
       info.chords = [this.finalChord()];
@@ -452,16 +526,118 @@ export class Piece {
     }
   }
 
-  private phrase(section: PlannedSection, role: "lead" | "counter", phraseIdx: number, phraseBars: number): PhraseNote[] {
-    const cacheKey = `${section.index}:${role}:${phraseIdx}`;
+  /** The material a part plays in a section. A tagged part picks from its own pool; an untagged one shares the section's. */
+  private materialOf(section: PlannedSection, part: Part): PartMaterial {
+    const role = part.role;
+    // Grooves are per section, like the section's own; motifs and comping per label, so repeats are recognisable.
+    const key = `${role === "drums" ? section.index : section.label}:${part.id}`;
+    let m = this.partMaterials.get(key);
+    if (m) return m;
+    const c = this.corpus;
+    const mine = <T extends { material?: string | undefined }>(items: T[]) => items.filter((x) => x.material === part.material);
+    m = { motifs: [], comp: undefined, grooves: [], fill: undefined };
+    if (role === "drums") {
+      const lanes = part.lanes ?? [];
+      const plays = (d: DrumPattern) => lanes.some((l) => /[Xxo]/.test(d.lanes[l]));
+      const rng = this.rng.fork(`part-groove:${section.index}:${part.id}`);
+      const near = (d: DrumPattern) => Math.abs(d.intensity - section.intensity);
+      const grooves = this.inPalette(mine(c.drums).filter((d) => d.kind === "groove" && plays(d)));
+      m.grooves = rng.shuffle(grooves).sort((a, b) => near(a) - near(b)).slice(0, 2);
+      const fills = this.inPalette(mine(c.drums).filter((d) => d.kind === "fill" && plays(d)));
+      m.fill = fills.length ? rng.weighted(fills, (f) => 1 / (0.15 + near(f))) : undefined;
+    } else if (part.material === undefined) {
+      if (role === "pad" || role === "comp") m.comp = section.material.comping[role];
+      else m.motifs = section.material.motifs[role];
+    } else {
+      const rng = this.rng.fork(`part-material:${section.label}:${part.id}`);
+      if (role === "pad" || role === "comp") {
+        const options = this.inPalette(mine(c.comping).filter((p) => p.role === role));
+        m.comp = options.length ? rng.pick(options) : undefined;
+      } else m.motifs = rng.shuffle(this.inPalette(mine(c.motifs).filter((x) => x.role === role))).slice(0, 2);
+    }
+    this.partMaterials.set(key, m);
+    return m;
+  }
+
+  /**
+   * A part's pattern as it stands in phrase `phrase` of a section: the written
+   * one, changed by one small step at each phrase boundary so far that drew
+   * one (at the style's `evolve` rate). Each boundary has its own stream, so
+   * the result is the same however the bar is reached.
+   */
+  private evolveOver<T>(key: string, base: T, phrase: number, step: (x: T, rng: Rng) => T): T {
+    const rate = this.corpus.arrangement?.evolve ?? DEFAULT_EVOLVE;
+    if (phrase <= 0 || rate <= 0) return base;
+    const k = `${key}:${phrase}`;
+    if (this.evolved.has(k)) return this.evolved.get(k) as T;
+    let x = this.evolveOver(key, base, phrase - 1, step);
+    const rng = this.rng.fork(`evolve:${k}`);
+    if (rng.chance(rate)) x = step(x, rng);
+    this.evolved.set(k, x);
+    return x;
+  }
+
+  /** One part's notes for a bar: the role's writer, on the part's own material, lanes and memory. */
+  private renderPart(part: Part, ctx: BarContext, section: PlannedSection, turn: Turn | undefined): NoteEvent[] {
+    const m = this.materialOf(section, part);
+    const role = part.role;
+    const key = `${section.index}:${part.id}`;
+    const phrase = Math.floor(ctx.barInSection / PHRASE_BARS);
+    const steady = this.steady.has(part.id);
+    let out: NoteEvent[] = [];
+    switch (role) {
+      case "drums": {
+        const lanes = part.lanes ?? [];
+        let pattern = m.grooves[0];
+        if (!pattern) return [];
+        if (ctx.barInSection === section.bars - 1 && m.fill && section.bars > 1 && ctx.rng.chance(0.75)) pattern = m.fill;
+        else if (m.grooves[1] && ctx.barInSection % 4 === 3 && ctx.rng.chance(0.35)) pattern = m.grooves[1];
+        else pattern = this.evolveOver(key, pattern, phrase, (p, rng) => evolveLanes(p, lanes, rng, steady));
+        out = writeDrums(ctx, pattern, { crash: lanes.includes("crash") && turn === "drop" }, lanes);
+        if (pattern.stepsPerBeat % 2 !== 0) for (const n of out) n.straight = true;
+        break;
+      }
+      case "bass":
+      case "arp": {
+        if (!m.motifs.length) return [];
+        const alt = m.motifs[1] && ctx.barInSection % 8 >= 6 && this.rng.fork(`alt:${section.index}:${part.id}`).chance(0.6);
+        const motif = alt ? m.motifs[1]! : this.evolveOver(key, m.motifs[0]!, phrase, (x, rng) => evolveMotif(x, rng, steady));
+        out = writeOstinato(ctx, motif, melodicRange(role, ctx.instrument.octave, this.corpus.melody));
+        break;
+      }
+      case "pad":
+      case "comp":
+        out = m.comp ? writeChords(ctx, m.comp, this.memory, part.id) : [];
+        break;
+      case "lead":
+      case "counter": {
+        const rules = this.corpus.melody;
+        const phraseBars = Math.max(1, rules.phraseBars);
+        const notes = this.phrase(section, role, Math.floor(ctx.barInSection / phraseBars), phraseBars, { id: part.id, motifs: m.motifs });
+        out = writeMelody(ctx, notes, role, melodicRange(role, ctx.instrument.octave, rules), this.memory, role === "lead" ? rules.trill : 0, part.id);
+        break;
+      }
+    }
+    for (const n of out) {
+      n.part = part.id;
+      n.role = role;
+      n.ch = CHANNELS[role];
+    }
+    return out;
+  }
+
+  /** `part`: a part's own phrase from its own motifs, for a style with parts. */
+  private phrase(section: PlannedSection, role: "lead" | "counter", phraseIdx: number, phraseBars: number, part?: { id: string; motifs: Motif[] }): PhraseNote[] {
+    const who = part ? `${role}@${part.id}` : role;
+    const cacheKey = `${section.index}:${who}:${phraseIdx}`;
     const cached = this.memory.phrases.get(cacheKey);
     if (cached) return cached;
     const rules = this.corpus.melody;
     const bpb = this.corpus.beatsPerBar;
     // Repeated sections usually replay the same melody; later passes sometimes vary it.
-    const decide = this.rng.fork(`phrase-variant:${section.index}:${role}:${phraseIdx}`);
+    const decide = this.rng.fork(`phrase-variant:${section.index}:${who}:${phraseIdx}`);
     const variant = section.pass > 0 && decide.chance(0.45) ? `:v${section.pass}` : "";
-    const rng = this.rng.fork(`phrase:${section.label}:${role}:${phraseIdx}${variant}`);
+    const rng = this.rng.fork(`phrase:${section.label}:${who}:${phraseIdx}${variant}`);
     const bars = Math.min(phraseBars, section.bars - phraseIdx * phraseBars);
     let notes: PhraseNote[] = [];
     let rest = rng.chance(rules.restProbability);
@@ -470,7 +646,7 @@ export class Piece {
       rest = leadPhrase.length > 0 ? rng.chance(0.55) : rng.chance(0.15);
     }
     if (!rest) {
-      const pool = section.material.motifs[role];
+      const pool = part ? part.motifs : section.material.motifs[role];
       const motifs = phraseIdx % 2 === 1 && pool.length > 1 ? [pool[1]!, pool[0]!] : pool;
       notes = composePhrase(motifs, rules, rng, phraseIdx * phraseBars * bpb, bars * bpb, role === "counter" ? 0.35 : 0);
     }
@@ -548,6 +724,13 @@ export class Piece {
       out.push({ beat: 0, kind: "cc", ch, cc: 11, value: 127 });
       if (this.expression.gestures && inst.role !== "drums") out.push(...bendRangeControls(ch), { beat: 0, kind: "bend", ch, value: 8192 });
     }
+    // Each part's own sound: a program change that names the part, and its patch if it plays one.
+    for (const part of this.parts ?? []) {
+      const inst = this.instruments.get(part.role);
+      if (!inst || part.role === "drums") continue;
+      const patch = part.patch ?? inst.patch;
+      out.push({ beat: 0, kind: "program", ch: CHANNELS[part.role], value: inst.program, part: part.id, ...(patch !== undefined && { patch }) });
+    }
     return out;
   }
 
@@ -565,12 +748,13 @@ export class Piece {
    * `gestureControls` turns the curves into events.
    */
   private gestures(notes: NoteEvent[], rng: Rng, section: PlannedSection | undefined, barInPiece: number): void {
-    const prev = new Map<Role, NoteEvent>();
+    // The line a note belongs to: its part, or its role in a style without parts.
+    const prev = new Map<string, NoteEvent>();
     const padSwell = new Map<number, boolean>();
     const landing = section !== undefined && barInPiece === section.startBar && section.index > 0 && section.intensity >= 0.5;
     notes.forEach((n, i) => {
-      const before = prev.get(n.role);
-      prev.set(n.role, n);
+      const before = prev.get(n.part ?? n.role);
+      prev.set(n.part ?? n.role, n);
       if (n.role === "drums") {
         delete n.gesture;
         if (n.key === 46) {
@@ -584,7 +768,7 @@ export class Piece {
         return;
       }
       const program = this.instruments.get(n.role)?.program ?? 0;
-      const line = n.role === "lead" || n.role === "counter" || n.role === "bass";
+      const line = n.role === "lead" || n.role === "counter" || n.role === "bass" || (n.part !== undefined && this.glides.has(n.part));
       // A gesture written in the corpus stands, where the part and the note can carry it.
       let gesture = line && n.dur >= 0.2 && n.gesture !== "choke" ? n.gesture : undefined;
       const interval = before ? before.key - n.key : 0;

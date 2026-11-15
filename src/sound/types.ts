@@ -9,6 +9,8 @@ export interface ScoreNote {
   vel: number;
   ch: number;
   role: Role;
+  /** The part that plays it, in a style with parts: its own line, window and level. */
+  part?: string;
   /** GM program sounding on this channel at the onset. */
   program: number;
   /** Name of the style's patch this note plays instead of `program` (see corpus/patch.ts), where the engine has it. */

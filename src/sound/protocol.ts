@@ -28,6 +28,8 @@ export type ToWorker =
       newPiece: boolean;
       /** Mix intent per role (corpus volume). */
       levels: Partial<Record<Role, number>>;
+      /** The same per part, for a style with parts, where a part has its own (else its role's stands). */
+      partLevels?: Record<string, number>;
       /** Notes in absolute seconds (frame / sampleRate). */
       notes: ScoreNote[];
       /** samples: one plan per note. */

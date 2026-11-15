@@ -22,6 +22,8 @@ export interface NoteEvent {
   /** 1..127 */
   vel: number;
   role: Role;
+  /** The part that plays it, in a style with parts (see corpus `parts`). */
+  part?: string;
   /** Exempt from swing (e.g. drums on a triplet grid). Consumed by the piece. */
   straight?: boolean;
   /** How the note is played, when the piece is arranged with gestures (see gestures.ts). */
@@ -45,8 +47,11 @@ export interface NoteCurve {
 }
 
 export type ControlEvent =
-  /** `patch` names the style's patch the channel's instrument plays, for engines that have patches (see corpus/patch.ts). */
-  | { beat: number; kind: "program"; ch: number; value: number; patch?: string }
+  /**
+   * `patch` names the style's patch the channel's instrument plays, for engines that have patches (see corpus/patch.ts).
+   * With `part`, the event sets up that part alone: its notes carry its id, and play this patch (or none).
+   */
+  | { beat: number; kind: "program"; ch: number; value: number; patch?: string; part?: string }
   | { beat: number; kind: "cc"; ch: number; cc: number; value: number }
   /** Pitch bend, 14 bits: 8192 is no bend, 0 and 16383 the full range down and up. */
   | { beat: number; kind: "bend"; ch: number; value: number }
@@ -78,6 +83,12 @@ export interface BarInfo {
   chords: string[];
   /** True for the trailing silence between pieces. */
   gap: boolean;
+  /** The arrangement grid, in a style with parts: ids of the parts that are in for this bar. */
+  parts?: string[];
+  /** Of those, the ones resting for this bar only (a one-bar gap at the end of a phrase). */
+  thin?: string[];
+  /** On the first bar of a section that turns the track: everything in ("drop") or the low end and more out ("break"). */
+  turn?: "drop" | "break";
 }
 
 export interface Bar {

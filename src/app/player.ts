@@ -23,7 +23,7 @@ import { type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../s
 import { creditLines, type PackCredit } from "../corpus/pack.js";
 import { type PlannedNote, SampleCache, SampleLibrary, servedAt } from "../sound/sampler.js";
 import { barScore } from "../sound/score.js";
-import { styleSound } from "../sound/sound_set.js";
+import { partLevels, styleSound } from "../sound/sound_set.js";
 import type { ScoreNote } from "../sound/types.js";
 
 export type { Engine };
@@ -205,7 +205,7 @@ export class Player {
   /** Programs per channel as of the last generated bar. */
   private readonly programs = new Map<number, number>();
   /** The patch per channel, for styles that declare their own sounds (see corpus/patch.ts); empty for the rest. */
-  private readonly patches = new Map<number, string>();
+  private readonly patches = new Map<number | string, string>();
   /** The next bar sent to an engine must carry its piece's setup (bank, programs, levels). */
   private needsSetup = false;
   private busStyle: string | null = null;
@@ -1131,6 +1131,7 @@ export class Player {
     const levels = Object.fromEntries((style?.corpus.instruments ?? []).map((i) => [i.role, i.volume])) as Partial<Record<Role, number>>;
     // The style's own patches and synth kit, if it declares any.
     const sound = style && styleSound(style.corpus);
+    const parts = style && partLevels(style.corpus);
     this.toWorker({
       type: "bar",
       engine,
@@ -1139,6 +1140,7 @@ export class Player {
       styleId: info.styleId,
       newPiece: info.barInPiece === 0,
       levels,
+      ...(parts && { partLevels: parts }),
       notes,
       plans: plans?.map((p) => (p.cut === undefined ? p : { ...p, cut: p.cut + at })),
       bar: engine === "fm_bus" ? bar : undefined,

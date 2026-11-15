@@ -46,6 +46,63 @@ export function kitWarnings(k: Kit): string[] {
   return out;
 }
 
+/** What a part of each role reads its material from. */
+function materialOf(c: StyleCorpus, role: Role): { kind: string; items: { id: string; material?: string | undefined }[] } {
+  if (role === "drums") return { kind: "drum patterns", items: c.drums };
+  if (role === "pad" || role === "comp") return { kind: `${role} comping patterns`, items: c.comping.filter((p) => p.role === role) };
+  return { kind: `${role} motifs`, items: c.motifs.filter((m) => m.role === role) };
+}
+
+/** The parts block: ids, roles, patches, lanes and material all resolve, and no lane or tag is claimed twice. */
+function checkParts(c: StyleCorpus, patches: Set<string>, patched: Set<string>, errors: string[], warnings: string[]): void {
+  const tagged: [string, { id: string; material?: string | undefined }, Role[]][] = [
+    ...c.motifs.map((m, i) => [`motifs[${i}]`, m, [m.role]] as [string, typeof m, Role[]]),
+    ...c.comping.map((p, i) => [`comping[${i}]`, p, [p.role]] as [string, typeof p, Role[]]),
+    ...c.drums.map((d, i) => [`drums[${i}]`, d, ["drums"]] as [string, typeof d, Role[]]),
+  ];
+  const parts = c.parts;
+  if (!parts) {
+    for (const [where, item] of tagged) if (item.material !== undefined) errors.push(`${where} "${item.id}": material "${item.material}" needs a parts block with a part of that material`);
+    if (c.arrangement) warnings.push("arrangement: does nothing without parts");
+    return;
+  }
+  const ids = new Set<string>();
+  const lanes = new Map<string, string>();
+  const instruments = new Set(c.instruments.map((i) => i.role));
+  parts.forEach((p, i) => {
+    const where = `parts[${i}] "${p.id}"`;
+    if (ids.has(p.id)) errors.push(`${where}: duplicate part id`);
+    ids.add(p.id);
+    if (!instruments.has(p.role)) errors.push(`${where}: role "${p.role}" has no instrument`);
+    if (p.patch !== undefined) {
+      patched.add(p.patch);
+      if (!patches.has(p.patch)) errors.push(`${where}: unknown patch "${p.patch}"`);
+      else if (p.role === "drums") warnings.push(`${where}: drums play the kit; patch "${p.patch}" is ignored`);
+    }
+    if (p.role === "drums") {
+      if (!p.lanes) errors.push(`${where}: a drums part names the lanes it plays`);
+      if (p.volume !== undefined) warnings.push(`${where}: a kit is levelled as one; volume is ignored`);
+    } else if (p.lanes) errors.push(`${where}: lanes are for drums parts`);
+    for (const lane of p.lanes ?? []) {
+      const other = lanes.get(lane);
+      if (other !== undefined) errors.push(`${where}: lane "${lane}" is already played by part "${other}"`);
+      else lanes.set(lane, p.id);
+    }
+    const { kind, items } = materialOf(c, p.role);
+    const pool = items.filter((x) => x.material === p.material);
+    if (!pool.length) errors.push(p.material === undefined ? `${where}: there are no untagged ${kind} for it to play` : `${where}: unknown material "${p.material}" (no ${kind} are tagged with it)`);
+    else if (p.role === "drums" && p.lanes && !c.drums.some((d) => d.kind === "groove" && d.material === p.material && p.lanes!.some((l) => d.lanes[l].length > 0 && /[Xxo]/.test(d.lanes[l])))) {
+      errors.push(`${where}: no groove${p.material === undefined ? "" : ` of material "${p.material}"`} has anything on its lanes (${p.lanes.join(", ")})`);
+    }
+  });
+  for (const [where, item, roles] of tagged) {
+    if (item.material !== undefined && !parts.some((p) => p.material === item.material && roles.includes(p.role))) {
+      errors.push(`${where} "${item.id}": unknown material "${item.material}" (no ${roles[0]} part has it)`);
+    }
+  }
+  if (!lanes.has("kick")) warnings.push("parts: no part plays the kick lane");
+}
+
 export function validateCorpus(input: unknown): ValidationResult {
   const parsed = StyleCorpus.safeParse(input);
   if (!parsed.success) {
@@ -94,6 +151,7 @@ export function validateCorpus(input: unknown): ValidationResult {
     else if (inst.role === "drums") warnings.push(`${where}: drums play the kit; patch "${inst.patch}" is ignored`);
   };
   c.instruments.forEach((inst, i) => checkPatch(`instruments[${i}]`, inst));
+  checkParts(c, patches, patched, errors, warnings);
   if (c.synthKit) for (const w of kitWarnings(c.synthKit)) warnings.push(`synthKit: ${w}`);
 
   c.progressions.forEach((p, i) => {
