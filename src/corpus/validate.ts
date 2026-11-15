@@ -73,6 +73,7 @@ function checkParts(c: StyleCorpus, patches: Set<string>, patched: Set<string>, 
   parts.forEach((p, i) => {
     const where = `parts[${i}] "${p.id}"`;
     if (ids.has(p.id)) errors.push(`${where}: duplicate part id`);
+    if (p.group !== undefined && c.arrangement?.groups?.[p.group] === undefined) warnings.push(`${where}: group "${p.group}" has no limit in arrangement.groups, so it does nothing`);
     ids.add(p.id);
     if (!instruments.has(p.role)) errors.push(`${where}: role "${p.role}" has no instrument`);
     if (p.patch !== undefined) {

@@ -152,7 +152,8 @@ test("a part enters only from its intensity, and a cooler track is a sparser one
   }
   console.log(`parts in, on average, at lift ${LIFTS.join(", ")}: ${mean.map((x) => x.toFixed(2)).join(", ")}`);
   for (let i = 1; i < mean.length; i++) assert.ok(mean[i]! > mean[i - 1]! + 0.1, `lift ${LIFTS[i]} plays more than ${LIFTS[i - 1]}`);
-  assert.ok(mean.at(-1)! > mean[0]! + 2, "by more than two parts from the coolest to the hottest");
+  // The style caps how many parts play at once, which narrows the range.
+  assert.ok(mean.at(-1)! > mean[0]! + 1.5, "by more than a part and a half from the coolest to the hottest");
   // The same track, cooler: nothing above the line the lift leaves.
   const cool = track("line", -0.3);
   for (const bar of barsOf(cool)) assert.ok(!bar.info.parts!.includes("ride") && !bar.info.parts!.includes("acid"));
@@ -418,4 +419,24 @@ test("the grid alone: with no rate nothing moves by choice", () => {
   const busy = planGrid(TOY, form, { change: 1, swap: 0, thin: 1 }, new Rng("busy"));
   assert.ok(busy.parts[63]!.length > 4, `${busy.parts[63]}`);
   assert.ok(busy.thin.filter(Boolean).length >= 6, "and with thin at 1 every phrase with a hat ends on a gap");
+});
+
+test("a style's limits hold: no more of a group than it allows, and no more parts than `most`", () => {
+  const { most, groups } = TECHNO.corpus.arrangement!;
+  assert.ok(most !== undefined && groups !== undefined);
+  let fullest = 0;
+  for (const seed of SEEDS)
+    for (const lift of LIFTS)
+      for (const bar of barsOf(track(seed, lift))) {
+        const on = bar.info.parts!.map(part);
+        for (const [group, limit] of Object.entries(groups)) {
+          const n = on.filter((p) => p.group === group).length;
+          assert.ok(n <= limit, `${seed} lift ${lift} bar ${bar.info.barInPiece}: ${n} of group ${group}: ${bar.info.parts}`);
+        }
+        // The roll of a build is extra.
+        const count = on.filter((p) => !p.roll).length;
+        assert.ok(count <= most, `${seed} lift ${lift} bar ${bar.info.barInPiece}: ${count} parts: ${bar.info.parts}`);
+        fullest = Math.max(fullest, count);
+      }
+  assert.equal(fullest, most, "the limit is reached somewhere");
 });

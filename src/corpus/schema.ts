@@ -219,6 +219,7 @@ export const Part = z
       ),
     octave: z.number().int().min(1).max(7).optional().describe("Register, if not the role instrument's."),
     volume: unit.optional().describe("Mix level 0..1, if not the role instrument's. Not for drum parts: a kit is levelled as one; balance it in the kit and in the pattern velocities."),
+    group: z.string().optional().describe("Names the parts this one crowds (say \"line\" for pitched lines, \"perc\" for busy percussion, \"top\" for noise and cymbals). `arrangement.groups` says how many of a group play at once."),
     roll: z
       .boolean()
       .optional()
@@ -234,6 +235,11 @@ export const Arrangement = z
     drop: unit
       .optional()
       .describe("Share of the parts that may play that come in at once at a drop (the first bar of a section that brings the kick back, or is a quarter hotter than the last). The rest enter one at a time after it. Omit for 1: everything in."),
+    most: z.number().int().min(2).max(32).optional().describe("The most parts playing at once, kick and bass included. Six to eight keeps techno clear; omit for no limit."),
+    groups: z
+      .record(z.string(), z.number().int().min(1).max(8))
+      .optional()
+      .describe("For each `group` a part may name, the most of its parts playing at once. Use it for sounds that crowd each other: pitched lines in one register, noise textures, busy percussion."),
     thin: unit.describe("Chance that the last bar of an 8-bar phrase drops a hat or percussion part for that bar: the simplest fill."),
     evolve: unit.describe("Chance, per part at each phrase boundary inside a section, that its pattern changes by one small step (a step more or less, an accent moved, a turn by a sixteenth). 0.1 to 0.3; a new section starts from the pattern as written."),
   })

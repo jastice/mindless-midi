@@ -61,6 +61,8 @@ export interface GridPart {
   rests?: boolean;
   /** Plays the roll in a build, and nowhere else. */
   roll?: boolean;
+  /** Parts that crowd each other; `GridRates.groups` says how many of a group play at once. */
+  group?: string;
 }
 
 /** Builds before drops, for a style that asks for them. `rng` is a stream of their own. */
@@ -85,6 +87,10 @@ export interface GridRates {
   thin: number;
   /** Share of the parts that may play that a drop brings in at once (default 1: everything). */
   drop?: number | undefined;
+  /** The most parts in at once, the low end included. */
+  most?: number | undefined;
+  /** The most parts of each group in at once. */
+  groups?: Record<string, number> | undefined;
 }
 
 export type Turn = "drop" | "break";
@@ -117,6 +123,14 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
     return s.roles.includes(p.role) && s.intensity >= p.enters - 1e-9;
   };
   const byEnters = (a: GridPart, b: GridPart) => a.enters - b.enters;
+  const limited = rates.most !== undefined || rates.groups !== undefined;
+  /** Whether `p` may join `among` under the style's limits. */
+  const room = (p: GridPart, among: readonly GridPart[]) => {
+    if (!limited) return true;
+    if (rates.most !== undefined && among.length >= rates.most) return false;
+    const limit = p.group === undefined ? undefined : rates.groups?.[p.group];
+    return limit === undefined || among.filter((x) => x.group === p.group).length < limit;
+  };
 
   let on: GridPart[] = [];
   /** The bar each part last entered or left. */
@@ -163,7 +177,7 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
         for (const p of on) moved.set(p.id, -HOLD_BARS);
       } else if (mixIn) {
         // Mix-in: one part more every slot, the bass half way.
-        const wanted = bar >= mix / 2 && bass && eligible(bass, s) && !on.includes(bass) ? bass : others(may).filter((p) => !on.includes(p)).sort(byEnters)[0];
+        const wanted = bar >= mix / 2 && bass && eligible(bass, s) && !on.includes(bass) ? bass : others(may).filter((p) => !on.includes(p) && room(p, on)).sort(byEnters)[0];
         if (kick && eligible(kick, s) && !on.includes(kick)) enter(kick, bar, true);
         if (wanted) enter(wanted, bar);
       } else {
@@ -183,6 +197,12 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
             const staying = fresh.filter((p) => on.includes(p));
             const coming = rng.shuffle(fresh.filter((p) => !on.includes(p)));
             fresh = [...staying, ...coming].slice(0, Math.max(staying.length, Math.ceil(fresh.length * share)));
+          }
+          if (limited) {
+            // What was playing has first claim on the room, then the coolest parts.
+            const kept: GridPart[] = [...low];
+            for (const p of [...fresh.filter((x) => on.includes(x)), ...fresh.filter((x) => !on.includes(x)).sort(byEnters)]) if (room(p, kept)) kept.push(p);
+            fresh = kept.filter((p) => !low.includes(p));
           }
           const keep = new Set([...low, ...fresh.sort(byEnters).slice(0, Math.max(0, cap - low.length))]);
           for (const p of on.slice()) if (!keep.has(p)) leave(p, bar, true);
@@ -214,7 +234,7 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
           else if (used < 2 && !mixOut && rng.chance(rates.change)) {
             // A change by choice: something enters, something leaves, or one is swapped for another.
             const staying = (p: GridPart) => !next || nextTurn || slotsLeft > 2 || eligible(p, next);
-            const add = others(may).filter((p) => !on.includes(p) && settled(p, bar) && staying(p));
+            const add = others(may).filter((p) => !on.includes(p) && settled(p, bar) && staying(p) && room(p, on));
             const drop = others(on).filter((p) => settled(p, bar));
             const canAdd = add.length > 0 && on.length < cap;
             const canDrop = drop.length > 0 && on.length > 2;

@@ -3152,7 +3152,8 @@
       "lanes": [
         "openHat"
       ],
-      "enters": 0.4
+      "enters": 0.4,
+      "group": "top"
     },
     {
       "id": "clap",
@@ -3160,7 +3161,8 @@
       "lanes": [
         "clap"
       ],
-      "enters": 0.5
+      "enters": 0.5,
+      "group": "perc"
     },
     {
       "id": "rim",
@@ -3168,7 +3170,8 @@
       "lanes": [
         "rim"
       ],
-      "enters": 0.3
+      "enters": 0.3,
+      "group": "perc"
     },
     {
       "id": "shaker",
@@ -3176,7 +3179,8 @@
       "lanes": [
         "shaker"
       ],
-      "enters": 0.55
+      "enters": 0.55,
+      "group": "perc"
     },
     {
       "id": "ride",
@@ -3185,7 +3189,8 @@
         "ride",
         "crash"
       ],
-      "enters": 0.75
+      "enters": 0.75,
+      "group": "top"
     },
     {
       "id": "blip",
@@ -3195,7 +3200,8 @@
         "tomLow"
       ],
       "material": "blip",
-      "enters": 0.45
+      "enters": 0.45,
+      "group": "perc"
     },
     {
       "id": "roll",
@@ -3218,19 +3224,22 @@
       "material": "acid",
       "octave": 3,
       "volume": 0.3,
-      "enters": 0.6
+      "enters": 0.6,
+      "group": "line"
     },
     {
       "id": "bleep",
       "role": "arp",
       "patch": "bleep",
-      "enters": 0.35
+      "enters": 0.35,
+      "group": "line"
     },
     {
       "id": "stab",
       "role": "comp",
       "patch": "stab",
-      "enters": 0.3
+      "enters": 0.3,
+      "group": "line"
     },
     {
       "id": "chord",
@@ -3238,7 +3247,8 @@
       "patch": "chord",
       "material": "chord",
       "volume": 0.3,
-      "enters": 0.55
+      "enters": 0.55,
+      "group": "line"
     },
     {
       "id": "pad",
@@ -3252,13 +3262,20 @@
       "patch": "air",
       "material": "air",
       "volume": 0.16,
-      "enters": 0.25
+      "enters": 0.25,
+      "group": "top"
     }
   ],
   "arrangement": {
     "change": 0.45,
     "swap": 0.2,
     "drop": 0.7,
+    "most": 8,
+    "groups": {
+      "line": 2,
+      "perc": 2,
+      "top": 1
+    },
     "thin": 0.3,
     "evolve": 0.2
   },

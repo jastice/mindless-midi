@@ -281,6 +281,7 @@ export class Piece {
         ...(p === bass && { anchor: "bass" as const }),
         ...(p.role === "drums" && p !== kick && !roll && { rests: true }),
         ...(roll && { roll: true }),
+        ...(p.group !== undefined && { group: p.group }),
       });
       moving.push({
         id: p.id,
