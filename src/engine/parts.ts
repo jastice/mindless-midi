@@ -107,6 +107,23 @@ export function writeDrums(ctx: BarContext, pattern: DrumPattern, opts: { crash:
   return out;
 }
 
+/**
+ * A build's roll on one lane: a hit a beat in its first quarter, doubling in
+ * rate each quarter (quarters, eighths, sixteenths, thirty-seconds), rising
+ * in level. `bar` is this bar of the build's `bars`.
+ */
+export function writeRoll(ctx: Pick<BarContext, "intensity" | "velocityFloor" | "beatsPerBar">, lane: DrumLane, bar: number, bars: number): NoteEvent[] {
+  const out: NoteEvent[] = [];
+  const bpb = ctx.beatsPerBar;
+  for (let beat = 0; beat < bpb - 1e-9; ) {
+    const x = (bar + beat / bpb) / bars;
+    const step = 1 / Math.pow(2, Math.min(3, Math.floor(x * 4)));
+    out.push({ beat, dur: Math.min(step, 0.25), ch: CHANNELS.drums, key: GM_DRUMS[lane], vel: vel(0.45 + 0.5 * x, ctx), role: "drums", straight: true });
+    beat += step;
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------------------
 // Motif-driven parts (bass, arp): an ostinato that follows the chords
 // ---------------------------------------------------------------------------

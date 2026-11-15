@@ -38,7 +38,7 @@ const SEEDS = Array.from({ length: 24 }, (_, i) => `grid-${i}`);
 const LIFTS = [-0.3, -0.15, 0, 0.15, 0.3];
 
 test("minimal techno declares its parts, and a track's bars carry the grid and notes that name their part", () => {
-  assert.ok(PARTS.length >= 10 && PARTS.length <= 15, `${PARTS.length} parts`);
+  assert.ok(PARTS.length >= 10 && PARTS.length <= 16, `${PARTS.length} parts`);
   const p = track("carry");
   assert.ok(p.grid);
   const heard = new Set<string>();
@@ -60,7 +60,7 @@ test("minimal techno declares its parts, and a track's bars carry the grid and n
   }
 });
 
-test("no more than two parts change in a phrase outside a turn, and only every four bars", () => {
+test("no more than two parts change in a phrase outside a turn or the start of a build, and only every four bars", () => {
   let turns = 0;
   let changes = 0;
   for (const seed of SEEDS) {
@@ -75,6 +75,11 @@ test("no more than two parts change in a phrase outside a turn, and only every f
         if (bar.info.turn) {
           assert.equal(bar.info.barInSection, 0);
           turns++;
+          return;
+        }
+        if (bar.info.build?.bar === 0) {
+          // A build starts: the kick goes (if it was in) and the roll comes in, and nothing else.
+          assert.ok(diff.includes("roll") && diff.every((id) => id === "roll" || id === "kick"), `${seed}: ${diff} as a build starts on bar ${b}`);
           return;
         }
         changes += diff.length;
@@ -95,7 +100,7 @@ test("no more than two parts change in a phrase outside a turn, and only every f
   assert.ok(turns > 100 && changes > 1000, `${turns} turns, ${changes} changes`);
 });
 
-test("the kick and the bass are absent only in a breakdown, or while the track mixes in and out", () => {
+test("the kick and the bass are absent only in a breakdown or a build, or while the track mixes in and out", () => {
   let out = 0;
   for (const seed of SEEDS) {
     for (const lift of LIFTS) {
@@ -107,8 +112,8 @@ test("the kick and the bass are absent only in a breakdown, or while the track m
         const roles = p.sectionAt(b)!.roles;
         if (!on.includes("kick")) {
           out++;
-          assert.ok(breakdown(p, b), `${seed}: no kick on bar ${b}, section ${roles}`);
-        } else assert.ok(!breakdown(p, b), `${seed}: a kick in the breakdown at bar ${b}`);
+          assert.ok(breakdown(p, b) || bar.info.build, `${seed}: no kick on bar ${b}, section ${roles}`);
+        } else assert.ok(!breakdown(p, b) && !bar.info.build, `${seed}: a kick in the breakdown or a build at bar ${b}`);
         const mixing = b < mix / 2 || b >= p.totalBars - mix / 2;
         if (!on.includes("sub")) assert.ok(!roles.includes("bass") || mixing, `${seed}: no bass on bar ${b}, section ${roles}`);
         else assert.ok(roles.includes("bass") && !mixing);
@@ -134,7 +139,7 @@ test("a part enters only from its intensity, and a cooler track is a sparser one
         const section = p.sectionAt(b)!;
         for (const id of bar.info.parts!) {
           if (b > 0 && bars[b - 1]!.info.parts!.includes(id)) continue;
-          if (id === "kick" || id === "sub") continue;
+          if (id === "kick" || id === "sub" || id === "roll") continue;
           // (Where nothing may play, the coolest part does: a section is never silent.)
           if (bar.info.parts!.length === 1) continue;
           assert.ok(section.roles.includes(part(id).role), `${seed}: ${id} enters a section of ${section.roles}`);

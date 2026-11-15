@@ -64,6 +64,7 @@ function checkParts(c: StyleCorpus, patches: Set<string>, patched: Set<string>, 
   if (!parts) {
     for (const [where, item] of tagged) if (item.material !== undefined) errors.push(`${where} "${item.id}": material "${item.material}" needs a parts block with a part of that material`);
     if (c.arrangement) warnings.push("arrangement: does nothing without parts");
+    if (c.moves) warnings.push("moves: do nothing without parts");
     return;
   }
   const ids = new Set<string>();
@@ -88,6 +89,12 @@ function checkParts(c: StyleCorpus, patches: Set<string>, patched: Set<string>, 
       if (other !== undefined) errors.push(`${where}: lane "${lane}" is already played by part "${other}"`);
       else lanes.set(lane, p.id);
     }
+    if (p.roll) {
+      // A roll is written by the arranger, not read from patterns.
+      if (p.role !== "drums") errors.push(`${where}: a roll is a drums part`);
+      if (!c.moves?.build) warnings.push(`${where}: a roll plays only in builds, and the style has none (moves.build)`);
+      return;
+    }
     const { kind, items } = materialOf(c, p.role);
     const pool = items.filter((x) => x.material === p.material);
     if (!pool.length) errors.push(p.material === undefined ? `${where}: there are no untagged ${kind} for it to play` : `${where}: unknown material "${p.material}" (no ${kind} are tagged with it)`);
@@ -101,6 +108,7 @@ function checkParts(c: StyleCorpus, patches: Set<string>, patched: Set<string>, 
     }
   }
   if (!lanes.has("kick")) warnings.push("parts: no part plays the kick lane");
+  if (c.moves?.build && !parts.some((p) => p.roll)) warnings.push("moves: builds have no roll without a part with `roll`");
 }
 
 export function validateCorpus(input: unknown): ValidationResult {

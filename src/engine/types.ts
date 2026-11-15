@@ -89,7 +89,49 @@ export interface BarInfo {
   thin?: string[];
   /** On the first bar of a section that turns the track: everything in ("drop") or the low end and more out ("break"). */
   turn?: "drop" | "break";
+  /** In the build before a drop (a style with `moves`): this bar of how many. */
+  build?: { bar: number; bars: number };
 }
+
+export type MoveTarget = "gain" | "lowCut" | "highCut" | "lows" | "reverbSend" | "delaySend" | "patch" | "stutter" | "riser" | "impact";
+
+/**
+ * A change to the sound over time that is not a note. Units, by target:
+ *
+ *   gain                 a factor (1 is as it is)
+ *   lowCut, highCut      Hz; at or past OPEN_LOW / OPEN_HIGH the filter is open (the sound as it is)
+ *   lows                 dB below about 150 Hz (0 is as it is)
+ *   reverbSend, delaySend  the role's send level, 0..1; the style's own comes back after
+ *   patch                `param` of the part's patch in its own unit ("cutoff" Hz, "q", "env", "drive")
+ *   stutter              `from`: the slice repeated, beats; `to`: semitones the last repeat is pitched by; `param` "gate" halves each repeat
+ *   riser                Hz of its band, from and to; its level follows
+ *   impact               Hz of the thump, from and to; it rings on past the bar
+ *
+ * A move over several bars is written as one per bar, each with its own
+ * start and end values (`span` says which bar it is), so any bar can be
+ * rendered alone. Nothing carries over: a bar without a move on a target is
+ * the sound as it is.
+ */
+export interface Move {
+  /** A part, a role, or everything. (`deck` is for two decks, later; nothing reads it yet.) */
+  scope: { part?: string; role?: Role; deck?: 0 | 1 } | "master";
+  target: MoveTarget;
+  param?: string;
+  from: number;
+  to: number;
+  /** Where it starts, beats from the start of the bar (default 0). Before it the target is at `from`, after it at `to`. */
+  at?: number;
+  /** Length in beats. */
+  beats: number;
+  /** "linear" (default) is straight in the target's unit, and in octaves for one in Hz. */
+  curve?: "linear" | "ease";
+  /** For a move over several bars: which bar of it this is (0-based), of how many. */
+  span?: { bar: number; of: number };
+}
+
+/** Filter values at which a cut is open: the sound as it is. */
+export const OPEN_LOW = 20;
+export const OPEN_HIGH = 20000;
 
 export interface Bar {
   /** Global bar counter since the session started. */
@@ -99,6 +141,8 @@ export interface Bar {
   notes: NoteEvent[];
   controls: ControlEvent[];
   info: BarInfo;
+  /** What changes in the sound over the bar, in a style with `moves`. Absent otherwise. */
+  moves?: Move[];
 }
 
 export function barSeconds(bar: Pick<Bar, "beats" | "bpm">): number {

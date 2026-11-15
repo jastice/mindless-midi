@@ -219,6 +219,10 @@ export const Part = z
       ),
     octave: z.number().int().min(1).max(7).optional().describe("Register, if not the role instrument's."),
     volume: unit.optional().describe("Mix level 0..1, if not the role instrument's. Not for drum parts: a kit is levelled as one; balance it in the kit and in the pattern velocities."),
+    roll: z
+      .boolean()
+      .optional()
+      .describe("Drums only, for a style with `moves`: this part plays the roll in a build before a drop (its first lane, a snare or clap, doubling in rate) and plays nowhere else. It reads no patterns."),
   })
   .describe("One line of a track with its own sound. Keep each part tiny: the interest is in which parts are in, not in what one part plays.");
 export type Part = z.infer<typeof Part>;
@@ -235,6 +239,18 @@ export const Arrangement = z
   })
   .describe("How often the arrangement grid changes. These decide whether a style is hypnotic or busy.");
 export type Arrangement = z.infer<typeof Arrangement>;
+
+export const Moves = z
+  .object({
+    sweep: unit.describe("Chance per section that one part entering it opens up over 8 or 16 bars: a filter sweep. Techno 0.3 to 0.5."),
+    drift: unit.describe("Chance per section that one part with a patch has its filter cutoff drift away and back across the section (the acid line). 0.2 to 0.5."),
+    build: unit.describe("Chance that a drop has a build before it: kick out, the roll part, a rising high-pass and a riser, landing on an impact. Techno 1."),
+    long: unit.describe("Share of builds that last 8 bars rather than 4."),
+    stutter: unit.describe("Chance per phrase end that the last beat stutters (a slice repeated to the barline). Techno 0.03 to 0.08; big beat more."),
+    throw: unit.describe("Chance of an echo throw on the last beat before a break. 0 to 0.5."),
+  })
+  .describe("Changes to the sound that are not notes, for a style with `parts`. Restraint: few, long moves.");
+export type Moves = z.infer<typeof Moves>;
 
 export const StyleCorpus = z.object({
   title: z.string(),
@@ -271,6 +287,7 @@ export const StyleCorpus = z.object({
         "Omit for one part per role (the instruments), all playing wherever a section names their role.",
     ),
   arrangement: Arrangement.optional().describe("Rates for a style with `parts`. Omit for the defaults."),
+  moves: Moves.optional().describe("Sweeps, builds, risers and stutters, for a style with `parts`. Omit for none."),
   synthKit: Kit.optional().describe(
     "The style's own modelled drum machine, played by the drums role in the synth. Omit for the stock kit. (The sampled kit is not written here: it is a `sample_kit` in the style's BUILD file.)",
   ),

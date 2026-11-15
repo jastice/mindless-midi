@@ -9,6 +9,7 @@ import { MODES, type ModeName, foldIntoRange, keyLabel, mod, parseRoman, pitchCl
 import { bendRangeControls, gestureControls, gestureCurve } from "./gestures.js";
 import { DEFAULT_RATES, type Grid, type GridPart, PHRASE_BARS, type Turn, mixBars, planGrid } from "./grid.js";
 import { Harmony } from "./harmony.js";
+import { type MovePart, MovePlan } from "./moves.js";
 import {
   type BarContext,
   composePhrase,
@@ -23,6 +24,7 @@ import {
   writeDrums,
   writeMelody,
   writeOstinato,
+  writeRoll,
 } from "./parts.js";
 import { type Bar, type BarInfo, CHANNELS, type ControlEvent, type NoteEvent } from "./types.js";
 
@@ -132,6 +134,8 @@ export class Piece {
   private readonly steady = new Set<string>();
   /** Parts whose patch slides or accents, so their notes take gestures like a line's. */
   private readonly glides = new Set<string>();
+  /** Sweeps, builds and stutters, for a style with parts and `moves`. */
+  private moves: MovePlan | undefined;
 
   constructor(
     style: StyleBundle,
@@ -261,21 +265,37 @@ export class Piece {
     const bass = parts.find((p) => p.role === "bass");
     for (const p of [kick, bass]) if (p) this.steady.add(p.id);
     const list: GridPart[] = [];
+    const moving: MovePart[] = [];
     for (const p of parts) {
       const inst = this.instruments.get(p.role);
       if (!inst) continue;
       const patch = c.patches?.find((x) => x.id === (p.patch ?? inst.patch));
-      if (p.role !== "drums" && patch && (patch.glide !== undefined || patch.accent !== undefined)) this.glides.add(p.id);
+      const lively = p.role !== "drums" && patch !== undefined && (patch.glide !== undefined || patch.accent !== undefined);
+      if (lively) this.glides.add(p.id);
+      const roll = p.roll === true;
       list.push({
         id: p.id,
         role: p.role,
         enters: p.enters ?? 0,
         ...(p === kick && { anchor: "kick" as const }),
         ...(p === bass && { anchor: "bass" as const }),
-        ...(p.role === "drums" && p !== kick && { rests: true }),
+        ...(p.role === "drums" && p !== kick && !roll && { rests: true }),
+        ...(roll && { roll: true }),
+      });
+      moving.push({
+        id: p.id,
+        role: p.role,
+        ...((p === kick || p === bass || roll) && { fixed: true }),
+        ...(p.role !== "drums" && patch?.filter.type === "low" && { cutoff: patch.filter.cutoff }),
+        ...(lively && { lively: true }),
       });
     }
-    return planGrid(list, this.sections, c.arrangement ?? DEFAULT_RATES, this.rng.fork("grid"), this.set ? mixBars(bars) : 0);
+    const mix = this.set ? mixBars(bars) : 0;
+    // Builds and moves draw from streams of their own, made only for a style that asks for them.
+    const builds = c.moves && { chance: c.moves.build, long: c.moves.long, rng: this.rng.fork("builds") };
+    const grid = planGrid(list, this.sections, c.arrangement ?? DEFAULT_RATES, this.rng.fork("grid"), mix, builds);
+    if (c.moves) this.moves = new MovePlan(grid, this.sections, moving, c.moves, this.rng.fork("moves"), c.beatsPerBar, mix);
+    return grid;
   }
 
   /** Material a part without a tag may use: with parts, everything not tagged for another. (Without parts nothing is tagged.) */
@@ -428,14 +448,16 @@ export class Piece {
         const on = this.grid.parts[barInPiece] ?? [];
         const thin = this.grid.thin[barInPiece];
         const turn = this.grid.turn[barInPiece];
+        const build = this.grid.build?.[barInPiece];
         info.parts = on;
         if (thin) info.thin = thin;
         if (turn) info.turn = turn;
+        if (build) info.build = build;
         for (const part of this.parts) {
           const instrument = this.instruments.get(part.role);
           if (!instrument || !on.includes(part.id) || thin?.includes(part.id)) continue;
           const ctx = context(`part:${part.id}`, part.octave === undefined ? instrument : { ...instrument, octave: part.octave });
-          notes.push(...this.renderPart(part, ctx, section, turn));
+          notes.push(...(part.roll ? this.roll(part, ctx, build) : this.renderPart(part, ctx, section, turn)));
         }
       } else {
         for (const role of section.roles) {
@@ -455,7 +477,19 @@ export class Piece {
       this.gestures(notes, this.rng.fork(`gesture:${barInPiece}`), section, barInPiece);
       controls.push(...gestureControls(played));
     } else for (const n of notes) delete n.gesture;
-    return { index: globalIndex, beats: bpb, bpm: this.ritardando(barInPiece, played), notes: played, controls, info };
+    const out: Bar = { index: globalIndex, beats: bpb, bpm: this.ritardando(barInPiece, played), notes: played, controls, info };
+    const moves = section && this.moves?.at(barInPiece);
+    if (moves?.length) out.moves = moves;
+    return out;
+  }
+
+  /** The roll part: a build's roll on its first lane, and nothing outside a build. */
+  private roll(part: Part, ctx: BarContext, build: { bar: number; bars: number } | undefined): NoteEvent[] {
+    const lane = part.lanes?.[0];
+    if (!build || !lane) return [];
+    const out = writeRoll(ctx, lane, build.bar, build.bars);
+    for (const n of out) n.part = part.id;
+    return out;
   }
 
   /** The chord a piece comes to rest on: the tonic, made major in a minor mode if the style ends with a Picardy third. */

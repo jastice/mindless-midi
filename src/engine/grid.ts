@@ -16,6 +16,9 @@
  *     comes in (or the share of it the style asks for), at a "break"
  *     everything that may not goes.
  *   - The last bar of a phrase may rest one hat or percussion part.
+ *   - A build (a style with `moves`): the last 4 or 8 bars before a drop. The
+ *     kick leaves, the roll part comes in, and nothing else moves until the
+ *     drop brings the kick back and sends the roll out.
  *   - A set's track mixes in and out: it starts on the kick alone, adds a
  *     part every 4 bars with the bass half way, and ends the same way round.
  *
@@ -56,6 +59,17 @@ export interface GridPart {
   anchor?: "kick" | "bass";
   /** May rest for the last bar of a phrase (hats and percussion). */
   rests?: boolean;
+  /** Plays the roll in a build, and nowhere else. */
+  roll?: boolean;
+}
+
+/** Builds before drops, for a style that asks for them. `rng` is a stream of their own. */
+export interface GridBuilds {
+  /** Chance that a drop has a build. */
+  chance: number;
+  /** Share of builds that are 8 bars rather than 4. */
+  long: number;
+  rng: Rng;
 }
 
 export interface GridSection {
@@ -82,16 +96,22 @@ export interface Grid {
   /** Of those, the ones resting for this bar only. */
   thin: (string[] | undefined)[];
   turn: (Turn | undefined)[];
+  /** In a build: this bar of how many. Only planned with `GridBuilds`. */
+  build?: ({ bar: number; bars: number } | undefined)[];
 }
 
 /** `mix` is the bars of mix-in and mix-out (0 for a piece that is not a set's track). */
-export function planGrid(parts: readonly GridPart[], sections: readonly GridSection[], rates: GridRates, rng: Rng, mix = 0): Grid {
+export function planGrid(parts: readonly GridPart[], sections: readonly GridSection[], rates: GridRates, rng: Rng, mix = 0, builds?: GridBuilds): Grid {
   const total = sections.reduce((a, s) => Math.max(a, s.startBar + s.bars), 0);
   const grid: Grid = { parts: [], thin: [], turn: [] };
   const kick = parts.find((p) => p.anchor === "kick");
   const bass = parts.find((p) => p.anchor === "bass");
+  const roll = parts.find((p) => p.roll);
   const breakdown = (s: GridSection) => (bass !== undefined && !s.roles.includes("bass")) || (kick !== undefined && !s.roles.includes("drums"));
+  const builtAt = builds ? planBuilds(sections, breakdown, builds, total, mix) : undefined;
+  if (builtAt) grid.build = [];
   const eligible = (p: GridPart, s: GridSection) => {
+    if (p === roll) return false;
     if (p === kick) return !breakdown(s);
     if (p === bass) return s.roles.includes("bass");
     return s.roles.includes(p.role) && s.intensity >= p.enters - 1e-9;
@@ -132,6 +152,7 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
       const mixIn = bar < mix;
       const mixOut = mix > 0 && bar >= total - mix;
       const bassOut = mix > 0 && bar >= total - mix / 2;
+      const build = builtAt?.get(bar);
       let turn: Turn | undefined;
 
       if (bar === 0) {
@@ -174,8 +195,13 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
           for (const p of [kick, bass]) if (p && may.includes(p) && !on.includes(p) && !mixOut) enter(p, bar, true);
         }
         if (bass && bassOut && on.includes(bass)) leave(bass, bar, turn !== undefined);
+        if (build?.bar === 0) {
+          // A build starts: the kick goes and the roll comes in, whatever else this phrase has done.
+          if (kick && on.includes(kick)) leave(kick, bar, true);
+          if (roll && !on.includes(roll)) enter(roll, bar, true);
+        }
 
-        if (!turn) {
+        if (!turn && !build) {
           // What has to go: a part the section no longer allows, or one too many for the end of the track.
           const stale = others(on).filter((p) => !may.includes(p)).sort((a, b) => b.enters - a.enters);
           while (used < 2 && stale.length) leave(stale.shift()!, bar);
@@ -202,7 +228,7 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
         }
         // A section is never silent: if nothing may play, its coolest part does.
         if (!on.length) {
-          const fallback = (may.length ? may : parts.filter((p) => s.roles.includes(p.role) && p !== kick)).slice().sort(byEnters)[0];
+          const fallback = (may.length ? may : parts.filter((p) => s.roles.includes(p.role) && p !== kick && p !== roll)).slice().sort(byEnters)[0];
           if (fallback) enter(fallback, bar, true);
         }
       }
@@ -212,6 +238,7 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
         grid.parts[b] = ids;
         grid.thin[b] = undefined;
         grid.turn[b] = b === bar ? turn : undefined;
+        if (grid.build) grid.build[b] = build && { bar: build.bar + b - bar, bars: build.bars };
         if (b % PHRASE_BARS === PHRASE_BARS - 1 && rng.chance(rates.thin)) {
           const resting = on.filter((p) => p.rests);
           if (resting.length) grid.thin[b] = [rng.pick(resting).id];
@@ -220,4 +247,30 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
     }
   });
   return grid;
+}
+
+/**
+ * Where the builds fall: the bars before each drop that draws one, keyed by
+ * their first bar of each slot. A build stays inside the section before its
+ * drop and out of the mix-in and mix-out.
+ */
+function planBuilds(sections: readonly GridSection[], breakdown: (s: GridSection) => boolean, builds: GridBuilds, total: number, mix: number): Map<number, { bar: number; bars: number }> {
+  const out = new Map<number, { bar: number; bars: number }>();
+  sections.forEach((s, si) => {
+    const before = sections[si - 1];
+    if (!before || s.startBar < mix || (mix > 0 && s.startBar >= total - mix)) return;
+    const low = !breakdown(s);
+    const lowBefore = !breakdown(before);
+    const step = s.intensity - before.intensity;
+    const drop = (low !== lowBefore || Math.abs(step) >= TURN_STEP - 1e-9) && low && (!lowBefore || step > 0);
+    if (!drop) return;
+    // Both draws happen for every drop, so one build's choice never moves another's.
+    const wanted = builds.rng.chance(builds.chance);
+    const long = builds.rng.chance(builds.long);
+    if (!wanted) return;
+    const bars = [long ? 2 * SLOT_BARS : SLOT_BARS, SLOT_BARS].find((n) => n <= before.bars && s.startBar - n >= mix);
+    if (bars === undefined) return;
+    for (let at = 0; at < bars; at += SLOT_BARS) out.set(s.startBar - bars + at, { bar: at, bars });
+  });
+  return out;
 }
