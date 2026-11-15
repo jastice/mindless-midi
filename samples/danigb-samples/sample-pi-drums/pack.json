@@ -1,0 +1,985 @@
+{
+  "id": "danigb-samples/sample-pi-drums",
+  "kind": "oneshots",
+  "description": "Sonic Pi drum one-shots (Sample Pi)",
+  "origin": {
+    "repo": "danigb/samples",
+    "commit": "eae8c5c7a10f4b0e06281211e704c36c30e25342",
+    "path": "audio/sample-pi/drums/one-shots/"
+  },
+  "licence": {
+    "spdx": "CC0-1.0",
+    "note": "Sample Pi (Sonic Pi's sounds, from alex-esc/sample-pi). danigb/samples' README gives CC0 1.0 for sample-pi, and the folder's README says its samples come from freesound.org and were placed in the public domain via CC0, listing each drum's original upload.",
+    "attribution": null,
+    "share_alike": false,
+    "source": "https://github.com/danigb/samples/blob/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/README.md",
+    "read_on": "2026-11-14"
+  },
+  "samples": {
+    "bd_808": {
+      "file": "kick/bd_808.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_808.m4a",
+      "sha256": "c92a3ea175e107156ee84ef8b31fa0037879c0878f15ba1eb079fb8b660742d6",
+      "bytes": 9372,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_ada": {
+      "file": "kick/bd_ada.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_ada.m4a",
+      "sha256": "cf01c02ceef5c75cdf43b27013b590db7527078fe5de4b3c59ef7db71f8b6faf",
+      "bytes": 2963,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_boom": {
+      "file": "kick/bd_boom.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_boom.m4a",
+      "sha256": "8e5afc119860c5d1e323a7251f9410e670c66099124aa695a905cc5cf9537fbf",
+      "bytes": 29165,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_fat": {
+      "file": "kick/bd_fat.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_fat.m4a",
+      "sha256": "f7fb8e742db6ccb8cf600f70ab87d079cc4e32cf0577510610bdfe2e3c96dd5b",
+      "bytes": 4676,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_gas": {
+      "file": "kick/bd_gas.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_gas.m4a",
+      "sha256": "2c7e617d8e5cd850feefb355fd25c7886a3e976febbe9d4d3eb0afb41bcbdd02",
+      "bytes": 7732,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_haus": {
+      "file": "kick/bd_haus.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_haus.m4a",
+      "sha256": "d21b35c6b4034c9e61c9a14bb3f1ae7bb3db01576c2e82f19c60df8c2a4296e3",
+      "bytes": 4875,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_klub": {
+      "file": "kick/bd_klub.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_klub.m4a",
+      "sha256": "00b8d9c9b5a5bcd129ddbad0cbef47aea35506e4e02b8073129e5d38e4eb48bb",
+      "bytes": 7323,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_mehackit": {
+      "file": "kick/bd_mehackit.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_mehackit.m4a",
+      "sha256": "7811cb3631db8695bfc0ef01157161229d42b9eaed4d8b26818993c56ee839a3",
+      "bytes": 14637,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_pure": {
+      "file": "kick/bd_pure.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_pure.m4a",
+      "sha256": "b26029c4ee2f936e02805f4beb53b2c82858493440e2bcc21ee4e65d80371a1b",
+      "bytes": 7560,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_sone": {
+      "file": "kick/bd_sone.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_sone.m4a",
+      "sha256": "0647f4c36b8f6fca04d473efb7b197f05c22d70d30c5761e67b671ded0b103be",
+      "bytes": 7892,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_tek": {
+      "file": "kick/bd_tek.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_tek.m4a",
+      "sha256": "1ae56d19d3f01899d7bfd7f3bca77b6056b8c77ab9d1842ddc138ac5dae95117",
+      "bytes": 5320,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_zome": {
+      "file": "kick/bd_zome.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_zome.m4a",
+      "sha256": "a32edd33b99a49b75112911a57db4af868d612c2585b3f9c6ca7ea5c9350904f",
+      "bytes": 8938,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "bd_zum": {
+      "file": "kick/bd_zum.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/bd_zum.m4a",
+      "sha256": "0f8eda9934b7f5c7b3680abcac5e28c2f65b81a17dfe4174d34bff397354bd33",
+      "bytes": 3435,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "drum_bass_hard": {
+      "file": "kick/drum_bass_hard.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/drum_bass_hard.m4a",
+      "sha256": "8eb002561749f582cbb0178b4510e4d896467d45646707ac0fcdbc5bf7b27a0c",
+      "bytes": 11401,
+      "tags": [
+        "kick",
+        "hard"
+      ],
+      "gm": 36
+    },
+    "drum_bass_soft": {
+      "file": "kick/drum_bass_soft.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/drum_bass_soft.m4a",
+      "sha256": "1cea8e90901912e3850c8e27e6ed6bb56c51b4a036c1ec07deff435bb9f9f7da",
+      "bytes": 9319,
+      "tags": [
+        "kick",
+        "soft"
+      ],
+      "gm": 36
+    },
+    "drum_cowbell": {
+      "file": "other/drum_cowbell.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/other/drum_cowbell.m4a",
+      "sha256": "da342b728cd515ef64c37d791f88dd0e1747e4c7324ff1e1369d7f116a8ac5a1",
+      "bytes": 6593,
+      "tags": [
+        "cowbell"
+      ],
+      "gm": 56
+    },
+    "drum_cymbal_closed": {
+      "file": "cymbal/drum_cymbal_closed.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/cymbal/drum_cymbal_closed.m4a",
+      "sha256": "7329d1fad3ad565fab58821c6057398b53d7fc441bef62715a2e4db904ed555b",
+      "bytes": 4293,
+      "tags": [
+        "hat-closed"
+      ],
+      "gm": 42
+    },
+    "drum_cymbal_hard": {
+      "file": "cymbal/drum_cymbal_hard.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/cymbal/drum_cymbal_hard.m4a",
+      "sha256": "e0747dcfa6ec540d6da1d8a23402bd68031fb484aefd8d6ae1311226027ed2be",
+      "bytes": 26459,
+      "tags": [
+        "cymbal",
+        "hard"
+      ],
+      "gm": 49
+    },
+    "drum_cymbal_open": {
+      "file": "cymbal/drum_cymbal_open.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/cymbal/drum_cymbal_open.m4a",
+      "sha256": "96c6c74032e2faaba39b689c1ccbbf5b41acfa641a6e3f14c517ed8400cb14f0",
+      "bytes": 29533,
+      "tags": [
+        "hat-open"
+      ],
+      "gm": 46
+    },
+    "drum_cymbal_pedal": {
+      "file": "cymbal/drum_cymbal_pedal.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/cymbal/drum_cymbal_pedal.m4a",
+      "sha256": "15bb0c44f4a6934fd1c0e13e52cedacb249091eedfb21985aeca080420ebfb92",
+      "bytes": 5287,
+      "tags": [
+        "hat-closed"
+      ],
+      "gm": 42
+    },
+    "drum_cymbal_soft": {
+      "file": "cymbal/drum_cymbal_soft.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/cymbal/drum_cymbal_soft.m4a",
+      "sha256": "c6ef26a41fd6db9ddf629fac2b1a3b520cb13cb2c2c5467136d37dc7af497236",
+      "bytes": 15620,
+      "tags": [
+        "cymbal",
+        "soft"
+      ],
+      "gm": 49
+    },
+    "drum_heavy_kick": {
+      "file": "kick/drum_heavy_kick.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/drum_heavy_kick.m4a",
+      "sha256": "ddddcc209c135932982e529f5800a4e396108847e85d4f0032856ffa17130ea7",
+      "bytes": 5191,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "drum_roll": {
+      "file": "other/drum_roll.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/other/drum_roll.m4a",
+      "sha256": "c5338f36ed59bbe2e53d2a3cdeef3e54633833a1ced1ef66c31e29eeda5350a7",
+      "bytes": 102218,
+      "tags": []
+    },
+    "drum_snare_hard": {
+      "file": "snare/drum_snare_hard.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/drum_snare_hard.m4a",
+      "sha256": "6f9c5010863a813404c4c2533505861b93a651d94b7cb16c02835a321ce67875",
+      "bytes": 7817,
+      "tags": [
+        "snare",
+        "hard"
+      ],
+      "gm": 38
+    },
+    "drum_snare_soft": {
+      "file": "snare/drum_snare_soft.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/drum_snare_soft.m4a",
+      "sha256": "76fd9a1d893aa34f1e78f4b5acb120605d78f736ba1208b8f0ecdac343858193",
+      "bytes": 5888,
+      "tags": [
+        "snare",
+        "soft"
+      ],
+      "gm": 38
+    },
+    "drum_splash_hard": {
+      "file": "other/drum_splash_hard.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/other/drum_splash_hard.m4a",
+      "sha256": "fe3ae12f883e077e1033758606408fc8eddd4cc3d4c8bf0865c0d2ed9fa2f641",
+      "bytes": 41146,
+      "tags": [
+        "cymbal",
+        "hard"
+      ],
+      "gm": 49
+    },
+    "drum_splash_soft": {
+      "file": "other/drum_splash_soft.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/other/drum_splash_soft.m4a",
+      "sha256": "e101492a805bb0ebc07de74641e597c42fabd056dd3c72e0e1253615291d236f",
+      "bytes": 29992,
+      "tags": [
+        "cymbal",
+        "soft"
+      ],
+      "gm": 49
+    },
+    "drum_tom_hi_hard": {
+      "file": "tom/drum_tom_hi_hard.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tom/drum_tom_hi_hard.m4a",
+      "sha256": "f9276a23e128058625e9035c5b8565e908882b489c27687515fd440930f37052",
+      "bytes": 11953,
+      "tags": [
+        "tom-high",
+        "hard"
+      ],
+      "gm": 50
+    },
+    "drum_tom_hi_soft": {
+      "file": "tom/drum_tom_hi_soft.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tom/drum_tom_hi_soft.m4a",
+      "sha256": "af6d8fe01ed603043edd277139fcd651825016acd14c1dc094197c0b7b1ffe89",
+      "bytes": 10338,
+      "tags": [
+        "tom-high",
+        "soft"
+      ],
+      "gm": 50
+    },
+    "drum_tom_lo_hard": {
+      "file": "tom/drum_tom_lo_hard.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tom/drum_tom_lo_hard.m4a",
+      "sha256": "649a6c5b3abb069f3d04586fa857e3b71d8de983f3e7a427b30bc3f811ae9aeb",
+      "bytes": 16079,
+      "tags": [
+        "tom-low",
+        "hard"
+      ],
+      "gm": 45
+    },
+    "drum_tom_lo_soft": {
+      "file": "tom/drum_tom_lo_soft.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tom/drum_tom_lo_soft.m4a",
+      "sha256": "71928cbf06b44f7bc07f5f386ac61820e339cb177a39803fa755085273c2d3f1",
+      "bytes": 14003,
+      "tags": [
+        "tom-low",
+        "soft"
+      ],
+      "gm": 45
+    },
+    "drum_tom_mid_hard": {
+      "file": "tom/drum_tom_mid_hard.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tom/drum_tom_mid_hard.m4a",
+      "sha256": "ae4f33f19c30eb290e11f0b5ef96617b89616ffce27d3b07d48694fda881a609",
+      "bytes": 11961,
+      "tags": [
+        "tom-mid",
+        "hard"
+      ],
+      "gm": 47
+    },
+    "drum_tom_mid_soft": {
+      "file": "tom/drum_tom_mid_soft.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tom/drum_tom_mid_soft.m4a",
+      "sha256": "90be59a1cdbc3710e96ad52dfdcdf7a795c96b08f985fdece0430c8ce7a27ce1",
+      "bytes": 10930,
+      "tags": [
+        "tom-mid",
+        "soft"
+      ],
+      "gm": 47
+    },
+    "elec_beep": {
+      "file": "electric/elec_beep.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_beep.m4a",
+      "sha256": "a49bbf6749aae193c479f86dabb47ced08197ef67f7305b94eae0d918ac797e1",
+      "bytes": 2903,
+      "tags": []
+    },
+    "elec_bell": {
+      "file": "electric/elec_bell.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_bell.m4a",
+      "sha256": "e8236d743cdca82e18dd696e30965d0c5ef0c0cedd561b00e8cc0be8acbfaf30",
+      "bytes": 5235,
+      "tags": []
+    },
+    "elec_blip": {
+      "file": "electric/elec_blip.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_blip.m4a",
+      "sha256": "976ffc622dd12cdcb4d4541f7d3dcdc2a5fab15d7efba2fdc5db96ef675c228e",
+      "bytes": 3600,
+      "tags": []
+    },
+    "elec_blip2": {
+      "file": "electric/elec_blip2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_blip2.m4a",
+      "sha256": "324ff530c699800151e8d2d4b063bfee1cf3be2f89e63c86f31bbb0323aeb810",
+      "bytes": 3950,
+      "tags": []
+    },
+    "elec_blup": {
+      "file": "electric/elec_blup.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_blup.m4a",
+      "sha256": "041f38dc91e7bdd56bb51a85b82465b4c868b2a5bd2c096b0f7e254b91bf678a",
+      "bytes": 12136,
+      "tags": []
+    },
+    "elec_bong": {
+      "file": "electric/elec_bong.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_bong.m4a",
+      "sha256": "959cda3641b63d5eab5d04017ae1e4c77bd95e103b5572db5ad9ba6364b88d54",
+      "bytes": 6325,
+      "tags": []
+    },
+    "elec_chime": {
+      "file": "electric/elec_chime.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_chime.m4a",
+      "sha256": "845f784d346135fb9fa8055ca6d8503b874253b932b566a0829292ee53b67ce7",
+      "bytes": 35521,
+      "tags": []
+    },
+    "elec_cymbal": {
+      "file": "cymbal/elec_cymbal.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/cymbal/elec_cymbal.m4a",
+      "sha256": "f7fbd509373c26769e7436a783db47ec3d0ee512c84b7d44f6cedd9add2f25f4",
+      "bytes": 9426,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "elec_filt_snare": {
+      "file": "snare/elec_filt_snare.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/elec_filt_snare.m4a",
+      "sha256": "69c5cc0233ab2f4052082fcc5a427b613048f8fdcc683c2c75a8e401e3665772",
+      "bytes": 24734,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "elec_flip": {
+      "file": "electric/elec_flip.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_flip.m4a",
+      "sha256": "60c5a8019f6c8b9b6112a993b527b076796311aa4b4bf012b6d75c5cb736e37d",
+      "bytes": 2607,
+      "tags": []
+    },
+    "elec_fuzz_tom": {
+      "file": "electric/elec_fuzz_tom.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_fuzz_tom.m4a",
+      "sha256": "ecec0c1a36a2bf04b81713043e275d087ef0dcf03f35e330fef674ab7d3e93be",
+      "bytes": 7235,
+      "tags": []
+    },
+    "elec_hi_snare": {
+      "file": "snare/elec_hi_snare.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/elec_hi_snare.m4a",
+      "sha256": "48c38e806faced2091a67c7273e6a810f7a1c4fe2e941c163dbb38a3fac11ad4",
+      "bytes": 4245,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "elec_hollow_kick": {
+      "file": "kick/elec_hollow_kick.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/elec_hollow_kick.m4a",
+      "sha256": "d87421fcd71f4cfb60ccb4467b1a5c7ff3868eb7e9d5a02ac1612a50f30e7faf",
+      "bytes": 3966,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "elec_lo_snare": {
+      "file": "snare/elec_lo_snare.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/elec_lo_snare.m4a",
+      "sha256": "d329b7f31bbef9afcf336b875b0337e0097501fa482f335b91dce6914cd0e848",
+      "bytes": 10977,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "elec_mid_snare": {
+      "file": "snare/elec_mid_snare.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/elec_mid_snare.m4a",
+      "sha256": "24e1173eebbc61400f8c34778710e34db8f38188f0132d01a313c66702ec56ed",
+      "bytes": 11614,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "elec_ping": {
+      "file": "electric/elec_ping.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_ping.m4a",
+      "sha256": "32d49ec96adebad1fe88de3957716701af1482da55ae7a0a6ac1f36c37607e55",
+      "bytes": 4600,
+      "tags": []
+    },
+    "elec_plip": {
+      "file": "electric/elec_plip.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_plip.m4a",
+      "sha256": "95542fd46028014befbae97bc66dedc9463303ed6681ab85ca6e5a0990a31eb6",
+      "bytes": 4638,
+      "tags": []
+    },
+    "elec_pop": {
+      "file": "electric/elec_pop.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_pop.m4a",
+      "sha256": "47f9a5869ede6ebf7b98c84f58a06a604feb04862a76659ebb2af2f58b7fbe7e",
+      "bytes": 2618,
+      "tags": []
+    },
+    "elec_snare": {
+      "file": "snare/elec_snare.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/elec_snare.m4a",
+      "sha256": "c3001a6f304bfec28096094721428ecccdefada053a293073e29d21f9e5f356e",
+      "bytes": 7029,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "elec_soft_kick": {
+      "file": "kick/elec_soft_kick.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/kick/elec_soft_kick.m4a",
+      "sha256": "4c65a42feccffc9889a08f1147c49065db9623fefc1bf800b474b572c9d912dc",
+      "bytes": 3567,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "elec_tick": {
+      "file": "electric/elec_tick.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_tick.m4a",
+      "sha256": "38e9e8f4f92fc96ffa22118274faacd62e4502306f4583ec38df5e3a64166963",
+      "bytes": 1508,
+      "tags": []
+    },
+    "elec_triangle": {
+      "file": "electric/elec_triangle.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_triangle.m4a",
+      "sha256": "5d6ac82ef98d9efc523859dcb01502683d373edf1671d07ac6723780d32e8209",
+      "bytes": 4493,
+      "tags": []
+    },
+    "elec_twang": {
+      "file": "electric/elec_twang.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_twang.m4a",
+      "sha256": "e819520f9fd762152f4ee86910f2c5693439d41b85f58669670ea0624ec0b590",
+      "bytes": 10917,
+      "tags": []
+    },
+    "elec_twip": {
+      "file": "electric/elec_twip.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_twip.m4a",
+      "sha256": "81bf56cc5d3307d9d74968e57b22a9e3b8266bec53a4de1ad5f3d22be73850d2",
+      "bytes": 3130,
+      "tags": []
+    },
+    "elec_wood": {
+      "file": "electric/elec_wood.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/electric/elec_wood.m4a",
+      "sha256": "7bdbd4cbf52543ea79460f01a97034c70f88f4b3ef9a3b4a64649471e60c9ba9",
+      "bytes": 8357,
+      "tags": []
+    },
+    "glitch_bass_g": {
+      "file": "glitchy/glitch_bass_g.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/glitchy/glitch_bass_g.m4a",
+      "sha256": "edf394789706ff159f50b594937900aae01d80f16db52dfd81333c33bab9acd7",
+      "bytes": 32230,
+      "tags": []
+    },
+    "glitch_perc1": {
+      "file": "glitchy/glitch_perc1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/glitchy/glitch_perc1.m4a",
+      "sha256": "788e13d6452dc27a979303a76caafb13eff690a7a11c7be5a4c37a404bfd5aee",
+      "bytes": 30497,
+      "tags": []
+    },
+    "glitch_perc2": {
+      "file": "glitchy/glitch_perc2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/glitchy/glitch_perc2.m4a",
+      "sha256": "0cd7b18c3fd13034d6d391a42e5504670ff87da7f1ae2c1ccac4f04711fec502",
+      "bytes": 15679,
+      "tags": []
+    },
+    "glitch_perc3": {
+      "file": "glitchy/glitch_perc3.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/glitchy/glitch_perc3.m4a",
+      "sha256": "9168c31a25505eee9affc75de734b11195f4980db75e458bde23c51f9e08e3d2",
+      "bytes": 18320,
+      "tags": []
+    },
+    "glitch_perc4": {
+      "file": "glitchy/glitch_perc4.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/glitchy/glitch_perc4.m4a",
+      "sha256": "124e3f6e39ee7972269e461f952b8e9f19aba70921f667fccd15f13d2146c16b",
+      "bytes": 15626,
+      "tags": []
+    },
+    "glitch_perc5": {
+      "file": "glitchy/glitch_perc5.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/glitchy/glitch_perc5.m4a",
+      "sha256": "274fbea110cd8408ae12d849ed70c129e5c630b15f4981dd9a5086a853e01768",
+      "bytes": 15612,
+      "tags": []
+    },
+    "glitch_robot1": {
+      "file": "glitchy/glitch_robot1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/glitchy/glitch_robot1.m4a",
+      "sha256": "c86aefdcce5da25389b470c9e3a90e8e73553cb3d3f7f307a4ffb1c5335b9724",
+      "bytes": 17333,
+      "tags": []
+    },
+    "glitch_robot2": {
+      "file": "glitchy/glitch_robot2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/glitchy/glitch_robot2.m4a",
+      "sha256": "59f3466b86915e0b1d259c94ce8ef475f54ddf7a3bedb67543fcb753b960c037",
+      "bytes": 15721,
+      "tags": []
+    },
+    "mehackit_phone1": {
+      "file": "mehackit/mehackit_phone1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_phone1.m4a",
+      "sha256": "9a4f5b5e59bb62275a39a3ec767a6767f24759a4f086c7da25f71bf8f34cf73c",
+      "bytes": 21074,
+      "tags": []
+    },
+    "mehackit_phone2": {
+      "file": "mehackit/mehackit_phone2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_phone2.m4a",
+      "sha256": "bb9838d04a2169c52393c73b690a172824ca7536148dde2ed91945c05c56ecf9",
+      "bytes": 21357,
+      "tags": []
+    },
+    "mehackit_phone3": {
+      "file": "mehackit/mehackit_phone3.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_phone3.m4a",
+      "sha256": "efa2cfb13f9930eaec660972102e7a926ebc2ed7a09c2b8dfe7ee616bf021dcd",
+      "bytes": 30706,
+      "tags": []
+    },
+    "mehackit_phone4": {
+      "file": "mehackit/mehackit_phone4.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_phone4.m4a",
+      "sha256": "4529c8fa25468415410f55e52bde58b6f1233dba0445a60295235e3f0162cffe",
+      "bytes": 25801,
+      "tags": []
+    },
+    "mehackit_robot1": {
+      "file": "mehackit/mehackit_robot1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_robot1.m4a",
+      "sha256": "bdf1196afbb1358421ca160cdb30339cf9581194f12ff34e4613b24bacd49a72",
+      "bytes": 16079,
+      "tags": []
+    },
+    "mehackit_robot2": {
+      "file": "mehackit/mehackit_robot2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_robot2.m4a",
+      "sha256": "c9b76fb197305a3b0909d77e0b11da7dfc3e58d903aae172ad6fda2025f8eb0e",
+      "bytes": 17220,
+      "tags": []
+    },
+    "mehackit_robot3": {
+      "file": "mehackit/mehackit_robot3.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_robot3.m4a",
+      "sha256": "5bc346233fe32043711a1226358e9017b394f320354b853fba7a0c4eb12c616a",
+      "bytes": 20610,
+      "tags": []
+    },
+    "mehackit_robot4": {
+      "file": "mehackit/mehackit_robot4.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_robot4.m4a",
+      "sha256": "6d18fa573e7df9329d029d5e15511ae00fe81aa770f60897221ba49c1f860ea7",
+      "bytes": 33208,
+      "tags": []
+    },
+    "mehackit_robot5": {
+      "file": "mehackit/mehackit_robot5.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_robot5.m4a",
+      "sha256": "04b235917fd8431c0afffdfa9cb9007ba2aee4e20087d820086fc566bf560172",
+      "bytes": 25023,
+      "tags": []
+    },
+    "mehackit_robot6": {
+      "file": "mehackit/mehackit_robot6.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_robot6.m4a",
+      "sha256": "49246dc90969f9320c22f0f889389c53955ce65989833c84d0822d74dd5b3d40",
+      "bytes": 40916,
+      "tags": []
+    },
+    "mehackit_robot7": {
+      "file": "mehackit/mehackit_robot7.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/mehackit/mehackit_robot7.m4a",
+      "sha256": "a1dbba0b7b255cfc2d25856c81224e0610403ffacb8b6bf008e4599e2d0ebf1e",
+      "bytes": 8974,
+      "tags": []
+    },
+    "perc_bell": {
+      "file": "percussion/perc_bell.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/percussion/perc_bell.m4a",
+      "sha256": "b757c53243fc9a35ae4b00f003eadec03cc33d85099735733a13319828a2a540",
+      "bytes": 109631,
+      "tags": []
+    },
+    "perc_bell2": {
+      "file": "percussion/perc_bell2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/percussion/perc_bell2.m4a",
+      "sha256": "29d028ff525ef6a4abbe89e5c6d0b397c52f5ec8f59fb730749122158f32e033",
+      "bytes": 89040,
+      "tags": []
+    },
+    "perc_door": {
+      "file": "percussion/perc_door.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/percussion/perc_door.m4a",
+      "sha256": "5484aea3086ef19c7778991e6d97b8e88cf57cdc855ead23b1257dd1394a4db4",
+      "bytes": 40538,
+      "tags": []
+    },
+    "perc_impact1": {
+      "file": "percussion/perc_impact1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/percussion/perc_impact1.m4a",
+      "sha256": "0675a2a945864c296e8de8b2708dd411fa047d78b9cd07eb11af7081d4524047",
+      "bytes": 18808,
+      "tags": []
+    },
+    "perc_impact2": {
+      "file": "percussion/perc_impact2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/percussion/perc_impact2.m4a",
+      "sha256": "6f014ae2bf8c9286990b4fd15c78192e10ef184f2fc6ea09b4c1fbc4e3f7f955",
+      "bytes": 14622,
+      "tags": []
+    },
+    "perc_snap": {
+      "file": "percussion/perc_snap.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/percussion/perc_snap.m4a",
+      "sha256": "87931feeb52fd8f7aeb8115e09716a84f4f762f8131a13ea640454c53ec132d2",
+      "bytes": 6632,
+      "tags": []
+    },
+    "perc_snap2": {
+      "file": "percussion/perc_snap2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/percussion/perc_snap2.m4a",
+      "sha256": "af653d1ca37f81eef1e2c017d92a4456513de983e71a51a6c449c6e43d69e963",
+      "bytes": 4099,
+      "tags": []
+    },
+    "perc_swash": {
+      "file": "percussion/perc_swash.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/percussion/perc_swash.m4a",
+      "sha256": "30ed9a4dd875f056f34345e53bed645df2640cb7c6b60ae2f486db5f53c08fcb",
+      "bytes": 5974,
+      "tags": []
+    },
+    "perc_swoosh": {
+      "file": "percussion/perc_swoosh.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/percussion/perc_swoosh.m4a",
+      "sha256": "54790a54b952cc0f2b7953df63f83360fb49e3ecc469bf3286561395aea5240b",
+      "bytes": 10805,
+      "tags": []
+    },
+    "perc_till": {
+      "file": "percussion/perc_till.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/percussion/perc_till.m4a",
+      "sha256": "410b63f24e0c26a2b3dc3fc662a737dca867f1223f16ee3332933c329fa345f7",
+      "bytes": 43373,
+      "tags": []
+    },
+    "sn_dolf": {
+      "file": "snare/sn_dolf.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/sn_dolf.m4a",
+      "sha256": "b64ba50b6be42e835674dac1ed9f1cf09be79a58c54a94b4f6b918af7ac91219",
+      "bytes": 7429,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sn_dub": {
+      "file": "snare/sn_dub.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/sn_dub.m4a",
+      "sha256": "63e86e019a076f9a76dad08ca05cda17b80352271e0efc1800798535a2ea05e2",
+      "bytes": 5496,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sn_generic": {
+      "file": "snare/sn_generic.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/sn_generic.m4a",
+      "sha256": "fc02f53ce931c877df92e5b49cab472b76a9156ccdd245b6d0247e87749f9822",
+      "bytes": 9688,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "sn_zome": {
+      "file": "snare/sn_zome.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/snare/sn_zome.m4a",
+      "sha256": "57b745a305e787e4aded6931ce8a817295c199dddda09d63814ac56f0bf2dba5",
+      "bytes": 9080,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "tabla_dhec": {
+      "file": "tabla/tabla_dhec.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_dhec.m4a",
+      "sha256": "2040ebf46afb0a2d55e6b01547814924031932bba68ea249e92ea9b6679f5693",
+      "bytes": 5894,
+      "tags": []
+    },
+    "tabla_ghe1": {
+      "file": "tabla/tabla_ghe1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ghe1.m4a",
+      "sha256": "7699d17e9cf49d9574401b85bc61ee0122123db2a1a371789241912fcd2aab7c",
+      "bytes": 10014,
+      "tags": []
+    },
+    "tabla_ghe2": {
+      "file": "tabla/tabla_ghe2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ghe2.m4a",
+      "sha256": "38ad752cbc5622347e429b14bf4611c09bd99a7c886394507b722e39eabaca56",
+      "bytes": 43119,
+      "tags": []
+    },
+    "tabla_ghe3": {
+      "file": "tabla/tabla_ghe3.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ghe3.m4a",
+      "sha256": "fd91685db91ee4b5c45a8ccaf7f7b3ecf996d98175d929603687817dab066f71",
+      "bytes": 38846,
+      "tags": []
+    },
+    "tabla_ghe4": {
+      "file": "tabla/tabla_ghe4.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ghe4.m4a",
+      "sha256": "b899909e8372c6a654c676db0c1736522e40af4d648830d2f4fcd6c0be28d00c",
+      "bytes": 13017,
+      "tags": []
+    },
+    "tabla_ghe5": {
+      "file": "tabla/tabla_ghe5.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ghe5.m4a",
+      "sha256": "8a63978a69cad1a635ab0167cc87e2c04175cfd75640bdd286d3e43d04372d15",
+      "bytes": 56801,
+      "tags": []
+    },
+    "tabla_ghe6": {
+      "file": "tabla/tabla_ghe6.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ghe6.m4a",
+      "sha256": "6f41bc4680fcfb41125146babbb1c94e9490445ae8245e31ae7b8ad9a4e0ce40",
+      "bytes": 59140,
+      "tags": []
+    },
+    "tabla_ghe7": {
+      "file": "tabla/tabla_ghe7.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ghe7.m4a",
+      "sha256": "2735cece0d9ba06f23c2c1aca8fe2a68f241f50338e0f761783ae34102f68790",
+      "bytes": 35130,
+      "tags": []
+    },
+    "tabla_ghe8": {
+      "file": "tabla/tabla_ghe8.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ghe8.m4a",
+      "sha256": "d6ddddc323aa7827b57a53d4b11c78d4c2e56b3eb61ad415da2337b32004774d",
+      "bytes": 9609,
+      "tags": []
+    },
+    "tabla_ke1": {
+      "file": "tabla/tabla_ke1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ke1.m4a",
+      "sha256": "24bd00be3c7166752205568d177f3a116ef1af95b52dad6601d27aaf1b7e1e9c",
+      "bytes": 1994,
+      "tags": []
+    },
+    "tabla_ke2": {
+      "file": "tabla/tabla_ke2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ke2.m4a",
+      "sha256": "6f5e48c66b96b881bcd1f2bbc69e0ff7abdf162c2cc0b98a8833d81ec6de1a9f",
+      "bytes": 2001,
+      "tags": []
+    },
+    "tabla_ke3": {
+      "file": "tabla/tabla_ke3.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_ke3.m4a",
+      "sha256": "3e0813c98712adde5323649f56bfb3324b59a336315442f598c4f52d80d70cd5",
+      "bytes": 2632,
+      "tags": []
+    },
+    "tabla_na": {
+      "file": "tabla/tabla_na.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_na.m4a",
+      "sha256": "1d945fb6187b593850483509d2d35c0e205f8a0b70522d1724a76b83765d791c",
+      "bytes": 11580,
+      "tags": []
+    },
+    "tabla_na_o": {
+      "file": "tabla/tabla_na_o.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_na_o.m4a",
+      "sha256": "f73d17f70980570e2b145e8d4fdd3f86c77db61d43516b8048c46cc2dd51e82e",
+      "bytes": 23648,
+      "tags": []
+    },
+    "tabla_na_s": {
+      "file": "tabla/tabla_na_s.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_na_s.m4a",
+      "sha256": "e886a71c7259b36e4eb8fe747811111f206f89830deb4c206a3d4099df61ea1d",
+      "bytes": 4969,
+      "tags": []
+    },
+    "tabla_re": {
+      "file": "tabla/tabla_re.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_re.m4a",
+      "sha256": "8159312ffa7dfae022fdd98bb3a542415a85fdcff4bb5e585f027f0d298bdf90",
+      "bytes": 5484,
+      "tags": []
+    },
+    "tabla_tas1": {
+      "file": "tabla/tabla_tas1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_tas1.m4a",
+      "sha256": "b48706139765eada9545e1de79ada9e0043f376687f852bcafd0ac4dcfa9c53d",
+      "bytes": 17754,
+      "tags": []
+    },
+    "tabla_tas2": {
+      "file": "tabla/tabla_tas2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_tas2.m4a",
+      "sha256": "d82f0276239b7eb942eea8965f715bfd15dcd6c8a6c4f5f4c069a6e77dafe062",
+      "bytes": 22999,
+      "tags": []
+    },
+    "tabla_tas3": {
+      "file": "tabla/tabla_tas3.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_tas3.m4a",
+      "sha256": "251fdaf762bdef4a0443a22f4632f2c5fee0473f8e12dc001ac80c481c35dac5",
+      "bytes": 19799,
+      "tags": []
+    },
+    "tabla_te1": {
+      "file": "tabla/tabla_te1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_te1.m4a",
+      "sha256": "fb8d05fc97ba9ec1f3be12dc9e2949d1040df9a5cdb88fe1f4c88cbff0dde052",
+      "bytes": 3958,
+      "tags": []
+    },
+    "tabla_te2": {
+      "file": "tabla/tabla_te2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_te2.m4a",
+      "sha256": "b06e2fc5ad8b808e3781b0617e0096d7e5a333daf19fb6ec004bc5c676d94364",
+      "bytes": 6344,
+      "tags": []
+    },
+    "tabla_te_m": {
+      "file": "tabla/tabla_te_m.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_te_m.m4a",
+      "sha256": "6d23d60d228a90b6c296cef81bfaa33cbe966a563a8d89df57409340d5f7c3cb",
+      "bytes": 5595,
+      "tags": []
+    },
+    "tabla_te_ne": {
+      "file": "tabla/tabla_te_ne.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_te_ne.m4a",
+      "sha256": "4607b33131bad955158b44a46815049b87c57c8fd0c9f7c25b6dce08e221786c",
+      "bytes": 3624,
+      "tags": []
+    },
+    "tabla_tun1": {
+      "file": "tabla/tabla_tun1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_tun1.m4a",
+      "sha256": "ce16d21fd2631aa76cb9fdcad711ea2b4f893a4999c7aeee32bd63eb8c315046",
+      "bytes": 37783,
+      "tags": []
+    },
+    "tabla_tun2": {
+      "file": "tabla/tabla_tun2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_tun2.m4a",
+      "sha256": "b1615617411af9b24484e56cd30e3fd7d3bd0dc57aa987183b3c7335f18d0578",
+      "bytes": 43431,
+      "tags": []
+    },
+    "tabla_tun3": {
+      "file": "tabla/tabla_tun3.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/sample-pi/drums/one-shots/tabla/tabla_tun3.m4a",
+      "sha256": "94c5531372c293bb0ee3baf1c8e07026c4fd37a6ab683ca4c72485b82ce32b9f",
+      "bytes": 34094,
+      "tags": []
+    }
+  }
+}

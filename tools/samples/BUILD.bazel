@@ -1,12 +1,30 @@
-load("//bazel:ts.bzl", "ts_binary")
+load("//bazel:ts.bzl", "ts_binary", "ts_lib", "ts_test")
 
-# Fetches the sample files the styles declare they can play; see style_samples in //bazel:music.bzl.
+# Packages the sample files the styles can play, offline, and checks each
+# style's declared ranges against its packs; see style_samples in //bazel:music.bzl.
+ts_lib(
+    name = "package_lib",
+    srcs = ["package_lib.ts"],
+    node = True,
+    deps = [
+        "//src/corpus",
+        "//src/sound",
+    ],
+)
+
 ts_binary(
     name = "samples",
     src = "samples.ts",
     visibility = ["//visibility:public"],
+    deps = [":package_lib"],
+)
+
+ts_test(
+    name = "samples_test",
+    src = "samples.test.ts",
+    data = ["//samples:manifests"],
     deps = [
+        ":package_lib",
         "//src/corpus",
-        "//src/sound",
     ],
 )

@@ -9,7 +9,7 @@ Courtyard Nine, Low Log) and it plays forever, never repeating, without streamin
 is arranged and synthesized live in the
 page.
 
-**Live:** https://mindless-midi.pages.dev/ (the old GitHub Pages address redirects here)
+**Live:** https://mindless-midi.trurl.systems/ (the old GitHub Pages address redirects here)
 
 - **LLM-seeded.** Claude, Astra, and Grok author each style's checked-in *corpus*: chord
   progressions, motifs, bass and arpeggio ostinatos, comping rhythms, drum
@@ -132,7 +132,8 @@ knowledge base in [docs/knowledge](docs/knowledge/index.md).
 - `src/app`: the page.
 - `tools/generate`: regenerates corpora with Claude.
 - `tools/stylec`: the build-time style compiler used by the rules.
-- `tools/samples`: the build-time sample fetcher (see `style_samples`).
+- `tools/samples`: the offline sample packaging step and reach check (see `style_samples`).
+- `tools/packs`: writes sample pack manifests (`samples/`) from upstream, by hand.
 - `tools/render`: offline WAV/MIDI rendering and loudness calibration (Node + the same WASM synth).
 - `tools/social`: the link-preview card; `tools/social/render.sh` re-renders `src/app/social.png` (headless Chrome) after you edit `card.html`.
 - `site`: assembles the static site; dev server; deploy target.
@@ -145,7 +146,8 @@ Custom rules live in `bazel/`:
 | --- | --- | --- |
 | `music_style` | `bazel/music.bzl` | Validates a corpus (an invalid corpus fails the build), binds the FM bank and UI colour, and calibrates per-instrument CC7 levels plus a style gain by rendering through the synth. `--output_groups=+calibration` emits a report. |
 | `style_pack` | `bazel/music.bzl` | Merges styles into the `styles.json` the app fetches. |
-| `style_samples` | `bazel/music.bzl` | Fetches the sample files the styles' declarations (`sound.json`, from `music_style`) say they can play. The site serves them as `samples/`. The action needs network access and reruns only when a declaration changes. Downloads are pinned by sha256 in `styles/samples.lock.json`: a changed or unlisted file fails the build, and `bazel run //styles:samples_lock` refreshes the pin after a style or upstream change. `--output_groups=+report` lists the files. |
+| `style_samples` | `bazel/music.bzl` | Packages, offline, the sample files the styles' declarations (`sound.json`, from `music_style`) can reach, from the sample packs each style declares (`music_style(packs = ..., kit = ...)`). The site serves them as `samples/`. Fails, naming the style, keys and pack, if a declared range reaches a pack the style does not declare. `--output_groups=+report` lists the files; `superset` holds every declared file, for the dev servers. |
+| `sample_kit`, `sample_pack` | `bazel/samples.bzl` | A drum kit of `@samples` hits; a whole pack (`@samples//<pack id>`), declared by the `samples` extension from the checked-in manifests and `samples/instruments.json`. |
 | `gh_pages_deploy` | `bazel/deploy.bzl` | `bazel run` target that commits the built site to a branch and pushes it. |
 | `stamp_build_info` | `bazel/stamp.bzl` | Fills the footer's build line (commit hash linked to GitHub) from workspace status. Needs `--config=stamp`. |
 | `ts_lib`, `ts_test`, `ts_binary` | `bazel/ts.bzl` | Repo conventions over rules_ts/rules_js (browser vs Node tsconfig, `node:test` tests). |
@@ -188,17 +190,17 @@ the generation tool replaces the selected corpus with an API-generated one.
 ## Deploying
 
 The workflow in `.github/workflows/pages.yml` runs `bazel test //...` and
-`bazel build --config=stamp //site` on every push and PR. From `main` it
+`bazel build --config=stamp //site` on every push to `main` or `prod` and every PR. From `prod` it
 publishes only a small redirect (`.github/pages-redirect/`) to GitHub Pages,
 which forwards old links, with their path and session query, to Cloudflare.
 This needs **Settings → Pages → Source: GitHub Actions**.
 
 `.github/workflows/cloudflare.yml` deploys the real site: it builds `//site`
-and publishes to Cloudflare Pages (production from `main`, a preview URL per
+and publishes to Cloudflare Pages (production from a push to the `prod` branch, a preview URL per
 same-repo PR). It does nothing until you set it up once:
 
 1. Create the project: `npx wrangler pages project create <name>
-   --production-branch main` (or Workers & Pages → Create → Pages → Direct
+   --production-branch prod` (or Workers & Pages → Create → Pages → Direct
    Upload in the dashboard).
 2. Create an API token with the **Cloudflare Pages: Edit** permission, and note
    your account ID.
@@ -209,6 +211,9 @@ same-repo PR). It does nothing until you set it up once:
 
 The same workflow deploys the synthesis bench (`//src/bench:site`) as a
 separate Pages project, `<project>-bench`, which it creates on first run.
+
+A push to `main` only builds and tests. To release, fast-forward `prod`:
+`git push origin main:prod`.
 
 To publish by hand to a `gh-pages` branch instead:
 
@@ -231,14 +236,18 @@ localhost) for AudioWorklet.
   component (only the Nuked OPL3 profile is bundled here).
 - The Samples engine plays recordings from [danigb/samples](https://github.com/danigb/samples)
   and [gleitz/midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts).
-  The build fetches them (`//styles:samples`) and the site serves its own copies
-  under `samples/`, so the page makes no requests to other hosts. Only what the
-  styles can play is fetched: each style declares its instruments and key
-  ranges, so a soundfont program contributes just the notes its parts can reach
-  (about 2,800 files, 92 MB for all twenty styles; a listener downloads the
-  slice a piece needs). The files are pinned by hash and not checked in. The recordings: Splendid Grand Piano (public domain), VCSL
-  (CC0), D. Smolken double bass (CC0), Greg Sullivan's Wurlitzer (CC BY 3.0),
-  MusyngKite (CC BY-SA 3.0), plus drum-machine and Sonic Pi kits. The page
-  credits whatever it has played. The bench still streams its samples from the
-  upstream hosts, and additionally loads the Magenta DDSP checkpoints (Apache 2.0).
+  Each source is converted once to a checked-in sample pack manifest
+  (`samples/`, commit- and hash-pinned, with its licence), and Bazel downloads
+  the packs each style declares. The site serves its own copies under
+  `samples/`, so the page makes no requests to other hosts. Only what the
+  styles can play ships: each style declares its instruments and key ranges,
+  so a soundfont program contributes just the notes its parts can reach
+  (about 2,900 files, 95 MB for all styles; a listener downloads the slice a
+  piece needs). The files are not checked in. The recordings: Splendid Grand
+  Piano (public domain), VCSL (CC0), D. Smolken double bass (CC0), Greg
+  Sullivan's Wurlitzer (CC BY 3.0), MusyngKite (CC BY-SA 3.0), plus
+  drum-machine and Sonic Pi kits (each style's `sample_kit`). The page credits
+  the packs it has played, from the licence blocks (`samples/credits.json`). The
+  bench streams the audio from each manifest's pinned upstream URL, and
+  additionally loads the Magenta DDSP checkpoints (Apache 2.0).
 - Dev console: `mindlessMidi.player` and `mindlessMidi.styles` are exposed for tinkering.

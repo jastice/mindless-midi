@@ -42,6 +42,7 @@ const TIERS: Record<string, Weight> = {
   synthwave: HARD, liquid_dnb: HARD, disco: HARD, electro_swing: HARD, funk: HARD, castlevania: HARD, retro: HARD, metroid: HARD,
   // A dusty kit: thump and pump, little grit.
   lofi: { ...HARD, kickDrive: 1.2, bassDrive: 0.9 },
+  minimal_techno: HARD,
   jazz_trio: SOFT, minimalist: SOFT, baroque: SOFT, celtic: SOFT, musette: SOFT, midnight_platform: SOFT, bossa_nova: SOFT,
 };
 

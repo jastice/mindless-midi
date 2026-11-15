@@ -78,7 +78,8 @@ async function main(): Promise<void> {
   const byId = new Map(styles.map((s) => [s.id, s]));
   const ctx = new AudioContext({ latencyHint: "playback" });
   const sr = ctx.sampleRate;
-  const cache = new SampleCache(ctx);
+  // The program table and manifests are served beside the page; the audio comes from each manifest's pinned upstream URL.
+  const cache = new SampleCache(ctx, (ref, upstream) => upstream ?? new URL(`samples/${ref}`, document.baseURI).href);
   const libraries = new Map<Soundfont, SampleLibrary>();
   const library = (font: Soundfont) => {
     let lib = libraries.get(font);
@@ -448,7 +449,7 @@ async function main(): Promise<void> {
     await run("samples", async (p) => {
       const { stems, report } = await renderSampleStems(s, sr, library(font), [], p);
       sampleStems = stems;
-      return { mix: await mixOf(stems, s), bytes: report.bytes, stems, note: `${report.files} files: ${report.instruments.join(", ")}` };
+      return { mix: await mixOf(stems, s), bytes: report.bytes, stems, note: `${report.files} files: ${report.packs.join(", ")}` };
     });
     await run("neural", async (p) => {
       if (!s.lead) return null;

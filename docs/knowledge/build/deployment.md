@@ -16,8 +16,8 @@ sources:
 
 | Workflow | Does |
 | --- | --- |
-| `.github/workflows/pages.yml` | `bazel test //...` and `bazel build --config=stamp //site` on every push and PR. From `main` it publishes only `.github/pages-redirect/` to GitHub Pages, forwarding old links (path and session query) to Cloudflare. |
-| `.github/workflows/cloudflare.yml` | Builds `//site` and publishes to Cloudflare Pages: production from `main`, a preview URL per same-repo PR. Also deploys `//src/bench:site` as `<project>-bench`. |
+| `.github/workflows/pages.yml` | `bazel test //...` and `bazel build --config=stamp //site` on every push to `main`/`prod` and every PR. From `prod` it publishes only `.github/pages-redirect/` to GitHub Pages, forwarding old links (path and session query) to Cloudflare. |
+| `.github/workflows/cloudflare.yml` | Builds `//site` and publishes to Cloudflare Pages: production from a push to `prod` (`main` only builds and tests), a preview URL per same-repo PR. Also deploys `//src/bench:site` as `<project>-bench`. |
 
 Cloudflare setup needs secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
 and the variable `CLOUDFLARE_PAGES_PROJECT`; full steps in the README.[^readme]

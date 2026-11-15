@@ -20,7 +20,8 @@ import { DEFAULT_PIECE_OPTIONS, type Expression, type PieceOptions } from "../en
 import { type Bar, barSeconds } from "../engine/types.js";
 import { Bus } from "../sound/bus.js";
 import { type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../sound/protocol.js";
-import { type PlannedNote, SampleCache, SampleLibrary, mirroredAt } from "../sound/sampler.js";
+import { creditLines, type PackCredit } from "../corpus/pack.js";
+import { type PlannedNote, SampleCache, SampleLibrary, servedAt } from "../sound/sampler.js";
 import { barScore } from "../sound/score.js";
 import type { ScoreNote } from "../sound/types.js";
 
@@ -80,8 +81,9 @@ export interface PlayerOptions {
   seed: string;
   /** Where in the seed to start (default: the beginning). */
   at?: Position;
-  processorUrl: string;
-  wasmUrl: string;
+  /** The FM chip's worklet and synth; a page that offers neither "fm" nor "fm_bus" can leave them out. */
+  processorUrl?: string;
+  wasmUrl?: string;
   stemWorkletUrl: string;
   workerUrl: string;
   engine?: Engine;
@@ -145,6 +147,8 @@ export class Player {
   private worker: Worker | null = null;
   private bus: Bus | null = null;
   private library: SampleLibrary | null = null;
+  /** The site's credits.json, once read (see `sampleCredits`). */
+  private credits: PackCredit[] | null = null;
   private wasm: Promise<ArrayBuffer> | null = null;
   private workerHasWasm = false;
   private conductor: BarSource;
@@ -208,6 +212,10 @@ export class Player {
   private readonly meterBuf: Float32Array<ArrayBuffer>;
   private readonly pieces: PieceOptions;
   private tap: AnalyserNode | null = null;
+  /** A move to the next piece waiting for a phrase start of the piece playing (`nextPieceOnPhrase`). */
+  private queued: { from: number; to: number; bars: number } | null = null;
+  /** The piece such a move goes to, until it is audible. */
+  private skipTo: number | null = null;
 
   constructor(styles: StyleBundle[], opts: PlayerOptions) {
     this.opts = opts;
@@ -311,9 +319,9 @@ export class Player {
     return { bytes: this.library?.bytes ?? 0, rate: this.rate };
   }
 
-  /** Credits for the sampled instruments heard so far. */
+  /** Credits for the sample packs heard so far, from the site's credits.json. */
   get sampleCredits(): string[] {
-    return this.library?.labels ?? [];
+    return this.library && this.credits ? creditLines(this.credits, this.library.packs) : [];
   }
 
   /** Seconds between the audio clock and the speaker, as the browser reports it. */
@@ -508,6 +516,60 @@ export class Player {
     else this.goTo(Math.max(at.piece - 1, 0), 0);
   }
 
+  /**
+   * Move to the next piece at the next start of a `bars`-bar phrase of the one
+   * playing, instead of right away. Until then the piece plays on. Bars already
+   * sent past that point are replaced. Before the first play, or asked again
+   * while waiting, it moves at once.
+   */
+  nextPieceOnPhrase(bars: number): void {
+    const ctx = this.ctx;
+    const at = this.segment();
+    // Asked again while waiting: go now.
+    if (this.skipTo !== null) return this.goTo(this.skipTo, 0);
+    if (!ctx || this.heading) return this.goTo(at.piece + 1, 0);
+    const from = at.piece;
+    const to = from + 1;
+    this.skipTo = to;
+    const ups = this.upcoming(ctx.currentTime + 0.3);
+    const u = ups.find(({ e }) => e.bar.info.pieceIndex !== from || (e.bar.info.barInPiece > 0 && e.bar.info.barInPiece % bars === 0));
+    this.emit();
+    // The next piece is already on its way at its own start.
+    if (u && u.e.bar.info.pieceIndex !== from) return;
+    if (!u) {
+      this.queued = { from, to, bars };
+      return;
+    }
+    if (this.pending) this.pending.at = this.pending.target = undefined;
+    const i = this.ahead.indexOf(u.e);
+    if (i >= 0) {
+      // Not sent yet: drop it and what follows.
+      this.ahead.length = i;
+      this.conductor.seekSegment(to, 0);
+      return;
+    }
+    // Sent: silence the engines from its start and send the next piece from there.
+    this.token++;
+    this.skips++;
+    this.ahead = [];
+    const arriving = this.arrivingNow;
+    if (arriving) this.stopEngine(arriving.from, u.e.frame);
+    this.stopEngine(this.engineName, u.e.frame);
+    this.timeline = this.timeline.filter((t) => t.frame < u.e.frame);
+    this.nextFrame = u.e.frame;
+    this.needsSetup = true;
+    this.conductor.seekSegment(to, 0);
+    this.schedule(Math.round(ctx.currentTime * ctx.sampleRate));
+  }
+
+  /** The piece a `nextPieceOnPhrase` is moving to, and seconds until it is heard (null until its bar is scheduled). */
+  get skipping(): { piece: number; in: number | null } | null {
+    this.where();
+    if (this.skipTo === null) return null;
+    const first = this.timeline.find((t) => t.bar.info.pieceIndex >= this.skipTo!);
+    return { piece: this.skipTo, in: first ? Math.max(0, first.start - this.now) : null };
+  }
+
   /** Show `landing` until a bar generated after the cut that led to it is audible. */
   private head(landing: Landing): void {
     this.last = landing;
@@ -517,6 +579,8 @@ export class Player {
   /** Throw away what the conductor generated ahead and play whatever it makes next from now on. */
   private cut(): void {
     this.heading = null;
+    this.queued = null;
+    this.skipTo = null;
     this.skips++;
     this.ahead = [];
     if (this.pending) this.pending.at = undefined;
@@ -552,6 +616,7 @@ export class Player {
   /** Where the listener is: the audible bar, or the place a jump is heading for, or the last one heard (the start before play). */
   private where(): Landing {
     const tb = this.audible();
+    if (tb && this.skipTo !== null && tb.bar.info.pieceIndex >= this.skipTo) this.skipTo = null;
     if (tb) {
       // Bars from before a jump or reseed are still audible for a moment.
       if (this.heading && tb.skips >= this.heading.epoch) this.heading = null;
@@ -644,7 +709,9 @@ export class Player {
   }
 
   private loadWasm(): Promise<ArrayBuffer> {
-    this.wasm ??= fetch(this.opts.wasmUrl).then((r) => {
+    const url = this.opts.wasmUrl;
+    if (!url) return Promise.reject(new Error("this page has no FM synth"));
+    this.wasm ??= fetch(url).then((r) => {
       if (!r.ok) throw new Error(`failed to load synth (${r.status})`);
       return r.arrayBuffer();
     });
@@ -655,6 +722,7 @@ export class Player {
     const ctx = this.ctx!;
     if (engine === "fm") {
       if (this.fmNode) return;
+      if (!this.opts.processorUrl) throw new Error("this page has no FM chip");
       const [wasm] = await Promise.all([this.loadWasm(), ctx.audioWorklet.addModule(this.opts.processorUrl)]);
       const node = new AudioWorkletNode(ctx, PROCESSOR_NAME, {
         numberOfInputs: 0,
@@ -712,7 +780,11 @@ export class Player {
       this.workerHasWasm = true;
     }
     // The site ships the samples its styles can play (//styles:samples) next to the page.
-    if (engine === "samples") this.library ??= new SampleLibrary(new SampleCache(ctx, mirroredAt(new URL("samples/", document.baseURI).href)), undefined, this.opts.weighted);
+    if (engine === "samples" && !this.library) {
+      const cache = new SampleCache(ctx, servedAt(new URL("samples/", document.baseURI).href));
+      this.library = new SampleLibrary(cache, undefined, this.opts.weighted);
+      cache.credits().then((c) => (this.credits = c), (e: unknown) => console.warn("no sample credits", e));
+    }
   }
 
   /**
@@ -819,7 +891,15 @@ export class Player {
   }
 
   private generate(): Scheduled {
-    const bar = this.conductor.nextBar();
+    let bar = this.conductor.nextBar();
+    const q = this.queued;
+    if (q && (bar.info.pieceIndex !== q.from || bar.info.barInPiece % q.bars === 0)) {
+      this.queued = null;
+      if (bar.info.pieceIndex === q.from) {
+        this.conductor.seekSegment(q.to, 0);
+        bar = this.conductor.nextBar();
+      }
+    }
     return { bar, notes: this.notesOf(bar), skips: this.skips, frame: 0, frames: barFrames(bar, this.ctx!.sampleRate), start: 0, end: 0 };
   }
 
@@ -980,7 +1060,7 @@ export class Player {
     }
     try {
       const t0 = performance.now();
-      const { plans, fresh } = await lib.prepare(entry.notes, entry.bar.info.styleId);
+      const { plans, fresh } = await lib.prepare(entry.notes, entry.bar.info.styleId, this.styleById.get(entry.bar.info.styleId)?.kit);
       // Connection speed from real downloads; demand from what the music needed.
       const bytes = [...fresh.keys()].reduce((a, u) => a + (lib.sizes.get(u) ?? 0), 0);
       const seconds = (performance.now() - t0) / 1000;

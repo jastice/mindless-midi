@@ -17,7 +17,7 @@ Endless background music in a browser tab. A listener picks one or more
 [styles](./concepts/styles-and-corpora.md) (Lo-fi Hip Hop, Metroid Vibes, Jazz
 Piano Trio, Baroque Court and so on, 22 in all) and the page plays forever
 without repeating and without streaming audio: every note is arranged and
-synthesized in the page.[^readme] Live at https://mindless-midi.pages.dev/.
+synthesized in the page.[^readme] Live at https://mindless-midi.trurl.systems/.
 
 ## The idea in three layers
 

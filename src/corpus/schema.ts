@@ -10,6 +10,7 @@ import { CHORD_SUFFIXES, MODE_NAMES, TONIC_NAMES, VOICINGS } from "../theory/the
 
 import { DRUM_LANES, type DrumLane, GESTURES, type Gesture, ROLES, type Role } from "./constants.js";
 import { Kit, NamedPatch } from "./patch.js";
+import type { SampleKit } from "./pack.js";
 
 export { DRUM_LANES, GESTURES, ROLES, type DrumLane, type Gesture, type Role };
 
@@ -234,4 +235,6 @@ export interface StyleBundle extends StyleMeta {
   formMixers?: Record<string, Partial<Record<Role, number>>>;
   /** Linear output gain that brings the style to the common loudness target. */
   gain?: number;
+  /** The style's drum kit from sample packs (`sample_kit`); without one its drums are silent and it cannot declare drum keys. */
+  kit?: SampleKit;
 }

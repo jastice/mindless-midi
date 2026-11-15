@@ -1,0 +1,59 @@
+load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+# A TR-909 (Detroit set, danigb/sampled), with the house kick for hard hits,
+# an LM-2 ride, and the 808's low tom and maraca where the 909 set has none
+# or only a long one (its low tom and ride are 2 MB each).
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": {
+            "default": "@samples//danigb-sampled/tr909-detroit:kick",
+            "hard": "@samples//danigb-samples/sample-pi-drums:bd_haus",
+            "soft": "@samples//danigb-sampled/tr909-detroit:kick-short",
+        },
+        "38": "@samples//danigb-sampled/tr909-detroit:snare",
+        "37": "@samples//danigb-sampled/tr909-detroit:rim",
+        "39": {
+            "default": "@samples//danigb-sampled/tr909-detroit:clap-1",
+            "soft": "@samples//danigb-sampled/tr909-detroit:clap-2",
+        },
+        "42": {
+            "default": "@samples//danigb-sampled/tr909-detroit:hihat-closed",
+            "hard": "@samples//danigb-sampled/tr909-detroit:hihat-close",
+        },
+        "46": {
+            "default": "@samples//danigb-sampled/tr909-detroit:hihat-open-1",
+            "soft": "@samples//danigb-sampled/tr909-detroit:hihat-open-2",
+        },
+        "51": "@samples//danigb-samples/lm-2:ride",
+        "49": "@samples//danigb-sampled/tr909-detroit:cymbal",
+        "45": "@samples//danigb-samples/tr-808:lt25",
+        "50": "@samples//danigb-sampled/tr909-detroit:tom-h",
+        "70": "@samples//danigb-samples/tr-808:ma",
+    },
+)
+
+music_style(
+    name = "style",
+    bank = 68,
+    brief = "brief.md",
+    color = "#3fd0c9",
+    corpus = "corpus.json",
+    kit = ":kit",
+    packs = [
+        "@samples//gleitz-musyngkite/lead-1-square",
+        "@samples//gleitz-musyngkite/pad-2-warm",
+        "@samples//gleitz-musyngkite/pad-3-polysynth",
+        "@samples//gleitz-musyngkite/synth-bass-1",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# For JS tests that read the raw corpus from runfiles.
+copy_to_bin(
+    name = "corpus",
+    srcs = ["corpus.json"],
+    visibility = ["//visibility:public"],
+)

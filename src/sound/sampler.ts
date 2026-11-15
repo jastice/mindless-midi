@@ -1,46 +1,41 @@
 /**
- * Approach 2: multi-sampled instruments. Piano, electric piano, mallets,
- * upright bass and tenor sax come from free SFZ libraries (velocity layers,
- * round robins, crossfades); everything else falls back to a General MIDI
- * soundfont with a sample per semitone; drums use per-style kits.
+ * Approach 2: multi-sampled instruments. Which pack plays a General MIDI
+ * program is data, `samples/instruments.json`: free SFZ libraries (velocity
+ * layers, round robins, crossfades) for piano, electric piano, mallets,
+ * upright bass and tenor sax, and a General MIDI soundfont group (a sample per
+ * semitone) for every other program the styles use. Drums use each style's
+ * kit (`sample_kit` in its BUILD file), carried in its bundle.
  *
  * Split in two so playback can run in a worker: `SampleLibrary` (main thread:
  * resolves notes to sample zones, downloads and decodes them) and
  * `renderSampleNote` (pure: mixes decoded sample data into a Stereo).
  *
- * Files are named by their upstream URL. The site serves its own copies of the
- * ones the styles can play (see `requiredSamples` and //tools/samples); the
- * bench reads from upstream directly.
+ * Files are named by the path the site serves them at: the table
+ * (`instruments.json`), each pack's manifest (`<pack id>/pack.json`, see
+ * //src/corpus:pack.ts), its samples (`<pack id>/<sample id>.<ext>`) and the
+ * credits of the packs shipped (`credits.json`). The site serves its own
+ * copies of what the styles can play (see `reach` and //tools/samples); the
+ * bench reads the audio from each manifest's pinned upstream URL.
  */
+import { type InstrumentEntry, type InstrumentTable, type MultisamplePack, type PackCredit, type PackManifest, type SampleKit, type Soundfont, packOfPath, servedPath } from "../corpus/pack.js";
 import type { SoundDeclaration } from "../corpus/sound.js";
 import type { ScoreNote } from "./types.js";
 import type { Samples, Stereo } from "./dsp.js";
 import { renderShaped } from "./shape.js";
 
-const DANIGB = "https://danigb.github.io/samples/";
-const GLEITZ = "https://gleitz.github.io/midi-js-soundfonts/";
+export type { Soundfont };
 
-/**
- * Instruments name their files by upstream URL. The site ships those files
- * itself (//tools/samples fetches the ones the styles can play at build time),
- * laid out as `danigb/<path>` and `gleitz/<path>` under one directory.
- */
-export function mirrorPath(url: string): string | undefined {
-  if (url.startsWith(DANIGB)) return `danigb/${url.slice(DANIGB.length)}`;
-  if (url.startsWith(GLEITZ)) return `gleitz/${url.slice(GLEITZ.length)}`;
-  return undefined;
+/** Where the program table is served, beside the packs. */
+export const INSTRUMENTS = "instruments.json";
+/** Where the credits of the shipped packs are served (written by //tools/samples). */
+export const CREDITS = "credits.json";
+/** Where a pack's manifest is served. */
+export const manifestPath = (pack: string): string => `${pack}/pack.json`;
+
+/** Fetches every served path from the sample directory at `base` (ending in a slash). */
+export function servedAt(base: string): Locate {
+  return (ref) => base + ref;
 }
-
-/** Fetches from the mirror directory at `base` (ending in a slash) instead of upstream. */
-export function mirroredAt(base: string): (url: string) => string {
-  return (url) => {
-    const path = mirrorPath(url);
-    if (path === undefined) throw new Error(`not a mirrored sample: ${url}`);
-    return base + path;
-  };
-}
-
-export type Soundfont = "MusyngKite" | "FluidR3_GM";
 
 /** Decoded audio, transferable to a worker. */
 export interface SampleData {
@@ -48,25 +43,35 @@ export interface SampleData {
   sampleRate: number;
 }
 
+/**
+ * Where to fetch a file: from its served path, or, for a pack sample, from
+ * `upstream`, the manifest's pinned URL (what the bench does).
+ */
+export type Locate = (ref: string, upstream?: string) => string;
+
 /** Downloads and decodes sample files once per page; tracks bytes for reports. */
 export class SampleCache {
   private readonly buffers = new Map<string, Promise<{ data: SampleData; bytes: number }>>();
   private readonly json = new Map<string, Promise<unknown>>();
+  /** Served path -> pinned upstream URL, for every pack sample of a manifest read so far. */
+  private readonly upstream = new Map<string, string>();
   /**
-   * `ctx` decodes audio (not needed to read sample documents); `locate` maps an
-   * upstream URL to where to fetch it from (default: upstream itself).
+   * `ctx` decodes audio (not needed to read the table and manifests);
+   * `locate` maps a served path to where to fetch it from (default: as
+   * named); `get` fetches (the build reads from disk instead).
    */
   constructor(
     private readonly ctx?: BaseAudioContext,
-    private readonly locate: (url: string) => string = (url) => url,
+    private readonly locate: Locate = (ref) => ref,
+    private readonly get: (url: string) => Promise<Response> = (url) => fetch(url),
   ) {}
 
-  audio(url: string): Promise<{ data: SampleData; bytes: number }> {
-    let p = this.buffers.get(url);
+  audio(ref: string): Promise<{ data: SampleData; bytes: number }> {
+    let p = this.buffers.get(ref);
     if (!p) {
-      p = fetch(this.locate(url))
+      p = this.get(this.locate(ref, this.upstream.get(ref)))
         .then((r) => {
-          if (!r.ok) throw new Error(`${r.status} ${url}`);
+          if (!r.ok) throw new Error(`${r.status} ${ref}`);
           return r.arrayBuffer();
         })
         .then(async (raw) => {
@@ -76,21 +81,38 @@ export class SampleCache {
           const channels = Array.from({ length: b.numberOfChannels }, (_, c) => b.getChannelData(c).slice());
           return { bytes, data: { channels, sampleRate: b.sampleRate } };
         });
-      this.buffers.set(url, p);
+      this.buffers.set(ref, p);
     }
     return p;
   }
 
-  getJson<T>(url: string): Promise<T> {
-    let p = this.json.get(url);
+  getJson<T>(ref: string): Promise<T> {
+    let p = this.json.get(ref);
     if (!p) {
-      p = fetch(this.locate(url)).then((r) => {
-        if (!r.ok) throw new Error(`${r.status} ${url}`);
+      p = this.get(this.locate(ref)).then((r) => {
+        if (!r.ok) throw new Error(`${r.status} ${ref}`);
         return r.json();
       });
-      this.json.set(url, p);
+      this.json.set(ref, p);
     }
     return p as Promise<T>;
+  }
+
+  /** A pack's manifest; also records where each of its samples lives upstream. */
+  async pack<T extends PackManifest = PackManifest>(id: string): Promise<T> {
+    const pack = await this.getJson<T>(manifestPath(id));
+    for (const [sid, s] of Object.entries(pack.samples)) this.upstream.set(servedPath(pack.id, sid, s.file), s.url);
+    return pack;
+  }
+
+  /** The program table. */
+  instruments(): Promise<InstrumentTable> {
+    return this.getJson<InstrumentTable>(INSTRUMENTS);
+  }
+
+  /** The credits of every pack the site ships, one per pack. */
+  credits(): Promise<PackCredit[]> {
+    return this.getJson<PackCredit[]>(CREDITS);
   }
 }
 
@@ -117,121 +139,41 @@ export interface PlannedNote {
   lowpass?: number;
 }
 
-interface Instrument {
-  label: string;
+export interface Instrument {
   release: number;
   sustain: boolean;
   /** One recording per note, whatever the velocity (so touch has to shape it). */
   flat: boolean;
   /** `touch`: let velocity choose between recordings where the set has a harder and a softer one. */
   zones(key: number, vel: number, touch?: boolean): Promise<Zone[]>;
-  /** Every upstream URL (sample documents and audio) that playing any of `keys` can need. */
+  /** Every served path (manifest and audio) that playing any of `keys` can need. */
   required(keys: readonly number[]): Promise<string[]>;
 }
 
-// --- websfz (SFZ as JSON, as published by danigb/samples) ---------------
+// --- Multisampled instruments (pack manifests) ----------------------------
 
-interface SfzRegion {
-  sample: string;
-  lokey: number;
-  hikey: number;
-  lovel: number;
-  hivel: number;
-  center: number;
-  tune: number;
-  volume: number;
-  offset: number;
-  xfin: [number, number] | null;
-  xfout: [number, number] | null;
-  seqLength: number;
-  seqPosition: number;
-  prefix: string;
-}
-
-const NOTE_INDEX: Record<string, number> = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
-
-function sfzKey(v: unknown): number | undefined {
-  if (typeof v === "number") return v;
-  if (typeof v !== "string") return undefined;
-  const m = /^([a-gA-G])([#b]?)(-?\d+)$/.exec(v.trim());
-  if (!m) return Number(v);
-  const acc = m[2] === "#" ? 1 : m[2] === "b" ? -1 : 0;
-  return 12 * (Number(m[3]) + 1) + NOTE_INDEX[m[1]!.toLowerCase()]! + acc;
-}
-
-type Opcodes = Record<string, unknown>;
-
-/** Conditions we don't model (pedal, CC switches, keyswitches, release triggers): skip the region. */
-function playable(o: Opcodes): boolean {
-  for (const k of Object.keys(o)) {
-    if (/^(lo|hi)cc\d+$/.test(k) || k.startsWith("sw_") || (k === "trigger" && o[k] !== "attack")) return false;
-  }
-  return true;
-}
-
-async function loadSfz(cache: SampleCache, url: string, samplePath = ""): Promise<{ base: string; regions: SfzRegion[] }> {
-  const doc = await cache.getJson<{ global?: Opcodes; groups: (Opcodes & { regions: Opcodes[]; control?: Opcodes })[] }>(url);
-  const regions: SfzRegion[] = [];
-  // A <control> header applies to every group after it, not just its own.
-  let prefix = "";
-  for (const g of doc.groups) {
-    const { regions: rs, control, ...groupOps } = g;
-    if (control?.prefix_sfz_path !== undefined) prefix = String(control.prefix_sfz_path);
-    for (const r of rs) {
-      const o: Opcodes = { ...(doc.global ?? {}), ...groupOps, ...r };
-      if (!playable(o) || typeof o.sample !== "string") continue;
-      const lokey = sfzKey(o.lokey ?? o.key) ?? 0;
-      const hikey = sfzKey(o.hikey ?? o.key) ?? 127;
-      const pair = (a: unknown, b: unknown): [number, number] | null => (a === undefined && b === undefined ? null : [Number(a ?? 0), Number(b ?? 127)]);
-      regions.push({
-        sample: o.sample,
-        lokey,
-        hikey,
-        lovel: Number(o.lovel ?? 0),
-        hivel: Number(o.hivel ?? 127),
-        center: sfzKey(o.pitch_keycenter ?? o.key) ?? lokey,
-        tune: Number(o.tune ?? 0) + 100 * Number(o.transpose ?? 0),
-        volume: Number(o.volume ?? 0) + Number(o.group_volume ?? 0),
-        offset: Number(o.offset ?? 0),
-        xfin: pair(o.xfin_lovel, o.xfin_hivel),
-        xfout: pair(o.xfout_lovel, o.xfout_hivel),
-        seqLength: Number(o.seq_length ?? 1),
-        seqPosition: Number(o.seq_position ?? 1),
-        prefix: samplePath + prefix,
-      });
-    }
-  }
-  // Samples sit beside the document (upstream's meta.baseUrl says the same, but would defeat a mirror).
-  return { base: url.slice(0, url.lastIndexOf("/") + 1), regions };
-}
-
-function regionUrl(base: string, r: SfzRegion): string {
-  return encodeURI(`${base}${r.prefix}${r.sample}.m4a`).replace(/#/g, "%23");
-}
-
-function sfzInstrument(cache: SampleCache, label: string, url: string, release: number, sustain = false, samplePath = ""): Instrument {
-  const loaded = loadSfz(cache, url, samplePath);
+/** An instrument from a multisample pack, as the program table describes it. */
+export function packInstrument(pack: MultisamplePack, entry: Pick<InstrumentEntry, "release" | "sustain" | "flat">): Instrument {
   const rr = new Map<number, number>();
+  const url = (sample: string) => servedPath(pack.id, sample, pack.samples[sample]!.file);
   return {
-    label,
-    release,
-    sustain,
-    flat: false,
+    release: entry.release,
+    sustain: entry.sustain,
+    flat: entry.flat,
     async zones(key, vel) {
-      const { base, regions } = await loaded;
       const counter = rr.get(key) ?? 0;
       rr.set(key, counter + 1);
       const out: Zone[] = [];
-      for (const r of regions) {
-        if (key < r.lokey || key > r.hikey || vel < r.lovel || vel > r.hivel) continue;
-        if (r.seqLength > 1 && (counter % r.seqLength) + 1 !== r.seqPosition) continue;
+      for (const r of pack.regions) {
+        if (key < r.lo || key > r.hi || vel < r.vel[0] || vel > r.vel[1]) continue;
+        if (r.seq[0] > 1 && (counter % r.seq[0]) + 1 !== r.seq[1]) continue;
         let w = 1;
         if (r.xfin) w *= ramp(vel, r.xfin[0], r.xfin[1]);
         if (r.xfout) w *= 1 - ramp(vel, r.xfout[0], r.xfout[1]);
         if (w < 0.02) continue;
         out.push({
-          url: regionUrl(base, r),
-          rate: Math.pow(2, (key - r.center + r.tune / 100) / 12),
+          url: url(r.sample),
+          rate: Math.pow(2, (key - r.root + r.tune / 100) / 12),
           gain: Math.sqrt(w) * Math.pow(10, r.volume / 20),
           offset: r.offset,
         });
@@ -239,10 +181,9 @@ function sfzInstrument(cache: SampleCache, label: string, url: string, release: 
       return out;
     },
     async required(keys) {
-      const { base, regions } = await loaded;
       // Any velocity layer or round robin can sound, so take every region the keys reach.
-      const urls = regions.filter((r) => keys.some((k) => k >= r.lokey && k <= r.hikey)).map((r) => regionUrl(base, r));
-      return [url, ...new Set(urls)];
+      const urls = pack.regions.filter((r) => keys.some((k) => k >= r.lo && k <= r.hi)).map((r) => url(r.sample));
+      return [manifestPath(pack.id), ...new Set(urls)];
     },
   };
 }
@@ -252,160 +193,39 @@ function ramp(x: number, lo: number, hi: number): number {
   return Math.max(0, Math.min(1, (x - lo) / (hi - lo)));
 }
 
-// --- General MIDI soundfont (one file per semitone) ---------------------
-
-const FLAT_NAMES = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-
-function gmInstrument(cache: SampleCache, font: Soundfont, program: number, sustain: boolean, release: number): Instrument {
-  const namesUrl = `${GLEITZ}${font}/names.json`;
-  const names = cache.getJson<string[]>(namesUrl);
-  const fileKey = (key: number) => Math.max(21, Math.min(108, key));
-  const file = async (key: number) => {
-    const name = (await names)[program] ?? "acoustic_grand_piano";
-    const k = fileKey(key);
-    return `${GLEITZ}${font}/${name}-mp3/${FLAT_NAMES[k % 12]}${Math.floor(k / 12) - 1}.mp3`;
-  };
+/** A program the table does not list: silent, and not something a style can declare. */
+function unlisted(program: number): Instrument {
+  const why = `program ${program} has no entry in samples/${INSTRUMENTS}`;
+  let warned = false;
   return {
-    label: font === "MusyngKite" ? "MusyngKite GM soundfont (CC BY-SA 3.0)" : "FluidR3 GM soundfont (MIT)",
-    release,
-    sustain,
+    release: 0.2,
+    sustain: false,
     flat: true,
-    async zones(key) {
-      return [{ url: await file(key), rate: Math.pow(2, (key - fileKey(key)) / 12), gain: 1, offset: 0 }];
+    async zones() {
+      if (!warned) console.warn(why);
+      warned = true;
+      return [];
     },
-    async required(keys) {
-      return [namesUrl, ...new Set(await Promise.all(keys.map(file)))];
+    async required() {
+      throw new Error(why);
     },
   };
 }
 
+/** The instrument the program table names for a program in this soundfont. */
+export async function instrumentFor(cache: SampleCache, font: Soundfont, program: number): Promise<Instrument> {
+  const entry = (await cache.instruments()).programs[String(program)];
+  if (!entry) return unlisted(program);
+  const pack = await cache.pack(entry.packs[font]);
+  if (pack.kind !== "multisample") throw new Error(`${pack.id}: program ${program} names a ${pack.kind} pack`);
+  return packInstrument(pack, entry);
+}
+
 // --- Drum kits ----------------------------------------------------------
 
-const SP = `${DANIGB}sample-pi/drums/one-shots/`;
-const LM2 = `${DANIGB}drum-machines/LM-2/`;
-const TR808 = `${DANIGB}drum-machines/TR-808/`;
-const RZ1 = `${DANIGB}drum-machines/Casio-RZ1/`;
-
-const KITS: Record<string, Record<number, string>> = {
-  lofi: {
-    36: `${SP}kick/drum_bass_hard.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${SP}percussion/perc_snap.m4a`,
-    39: `${SP}percussion/perc_snap2.m4a`, 42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`,
-    51: `${SP}cymbal/drum_cymbal_soft.m4a`, 49: `${SP}other/drum_splash_hard.m4a`, 45: `${SP}tom/drum_tom_lo_soft.m4a`,
-    50: `${SP}tom/drum_tom_hi_soft.m4a`, 70: `${LM2}cabasa.m4a`,
-  },
-  synthwave: {
-    36: `${LM2}kick.m4a`, 38: `${LM2}snare-m.m4a`, 37: `${LM2}stick-m.m4a`, 39: `${LM2}clap.m4a`, 42: `${LM2}hhclosed.m4a`,
-    46: `${LM2}hhopen.m4a`, 51: `${LM2}ride.m4a`, 49: `${LM2}crash.m4a`, 45: `${LM2}tom-l.m4a`, 50: `${LM2}tom-h.m4a`, 70: `${LM2}cabasa.m4a`,
-  },
-  electro_swing: {
-    36: `${SP}kick/bd_haus.m4a`, 38: `${SP}snare/sn_generic.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${LM2}clap.m4a`,
-    42: `${TR808}hihat-close/ch.m4a`, 46: `${TR808}hihat-open/oh25.m4a`, 51: `${LM2}ride.m4a`, 49: `${LM2}crash.m4a`,
-    45: `${LM2}tom-l.m4a`, 50: `${LM2}tom-h.m4a`, 70: `${LM2}tambourine.m4a`,
-  },
-  jazz_trio: {
-    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${SP}percussion/perc_snap.m4a`,
-    42: `${SP}cymbal/drum_cymbal_pedal.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
-    49: `${SP}other/drum_splash_hard.m4a`, 45: `${SP}tom/drum_tom_lo_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`,
-  },
-  retro: {
-    36: `${RZ1}kick.m4a`, 38: `${RZ1}snare.m4a`, 37: `${RZ1}clave.m4a`, 39: `${RZ1}clap.m4a`, 42: `${RZ1}hihat-closed.m4a`,
-    46: `${RZ1}hihat-open.m4a`, 51: `${RZ1}ride.m4a`, 49: `${RZ1}crash.m4a`, 45: `${RZ1}tom-3.m4a`, 50: `${RZ1}tom-1.m4a`,
-    70: `${LM2}cabasa.m4a`,
-  },
-  metroid: {
-    36: `${TR808}kick/bd2525.m4a`, 38: `${TR808}snare/sd2525.m4a`, 37: `${TR808}rimshot/rs.m4a`, 39: `${TR808}clap/cp.m4a`,
-    42: `${TR808}hihat-close/ch.m4a`, 46: `${TR808}hihat-open/oh25.m4a`, 51: `${TR808}cymbal/cy2525.m4a`,
-    49: `${TR808}cymbal/cy2525.m4a`, 45: `${TR808}tom-low/lt25.m4a`, 50: `${TR808}tom-hi/ht25.m4a`, 70: `${TR808}maraca/ma.m4a`,
-  },
-  monkey_island: {
-    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${TR808}conga-hi/hc25.m4a`, 37: `${TR808}clave/cl.m4a`,
-    70: `${TR808}maraca/ma.m4a`, 45: `${TR808}conga-low/lc25.m4a`, 50: `${TR808}conga-mid/mc25.m4a`,
-    42: `${LM2}cabasa.m4a`, 49: `${LM2}crash.m4a`,
-  },
-  bossa_nova: {
-    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-m.m4a`, 39: `${LM2}clap.m4a`,
-    42: `${SP}cymbal/drum_cymbal_pedal.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
-    49: `${SP}other/drum_splash_soft.m4a`, 45: `${SP}tom/drum_tom_lo_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`, 70: `${LM2}cabasa.m4a`,
-  },
-  funk: {
-    36: `${SP}kick/drum_bass_hard.m4a`, 38: `${SP}snare/drum_snare_hard.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${LM2}clap.m4a`,
-    42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
-    49: `${SP}cymbal/drum_cymbal_hard.m4a`, 45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_hi_hard.m4a`, 70: `${LM2}tambourine.m4a`,
-  },
-  western: {
-    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${SP}percussion/perc_snap2.m4a`,
-    45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_hi_hard.m4a`, 70: `${TR808}maraca/ma.m4a`,
-    49: `${SP}other/drum_splash_soft.m4a`,
-  },
-  celtic: {
-    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_hard.m4a`, 37: `${LM2}stick-m.m4a`,
-    45: `${SP}tom/drum_tom_mid_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`, 70: `${TR808}maraca/ma.m4a`,
-  },
-  musette: {
-    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-m.m4a`, 70: `${LM2}cabasa.m4a`,
-  },
-  liquid_dnb: {
-    36: `${SP}kick/drum_bass_hard.m4a`, 38: `${SP}snare/drum_snare_hard.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${LM2}clap.m4a`,
-    42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${SP}cymbal/drum_cymbal_soft.m4a`,
-    49: `${SP}other/drum_splash_hard.m4a`, 45: `${SP}tom/drum_tom_lo_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`, 70: `${LM2}cabasa.m4a`,
-  },
-  castlevania: {
-    36: `${SP}kick/drum_heavy_kick.m4a`, 38: `${SP}snare/drum_snare_hard.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${LM2}clap.m4a`,
-    42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
-    49: `${SP}cymbal/drum_cymbal_hard.m4a`, 45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_hi_hard.m4a`, 70: `${LM2}cabasa.m4a`,
-  },
-  jrpg: {
-    36: `${SP}kick/drum_bass_hard.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-m.m4a`, 39: `${LM2}clap.m4a`,
-    42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
-    49: `${SP}cymbal/drum_cymbal_hard.m4a`, 45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_mid_soft.m4a`, 70: `${TR808}maraca/ma.m4a`,
-  },  disco: {
-    36: `${SP}kick/bd_haus.m4a`, 38: `${SP}snare/drum_snare_hard.m4a`, 37: `${LM2}stick-h.m4a`, 39: `${LM2}clap.m4a`,
-    42: `${SP}cymbal/drum_cymbal_closed.m4a`, 46: `${SP}cymbal/drum_cymbal_open.m4a`, 51: `${LM2}ride.m4a`,
-    49: `${LM2}crash.m4a`, 45: `${LM2}tom-l.m4a`, 50: `${LM2}tom-h.m4a`, 70: `${LM2}cabasa.m4a`,
-  },
-  // Kettledrums only.
-  baroque: {
-    36: `${SP}kick/drum_bass_soft.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
-    45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_mid_soft.m4a`,
-  },
-  midnight_platform: {
-    36: `${SP}kick/drum_bass_soft.m4a`, 38: `${SP}snare/drum_snare_soft.m4a`, 37: `${LM2}stick-m.m4a`,
-    42: `${SP}cymbal/drum_cymbal_pedal.m4a`, 51: `${LM2}ride.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
-    45: `${SP}tom/drum_tom_lo_soft.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`,
-  },
-  // Dum on the kick, tek on the stick, slap on the tom, zills on the cabasa.
-  courtyard_nine: {
-    36: `${SP}kick/drum_bass_soft.m4a`, 37: `${LM2}stick-h.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
-    45: `${SP}tom/drum_tom_lo_hard.m4a`, 50: `${SP}tom/drum_tom_hi_soft.m4a`, 70: `${LM2}cabasa.m4a`,
-  },
-  // Soft kick, a stick for the rare tick, cabasa for the shaker.
-  low_log: {
-    36: `${SP}kick/drum_bass_soft.m4a`, 37: `${LM2}stick-m.m4a`, 49: `${SP}other/drum_splash_soft.m4a`,
-    45: `${SP}tom/drum_tom_lo_soft.m4a`, 70: `${LM2}cabasa.m4a`,
-  },
-};
-
-/**
- * Sonic Pi's kit has a hard and a soft recording of some drums. A kit names
- * one; with touch, a hard hit takes the hard one and a light hit the soft one.
- * (Both are among the files the site already serves: every one is some kit's default.)
- */
-const HARD_SOFT: [string, string][] = [
-  [`${SP}kick/drum_bass_hard.m4a`, `${SP}kick/drum_bass_soft.m4a`],
-  [`${SP}snare/drum_snare_hard.m4a`, `${SP}snare/drum_snare_soft.m4a`],
-  [`${SP}tom/drum_tom_lo_hard.m4a`, `${SP}tom/drum_tom_lo_soft.m4a`],
-  [`${SP}tom/drum_tom_hi_hard.m4a`, `${SP}tom/drum_tom_hi_soft.m4a`],
-  [`${SP}cymbal/drum_cymbal_hard.m4a`, `${SP}cymbal/drum_cymbal_soft.m4a`],
-  [`${SP}other/drum_splash_hard.m4a`, `${SP}other/drum_splash_soft.m4a`],
-];
-const HARDER = new Map(HARD_SOFT.map(([hard, soft]) => [soft, hard]));
-const SOFTER = new Map(HARD_SOFT.map(([hard, soft]) => [hard, soft]));
 /** Velocities from which a hit counts as hard, and up to which as light. */
 const HARD_FROM = 100;
 const SOFT_TO = 52;
-
-/** Upstream URLs of the recordings touch can swap in, for checking that the site serves them. */
-export const TOUCH_SAMPLES: readonly string[] = HARD_SOFT.flat();
 
 /** Low-pass corner for a note of this velocity: about 2 kHz at a whisper, open from a firm touch up. */
 function brightness(vel: number): number | undefined {
@@ -413,43 +233,51 @@ function brightness(vel: number): number | undefined {
   return hz < 16000 ? hz : undefined;
 }
 
-function drumKit(styleId: string): Instrument {
-  const kit = KITS[styleId] ?? KITS.synthwave!;
-  const alias: Record<number, number> = { 35: 36, 40: 38, 44: 42, 57: 49, 59: 51, 47: 45, 48: 50 };
+/** A kit from sample packs (`sample_kit`), with its own touch variants and key aliases. */
+function sampleKit(kit: SampleKit): Instrument {
+  const hit = (key: number) => kit.hits[String(key)] ?? kit.hits[String(kit.aliases[String(key)] ?? key)];
   return {
-    label: "drum machine & Sonic Pi kits",
     release: 0.05,
     sustain: false,
     flat: true,
     async zones(key, vel, touch) {
-      let url = kit[alias[key] ?? key];
-      if (url && touch) url = (vel >= HARD_FROM ? HARDER.get(url) : vel <= SOFT_TO ? SOFTER.get(url) : undefined) ?? url;
-      return url ? [{ url, rate: 1, gain: 1, offset: 0 }] : [];
+      const h = hit(key);
+      if (!h) return [];
+      const s = (touch && vel >= HARD_FROM ? h.hard : touch && vel <= SOFT_TO ? h.soft : undefined) ?? h.default;
+      return [{ url: s.path, rate: 1, gain: 1, offset: 0 }];
     },
     async required(keys) {
-      return [...new Set(keys.flatMap((k) => kit[alias[k] ?? k] ?? []))];
+      // Every variant touch can pick, so the shipped set never depends on another kit having it.
+      return [...new Set(keys.flatMap((k) => { const h = hit(k); return h ? [h.default, h.hard, h.soft].flatMap((v) => (v ? [v.path] : [])) : []; }))];
     },
   };
 }
 
-// --- Instrument choice --------------------------------------------------
+/** A style without a kit: its drums are silent, and it cannot declare drum keys (see `reach`). */
+function noKit(styleId: string): Instrument {
+  let warned = false;
+  return {
+    release: 0.05,
+    sustain: false,
+    flat: true,
+    async zones() {
+      if (!warned) console.warn(`${styleId} has no drum kit`);
+      warned = true;
+      return [];
+    },
+    async required() {
+      throw new Error("the style has no drum kit: add a sample_kit to its BUILD.bazel and pass it as music_style(kit = ...)");
+    },
+  };
+}
 
-const SUSTAINED = (p: number) => (p >= 16 && p <= 23) || (p >= 40 && p <= 95 && p !== 45 && p !== 46 && p !== 47);
-
-function instrumentFor(cache: SampleCache, font: Soundfont, program: number): Instrument {
-  const p = program;
-  if (p <= 2) return sfzInstrument(cache, "Splendid Grand Piano (public domain)", `${DANIGB}splendid-grand-piano/websfz.json`, 0.35);
-  if (p === 4 || p === 5) return sfzInstrument(cache, "Greg Sullivan Wurlitzer EP200 (CC BY 3.0)", `${DANIGB}gs-e-pianos/Wurlitzer EP200/wurlitzer-ep200.websfz.json`, 0.25, false, "Samples/");
-  if (p === 11) return sfzInstrument(cache, "VCSL vibraphone (CC0)", `${DANIGB}vcsl/Struck Idiophones/vibraphone-soft-mallets.websfz.json`, 0.6);
-  if (p === 12) return sfzInstrument(cache, "VCSL marimba (CC0)", `${DANIGB}vcsl/Struck Idiophones/marimba.websfz.json`, 0.4);
-  if (p === 32) return sfzInstrument(cache, "D. Smolken double bass (CC0)", `${DANIGB}dsmolken/double-bass/dsmolkenrubnerbasspizz.websfz.json`, 0.15);
-  if (p === 66) return sfzInstrument(cache, "VCSL tenor sax (CC0)", `${DANIGB}vcsl/Reed Aerophones/tenor-saxophone-vibrato.websfz.json`, 0.12, true);
-  return gmInstrument(cache, font, p, SUSTAINED(p), SUSTAINED(p) ? 0.4 : 0.2);
+function drumKit(styleId: string, kit?: SampleKit): Instrument {
+  return kit ? sampleKit(kit) : noKit(styleId);
 }
 
 /** Resolves notes to zones and makes sure their samples are downloaded. */
 export class SampleLibrary {
-  private readonly instruments = new Map<string, Instrument>();
+  private readonly instruments = new Map<string, Promise<Instrument>>();
   private readonly loaded = new Map<string, SampleData>();
   private readonly failed = new Set<string>();
   /** Download size per sample URL. */
@@ -466,16 +294,19 @@ export class SampleLibrary {
     private readonly touch = false,
   ) {}
 
-  private instrument(n: ScoreNote, styleId: string): Instrument {
+  private instrument(n: ScoreNote, styleId: string, kit?: SampleKit): Promise<Instrument> {
     const id = n.role === "drums" ? `kit:${styleId}` : `${n.program}`;
     let inst = this.instruments.get(id);
-    if (!inst) this.instruments.set(id, (inst = n.role === "drums" ? drumKit(styleId) : instrumentFor(this.cache, this.font, n.program)));
+    if (!inst) {
+      inst = n.role === "drums" ? Promise.resolve(drumKit(styleId, kit)) : instrumentFor(this.cache, this.font, n.program);
+      this.instruments.set(id, inst);
+    }
     return inst;
   }
 
-  /** Labels of every instrument used so far (for credits and reports). */
-  get labels(): string[] {
-    return [...new Set([...this.instruments.values()].map((i) => i.label))];
+  /** Ids of the packs whose samples have loaded so far, sorted (for credits and reports). */
+  get packs(): string[] {
+    return [...new Set([...this.loaded.keys()].map(packOfPath))].sort();
   }
 
   /** Fraction of the current burst of downloads that has finished (1 when idle). */
@@ -489,12 +320,13 @@ export class SampleLibrary {
 
   /**
    * Plan notes (in order: round robins advance) and download what they need.
+   * `kit` is the style's own drum kit, where its bundle has one.
    * Resolves with the plans and the samples that were new to this call.
    */
-  async prepare(notes: ScoreNote[], styleId: string, concurrency = 8): Promise<{ plans: PlannedNote[]; fresh: Map<string, SampleData> }> {
+  async prepare(notes: ScoreNote[], styleId: string, kit?: SampleKit, concurrency = 8): Promise<{ plans: PlannedNote[]; fresh: Map<string, SampleData> }> {
     const plans: PlannedNote[] = [];
     for (const n of notes) {
-      const inst = this.instrument(n, styleId);
+      const inst = await this.instrument(n, styleId, kit);
       const plan: PlannedNote = { zones: await inst.zones(n.key, n.vel, this.touch), release: inst.release, sustain: inst.sustain, drum: n.role === "drums" };
       const lowpass = this.touch && inst.flat ? brightness(n.vel) : undefined;
       if (lowpass !== undefined) plan.lowpass = lowpass;
@@ -529,26 +361,57 @@ export class SampleLibrary {
   }
 }
 
+export interface StyleSound {
+  id: string;
+  sound: SoundDeclaration;
+  kit?: SampleKit;
+}
+
+/** What one declared key of a style can need: the instrument, the key, and the served paths. */
+export interface Reach {
+  /** "lead, program 24" or "drums". */
+  part: string;
+  program?: number;
+  key: number;
+  files: string[];
+}
+
 /**
- * Upstream URL of every file the styles can play, given what they declare:
- * each program's keys across all styles, and each style's drum kit. Sorted.
+ * Every file each key a style declares can sound, through the same
+ * instruments `SampleLibrary` plays: each instrument's whole range, and the
+ * drum keys through the style's kit, with every touch variant. The packaging action trims the site's samples and
+ * checks them against the style's declared packs with this.
  */
-export async function requiredSamples(cache: SampleCache, styles: { id: string; sound: SoundDeclaration }[], font: Soundfont = "MusyngKite"): Promise<string[]> {
-  const keysByProgram = new Map<number, Set<number>>();
-  for (const { sound } of styles) {
-    for (const inst of sound.instruments) {
-      const keys = keysByProgram.get(inst.program) ?? new Set<number>();
-      for (let k = inst.range[0]; k <= inst.range[1]; k++) keys.add(k);
-      keysByProgram.set(inst.program, keys);
+export async function reach(cache: SampleCache, style: StyleSound, font: Soundfont = "MusyngKite"): Promise<Reach[]> {
+  const out: Reach[] = [];
+  for (const inst of style.sound.instruments) {
+    const instrument = await instrumentFor(cache, font, inst.program);
+    const part = `${inst.role}, program ${inst.program}`;
+    for (let key = inst.range[0]; key <= inst.range[1]; key++) {
+      let files: string[];
+      try {
+        files = await instrument.required([key]);
+      } catch (e) {
+        throw new Error(`${style.id}: ${part}, key ${key}: ${e instanceof Error ? e.message : e}`);
+      }
+      out.push({ part, program: inst.program, key, files });
     }
   }
-  const urls = new Set<string>();
-  for (const [program, keys] of keysByProgram) {
-    for (const url of await instrumentFor(cache, font, program).required([...keys])) urls.add(url);
+  const kit = drumKit(style.id, style.kit);
+  for (const key of style.sound.drums) {
+    try {
+      out.push({ part: "drums", key, files: await kit.required([key]) });
+    } catch (e) {
+      throw new Error(`${style.id}: drums, key ${key}: ${e instanceof Error ? e.message : e}`);
+    }
   }
-  for (const { id, sound } of styles) {
-    for (const url of await drumKit(id).required(sound.drums)) urls.add(url);
-  }
+  return out;
+}
+
+/** Every file the styles can play (see `reach`), with the program table. Sorted. */
+export async function requiredSamples(cache: SampleCache, styles: StyleSound[], font: Soundfont = "MusyngKite"): Promise<string[]> {
+  const urls = new Set<string>([INSTRUMENTS]);
+  for (const style of styles) for (const r of await reach(cache, style, font)) for (const f of r.files) urls.add(f);
   return [...urls].sort();
 }
 

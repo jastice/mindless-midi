@@ -189,7 +189,7 @@ async function main(): Promise<void> {
     const el = $("credits");
     el.hidden = !credits.length;
     if (credits.length) {
-      el.textContent = `Sampled instruments (streamed from danigb/samples and gleitz/midi-js-soundfonts): ${credits.join(", ")}.`;
+      el.textContent = `Sampled instruments: ${credits.join(", ")}.`;
     }
   }
   chips.addEventListener("keydown", (ev) => {

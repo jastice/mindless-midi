@@ -1,0 +1,131 @@
+{
+  "id": "danigb-samples/casio-rz1",
+  "kind": "oneshots",
+  "description": "Casio RZ-1 drum machine hits",
+  "origin": {
+    "repo": "danigb/samples",
+    "commit": "eae8c5c7a10f4b0e06281211e704c36c30e25342",
+    "path": "audio/drum-machines/Casio-RZ1/"
+  },
+  "licence": {
+    "spdx": "LicenseRef-permissive-claimed",
+    "note": "Casio RZ-1 hits. The folder holds only dm.json and the audio, with no licence or source. danigb/samples README says the compilation is of \"permissive licensed samples\" and refers to each drum-machine folder for licences, which this one does not have. Accepted for this project on the repo claim; the original source is unknown.",
+    "attribution": null,
+    "share_alike": false,
+    "source": "https://github.com/danigb/samples/blob/eae8c5c7a10f4b0e06281211e704c36c30e25342/README.md",
+    "read_on": "2026-11-14"
+  },
+  "samples": {
+    "clap": {
+      "file": "clap.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/clap.m4a",
+      "sha256": "4ca543c93d4e3f3e2f96c5148f30456fb6f216cd81384007e46b9f713122a6e0",
+      "bytes": 4360,
+      "tags": [
+        "clap"
+      ],
+      "gm": 39
+    },
+    "clave": {
+      "file": "clave.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/clave.m4a",
+      "sha256": "46be29bbca36a4920a6f661ad73de74d4620e77f8539e26ad83c0863aadb8b73",
+      "bytes": 3290,
+      "tags": [
+        "clave"
+      ],
+      "gm": 75
+    },
+    "cowbell": {
+      "file": "cowbell.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/cowbell.m4a",
+      "sha256": "c4f82f72b680fd2f9bb9ac7d1ed53bae6c5408e59f636cd084dd46d011775b3a",
+      "bytes": 3621,
+      "tags": [
+        "cowbell"
+      ],
+      "gm": 56
+    },
+    "crash": {
+      "file": "crash.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/crash.m4a",
+      "sha256": "671526b7df02d89d6b6bc33a5d277d78b4896e8426dda4807f2767fb6454a264",
+      "bytes": 12181,
+      "tags": [
+        "cymbal"
+      ],
+      "gm": 49
+    },
+    "hihat-closed": {
+      "file": "hihat-closed.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/hihat-closed.m4a",
+      "sha256": "19e0f1af82bbe765e09018fcdee316c035bf19042c91bbe0cb2a1c47cd67d04e",
+      "bytes": 2613,
+      "tags": [
+        "hat-closed"
+      ],
+      "gm": 42
+    },
+    "hihat-open": {
+      "file": "hihat-open.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/hihat-open.m4a",
+      "sha256": "4353e8c9cef2587519047350647983a41d8a2346798de97b1fd87b021f0bb663",
+      "bytes": 11562,
+      "tags": [
+        "hat-open"
+      ],
+      "gm": 46
+    },
+    "kick": {
+      "file": "kick.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/kick.m4a",
+      "sha256": "ecf9dfdae0eadd4f472932a56f5674956d9afa4f907f2525e60895aa8007e6d1",
+      "bytes": 3602,
+      "tags": [
+        "kick"
+      ],
+      "gm": 36
+    },
+    "ride": {
+      "file": "ride.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/ride.m4a",
+      "sha256": "74bdb2c429906ff3c5df031677ab065f7ba77e22f4b5980cb65c93435eca41e3",
+      "bytes": 11750,
+      "tags": [
+        "ride"
+      ],
+      "gm": 51
+    },
+    "snare": {
+      "file": "snare.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/snare.m4a",
+      "sha256": "d8935bc9344c5cc0aaa1fb60f7236efaa9fdad4b391af3209141eb649a341979",
+      "bytes": 4705,
+      "tags": [
+        "snare"
+      ],
+      "gm": 38
+    },
+    "tom-1": {
+      "file": "tom-1.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/tom-1.m4a",
+      "sha256": "c1905d63be93319af9f6d618282e9b9edb771d25e31620bf20ed3c4d1167cd2f",
+      "bytes": 5111,
+      "tags": []
+    },
+    "tom-2": {
+      "file": "tom-2.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/tom-2.m4a",
+      "sha256": "b64a2838064e38278328c069c3e3c2782475056a67302f023c82770bfa05e19b",
+      "bytes": 5318,
+      "tags": []
+    },
+    "tom-3": {
+      "file": "tom-3.m4a",
+      "url": "https://raw.githubusercontent.com/danigb/samples/eae8c5c7a10f4b0e06281211e704c36c30e25342/audio/drum-machines/Casio-RZ1/tom-3.m4a",
+      "sha256": "6b6087af66e32cf49db3f15ec6aba8e8890afc8d82eb98c23f8f9d79dc7f192c",
+      "bytes": 5051,
+      "tags": []
+    }
+  }
+}

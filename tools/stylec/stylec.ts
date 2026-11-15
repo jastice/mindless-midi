@@ -2,16 +2,18 @@
  * Build-time style compiler, driven by the `music_style` / `style_pack`
  * rules in //bazel:music.bzl.
  *
- *   stylec bundle --corpus C --id ID --bank N --color HEX --out OUT [--report R] [--sound S]
+ *   stylec bundle --corpus C --id ID --bank N --color HEX --out OUT [--report R] [--sound S] [--kit K]
  *     Validate a corpus (failing the build on errors), attach metadata and
  *     calibrate loudness by rendering through the real synth. S gets the
  *     style's sound declaration (instruments, key ranges), which //tools/samples
- *     turns into the sample files the site ships.
+ *     turns into the sample files the site ships. K is the style's drum kit
+ *     (kit.json from `sample_kit`), carried in the bundle and in S.
  *   stylec pack --out OUT BUNDLE...
  *     Merge style bundles into the single styles.json the app loads.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { isAbsolute, join } from "node:path";
+import type { SampleKit } from "../../src/corpus/pack.js";
 import type { StyleBundle } from "../../src/corpus/schema.js";
 import { declareSound } from "../../src/corpus/sound.js";
 import { validateCorpus } from "../../src/corpus/validate.js";
@@ -51,13 +53,14 @@ async function bundle(opts: Record<string, string>): Promise<void> {
     color: need(opts, "color"),
     corpus: result.corpus,
   };
+  if (opts.kit) out.kit = JSON.parse(readFileSync(p(opts.kit), "utf8")) as SampleKit;
   const cal = await calibrate(out);
   out.mixer = cal.mixer;
   if (Object.keys(cal.formMixers).length) out.formMixers = cal.formMixers;
   out.gain = cal.gain;
   writeFileSync(p(need(opts, "out")), JSON.stringify(out));
   if (opts.report) writeFileSync(p(opts.report), cal.report.join("\n") + "\n");
-  if (opts.sound) writeFileSync(p(opts.sound), JSON.stringify({ id: out.id, sound: declareSound(out.corpus) }));
+  if (opts.sound) writeFileSync(p(opts.sound), JSON.stringify({ id: out.id, sound: declareSound(out.corpus), ...(out.kit ? { kit: out.kit } : {}) }));
 }
 
 function pack(opts: Record<string, string>, inputs: string[]): void {

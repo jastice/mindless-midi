@@ -66,6 +66,7 @@ copy_to_directory(
         "bench.css",
         "index.html",
         ":bundle",
+        "//samples:manifests",
         "//src/app:favicon.svg",
         "//styles",
     ],

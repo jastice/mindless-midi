@@ -2,7 +2,7 @@
 type: Web App
 title: Mindless Midi (main page)
 description: The main page in src/app; style picker, transport, scrolling score, and the shared Player that drives every engine.
-resource: https://mindless-midi.pages.dev/
+resource: https://mindless-midi.trurl.systems/
 tags: [app, frontend]
 status: stable
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-13T00:00:00Z }
