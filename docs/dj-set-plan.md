@@ -1,8 +1,9 @@
 # DJ Claudia: design and implementation plan
 
 Built so far: all of step 1, and the first of step 6's conductor rules (legs
-with a target tempo, energy waves through `lift`). Step 2's patch engine is in
-progress in its own worktree. This was first written against `main` at
+with a target tempo, energy waves through `lift`). Step 2's engine half is
+built too (patches, the synth kit, six sounds for minimal techno), but nobody
+has listened to it yet. This was first written against `main` at
 `b4dabe6`; where it says "new", check first whether later work already has it.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
