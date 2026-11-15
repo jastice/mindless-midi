@@ -143,3 +143,77 @@ test("settings that do nothing are warnings, not errors", () => {
     assert.ok(r.warnings.some((x) => re.test(x)), `${name}: ${r.warnings.join(" | ")}`);
   }
 });
+
+// --- Parts -------------------------------------------------------------------
+
+/** The corpus with four parts (two of them drums, one with its own patch and material), then `mutate`. */
+function withParts(mutate: (c: any) => void = () => {}) {
+  const c = base();
+  c.patches = [structuredClone(PATCH)];
+  c.parts = [
+    { id: "kick", role: "drums", lanes: ["kick"] },
+    { id: "kit", role: "drums", lanes: ["snare", "closedHat"], enters: 0.2 },
+    { id: "low", role: "bass" },
+    { id: "run", role: "arp", patch: "blip", material: "run", enters: 0.5, octave: 3, volume: 0.3 },
+  ];
+  c.motifs.find((m: any) => m.role === "arp").material = "run";
+  c.arrangement = { change: 0.4, swap: 0.2, thin: 0.3, evolve: 0.2 };
+  mutate(c);
+  return validateCorpus(c);
+}
+
+test("a corpus may declare parts and arrangement rates, and keeps them", () => {
+  const r = withParts();
+  assert.ok(r.ok, r.ok ? "" : r.errors.join("\n"));
+  assert.deepEqual(r.corpus.parts!.map((p) => p.id), ["kick", "kit", "low", "run"]);
+  assert.equal(r.corpus.arrangement!.change, 0.4);
+  assert.ok(!r.warnings.some((w) => /parts|patch "blip"|arrangement/.test(w)), r.warnings.join("\n"));
+  const plain = validateCorpus(base());
+  assert.ok(plain.ok && plain.corpus.parts === undefined && plain.corpus.arrangement === undefined);
+});
+
+test("a malformed parts block is rejected, and the error says which part and why", () => {
+  const cases: Array<[string, (c: any) => void, RegExp]> = [
+    ["unknown role", (c) => (c.parts[2].role = "vocals"), /parts\.2\.role/],
+    ["unknown lane", (c) => (c.parts[1].lanes = ["cowbell"]), /parts\.1\.lanes\.0/],
+    ["unknown patch", (c) => (c.parts[3].patch = "nope"), /parts\[3\] "run": unknown patch "nope"/],
+    ["unknown material", (c) => (c.parts[3].material = "nope"), /parts\[3\] "run": unknown material "nope" \(no arp motifs are tagged with it\)/],
+    ["material nobody plays", (c) => (c.motifs.find((m: any) => m.role === "lead").material = "orphan"), /motifs\[\d+\] "[^"]+": unknown material "orphan" \(no lead part has it\)/],
+    ["material of another role's part", (c) => (c.drums[0].material = "run"), /drums\[0\] "[^"]+": unknown material "run" \(no drums part has it\)/],
+    ["duplicate ids", (c) => (c.parts[2].id = "kick"), /parts\[2\] "kick": duplicate part id/],
+    ["a lane claimed twice", (c) => c.parts[1].lanes.push("kick"), /parts\[1\] "kit": lane "kick" is already played by part "kick"/],
+    ["drums without lanes", (c) => delete c.parts[0].lanes, /parts\[0\] "kick": a drums part names the lanes it plays/],
+    ["empty lanes", (c) => (c.parts[0].lanes = []), /parts\.0\.lanes/],
+    ["lanes on a bass", (c) => (c.parts[2].lanes = ["kick"]), /parts\[2\] "low": lanes are for drums parts/],
+    ["a role with no instrument", (c) => (c.instruments = c.instruments.filter((i: any) => i.role !== "bass")), /parts\[2\] "low": role "bass" has no instrument/],
+    ["no untagged material left", (c) => c.motifs.forEach((m: any) => m.role === "bass" && (m.material = "run")), /parts\[2\] "low": there are no untagged bass motifs for it to play/],
+    ["lanes no groove uses", (c) => (c.drums.forEach((d: any) => (d.lanes.shaker = "")), (c.parts[1].lanes = ["shaker"])), /parts\[1\] "kit": no groove has anything on its lanes \(shaker\)/],
+    ["enters out of range", (c) => (c.parts[1].enters = 1.5), /parts\.1\.enters/],
+    ["part without an id", (c) => delete c.parts[0].id, /parts\.0\.id/],
+    ["a rate out of range", (c) => (c.arrangement.change = 2), /arrangement\.change/],
+    ["a missing rate", (c) => delete c.arrangement.evolve, /arrangement\.evolve/],
+    ["no parts at all", (c) => (c.parts = []), /^parts:/],
+  ];
+  for (const [name, mutate, re] of cases) {
+    const r = withParts(mutate);
+    const e = r.ok ? [] : r.errors;
+    assert.ok(e.some((x) => re.test(x)), `${name}: ${e.join(" | ") || "no errors"}`);
+  }
+  // A material tag means nothing without parts.
+  const e = errors((c) => (c.motifs[0].material = "run"));
+  assert.ok(e.some((x) => /motifs\[0\] "[^"]+": material "run" needs a parts block/.test(x)), e.join(" | "));
+});
+
+test("parts that are valid but odd are warnings", () => {
+  const cases: Array<[string, (c: any) => void, RegExp]> = [
+    ["a patch on a drums part", (c) => (c.parts[0].patch = "blip"), /parts\[0\] "kick": drums play the kit/],
+    ["a level on a drums part", (c) => (c.parts[1].volume = 0.5), /parts\[1\] "kit": a kit is levelled as one/],
+    ["no kick", (c) => (c.parts[0].lanes = ["rim"]), /no part plays the kick lane/],
+    ["rates without parts", (c) => (delete c.parts, delete c.motifs.find((m: any) => m.material).material), /arrangement: does nothing without parts/],
+  ];
+  for (const [name, mutate, re] of cases) {
+    const r = withParts(mutate);
+    assert.ok(r.ok, `${name}: ${r.ok ? "" : r.errors.join(" | ")}`);
+    assert.ok(r.warnings.some((x) => re.test(x)), `${name}: ${r.warnings.join(" | ")}`);
+  }
+});

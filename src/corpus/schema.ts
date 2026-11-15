@@ -227,6 +227,9 @@ export const Arrangement = z
   .object({
     change: unit.describe("Chance, every 4 bars, that a part enters or leaves when nothing has to. 0.3 is patient, 0.7 restless."),
     swap: unit.describe("Share of those changes that are a swap: one part out and another in on the same bar."),
+    drop: unit
+      .optional()
+      .describe("Share of the parts that may play that come in at once at a drop (the first bar of a section that brings the kick back, or is a quarter hotter than the last). The rest enter one at a time after it. Omit for 1: everything in."),
     thin: unit.describe("Chance that the last bar of an 8-bar phrase drops a hat or percussion part for that bar: the simplest fill."),
     evolve: unit.describe("Chance, per part at each phrase boundary inside a section, that its pattern changes by one small step (a step more or less, an accent moved, a turn by a sixteenth). 0.1 to 0.3; a new section starts from the pattern as written."),
   })

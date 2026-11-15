@@ -13,7 +13,8 @@
  *   - A turn is the first bar of a section where the low end leaves or comes
  *     back, or which is a quarter hotter or cooler than the one before. There
  *     any number of parts may change: at a "drop" everything that may play
- *     comes in, at a "break" everything that may not goes.
+ *     comes in (or the share of it the style asks for), at a "break"
+ *     everything that may not goes.
  *   - The last bar of a phrase may rest one hat or percussion part.
  *   - A set's track mixes in and out: it starts on the kick alone, adds a
  *     part every 4 bars with the bass half way, and ends the same way round.
@@ -68,6 +69,8 @@ export interface GridRates {
   change: number;
   swap: number;
   thin: number;
+  /** Share of the parts that may play that a drop brings in at once (default 1: everything). */
+  drop?: number | undefined;
 }
 
 export type Turn = "drop" | "break";
@@ -152,7 +155,14 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
           // Everything that may play comes in, the coolest parts first if the end of the track is near.
           // (In a mix-out only the low end comes back.)
           const low = may.filter((p) => p === kick || (p === bass && !bassOut));
-          const fresh = others(may).filter((p) => !mixOut || on.includes(p));
+          let fresh = others(may).filter((p) => !mixOut || on.includes(p));
+          const share = rates.drop ?? 1;
+          if (share < 1) {
+            // Not quite everything: what was playing stays, and a draw of the rest joins it.
+            const staying = fresh.filter((p) => on.includes(p));
+            const coming = rng.shuffle(fresh.filter((p) => !on.includes(p)));
+            fresh = [...staying, ...coming].slice(0, Math.max(staying.length, Math.ceil(fresh.length * share)));
+          }
           const keep = new Set([...low, ...fresh.sort(byEnters).slice(0, Math.max(0, cap - low.length))]);
           for (const p of on.slice()) if (!keep.has(p)) leave(p, bar, true);
           for (const p of parts) if (keep.has(p) && !on.includes(p)) enter(p, bar, true);

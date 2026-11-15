@@ -12,15 +12,19 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import type { Role } from "../corpus/constants.js";
+import { ROLES, type Role } from "../corpus/constants.js";
 import type { StyleBundle } from "../corpus/schema.js";
 import { Conductor } from "../engine/conductor.js";
 import { velocityScale } from "../engine/parts.js";
-import { DEFAULT_PIECE_OPTIONS } from "../engine/piece.js";
+import { DEFAULT_PIECE_OPTIONS, Piece, type PieceOptions } from "../engine/piece.js";
+import { SetConductor } from "../engine/set.js";
+import type { Bar } from "../engine/types.js";
+import { type Stereo, stereo } from "./dsp.js";
+import { measureWeight } from "./measure.js";
 import type { StemEngine, ToStems, ToWorker } from "./protocol.js";
 import type { PlannedNote, SampleData } from "./sampler.js";
 import { barScore } from "./score.js";
-import { styleSound } from "./sound_set.js";
+import { partLevels, styleSound } from "./sound_set.js";
 
 const SR = 24000;
 const FLOOR = 0.42;
@@ -48,13 +52,14 @@ for (let i = 0; i < SR / 2; i++) sample.channels[0]![i] = 0.4 * Math.sin(i * 0.1
 send({ type: "samples", items: [["x", sample]] });
 
 /** Bars of a style through the worker, as the player sends them; a hash of everything it posts. */
-async function run(style: StyleBundle, engine: StemEngine, weighted: boolean, bars: number): Promise<string> {
+async function run(style: StyleBundle, engine: StemEngine, weighted: boolean, bars: number, source?: { nextBar(): Bar }): Promise<string> {
   posted = [];
-  const conductor = new Conductor([style], `worker-${style.id}`, weighted ? { ...DEFAULT_PIECE_OPTIONS, expression: { gestures: true, velocityFloor: FLOOR } } : DEFAULT_PIECE_OPTIONS);
+  const conductor = source ?? new Conductor([style], `worker-${style.id}`, weighted ? { ...DEFAULT_PIECE_OPTIONS, expression: { gestures: true, velocityFloor: FLOOR } } : DEFAULT_PIECE_OPTIONS);
+  const parts = partLevels(style.corpus);
   const levels = Object.fromEntries(style.corpus.instruments.map((i) => [i.role, i.volume])) as Partial<Record<Role, number>>;
   const sound = styleSound(style.corpus);
   const programs = new Map<number, number>();
-  const patches = new Map<number, string>();
+  const patches = new Map<number | string, string>();
   let start = 0;
   for (let b = 0; b < bars; b++) {
     const bar = conductor.nextBar();
@@ -70,6 +75,7 @@ async function run(style: StyleBundle, engine: StemEngine, weighted: boolean, ba
       styleId: style.id,
       newPiece: bar.info.barInPiece === 0,
       levels,
+      ...(parts && { partLevels: parts }),
       notes,
       ...(plans && { plans }),
       ...(weighted && { mix: { intensity: bar.info.intensity, lean: velocityScale(bar.info.intensity, FLOOR) }, touch: true }),
@@ -156,4 +162,121 @@ test("the worker streams what it did for every shipped style, plain and weighted
   }
   if (process.env.PRINT_GOLDEN) console.log(JSON.stringify(got, null, 2));
   assert.deepEqual(got, GOLDEN);
+});
+
+// --- A style with parts ------------------------------------------------------
+
+const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles;
+const TECHNO = claudia.find((s) => s.id === "minimal_techno")!;
+const SET: PieceOptions = { minSeconds: 180, maxSeconds: 360, expression: { gestures: true, velocityFloor: FLOOR } };
+
+/** The same style as it was before it had parts: one part per role. */
+function withoutParts(style: StyleBundle): StyleBundle {
+  const { parts: _, arrangement: __, ...corpus } = style.corpus;
+  const own = <T extends { material?: string | undefined }>(items: T[]) => items.filter((x) => x.material === undefined);
+  return { ...style, corpus: { ...corpus, motifs: own(corpus.motifs), comping: own(corpus.comping), drums: own(corpus.drums) } };
+}
+
+/** What the last run posted, per role and summed. */
+function heard(): { roles: Map<Role, Stereo>; mix: Stereo } {
+  const pcm = posted.filter((m) => m.type === "pcm");
+  const frames = pcm.reduce((a, m) => a + m.frames, 0);
+  const roles = new Map<Role, Stereo>();
+  const mix = stereo(frames);
+  let at = 0;
+  for (const m of pcm) {
+    m.roles.forEach((r, i) => {
+      const role = ROLES[r]!;
+      const s = roles.get(role) ?? stereo(frames);
+      roles.set(role, s);
+      s.l.set(m.data[2 * i]!, at);
+      s.r.set(m.data[2 * i + 1]!, at);
+      for (let k = 0; k < m.frames; k++) {
+        mix.l[at + k]! += m.data[2 * i]![k]!;
+        mix.r[at + k]! += m.data[2 * i + 1]![k]!;
+      }
+    });
+    at += m.frames;
+  }
+  return { roles, mix };
+}
+const rms = (s: Stereo, from = 0, to = s.l.length) => {
+  let e = 0;
+  for (let i = from; i < to; i++) e += s.l[i]! ** 2 + s.r[i]! ** 2;
+  return Math.sqrt(e / (2 * Math.max(1, to - from)));
+};
+const db = (x: number) => 20 * Math.log10(Math.max(x, 1e-12));
+
+test("a style with parts streams one stem per role, whatever its parts, and the mix measures as techno", async () => {
+  // A whole track of a set: the mix-in, a breakdown, a drop, the mix-out.
+  const bars = 144;
+  const c = new SetConductor([TECHNO], "worker-parts", SET);
+  const seen = new Set<string>();
+  const source = {
+    nextBar() {
+      const bar = c.nextBar();
+      for (const id of bar.info.parts ?? []) seen.add(id);
+      return bar;
+    },
+  };
+  const t0 = performance.now();
+  await run(TECHNO, "synth", true, bars, source);
+  const withParts = (performance.now() - t0) / bars;
+  const { roles, mix } = heard();
+  assert.ok(seen.size >= 8, `parts played: ${[...seen]}`);
+  // Fifteen parts, five roles: the worklet and the bus see roles only.
+  assert.deepEqual([...roles.keys()].sort(), ["arp", "bass", "comp", "drums", "pad"].filter((r) => [...seen].some((id) => TECHNO.corpus.parts!.find((p) => p.id === id)!.role === r)).sort());
+  for (const s of [mix, ...roles.values()]) for (let i = 0; i < s.l.length; i++) assert.ok(Number.isFinite(s.l[i]) && Number.isFinite(s.r[i]));
+
+  // The same style without its parts block, as it played before: the comparison for level and for CPU.
+  const plain = withoutParts(TECHNO);
+  const t1 = performance.now();
+  await run(plain, "synth", true, bars, new SetConductor([plain], "worker-parts", SET));
+  const withoutThem = (performance.now() - t1) / bars;
+  const before = heard();
+
+  const barSeconds = mix.l.length / SR / bars;
+  const body = (s: Stereo): Stereo => ({ l: s.l.slice(16 * Math.round(barSeconds * SR)), r: s.r.slice(16 * Math.round(barSeconds * SR)) });
+  const m = measureWeight(body(mix), SR);
+  const was = measureWeight(body(before.mix), SR);
+  const line = (x: typeof m) => `rms ${db(x.rms).toFixed(1)} dB, crest ${x.crest.toFixed(1)} dB, range ${x.range.toFixed(1)} dB, sub ${(x.sub * 100).toFixed(0)}%, low-mid ${(x.lowMid * 100).toFixed(0)}%, low corr ${x.lowCorrelation.toFixed(2)}`;
+  console.log(`minimal techno, one track through the worker (weighted mix, synth, ${SR} Hz):\n  with parts    ${line(m)}\n  without parts ${line(was)}`);
+  // A role's level where it plays hardest: its loudest bar. (Over a whole track a role that plays less reads quieter, which says nothing about its level.)
+  const frames = Math.round(barSeconds * SR);
+  const loudest = (s: Stereo) => Math.max(...Array.from({ length: bars - 1 }, (_, b) => rms(s, b * frames, (b + 1) * frames)));
+  console.log(`  loudest bar per role with parts: ${[...roles].map(([r, s]) => `${r} ${db(loudest(s)).toFixed(1)} dB`).join(", ")}`);
+  console.log(`  loudest bar per role without:    ${[...before.roles].map(([r, s]) => `${r} ${db(loudest(s)).toFixed(1)} dB`).join(", ")}`);
+  console.log(`render time per bar: ${withParts.toFixed(1)} ms with parts, ${withoutThem.toFixed(1)} ms without (a bar is ${(barSeconds * 1000).toFixed(0)} ms: ${(barSeconds * 1000 / withParts).toFixed(0)}x and ${(barSeconds * 1000 / withoutThem).toFixed(0)}x real time at ${SR} Hz)`);
+  assert.ok(m.lowCorrelation > 0.95, `the low end is mono: ${m.lowCorrelation}`);
+  assert.ok(m.sub > 0.2 && m.sub < 0.75, `sub share ${m.sub}`);
+  // More parts are not a louder mix: within 3 dB of the style before parts, and each role's stem, at its loudest, within 6 dB of what it was.
+  assert.ok(Math.abs(db(m.rms / was.rms)) < 3, `${db(m.rms / was.rms).toFixed(1)} dB against the style without parts`);
+  for (const [role, s] of roles) {
+    const old = before.roles.get(role);
+    if (old) assert.ok(Math.abs(db(loudest(s) / loudest(old))) < 6, `${role}: ${db(loudest(s) / loudest(old)).toFixed(1)} dB`);
+  }
+  // Rendering stays far ahead of real time.
+  assert.ok(withParts < barSeconds * 1000 / 4, `${withParts} ms per bar`);
+
+  // The same at the hottest a set plays a track (lift 0.3), where the most parts are in.
+  const hot = async (style: StyleBundle) => {
+    const piece = new Piece(style, "worker-hot", 0, { ...SET, frame: "set", lift: 0.3 });
+    let b = 0;
+    let on = 0;
+    let most = 0;
+    const t = performance.now();
+    await run(style, "synth", true, piece.totalBars, {
+      nextBar() {
+        const bar = piece.renderBar(b, b++);
+        on += bar.info.parts?.length ?? 0;
+        most = Math.max(most, bar.info.parts?.length ?? 0);
+        return bar;
+      },
+    });
+    return { ms: (performance.now() - t) / piece.totalBars, mean: on / piece.totalBars, most, bars: piece.totalBars };
+  };
+  const hotParts = await hot(TECHNO);
+  const hotPlain = await hot(plain);
+  console.log(`at lift 0.3: ${hotParts.ms.toFixed(1)} ms per bar with parts (${hotParts.mean.toFixed(1)} parts in on average, ${hotParts.most} at most, ${hotParts.bars} bars), ${hotPlain.ms.toFixed(1)} ms without`);
+  assert.ok(hotParts.ms < barSeconds * 1000 / 4, `${hotParts.ms} ms per bar`);
 });

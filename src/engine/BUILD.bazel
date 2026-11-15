@@ -55,3 +55,14 @@ ts_test(
         "//src/theory",
     ],
 )
+
+ts_test(
+    name = "grid_test",
+    src = "grid.test.ts",
+    data = ["//styles:claudia"],
+    deps = [
+        ":engine",
+        "//src/corpus",
+        "//src/theory",
+    ],
+)

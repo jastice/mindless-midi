@@ -77,6 +77,7 @@ ts_test(
         ":worker",
         "//:node_modules/libadlmidi-js",
         "//styles",
+        "//styles:claudia",
     ],
     deps = [
         ":sound",
@@ -148,6 +149,7 @@ ts_test(
     src = "patch_library.test.ts",
     data = [
         "//styles",
+        "//styles:claudia",
         "//styles/minimal_techno:corpus",
     ],
     deps = [

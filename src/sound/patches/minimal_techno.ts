@@ -67,6 +67,53 @@ const patches: NamedPatch[] = [
     hp: 150,
     level: 0.3,
   },
+  {
+    // One resonant saw that squelches: the filter snaps shut on every note and drifts open and shut over 12 bars. Slides glide and accents bark. Kept out of the sub's octave.
+    id: "acid",
+    osc: { wave: "saw", voices: 1, detune: 0 },
+    filter: { type: "low", cutoff: 380, q: 7, keytrack: 0.5, env: 1800, a: 0.002, d: 0.12, s: 0.12, r: 0.05 },
+    amp: { a: 0.002, d: 0.3, s: 0.4, r: 0.04 },
+    drive: 1.2,
+    mod: [{ target: "cutoff", shape: "sine", beats: 48, depth: 1.5 }],
+    glide: 0.06,
+    accent: { cutoff: 3200, q: 4 },
+    hp: 160,
+    level: 0.4,
+  },
+  {
+    // A short FM blip that lands somewhere new in the stereo field each beat.
+    id: "bleep",
+    osc: { wave: "sine", voices: 1, detune: 0, fm: { ratio: 2, amount: 1.5, decay: 0.05 } },
+    filter: { type: "low", cutoff: 3000, q: 0.7, keytrack: 2, env: 0, a: 0.002, d: 0.1, s: 0, r: 0.08 },
+    amp: { a: 0.002, d: 0.12, s: 0, r: 0.08 },
+    mod: [{ target: "pan", shape: "random", beats: 1, depth: 0.5 }],
+    hp: 300,
+    level: 0.35,
+  },
+  {
+    // The dub chord: the stab's longer cousin, a low-pass that closes over half a second, wide, drifting over 12 bars.
+    id: "chord",
+    osc: { wave: "saw", voices: 3, detune: 14, spread: 0.7 },
+    filter: { type: "low", cutoff: 300, q: 1.8, keytrack: 1, env: 2200, a: 0.004, d: 0.4, s: 0.1, r: 0.3 },
+    amp: { a: 0.004, d: 0.7, s: 0.15, r: 0.35 },
+    mod: [{ target: "cutoff", shape: "sine", beats: 48, depth: 0.8 }],
+    hp: 200,
+    level: 0.22,
+  },
+  {
+    // A texture: bands of noise that fade in over two seconds, sweep over 6 bars and wander left and right. Nothing below 600 Hz.
+    id: "air",
+    osc: { wave: "noise", voices: 1, detune: 0 },
+    filter: { type: "band", cutoff: 1500, q: 3, keytrack: 2, env: 0, a: 1, d: 1, s: 1, r: 2 },
+    amp: { a: 2, d: 1, s: 1, r: 2.5 },
+    mod: [
+      { target: "cutoff", shape: "sine", beats: 24, depth: 1.5 },
+      { target: "pan", shape: "sine", beats: 10, depth: 0.5 },
+      { target: "amp", shape: "sine", beats: 6, depth: 0.3 },
+    ],
+    hp: 600,
+    level: 0.2,
+  },
 ];
 
 export const MINIMAL_TECHNO = { patches, synthKit: kit };

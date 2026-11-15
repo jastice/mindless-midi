@@ -12,6 +12,7 @@ import type { StyleBundle } from "../corpus/schema.js";
 import { kitWarnings, patchWarnings, validateCorpus } from "../corpus/validate.js";
 import { Conductor } from "../engine/conductor.js";
 import { DEFAULT_PIECE_OPTIONS } from "../engine/piece.js";
+import { SetConductor } from "../engine/set.js";
 import { type Stereo, stereo } from "./dsp.js";
 import { lowCorrelation } from "./measure.js";
 import { GM_PATCHES } from "./patches/gm.js";
@@ -150,7 +151,7 @@ test("the GM families and the built-in kits fit the schema", () => {
 });
 
 test("the minimal techno sounds fit the schema, with nothing in them that does nothing", () => {
-  assert.deepEqual(MINIMAL_TECHNO.patches.map((p) => p.id), ["stab", "bass", "pad"]);
+  assert.deepEqual(MINIMAL_TECHNO.patches.map((p) => p.id), ["stab", "bass", "pad", "acid", "bleep", "chord", "air"]);
   for (const p of MINIMAL_TECHNO.patches) {
     const r = Patch.safeParse(p);
     assert.ok(r.success, `${p.id}: ${r.success ? "" : JSON.stringify(r.error.issues)}`);
@@ -161,12 +162,15 @@ test("the minimal techno sounds fit the schema, with nothing in them that does n
   assert.deepEqual(kitWarnings(MINIMAL_TECHNO.synthKit), []);
 });
 
-test("minimal_techno's corpus declares exactly these sounds, on its stab, bass and pad", () => {
+test("minimal_techno's corpus declares exactly these sounds, on its instruments and its parts", () => {
   const corpus = JSON.parse(readFileSync("styles/minimal_techno/corpus.json", "utf8"));
   assert.deepEqual(corpus.patches, MINIMAL_TECHNO.patches);
   assert.deepEqual(corpus.synthKit, MINIMAL_TECHNO.synthKit);
   const named = Object.fromEntries(corpus.instruments.filter((i: { patch?: string }) => i.patch).map((i: { role: string; patch: string }) => [i.role, i.patch]));
   assert.deepEqual(named, { pad: "pad", comp: "stab", bass: "bass" });
+  // Every patch is some part's sound; the drum parts play the kit.
+  const byPart = Object.fromEntries(corpus.parts.filter((p: { patch?: string }) => p.patch).map((p: { id: string; patch: string }) => [p.id, p.patch]));
+  assert.deepEqual(byPart, { sub: "bass", acid: "acid", bleep: "bleep", stab: "stab", chord: "chord", pad: "pad", air: "air" });
   const v = validateCorpus(corpus);
   assert.ok(v.ok, v.ok ? "" : v.errors.join("\n"));
   assert.ok(!v.warnings.some((w) => /patch|synthKit/.test(w)), v.warnings.join("\n"));
@@ -190,7 +194,7 @@ test("a corpus that declares the sounds is valid, and its notes carry patch, bea
   const v = validateCorpus(style.corpus);
   assert.ok(v.ok, v.ok ? "" : v.errors.join("\n"));
   assert.ok(v.warnings.some((w) => /patch "stab" is not used/.test(w)), "an unused patch is a warning");
-  assert.deepEqual(Object.keys(styleSound(style.corpus)!.patches!), ["stab", "bass", "pad"]);
+  assert.deepEqual(Object.keys(styleSound(style.corpus)!.patches!), MINIMAL_TECHNO.patches.map((p) => p.id));
   assert.equal(styleSound(styles[0]!.corpus), undefined, "a style without sounds has no sound set");
 
   const c = new Conductor([style], "patches", DEFAULT_PIECE_OPTIONS);
@@ -223,6 +227,32 @@ test("a corpus that declares the sounds is valid, and its notes carry patch, bea
   const bar = old.nextBar();
   assert.ok(!JSON.stringify(bar).includes('"patch"'), "no patch on a program change that has none");
   for (const n of barScore(bar, new Map(), { patches: new Map() })) assert.ok(!("patch" in n));
+});
+
+test("in a style with parts, a note carries its part and plays that part's patch, whatever else is on its channel", () => {
+  const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles;
+  const techno = claudia.find((s) => s.id === "minimal_techno")!;
+  const want = Object.fromEntries(techno.corpus.parts!.map((p) => [p.id, p.role === "drums" ? undefined : p.patch]));
+  const c = new SetConductor([techno], "part-patches");
+  const programs = new Map<number, number>();
+  const patches = new Map<number | string, string>();
+  const seen = new Map<string, Set<number>>();
+  for (let i = 0; i < 400; i++) {
+    const bar = c.nextBar();
+    const score = barScore(bar, programs, { patches });
+    score.forEach((n, k) => {
+      assert.equal(n.part, bar.notes[k]!.part);
+      assert.ok(n.part !== undefined);
+      assert.equal(n.patch, want[n.part], `${n.part} plays ${n.patch}`);
+      seen.set(n.part, (seen.get(n.part) ?? new Set()).add(n.ch));
+    });
+  }
+  // Two parts of one role share a channel and still play their own sounds.
+  for (const pair of [["acid", "bleep"], ["stab", "chord"], ["pad", "air"]]) {
+    assert.ok(pair.every((id) => seen.has(id)), `${pair} were heard`);
+    assert.deepEqual([...seen.get(pair[0]!)!], [...seen.get(pair[1]!)!]);
+    assert.notEqual(want[pair[0]!], want[pair[1]!]);
+  }
 });
 
 // --- The six sounds, measured ------------------------------------------------
@@ -433,6 +463,113 @@ function riseTime(s: Stereo): number {
   const held = Math.max(...env);
   return (env.findIndex((x) => x > 0.9 * held) * hop) / SR;
 }
+
+// --- The four sounds the parts added, measured ---------------------------------
+
+/** How far the sound sits to the left (positive) or right, dB. */
+const lean = (s: Stereo) => db(rms({ l: s.l, r: s.l }) / rms({ l: s.r, r: s.r }));
+
+test("acid: resonant and mono, above the sub, with a filter that snaps shut, sweeps over bars, and barks and slides", () => {
+  // The acid part sits an octave above the bass: A2.
+  const note = (more: Partial<ScoreNote> = {}) => patchNote("acid", 0.01, BEAT / 4, 45, { role: "arp", ...more });
+  const plain = render([note()], 0.8);
+  const accented = render([note({ gesture: "accent" })], 0.8);
+  // The cutoff modulator is a sine over 48 beats: highest 12 beats in, lowest 36 beats in.
+  const open = render([note({ pos: 12 })], 0.8);
+  const shut = render([note({ pos: 36 })], 0.8);
+  const m = (numbers.acid = {
+    below60: round(share(plain, SR, 0, 60), 4),
+    band100to4k: round(share(plain, SR, 100, 4000), 3),
+    brightStart: round(brightness(cut(plain, 0.012, 0.03)), 0),
+    brightLater: round(brightness(cut(plain, 0.09, 0.13)), 0),
+    accentBrightness: round(brightness(cut(accented, 0.01, 0.1)) / brightness(cut(plain, 0.01, 0.1))),
+    sweepBrightness: round(brightness(cut(open, 0.01, 0.1)) / brightness(cut(shut, 0.01, 0.1))),
+    ringSeconds: round(ringTime(plain)),
+    peak: round(peak(plain)),
+  });
+  assert.deepEqual(plain.l, plain.r, "mono");
+  assert.ok(m.below60 < 0.05, `under 60 Hz, where the sub is: ${m.below60}`);
+  assert.ok(m.band100to4k > 0.9, `from 100 Hz to 4 kHz: ${m.band100to4k}`);
+  assert.ok(m.brightStart > 1.5 * m.brightLater, `the filter closes: ${m.brightStart} Hz to ${m.brightLater} Hz`);
+  assert.ok(m.accentBrightness > 1.3, `an accent barks: ${m.accentBrightness}x`);
+  assert.ok(m.sweepBrightness > 1.5, `the slow sweep: ${m.sweepBrightness}x`);
+  assert.ok(m.ringSeconds < 0.3, `a sixteenth stays short: ${m.ringSeconds} s`);
+  assert.ok(m.peak > 0.05 && m.peak < 1);
+  const before = patchNote("acid", 0, 0.12, 45, { role: "arp" });
+  const to = patchNote("acid", 0.12, 0.12, 52, { role: "arp", gesture: "slide", curves: { bend: [[0, -2], [0.06, 0]] } });
+  assert.notDeepEqual(cut(render([before, to], 0.6), 0.12, 0.2).l, cut(render([before, { ...to, gesture: undefined, curves: undefined } as ScoreNote], 0.6), 0.12, 0.2).l, "a slide glides");
+});
+
+test("bleep: a short blip above the low end that lands somewhere else each beat", () => {
+  const at = (pos: number) => render([patchNote("bleep", 0.01, BEAT / 4, 72, { role: "arp", pos })], 0.6);
+  const blip = at(0.2);
+  const leans = [0.2, 1.2, 2.2, 3.2, 4.2, 5.2].map((pos) => round(lean(at(pos)), 1));
+  const m = (numbers.bleep = {
+    below250: round(share(blip, SR, 0, 250), 4),
+    band400to6k: round(share(blip, SR, 400, 6000), 3),
+    ringSeconds: round(ringTime(blip), 3),
+    leanSpreadDb: round(Math.max(...leans) - Math.min(...leans), 1),
+    peak: round(peak(blip)),
+  });
+  assert.ok(m.below250 < 0.02 && m.band400to6k > 0.9, JSON.stringify(m));
+  assert.ok(m.ringSeconds < 0.2, `length: ${m.ringSeconds} s`);
+  assert.ok(m.leanSpreadDb > 3, `it moves between beats: ${leans} dB left`);
+  assert.equal(new Set(leans).size > 3, true, "to more than a couple of places");
+  assert.ok(m.peak > 0.05 && m.peak < 1);
+});
+
+test("chord: the stab's longer cousin, wide, without lows, closing over half a second", () => {
+  const notes = (patch: string) => [57, 60, 64, 67].map((key) => patchNote(patch, 0.01, BEAT * 1.5, key));
+  const chord = render(notes("chord"), 2.5);
+  const stab = render(notes("stab"), 2.5);
+  const m = (numbers.chord = {
+    below150: round(share(chord, SR, 0, 150), 4),
+    band200to5k: round(share(chord, SR, 200, 5000), 3),
+    brightStart: round(brightness(cut(chord, 0.012, 0.05)), 0),
+    brightLater: round(brightness(cut(chord, 0.4, 0.6)), 0),
+    ringSeconds: round(ringTime(chord)),
+    stabRingSeconds: round(ringTime(stab)),
+    correlation: round(correlation(chord)),
+    peak: round(peak(chord)),
+  });
+  assert.ok(m.below150 < 0.02 && m.band200to5k > 0.9, JSON.stringify(m));
+  assert.ok(m.brightStart > 1.5 * m.brightLater, `the filter closes: ${m.brightStart} Hz to ${m.brightLater} Hz`);
+  assert.ok(m.ringSeconds > 2 * m.stabRingSeconds && m.ringSeconds < 1.5, `it rings ${m.ringSeconds} s, the stab ${m.stabRingSeconds} s`);
+  assert.ok(m.correlation > 0.2 && m.correlation < 0.98, `stereo, not out of phase: ${m.correlation}`);
+  assert.ok(m.peak < 1);
+});
+
+test("air: a slow wash of noise with nothing in the low end, that moves", () => {
+  const chord = (pos: number, dur = 6) => [45, 52, 57].map((key) => patchNote("air", 0.01, dur, key, { role: "pad", pos }));
+  const air = render(chord(0), 9);
+  const held = cut(air, 3, 6);
+  // The cutoff sweeps over 24 beats (highest 6 beats in, lowest 18), and the pan over 10.
+  const high = render(chord(6 - 3 / BEAT, 4), 4.5);
+  const low = render(chord(18 - 3 / BEAT, 4), 4.5);
+  const left = render(chord(2.5 - 3 / BEAT, 4), 4.5);
+  const right = render(chord(7.5 - 3 / BEAT, 4), 4.5);
+  const { power } = spectrum(held.l);
+  // How far the loudest bin stands over the mean: a tone is thousands of times, noise a few dozen.
+  const tonal = power.reduce((a, x) => Math.max(a, x), 0) / (power.reduce((a, x) => a + x, 0) / power.length);
+  const m = (numbers.air = {
+    below400: round(share(held, SR, 0, 400), 4),
+    attackDb: round(db(rms(cut(air, 0.01, 0.21)) / rms(held)), 1),
+    releaseSeconds: round(ringTime(cut(air, 6, 9)), 2),
+    brightHigh: round(brightness(cut(high, 2.5, 3.5)), 0),
+    brightLow: round(brightness(cut(low, 2.5, 3.5)), 0),
+    leanLeftDb: round(lean(cut(left, 2.8, 3.2)), 1),
+    leanRightDb: round(lean(cut(right, 2.8, 3.2)), 1),
+    peakOverMean: round(tonal, 0),
+    peak: round(peak(air)),
+  });
+  assert.ok(m.below400 < 0.01, `under 400 Hz: ${m.below400}`);
+  assert.ok(m.attackDb < -10, `it fades in: ${m.attackDb} dB in the first 200 ms`);
+  assert.ok(m.releaseSeconds > 0.8, `and out: ${m.releaseSeconds} s`);
+  assert.ok(m.brightHigh > 1.5 * m.brightLow, `the sweep: ${m.brightHigh} Hz to ${m.brightLow} Hz`);
+  assert.ok(m.leanLeftDb - m.leanRightDb > 4 || m.leanRightDb - m.leanLeftDb > 4, `it wanders: ${m.leanLeftDb} dB and ${m.leanRightDb} dB`);
+  assert.ok(m.peakOverMean < 2000, `noise, not a tone: ${m.peakOverMean}`);
+  assert.ok(m.peak < 1);
+});
 
 test("eight bars of all six are a mix with a mono low end", () => {
   const notes: ScoreNote[] = [];

@@ -13,6 +13,13 @@ const byId = (id: string) => [...claudia, ...styles].find((s) => s.id === id)!;
 
 // Claudia's own pack, which is one style so far.
 const TECHNO = [byId("minimal_techno")];
+/** The same style as it was before it had parts, for the conductor's mix by role (see grid.test.ts for the mix by part). */
+function withoutParts(style: StyleBundle): StyleBundle {
+  const { parts: _, arrangement: __, ...corpus } = style.corpus;
+  const own = <T extends { material?: string | undefined }>(items: T[]) => items.filter((x) => x.material === undefined);
+  return { ...style, corpus: { ...corpus, motifs: own(corpus.motifs), comping: own(corpus.comping), drums: own(corpus.drums) } };
+}
+const PLAIN_TECHNO = [withoutParts(byId("minimal_techno"))];
 // Several 4/4 styles with spread tempos, for choosing between styles. Electro swing brings harmonic minor, which few keys of the others neighbour.
 const POOL = ["synthwave", "disco", "funk", "electro_swing", "retro"].map(byId);
 const SHORT: PieceOptions = { minSeconds: 60, maxSeconds: 150 };
@@ -116,7 +123,7 @@ test("seeking to a track and bar gives the bars playing through gives", () => {
 
 test("a track mixes in drums first, then bass, then the rest, and out in reverse", () => {
   let checked = 0;
-  for (const [seed, pool] of [["m1", TECHNO], ["m2", TECHNO], ["m3", POOL]] as const) {
+  for (const [seed, pool] of [["m1", PLAIN_TECHNO], ["m2", PLAIN_TECHNO], ["m3", POOL]] as const) {
     const c = new SetConductor(pool, `mix-${seed}`, SHORT);
     for (let i = 0; i < 3000; i++) {
       const bar = c.nextBar();
