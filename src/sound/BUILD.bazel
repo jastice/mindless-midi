@@ -68,6 +68,24 @@ ts_test(
     ],
 )
 
+# The worker itself, driven as the player drives it.
+ts_test(
+    name = "worker_test",
+    size = "medium",
+    src = "worker.test.ts",
+    data = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+        "//styles",
+    ],
+    deps = [
+        ":sound",
+        ":worker",
+        "//src/corpus",
+        "//src/engine",
+    ],
+)
+
 ts_lib(
     name = "worker",
     srcs = [
