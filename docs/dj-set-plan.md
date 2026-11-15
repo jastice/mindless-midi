@@ -2,8 +2,10 @@
 
 Built so far: all of step 1, and the first of step 6's conductor rules (legs
 with a target tempo, energy waves through `lift`). Step 2's engine half is
-built too (patches, the synth kit, six sounds for minimal techno), but nobody
-has listened to it yet. This was first written against `main` at
+built too (patches, the synth kit, six sounds for minimal techno), and so is
+step 3 (parts, the arrangement grid, pattern evolution, fifteen parts and
+four more sounds for minimal techno, a light per part on the page), but nobody
+has listened to either yet. This was first written against `main` at
 `b4dabe6`; where it says "new", check first whether later work already has it.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
@@ -374,6 +376,126 @@ can assert it.
 section, a part's pattern may gain or lose a step, shift an accent, or rotate
 by a sixteenth, at phrase boundaries. This reuses the motif development
 already in `parts.ts`, applied to ostinatos and drum lanes at a slow rate.
+
+### Built (2026-11-15)
+
+Written by Fable. `bazel test //...` passes (19 targets). Nobody has listened
+to it: the grid was judged by reading it, the sounds and the mix by
+measurement.
+
+| What | Where |
+| --- | --- |
+| `parts`, `arrangement` and the `material` tag in the corpus; their validation | `src/corpus/schema.ts`, `validate.ts` |
+| The arrangement grid, `mixBars` | `src/engine/grid.ts` |
+| Parts in the arranger: material per part, `renderPart`, evolution, `info.parts` / `thin` / `turn` | `src/engine/piece.ts`, `parts.ts` (`evolveMotif`, `evolveLanes`), `types.ts` |
+| Part and patch on the note | `src/sound/score.ts`, `types.ts` |
+| Windows, previous notes and levellers by part, summed by role | `src/sound/worker.ts`, `protocol.ts` (`partLevels`) |
+| Fifteen parts, rates, tagged material, and the acid, bleep, chord and air patches | `styles/minimal_techno/corpus.json`, `src/sound/patches/minimal_techno.ts` |
+| A light per part | `src/claudia/app.ts` |
+| Tests | `src/engine/grid.test.ts`, `src/sound/worker.test.ts`, additions to `validate.test.ts`, `patch_library.test.ts`, `set.test.ts` |
+
+**How part and patch reach the worker.** The piece's setup has, after the
+program change per channel, one more program change per part that names the
+part (and its patch, its own or its role instrument's). `barScore` keeps the
+patch per part beside the patch per channel; a note carries `part` and plays
+its part's patch. The worker keys its window and the previous note by part.
+In the weighted mix every part has its own `BodyLeveler`, except that a kit's
+parts share the kit's, the way the kick and the rest of the kit already did:
+a kit's balance is the kit's. Parts are then summed by role, so the mix, the
+worklet and the bus see one stem per role, as before. A part's level is its
+`volume` (sent as `partLevels`), else its role's.
+
+**How the grid sits with what was there.** Sections still say which roles
+play and how intense; the grid decides which parts, every 4 bars. It is
+planned once per piece from its own stream (`grid`), so a seek cannot move it.
+
+- A part may enter where the section has its role and is at least as intense
+  as its `enters`. `lift` is already in the section's intensity, so nothing
+  more is needed for a cooler track to be sparser (measured over 24 seeds:
+  3.8 parts in on average at lift -0.3, 6.0 at 0, 6.8 at +0.3).
+- The low end is the part with the kick lane and the first bass part. They
+  ignore `enters`: they play wherever the section has both drums and bass. A
+  section without one of those roles is a breakdown, and there the kick is
+  out. Builds (kick out before a hotter section) are left to step 4.
+- A slot changes one part, or swaps one for another; a phrase changes at most
+  two. The exception is a turn, the first bar of a section where the low end
+  leaves or returns or which is 0.25 hotter or cooler than the last: at a
+  "drop" what may play comes in, at a "break" what may not goes. A part the
+  next section will not allow leaves ahead of the boundary, one a slot.
+- Mix-in and mix-out: for a style with parts the grid does them, and
+  `mixLeaveOut` leaves nothing out. A track starts on the kick alone and adds
+  one part every 4 bars, the bass at bar 8; from 16 bars before the end one
+  part more may play per remaining slot, the bass leaves 8 bars out, and the
+  track ends on the kick and at most one more. Styles without parts mix by
+  role as before.
+- The last bar of a phrase rests one drum part other than the kick, at the
+  style's `thin` rate.
+- Rates are the style's `arrangement`: `change`, `swap`, `drop`, `thin`,
+  `evolve`.
+
+**Evolution.** At each phrase boundary inside a section a part's pattern
+takes one step at the `evolve` rate: a note more, a note less, an accent
+moved, or a turn by a sixteenth (the kick and the bass only move an accent).
+A new section starts from the pattern as written. Each boundary has its own
+stream and the steps so far are replayed, so a bar is the same however it is
+reached. It sits beside `develop` in `parts.ts` and shares its cell; it does
+not reuse its operations, which are melodic.
+
+**The other apps are unchanged.** `golden.test.ts` and `baseline.test.ts`
+pass as they were. `worker.test.ts` is new: it drives `worker.ts` itself as
+the player does and hashes the stems it posts, for every shipped style
+(synth, plain and weighted) and three through the samples path. It was
+committed first, from the code at `500d40c` (`44900ff`), and passes unchanged
+after. Minimal techno was pinned in none of the three. Without a `parts`
+block the new code is skipped, not run with neutral values: the grid's and
+the parts' streams are forks that are never made.
+
+Measured (in the tests' output):
+
+- Render time through the worker at 24 kHz, a whole track: 90 ms per bar with
+  parts against 98 ms for the same style without them (a bar is 1.9 s); at
+  lift 0.3, with 7 parts in on average and 12 at most, 106 ms against 107 ms.
+  Parts cost no more than the style did before: the new parts are small and
+  the pad's five saws dominate either way. Not measured at 48 kHz or on a
+  phone, and not with `?perf` in a browser.
+- The mix of a whole track: within 1 dB of the style without parts (-26.7 dB
+  against -27.5 dB RMS), low end mono, each role's loudest bar within 2.5 dB
+  of what it was.
+- Acid: 95% of its energy from 100 Hz to 4 kHz, 3.5% under 60 Hz, filter from
+  1490 Hz to 919 Hz within a sixteenth, an accent 1.8 times brighter, the
+  12-bar sweep 2.5 times. Bleep: 0.1 s, all of it from 400 Hz to 6 kHz, lands
+  up to 11 dB left or right from beat to beat. Chord: rings 0.66 s against the
+  stab's 0.2 s, nothing under 150 Hz, correlation 0.48. Air: nothing under
+  400 Hz, 28 dB down in its first 200 ms, sweeps from 5.8 kHz to 1.8 kHz,
+  wanders 9 dB either way.
+
+Decisions and gaps:
+
+- `material` tags a motif, comping pattern or drum pattern for the one part
+  that names it; untagged material is for untagged parts. A drum part reads
+  its lanes from the groove nearest the section's intensity that has
+  something on them, so two drum parts may read different grooves. A lane no
+  part claims is not played.
+- A part may also set `octave` and `volume`. It has no program or pan of its
+  own: the bus has one chain per role.
+- A part whose patch has `glide` or `accent` takes gestures like a line, so
+  the acid part (an arp) gets the slides and accents its motifs write.
+- A drop brings in `arrangement.drop` of what may play (0.7 for minimal
+  techno); the plan said everything.
+- The page shows a light per part, lit from `info.parts`. Checked once in a
+  browser from the worktree: it plays, no console errors.
+- The worker keeps a window per part, about 7 MB each at 48 kHz: fifteen
+  parts are about 110 MB where five roles were 40 MB. Untested on a phone.
+- The FM path and a `.mid` play all parts of a role on its channel with the
+  role's program; gesture bends of two parts on one channel would collide
+  there. Claudia uses neither.
+- Under the plain (not weighted) mix a kit's parts are summed and levelled as
+  one and the other parts each have a `RoleLeveler`. It runs but only the
+  weighted mix has a test with parts.
+- A style whose track opens without drums and bass starts on its coolest
+  part, and a section with drums and no bass counts as a breakdown. Fine for
+  minimal techno's forms; other genres may want this said in the corpus.
+- The parts schema has not been through the generator's structured output.
 
 ## Step 4: moves inside a track (M)
 

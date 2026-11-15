@@ -262,15 +262,24 @@ async function main(): Promise<void> {
   }
 
   // --- The deck -----------------------------------------------------------
+  // One light per part where the track's style has parts (lit while the arrangement grid has the part in), else one per role.
   const lights = new Map<string, HTMLElement>();
-  for (const role of LIGHTS) {
-    const el = document.createElement("span");
-    el.className = "light";
-    el.innerHTML = `<i aria-hidden="true"></i>`;
-    el.append(ROLE_LABELS[role]);
-    lights.set(role, el);
-    $("roles").append(el);
+  let lightsFor = "";
+  function setLights(names: readonly string[], label: (name: string) => string): void {
+    if (names.join() === lightsFor) return;
+    lightsFor = names.join();
+    lights.clear();
+    $("roles").replaceChildren();
+    for (const name of names) {
+      const el = document.createElement("span");
+      el.className = "light";
+      el.innerHTML = `<i aria-hidden="true"></i>`;
+      el.append(label(name));
+      lights.set(name, el);
+      $("roles").append(el);
+    }
   }
+  setLights(LIGHTS, (role) => ROLE_LABELS[role as (typeof ROLES)[number]]);
   const pips = [...Array(PHRASE_BARS)].map(() => {
     const el = document.createElement("i");
     $("pips").append(el);
@@ -362,8 +371,11 @@ async function main(): Promise<void> {
       el.classList.toggle("done", k < inPhrase);
       el.classList.toggle("here", k === inPhrase);
     });
-    const sounding = new Set(tb.bar.notes.map((n) => n.role));
-    for (const [role, el] of lights) el.classList.toggle("on", sounding.has(role as (typeof ROLES)[number]));
+    const parts = styles.find((s) => s.id === i.styleId)?.corpus.parts;
+    if (parts) setLights(parts.map((p) => p.id), (id) => id);
+    else setLights(LIGHTS, (role) => ROLE_LABELS[role as (typeof ROLES)[number]]);
+    const sounding = new Set<string>(parts ? (i.parts ?? []).filter((id) => !i.thin?.includes(id)) : tb.bar.notes.map((n) => n.role));
+    for (const [name, el] of lights) el.classList.toggle("on", sounding.has(name));
     document.title = `${player.playing ? "▶" : "❚❚"} ${i.styleTitle} · DJ Claudia`;
     if ("mediaSession" in navigator && (i.barInPiece === 0 || !navigator.mediaSession.metadata)) {
       navigator.mediaSession.metadata = new MediaMetadata({ title: `${i.styleTitle} · ${i.keyName} · ${tb.bar.bpm} bpm`, artist: "DJ Claudia", album: `Set ${player.seed}, track ${i.pieceIndex + 1}` });
