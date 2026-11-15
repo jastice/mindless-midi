@@ -23,8 +23,8 @@ const kit: Kit = {
   clap: { tone: 1150, q: 2, bursts: 4, decay: 0.11 },
   ride: { hp: 6000, decay: 0.22, level: 0.28 },
   perc: [
-    { lane: "tomLow", freq: 110, bend: 5, sweep: 0.03, decay: 0.18, pan: -0.3, level: 0.6 },
-    { lane: "tomHigh", freq: 440, bend: 2, sweep: 0.01, decay: 0.09, fm: { ratio: 1.48, amount: 2 }, pan: 0.3, level: 0.45 },
+    { lane: "tomLow", freq: 110, bend: 5, sweep: 0.03, decay: 0.18, tuned: true, pan: -0.3, level: 0.6 },
+    { lane: "tomHigh", freq: 440, bend: 2, sweep: 0.01, decay: 0.09, tuned: true, fm: { ratio: 1.48, amount: 2 }, pan: 0.3, level: 0.45 },
     { lane: "rim", freq: 1800, bend: 12, sweep: 0.004, decay: 0.02, noise: 0.3, pan: 0.15, level: 0.5 },
   ],
 };

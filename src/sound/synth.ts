@@ -653,8 +653,10 @@ function drum(out: Stereo, n: ScoreNote, sr: number, kit: Kit, touch: boolean): 
   if (perc) {
     let ph = 0;
     let mph = 0;
+    // Tuned: written for a track on A, moved by the nearest way to the track's tonic.
+    const freq = perc.tuned && n.tonic !== undefined ? perc.freq * Math.pow(2, ((((n.tonic - 9 + 6) % 12) + 12) % 12 - 6) / 12) : perc.freq;
     write(perc.decay * 5, perc.pan, (t) => {
-      const f = perc.freq * strike * Math.pow(2, (perc.bend * Math.exp(-t / perc.sweep)) / 12);
+      const f = freq * strike * Math.pow(2, (perc.bend * Math.exp(-t / perc.sweep)) / 12);
       ph += f / sr;
       let angle = 2 * Math.PI * ph;
       if (perc.fm) {

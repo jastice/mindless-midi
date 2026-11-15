@@ -179,6 +179,10 @@ export const KitPerc = z.object({
   bend: z.number().min(0).max(48).describe("Semitones above freq at the strike, falling within sweep. 0 is a pure tone, 3-7 a drum skin, 24+ a laser zap."),
   sweep: seconds(0.002, 0.5).describe("Seconds for the bend to fall. 0.01-0.03 for a drum, 0.1+ for a drop."),
   decay: seconds(0.01, 2).describe("Seconds for the tone to die to about a third. 0.03-0.08 is a tick, 0.15-0.3 a tom, 0.5+ rings."),
+  tuned: z
+    .boolean()
+    .optional()
+    .describe("The pitch follows the track's key. Write freq as the pitch in a track on A (110, 220, 440 are the tonic, 165 and 330 the fifth); it moves up to a tritone either way to the same degree of the track's tonic. For anything that rings long enough to have a note. Styles with parts only."),
   fm: z
     .object({
       ratio: z.number().min(0.25).max(16).describe("Modulator frequency as a multiple of freq; non-whole numbers sound metallic."),

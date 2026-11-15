@@ -18,6 +18,8 @@ export interface ScoreNote {
   /** For a patch's tempo-synced movement: seconds per beat at the note, and the onset in beats from the start of its track. */
   beat?: number;
   pos?: number;
+  /** The track's tonic pitch class at the note, for a kit's tuned percussion. Drum notes of a style with parts carry it. */
+  tonic?: number;
   /** The next note of a monophonic line starts right where this one ends. */
   legato?: boolean;
   /** How the note is played (see engine/gestures.ts). A choked note stops at the end of `dur`. */

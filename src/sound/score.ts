@@ -48,6 +48,7 @@ export function barScore(bar: Bar, programs: Map<number, number>, opts: ScoreOpt
       program: programs.get(n.ch) ?? 0,
     };
     if (n.part !== undefined) note.part = n.part;
+    if (n.part !== undefined && n.role === "drums") note.tonic = bar.info.tonic;
     const patch = opts.patches?.get(n.part ?? n.ch);
     if (patch !== undefined) {
       note.patch = patch;

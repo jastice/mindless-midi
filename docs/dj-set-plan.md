@@ -520,9 +520,11 @@ What changed (`56b41ca`, `712d995`), in `src/engine/grid.ts` and the schema:
   5.3, against 6.0 with no limits.
 - The same seed gives a different arrangement than before the limits.
 
-Judged good by ear after that. Not touched, and the next suspects if a mix is
-still harsh: the blip (a fixed 440 Hz tone with inharmonic FM whatever the
-key) and the acid line's resonance.
+Judged good by ear after that. Then the blip and the low tom were tuned: a
+kit's `perc` sound with `tuned` is written for a track on A and moves by the
+nearest way to the track's tonic (drum notes of a style with parts carry
+`tonic`). Not heard yet. Still untouched, and the next suspects if a mix is
+harsh: the blip's inharmonic FM (ratio 1.48) and the acid line's resonance.
 
 ## Step 4: moves inside a track (M)
 

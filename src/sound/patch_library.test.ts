@@ -371,6 +371,13 @@ test("clap, ride and tuned percussion sound where they should", () => {
   assert.ok(m.clapBand > 0.8 && m.clapRing > 0.08 && m.clapRing < 0.5, JSON.stringify(m));
   assert.ok(m.rideAbove5k > 0.9 && m.rideRing > 0.3 && m.rideRing < 1.5, JSON.stringify(m));
   assert.ok(m.tomBand > 0.9, `the low tom settles on 110 Hz: ${m.tomBand}`);
+  // Tuned percussion follows the track's tonic: the same samples on A, a fourth up on D, a tritone down on E flat.
+  const onA = render([{ ...drumNote(0.01, 45), tonic: 9 }], 1.5);
+  assert.deepEqual(onA.l, tom.l);
+  const onD = render([{ ...drumNote(0.01, 45), tonic: 2 }], 1.5);
+  assert.ok(share(cut(onD, 0.1, 0.5), SR, 135, 160) > 0.9, "the low tom on D is at 147 Hz");
+  const onEflat = render([{ ...drumNote(0.01, 45), tonic: 3 }], 1.5);
+  assert.ok(share(cut(onEflat, 0.1, 0.5), SR, 70, 85) > 0.9, "the low tom on E flat is at 78 Hz");
   assert.ok(m.bleepBrightness > 400, `the high tom is an FM bleep around 440 Hz and up: ${m.bleepBrightness}`);
   // Each takes its lane from the built-in model.
   const { perc: _, clap: __, ride: ___, ...stock } = MINIMAL_TECHNO.synthKit;

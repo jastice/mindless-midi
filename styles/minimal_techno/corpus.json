@@ -3632,6 +3632,7 @@
         "bend": 5,
         "sweep": 0.03,
         "decay": 0.18,
+        "tuned": true,
         "pan": -0.3,
         "level": 0.6
       },
@@ -3641,6 +3642,7 @@
         "bend": 2,
         "sweep": 0.01,
         "decay": 0.09,
+        "tuned": true,
         "fm": {
           "ratio": 1.48,
           "amount": 2
