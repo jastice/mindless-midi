@@ -3153,7 +3153,7 @@
         "openHat"
       ],
       "enters": 0.4,
-      "group": "top"
+      "group": "noise"
     },
     {
       "id": "clap",
@@ -3180,7 +3180,7 @@
         "shaker"
       ],
       "enters": 0.55,
-      "group": "perc"
+      "group": "noise"
     },
     {
       "id": "ride",
@@ -3190,7 +3190,7 @@
         "crash"
       ],
       "enters": 0.75,
-      "group": "top"
+      "group": "noise"
     },
     {
       "id": "blip",
@@ -3263,18 +3263,18 @@
       "material": "air",
       "volume": 0.16,
       "enters": 0.25,
-      "group": "top"
+      "group": "noise"
     }
   ],
   "arrangement": {
     "change": 0.45,
     "swap": 0.2,
     "drop": 0.7,
-    "most": 8,
+    "most": 10,
     "groups": {
-      "line": 2,
+      "line": 3,
       "perc": 2,
-      "top": 1
+      "noise": 2
     },
     "thin": 0.3,
     "evolve": 0.2
