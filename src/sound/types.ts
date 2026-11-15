@@ -11,6 +11,11 @@ export interface ScoreNote {
   role: Role;
   /** GM program sounding on this channel at the onset. */
   program: number;
+  /** Name of the style's patch this note plays instead of `program` (see corpus/patch.ts), where the engine has it. */
+  patch?: string;
+  /** For a patch's tempo-synced movement: seconds per beat at the note, and the onset in beats from the start of its track. */
+  beat?: number;
+  pos?: number;
   /** The next note of a monophonic line starts right where this one ends. */
   legato?: boolean;
   /** How the note is played (see engine/gestures.ts). A choked note stops at the end of `dur`. */

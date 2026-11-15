@@ -9,6 +9,7 @@ import { z } from "zod";
 import { CHORD_SUFFIXES, MODE_NAMES, TONIC_NAMES, VOICINGS } from "../theory/theory.js";
 
 import { DRUM_LANES, type DrumLane, GESTURES, type Gesture, ROLES, type Role } from "./constants.js";
+import { Kit, NamedPatch } from "./patch.js";
 
 export { DRUM_LANES, GESTURES, ROLES, type DrumLane, type Gesture, type Role };
 
@@ -29,6 +30,13 @@ export const Instrument = z
     octave: z
       .number().int().min(1).max(7)
       .describe("Register the part sits in; middle C (MIDI 60) is octave 4. Bass is typically 2, pads 3-4, leads 4-5."),
+    patch: z
+      .string()
+      .optional()
+      .describe(
+        "Id of one of the style's `patches`: the designed sound this instrument plays in the synth, instead of the stock sound of `program`. Not for drums (they play the style's `kit`). " +
+          "Still give a `program` of the same family: players without patches use it, and it decides which gestures the arranger writes (38 or 39, synth bass, for a patch that should get slides and accents).",
+      ),
     volume: unit.describe("Mix level 0..1."),
     pan: z.number().min(-1).max(1).describe("Stereo position, -1 left .. 1 right."),
   })
@@ -200,6 +208,11 @@ export const StyleCorpus = z.object({
   forms: z.array(Form).min(1),
   melody: MelodyRules,
   ending: Ending.optional().describe("How pieces come to a close. Omit for a plain in-tempo final chord."),
+  patches: z
+    .array(NamedPatch)
+    .optional()
+    .describe("The style's own synth sounds, which instruments name in `patch`. Omit to play General MIDI programs only."),
+  kit: Kit.optional().describe("The style's own drum machine, played by the drums role in the synth. Omit for the stock kit."),
 });
 export type StyleCorpus = z.infer<typeof StyleCorpus>;
 

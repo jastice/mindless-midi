@@ -3,6 +3,7 @@
  * (a broken corpus fails the build) and by the generator, which feeds the
  * errors back to Claude for a repair round.
  */
+import type { Kit, Patch } from "./patch.js";
 import { DRUM_LANES, type Role, StyleCorpus } from "./schema.js";
 import { parseRoman } from "../theory/theory.js";
 
@@ -11,6 +12,39 @@ export type ValidationResult =
   | { ok: false; errors: string[]; warnings: string[] };
 
 const EPS = 1e-6;
+
+/** Settings of a patch that are valid but do nothing, or will not do what they seem to. */
+export function patchWarnings(p: Patch): string[] {
+  const out: string[] = [];
+  const { osc } = p;
+  if (osc.pw !== undefined && osc.wave !== "pulse") out.push(`osc.pw does nothing on wave "${osc.wave}"`);
+  if (osc.voices === 1 && osc.detune > 0) out.push("osc.detune does nothing with one voice");
+  if (osc.spread && osc.voices === 1 && osc.wave !== "noise") out.push("osc.spread needs voices >= 2");
+  if (osc.wave === "noise" && osc.fm) out.push("osc.fm does nothing on noise");
+  for (const [i, m] of (p.mod ?? []).entries()) {
+    if (m.target === "pw" && osc.wave !== "pulse") out.push(`mod[${i}]: target "pw" needs wave "pulse"`);
+    if (m.target === "width" && !osc.spread) out.push(`mod[${i}]: target "width" needs osc.spread`);
+    if (m.target === "pitch" && osc.wave === "noise") out.push(`mod[${i}]: noise has no pitch to modulate`);
+    if (m.depth === 0) out.push(`mod[${i}]: depth 0 does nothing`);
+  }
+  if (p.amp.s === 0 && p.amp.d > 5) out.push("amp: no sustain and a decay over 5 s; the note still ends with its length");
+  return out;
+}
+
+/** The same for a kit. */
+export function kitWarnings(k: Kit): string[] {
+  const out: string[] = [];
+  if (k.kick.f0 < k.kick.f1) out.push("kick: f0 below f1, the pitch sweeps up");
+  if (k.toms && k.toms.low > k.toms.high) out.push("toms: low is above high");
+  if (k.hat && k.hat.hp > k.hat.tone * 1.5) out.push("hat: hp is far above tone, little of the hat is left");
+  const lanes = new Set<string>();
+  for (const p of k.perc ?? []) {
+    if (lanes.has(p.lane)) out.push(`perc: lane "${p.lane}" is taken twice; the first wins`);
+    lanes.add(p.lane);
+    if (p.lane === "kick") out.push("perc: lane \"kick\" replaces the kick, and its sub tail and rumble with it");
+  }
+  return out;
+}
 
 export function validateCorpus(input: unknown): ValidationResult {
   const parsed = StyleCorpus.safeParse(input);
@@ -46,6 +80,21 @@ export function validateCorpus(input: unknown): ValidationResult {
     if (ids.has(key)) errors.push(`${kind}: duplicate id "${id}"`);
     ids.add(key);
   };
+
+  const patches = new Set((c.patches ?? []).map((p) => p.id));
+  const patched = new Set<string>();
+  (c.patches ?? []).forEach((p, i) => {
+    uniq("patch", p.id);
+    for (const w of patchWarnings(p)) warnings.push(`patches[${i}] "${p.id}": ${w}`);
+  });
+  const checkPatch = (where: string, inst: { role: Role; patch?: string | undefined }) => {
+    if (inst.patch === undefined) return;
+    patched.add(inst.patch);
+    if (!patches.has(inst.patch)) errors.push(`${where}: unknown patch "${inst.patch}"`);
+    else if (inst.role === "drums") warnings.push(`${where}: drums play the kit; patch "${inst.patch}" is ignored`);
+  };
+  c.instruments.forEach((inst, i) => checkPatch(`instruments[${i}]`, inst));
+  if (c.kit) for (const w of kitWarnings(c.kit)) warnings.push(`kit: ${w}`);
 
   c.progressions.forEach((p, i) => {
     uniq("progression", p.id);
@@ -116,6 +165,7 @@ export function validateCorpus(input: unknown): ValidationResult {
     const overridden = new Set<Role>();
     (f.instruments ?? []).forEach((inst, k) => {
       if (overridden.has(inst.role)) errors.push(`forms[${i}].instruments[${k}]: duplicate role "${inst.role}"`);
+      checkPatch(`forms[${i}].instruments[${k}]`, inst);
       overridden.add(inst.role);
       formRoles.add(inst.role);
     });
@@ -137,6 +187,9 @@ export function validateCorpus(input: unknown): ValidationResult {
   }
   for (const r of roles.keys()) {
     if (!used.has(r)) warnings.push(`instrument for role "${r}" is never used by any form`);
+  }
+  for (const id of patches) {
+    if (!patched.has(id)) warnings.push(`patch "${id}" is not used by any instrument`);
   }
 
   return errors.length ? { ok: false, errors, warnings } : { ok: true, corpus: c, warnings };

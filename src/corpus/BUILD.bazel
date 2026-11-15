@@ -4,6 +4,7 @@ ts_lib(
     name = "corpus",
     srcs = [
         "constants.ts",
+        "patch.ts",
         "schema.ts",
         "sound.ts",
         "validate.ts",

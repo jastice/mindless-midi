@@ -11,6 +11,8 @@ ts_lib(
         "dsp.ts",
         "leveler.ts",
         "measure.ts",
+        "patches/gm.ts",
+        "patches/kits.ts",
         "protocol.ts",
         "sampler.ts",
         "score.ts",

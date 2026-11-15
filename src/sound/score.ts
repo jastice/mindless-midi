@@ -10,14 +10,27 @@ export interface ScoreOptions {
   legato?: boolean;
   /** Carry each note's gesture and its curves (see engine/gestures.ts), in seconds. */
   gestures?: boolean;
+  /**
+   * The patch per channel so far, kept by the caller like `programs`. When given, a note on a
+   * channel whose instrument names a patch carries that name and its place on the track's beat clock.
+   */
+  patches?: Map<number, string>;
 }
 
 /** `programs` is the program per channel so far; the bar's own program changes are applied to it. */
 export function barScore(bar: Bar, programs: Map<number, number>, opts: ScoreOptions = {}): ScoreNote[] {
   for (const c of bar.controls) {
-    if (c.kind === "reset") programs.clear();
-    else if (c.kind === "program") programs.set(c.ch, c.value);
+    if (c.kind === "reset") {
+      programs.clear();
+      opts.patches?.clear();
+    } else if (c.kind === "program") {
+      programs.set(c.ch, c.value);
+      if (c.patch !== undefined) opts.patches?.set(c.ch, c.patch);
+      else opts.patches?.delete(c.ch);
+    }
   }
+  // Beats from the start of the track to this bar: a patch's modulators count from there.
+  const barPos = bar.info.barInPiece * bar.beats;
   const spb = 60 / bar.bpm;
   return bar.notes.map((n) => {
     const note: ScoreNote = {
@@ -29,6 +42,12 @@ export function barScore(bar: Bar, programs: Map<number, number>, opts: ScoreOpt
       role: n.role,
       program: programs.get(n.ch) ?? 0,
     };
+    const patch = opts.patches?.get(n.ch);
+    if (patch !== undefined) {
+      note.patch = patch;
+      note.beat = spb;
+      note.pos = barPos + n.beat;
+    }
     if (opts.legato && (n.role === "lead" || n.role === "counter" || n.role === "bass")) note.legato = true;
     if (opts.gestures && n.gesture) {
       note.gesture = n.gesture;

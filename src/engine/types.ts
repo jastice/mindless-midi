@@ -45,7 +45,8 @@ export interface NoteCurve {
 }
 
 export type ControlEvent =
-  | { beat: number; kind: "program"; ch: number; value: number }
+  /** `patch` names the style's patch the channel's instrument plays, for engines that have patches (see corpus/patch.ts). */
+  | { beat: number; kind: "program"; ch: number; value: number; patch?: string }
   | { beat: number; kind: "cc"; ch: number; cc: number; value: number }
   /** Pitch bend, 14 bits: 8192 is no bend, 0 and 16383 the full range down and up. */
   | { beat: number; kind: "bend"; ch: number; value: number }

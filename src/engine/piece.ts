@@ -538,7 +538,7 @@ export class Piece {
     ];
     for (const inst of this.instruments.values()) {
       const ch = CHANNELS[inst.role];
-      if (inst.role !== "drums") out.push({ beat: 0, kind: "program", ch, value: inst.program });
+      if (inst.role !== "drums") out.push({ beat: 0, kind: "program", ch, value: inst.program, ...(inst.patch !== undefined && { patch: inst.patch }) });
       const calibrated = this.overridden.has(inst.role)
         ? this.style.formMixers?.[this.formId]?.[inst.role]
         : this.style.mixer?.[inst.role];
