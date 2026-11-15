@@ -280,6 +280,45 @@ by ear is the main unknown of this step. Start with six patches written by
 hand for minimal techno (kick, rumble, hat, stab, bass, pad) before asking a
 model for any.
 
+### Built (2026-11-15)
+
+Written by Fable. `bazel test //...` passes (17 targets). Nobody has listened
+to it yet: the six sounds were tuned by measurement.
+
+| What | Where |
+| --- | --- |
+| `Patch` and `Kit` schemas, with the descriptions a model writes from | `src/corpus/patch.ts` |
+| `patches`, `synthKit` and `instrument.patch` in the corpus; their validation | `src/corpus/schema.ts`, `validate.ts` |
+| The GM families and built-in kits as data | `src/sound/patches/gm.ts`, `kits.ts` |
+| The voice: modulators, band and high-pass, FM, drive, stereo spread, glide, accent | `sub()` in `src/sound/synth.ts` |
+| Drum models: kick sub tail, rumble, noise hats, clap, ride, tuned percussion | `drum()` in `src/sound/synth.ts` |
+| The six sounds, also copied into `styles/minimal_techno/corpus.json` | `src/sound/patches/minimal_techno.ts` |
+| Tests | `src/sound/baseline.test.ts`, `patch.test.ts`, `patch_library.test.ts`, `src/corpus/validate.test.ts` |
+
+How a patch reaches a voice: the piece's program change carries the
+instrument's patch name; `barScore` puts `patch`, `beat` (seconds per beat)
+and `pos` (beats from the start of the track) on each note of that channel;
+the `Player` sends the style's `SoundSet` with every bar; the synth looks the
+name up. A modulator's phase is `pos` plus the time into the note, so it runs
+on across notes and follows a drifting tempo.
+
+**The other apps are unchanged.** `baseline.test.ts` hashes the samples of all
+128 programs and every built-in kit; the hashes were taken before the change.
+
+Decisions and gaps:
+
+- The corpus field is `synthKit`; `kit` on the bundle is the sampled kit.
+  Under the Samples engine, notes with a patch are played by the synth and
+  the drums stay sampled.
+- Modulator targets are `cutoff`, `pitch`, `pw`, `amp`, `pan` and `width`
+  (stereo spread), each with one meaning; `patches` is a list with ids, not a
+  map, to suit structured output.
+- With `glide`, a slide starts from the previous note's pitch; the envelopes
+  still retrigger (no tied 303 slide). An accent adds filter depth and
+  resonance; it does not shorten the decay.
+- A swell on a patched note is cut 2.5 s after the note ends (`renderShaped`).
+- The patch schema has not been through the generator's structured output.
+
 ## Step 3: parts and the arrangement grid (L)
 
 Model: Fable for the arranger and worker changes; Sonnet for the tests once the grid's rules are fixed.
