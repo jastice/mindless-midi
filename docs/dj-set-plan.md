@@ -4,8 +4,9 @@ Built so far: all of step 1, and the first of step 6's conductor rules (legs
 with a target tempo, energy waves through `lift`). Step 2's engine half is
 built too (patches, the synth kit, six sounds for minimal techno), and so is
 step 3 (parts, the arrangement grid, pattern evolution, fifteen parts and
-four more sounds for minimal techno, a light per part on the page), but nobody
-has listened to either yet. This was first written against `main` at
+four more sounds for minimal techno, a light per part on the page), and so is
+step 4 (moves: sweeps, drift, builds with a roll, riser and impact, stutters
+and send throws), but nobody has listened to any of the three yet. This was first written against `main` at
 `b4dabe6`; where it says "new", check first whether later work already has it.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
@@ -534,6 +535,130 @@ filter half closed.
 
 Up to here everything runs through the existing `Player`: one stream of bars,
 with moves riding on the bar.
+
+### Built (2026-11-15)
+
+Written by Opus. `bazel test //...` passes (21 targets). Nobody has listened
+to it: the riser, the impact, the cuts and the build were tuned by
+measurement only.
+
+| What | Where |
+| --- | --- |
+| `Move`, `bar.moves`, `info.build`, `OPEN_LOW` / `OPEN_HIGH` | `src/engine/types.ts` |
+| `moves` rates and `roll` on a part in the corpus; their validation | `src/corpus/schema.ts`, `validate.ts` |
+| Builds in the grid (`GridBuilds`, `grid.build`) | `src/engine/grid.ts` |
+| `MovePlan` (sweeps, drift, builds, stutters, throws), `moveValue` | `src/engine/moves.ts`, wired in `piece.ts` |
+| The roll (`writeRoll`) | `src/engine/parts.ts` |
+| `MoveRunner` (cuts, lows, gain, stutter, riser), `impact`, `stemMoves` | `src/sound/moves.ts` |
+| Moves through the worker; the `moves` field of a bar message | `src/sound/worker.ts`, `protocol.ts` |
+| Send throws (`Bus.throws`, `clearThrows`) | `src/sound/bus.ts`, called from `src/app/player.ts` |
+| A roll part and rates for minimal techno | `styles/minimal_techno/corpus.json` |
+| "Build, 4 bars (2 to go)" and "Drop" beside the section | `src/claudia/app.ts` |
+| Tests | `src/engine/moves.test.ts`, `src/sound/moves.test.ts`, additions to `grid.test.ts`, `worker.test.ts`, `validate.test.ts` |
+
+**How moves travel.** The piece plans them once (`MovePlan`, from the grid and
+the style's `moves` rates, on a stream `moves` of its own) and puts each bar's
+slice on `bar.moves`. `Player` hands the send throws to the bus (`AudioParam`
+ramps at the bar's time) and sends the rest to the worker as `moves` on the
+bar message (`stemMoves`: the bar's length in beats and the list). A bar with
+no moves sends nothing, and the worker skips every line of the new code: the
+runner, the fx windows and the patched sound are made only when a bar has
+moves.
+
+**Seek safety.** A move over several bars is cut into one per bar, each with
+its own `from`, `to` and `span` (bar k of n), all computed from the plan and
+the bar's index, so a bar reached by a seek has the moves playing to it gives
+(tested through `SetConductor`). The worker keeps a filter's state only while
+consecutive bars move the same target on the same stem, so a sweep is smooth
+across barlines; a target not moved this bar loses its state, a seek clears
+everything, and a filter with no state fades in from the dry sound over 4 ms.
+Rendered alone, a sweep's bar matches the bar rendered after its predecessors
+to 1e-5 after its first 50 ms. A cut at its open end is the dry signal
+exactly (it fades to dry over the top or bottom octave), so a sweep that ends
+open hands over to no filter without a step. The bus restores a thrown send
+the bar after, or on a seek (`Player.cut` calls `clearThrows`).
+
+**Where the fx go.** Risers and impacts are synthesised in the worker into
+windows of their own and added to a role's stem after levelling and the
+weighted mix, so no leveller flattens a riser and the kick never ducks it.
+The riser joins the pad's chain (wide, chorus, the most reverb); the impact
+the drums' (no high-pass, little reverb). No new graph nodes and no new
+worklet outputs: the alternative, a seventh "fx" output and chain, would have
+touched the bus and worklet the other apps use.
+
+**How the build changes the grid.** For a style with `moves`, every section
+the grid would mark as a drop draws a build (at the `build` rate, 4 or 8 bars
+at the `long` share) inside the section before it, outside the mix-in and
+mix-out. On its first bar the kick leaves and the roll part enters (free, like
+a turn); nothing else moves by choice until the drop, which brings the kick
+back and sends the roll out with the rest of the turn. The roll part is never
+otherwise eligible, never rests and is never the "never silent" fallback.
+The grid test now reads "absent only in a breakdown or a build".
+
+Decisions made where the plan was silent:
+
+- `Move` gains `at` (start beat, default 0; before it the target holds `from`,
+  after it `to`) and `span`. Units: gain a factor, cuts Hz, `lows` dB of a low
+  shelf at 150 Hz, sends 0..1 absolute, `patch` the parameter's own unit
+  (cutoff, q, env, drive), stutter `from` the slice in beats and `to` the last
+  repeat's pitch in semitones (`param: "gate"` halves each repeat), riser and
+  impact Hz. Targets in Hz move in octaves. `deck` is in the type and read by
+  nothing.
+- Cuts are 24 dB an octave (two Butterworth SVF stages): a 12 dB build
+  high-pass took only 6 dB out below 150 Hz by the build's last bar.
+- A part's moves run after its levelling (in the weighted mix; in the plain
+  mix before it), a role's and everything's on the role stems, then the fx.
+  Order on a stem: stutter, lows, cuts, gain.
+- Sweeps start on a part as it enters (from silence, so the filter has
+  nothing to cut yet) and only where it then plays through 8 or 16 bars; drums
+  and lines open a high-cut from 300 Hz, pads and comps half the time a
+  low-cut from 1.5 kHz. Drift is an arc away and back in a section (0.6 to 1.3
+  octaves, mostly up), on the acid line first, never on a part swept in that
+  section. Neither touches the kick, the bass or the roll.
+- A build is a master low-cut from open to 600 Hz (8 bars: 1 kHz) and a riser
+  from 200 Hz to 6 kHz across it, the roll doubling every quarter of it
+  (quarters, eighths, sixteenths, thirty-seconds, rising in level); an impact
+  on the drop's downbeat falling from 90 to 38 Hz. The bass stays in a build.
+- Stutters are on everything, the last beat or half beat, a half or quarter of
+  it repeated; a quarter of them pitched down an octave, a third gated. Throws
+  are a delay throw on the comp or arp for the last beat before a break.
+- The snare lane moved from the clap part to the roll (only the `lift_roll`
+  fill used it), so minimal techno's clap no longer plays that fill's snare.
+  Minimal techno was pinned nowhere, so no hash changed.
+- Minimal techno's rates: sweep 0.4, drift 0.35, build 1, long 0.5, stutter
+  0.05, throw 0.25. Over 24 tracks: 33 sweeps, 29 drifts, 18 stutters at 426
+  phrase ends, 9 throws; 90 builds over 72 tracks at three lifts.
+
+Measured (in the tests' output, 24 kHz):
+
+- Riser over 4 bars: from -61 to -31 dB a beat (a stem at full level is
+  -26 dB), the share above 1.5 kHz from 1% to 96%, silent at its last sample.
+- Impact: 82% of its first 300 ms below 120 Hz, peak -12.8 dBFS, then a tail
+  at -50 dB from 0.8 to 1.8 s with 58% above 300 Hz; silent after 2.6 s.
+- A 4-bar build through the worker: below 150 Hz, against the same bars
+  without the high-pass, -0.4, -0.5, -1.1, -12.8 dB per bar; the riser in the
+  pad's stem -56, -44, -38, -30 dB; on the drop the drums' first 300 ms at
+  -17 dB (82% below 120 Hz) against -32 dB on the build's last downbeat.
+- A high-cut opening from 300 Hz over 4 bars on noise: the share above 2 kHz
+  per beat goes from 0 to 0.75, never falling.
+- The whole-track mix and per-role levels of the step 3 test still hold
+  (the pad's loudest bar is now measured outside builds, where the riser is).
+
+Known gaps:
+
+- Nobody has listened. The riser's level, the impact's and the high-pass's
+  shape are guesses checked by numbers.
+- Send throws run on the `AudioParam`s and are not tested (`Player` and `Bus`
+  have no tests in Node); the restore is by setTarget, so a throw's own echoes
+  ring on, as they should.
+- The FM bus path ignores moves; Claudia does not use it.
+- The worker's levellers remember earlier bars, so the worker test cannot
+  compare two runs by hash; determinism is asserted on the bars and the
+  runner instead.
+- The corpus cannot write moves as lanes yet (the plan's "optionally by the
+  corpus"); everything comes from rules.
+- The `moves` schema has not been through the generator's structured output.
+- Not checked in a browser.
 
 ## Step 5: two decks (L)
 
