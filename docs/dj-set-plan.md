@@ -6,8 +6,8 @@ built too (patches, the synth kit, six sounds for minimal techno), and so is
 step 3 (parts, the arrangement grid, pattern evolution, fifteen parts and
 four more sounds for minimal techno, a light per part on the page), and so is
 step 4 (moves: sweeps, drift, builds with a roll, riser and impact, stutters
-and send throws), but nobody has listened to any of the three yet. This was first written against `main` at
-`b4dabe6`; where it says "new", check first whether later work already has it.
+and send throws). Steps 2 to 4 were first heard on 2026-11-15 (see "Heard"
+under step 3). This was first written against `main` at `b4dabe6`; where it says "new", check first whether later work already has it.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
 
@@ -497,6 +497,32 @@ Decisions and gaps:
   part, and a section with drums and no bass counts as a breakdown. Fine for
   minimal techno's forms; other genres may want this said in the corpus.
 - The parts schema has not been through the generator's structured output.
+
+### Heard (2026-11-15), and the limits that followed
+
+Steps 2 to 4 were listened to in the browser, Synth engine. Verdict: groovy,
+more variety of sound, and the build into a drop is fat (for one,
+`?seed=jaunty-coda-capriccio&at=43.57`). The complaint: too many conflicting
+noises where many parts were in (`at=42.115` had nine parts, twelve just after
+the drop, several of them noise or unpitched).
+
+What changed (`56b41ca`, `712d995`), in `src/engine/grid.ts` and the schema:
+
+- A part may name a `group`; `arrangement.groups` says how many parts of a
+  group play at once, and `arrangement.most` how many parts in all. They gate
+  entries: at a drop, in the mix-in and for a change by choice. A style with
+  neither runs none of it.
+- At a drop with limits, what was playing has first claim on the room, then
+  the coolest parts, so the hat is not what gets left out.
+- Minimal techno: `most` 10; `line` 3 (acid, bleep, stab, chord); `perc` 2
+  (blip, rim, clap); `noise` 2 (open hat, ride, shaker, air). A first try at
+  8 / 2 / 2 / 1 was judged too thin. Parts in on average at neutral lift:
+  5.3, against 6.0 with no limits.
+- The same seed gives a different arrangement than before the limits.
+
+Judged good by ear after that. Not touched, and the next suspects if a mix is
+still harsh: the blip (a fixed 440 Hz tone with inharmonic FM whatever the
+key) and the acid line's resonance.
 
 ## Step 4: moves inside a track (M)
 
