@@ -604,6 +604,24 @@ test("two decks: between two styles, each deck plays its own style and the lower
       for (const d of s.decks) assert.equal(d.bar.deck, d.deck);
     }
   }
+  // Links for the page, four bars before the first transition of each type in each direction (the page's own options).
+  const links = new Map<string, string>();
+  for (let k = 0; k < 12 && links.size < 8; k++) {
+    const c = new SetConductor(both, `decks-${k}`);
+    let before: Slice | undefined;
+    for (let i = 0; i < 1500; i++) {
+      const s = c.nextSlice();
+      const t = s.transition;
+      if (t && t.bar === 0 && before && !before.transition) {
+        const from = before.decks[0]!.bar.info;
+        const name = `${t.type}, ${from.styleId.split("_")[0]} into ${c.trackPiece(t.to).style.id.split("_")[0]}`;
+        if (!links.has(name)) links.set(name, `?seed=decks-${k}&at=${from.pieceIndex + 1}.${from.barInPiece + 1 - 4}`);
+      }
+      before = s;
+    }
+  }
+  console.log([...links].sort().map(([name, link]) => `${name}: ${link}`).join("\n"));
+  assert.equal(links.size, 8);
   console.log(`between the two styles: ${across} bars with both, ${[...types].map(([t, n]) => `${t} ${n}`).join(", ")}`);
   assert.ok(across > 200 && types.size >= 3);
 });

@@ -221,6 +221,8 @@ export class Player {
   private needsSetup = false;
   /** The style each bus strip is set for (one strip, or one per deck in a set). */
   private readonly busStyle: (string | null)[] = [null, null];
+  /** In a set: the track each deck played last. A track cut or filtered into starts past its first bar. */
+  private readonly deckPiece: (number | null)[] = [null, null];
   /** Bus loudness AGC (the stem engines' counterpart of the FM path's Leveler). */
   private agcEnv = TARGET_RMS * TARGET_RMS;
   private agcGain = 1;
@@ -474,6 +476,7 @@ export class Player {
     this.token++;
     this.needsSetup = true;
     this.busStyle.fill(null);
+    this.deckPiece.fill(null);
     if (boundary) {
       this.stopEngine(previous, boundary.frame);
       for (const t of this.timeline) if (t.frame >= boundary.frame) this.dispatch(t, t.plans);
@@ -872,6 +875,7 @@ export class Player {
           this.pending = null;
           this.needsSetup = true;
           this.busStyle.fill(null);
+          this.deckPiece.fill(null);
           this.emit();
         }
         const plans = this.engineName === "samples" ? await this.plan(entry) : undefined;
@@ -1144,6 +1148,14 @@ export class Player {
    * In a set: the bar's deck, and in a transition the other deck's bar beside it, set up like the bar's own.
    * The other strip's throws are restored when it has no bar, so a throw on a track's last bar does not stick.
    */
+  /** Whether `bar` is the first its deck plays of its track (bars that name no deck: the track's first bar). */
+  private newTrack(bar: Bar): boolean {
+    if (bar.deck === undefined) return bar.info.barInPiece === 0;
+    const fresh = bar.info.barInPiece === 0 || this.deckPiece[bar.deck] !== bar.info.pieceIndex;
+    this.deckPiece[bar.deck] = bar.info.pieceIndex;
+    return fresh;
+  }
+
   private setDecks(entry: Scheduled, plans: PlannedNote[] | undefined, at: number): { deck: 0 | 1; with?: DeckBar } {
     const own = entry.bar.deck!;
     const bar = entry.bar.with;
@@ -1159,7 +1171,7 @@ export class Player {
     const moves = stemMoves(bar);
     const other: DeckBar = {
       styleId: info.styleId,
-      newPiece: info.barInPiece === 0,
+      newPiece: this.newTrack(bar),
       levels: Object.fromEntries((style?.corpus.instruments ?? []).map((i) => [i.role, i.volume])) as Partial<Record<Role, number>>,
       ...(parts && { partLevels: parts }),
       notes: entry.withNotes.map((n) => ({ ...n, t: n.t + at })),
@@ -1206,7 +1218,7 @@ export class Player {
       start: entry.frame,
       frames: entry.frames,
       styleId: info.styleId,
-      newPiece: info.barInPiece === 0,
+      newPiece: this.newTrack(bar),
       levels,
       ...(parts && { partLevels: parts }),
       notes,

@@ -43,6 +43,14 @@ const port = {
 const send = (data: ToWorker) => scope.onmessage!({ data });
 send({ type: "init", sampleRate: SR, port } as unknown as ToWorker);
 
+/** The track each deck played last: as in the player, a deck's first bar of a track resets its levellers, whichever bar it is. */
+const deckPiece: (number | null)[] = [null, null];
+function fresh(bar: Bar): boolean {
+  const is = bar.info.barInPiece === 0 || deckPiece[bar.deck!] !== bar.info.pieceIndex;
+  deckPiece[bar.deck!] = bar.info.pieceIndex;
+  return is;
+}
+
 /** One deck's bar as the player sends it. */
 function deckBar(bar: Bar, notes: ScoreNote[]): DeckBar {
   const style = byId.get(bar.info.styleId)!;
@@ -51,7 +59,7 @@ function deckBar(bar: Bar, notes: ScoreNote[]): DeckBar {
   const moves = stemMoves(bar);
   return {
     styleId: style.id,
-    newPiece: bar.info.barInPiece === 0,
+    newPiece: fresh(bar),
     levels: Object.fromEntries(style.corpus.instruments.map((i) => [i.role, i.volume])) as Partial<Record<Role, number>>,
     ...(parts && { partLevels: parts }),
     notes,
@@ -74,6 +82,7 @@ interface Heard {
 /** Slices `from` to `to` of a set through the worker. Every slice from the first is scored, so each deck's sounds are set up. */
 async function play(slices: Slice[], from: number, to: number): Promise<Heard> {
   posted = [];
+  deckPiece.fill(null);
   const programs = [new Map<number, number>(), new Map<number, number>()];
   const patches = [new Map<number | string, string>(), new Map<number | string, string>()];
   const score = (bar: Bar, start: number) => barScore(bar, programs[bar.deck!]!, { legato: true, gestures: true, patches: patches[bar.deck!]! }).map((n) => ({ ...n, t: n.t + start / SR }));
