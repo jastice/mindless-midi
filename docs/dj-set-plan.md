@@ -7,7 +7,10 @@ step 3 (parts, the arrangement grid, pattern evolution, fifteen parts and
 four more sounds for minimal techno, a light per part on the page), and so is
 step 4 (moves: sweeps, drift, builds with a roll, riser and impact, stutters
 and send throws). Steps 2 to 4 were first heard on 2026-11-15 (see "Heard"
-under step 3). This was first written against `main` at `b4dabe6`; where it says "new", check first whether later work already has it.
+under step 3). Step 5 is built (2026-11-16): tracks overlap on two decks in
+four kinds of transition, with one low end and the two grids interleaved; it
+has been checked in a browser and by measurement, and nobody has listened to
+it yet (see "Built" under step 5). This was first written against `main` at `b4dabe6`; where it says "new", check first whether later work already has it.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
 
@@ -753,6 +756,152 @@ the scheduler new:
 
 No engine switching mid-set: the engine is chosen before play. That removes
 the most intricate part of `Player`.
+
+### Built (2026-11-16)
+
+Written by Opus, from a first draft of the set conductor that Fable left
+unfinished. `bazel test //...` passes (23 targets). Nobody has listened to it:
+the transitions were tuned by measurement and checked in a browser by their
+levels per deck, not by ear.
+
+| What | Where |
+| --- | --- |
+| `Slice`, `Transition`, `nextSlice`, `interleave`, `overlapMoves`, `breakdownParts`, `trackPiece` | `src/engine/set.ts` |
+| `TransitionInfo`, `bar.deck`, `bar.with`, `bar.transition`; a deck-only `Move` scope covers the deck | `src/engine/types.ts`, `moves.ts` |
+| `extra` parts on `renderBar` (a breakdown's pad) | `src/engine/piece.ts` |
+| `StemDeck` (all the worker's old module state), `SetMix` (two decks, tails) | `src/sound/worker.ts` |
+| `DeckBar`, `deck` and `with` on a bar message | `src/sound/protocol.ts` |
+| `DeckStrip` per deck and one master in `Bus` | `src/sound/bus.ts` |
+| The `decks` option: twice the worklet outputs, two strips, `bar.with` sent beside the bar | `src/app/player.ts` |
+| Both decks and the transition on the page | `src/claudia/app.ts`, `index.html`, `styles.css` |
+| Tests | `src/engine/set.test.ts`, `src/sound/decks.test.ts` (new), changes to `grid.test.ts`, `moves.test.ts`, `berlin_techno.test.ts` |
+
+**Transitions.** Tracks alternate decks (track `i` on deck `i % 2`). How a
+track hands over is drawn once per pair, on a stream of its own
+(`seed/mix/i`), from the step in `lift`: under 0.08 mostly a blend; going up
+mostly a filter, going down mostly a breakdown; 0.22 or more mostly a cut.
+Successive lifts differ by 0.12 at the median (the energy wave moves a lot in
+a track), so those thresholds sit near the 30th and 93rd percentiles. Over 6
+sets of 5000 bars: 101 blends, 61 breakdowns, 55 filters, 28 cuts.
+
+| Type | Overlap | Swap | What happens |
+| --- | --- | --- | --- |
+| Blend | 16 bars (both mixes) | bar 8 | The incoming plays its mix-in, lows cut below 180 Hz and faded in from 0.4 over 4 bars; the low end changes hands over the last half beat before the swap; then the outgoing's cut rises to 450 Hz and it fades to 0.3 over its last 4 bars |
+| Breakdown | 16 bars | bar 8 | A blend whose second phrase has no kick and no bass on either deck; up to two pitched parts of the incoming (a pad first) play over it; the incoming's low end lands after it on an impact |
+| Filter | 8 bars | bar 0 | The incoming has the low end from the start; the outgoing is high-passed from 180 Hz to 4 kHz and fades over its last 2 bars; a riser on the incoming lands on an impact |
+| Cut | none | | The outgoing stops a phrase short of its mix-out with a delay throw on its last beat; the incoming starts past its mix-in, on an impact |
+
+Styles without parts (or tracks too short to mix) cut at the track's end, as
+before, and their bars name no deck.
+
+**Interleaving.** In an overlap the dominant deck (the one with the low end)
+plays what its grid says; the other plays drums only, so there are never two
+basses, pads or lines. Of its drums its kick always plays (its lows cut), and
+the rest only while the sum of both decks stays within `most` and each group's
+limit, the lower of the two styles' where both name one. At most 7 parts
+across both decks were seen in 6 sets. The pitched parts change hands with the
+low end at the swap, and each grid keeps adding or taking out one part a slot,
+so a blend hands over part by part.
+
+**Tempo.** One per slice. Across an overlap it moves from the outgoing
+track's to the incoming's in equal steps a bar (rounded to 0.01 bpm), and both
+decks play at it; before a cut it ramps over the 8 bars before the cut. Tracks
+are within 3% of each other, so a step is at most about 0.2% a bar (a filter's
+8 bars: 0.33%). Outside transitions a track plays at its own tempo.
+
+**Position.** `track.bar` of the dominant deck, so a link in the second half
+of a blend names the incoming track. Seeking to a bar inside an overlap lands
+in the transition with both decks playing; `skip` in a transition goes on with
+the incoming alone. The page's next-track control seeks to the next track's
+first bar, which is inside its overlap with this one: it jumps to this track's
+mix-out and mixes from there, on the phrase.
+
+**The worker.** Everything the worker kept at module level is one `StemDeck`.
+A bar message without `deck` (Mindless Midi, Mighty Midi, any non-set bar) is
+rendered by one solo deck exactly as before. A message with `deck` goes to a
+`SetMix` of two decks: each renders its bar into its own stems, posted as
+outputs `deck * 7 + role`; `with` carries the other deck's bar. A deck that
+stops rings out over one more bar, with its transition's filters held and its
+level falling to nothing over the first beat, and is then dropped.
+
+**The bus and the player.** `Bus` is a `DeckStrip` (role chains, sends,
+reverb, delay, set from one style) per deck and one master (tape chain,
+compressor, limiter, trim, meter). Without the `decks` option it builds one
+strip and every method is deck 0's. With it (only Claudia passes it) the
+worklet has 14 outputs and each strip is set from its own track's style at
+its first bar, so minimal techno's preset and Berlin techno's (the default
+one) sound side by side in a transition between them. Throws go to their
+deck's strip, and a strip with no bar is restored, so a cut's echo throw
+does not stick. The other deck's notes are scored from its own programs and
+patches, and under Samples planned from its own style's kit.
+
+**The other apps are unchanged.** The worker test's runs (all shipped styles,
+plain and weighted, synth and samples, and the minimal techno runs) print a
+bit-exact hash with `PRINT_EXACT`; all 56 were the same before and after the
+`StemDeck` change. The bus split builds the same nodes in the same graph for
+one deck; that was checked in a browser only (no Web Audio in the tests).
+
+Decisions and deviations from the plan above:
+
+- **No `SetPlayer`, no extraction from `Player`.** A slice is one bar of time
+  at one tempo, which is already `Player`'s unit, so the conductor's
+  `nextBar` returns the dominant deck's bar with the other's on `with`, and
+  `Player` sends both. Everything new in `Player` runs only for a bar that
+  names a deck. Rewriting the scheduler would have put the other two apps at
+  risk for no audible gain. Engine switching mid-set still works, as before.
+- **No separate low-end stage.** The low end is the conductor's moves on each
+  deck (a 24 dB/octave low cut at 180 Hz on the deck without it, opened over
+  half a beat at the swap), so it is pure data, seek-safe and tested in the
+  engine. The kick's ducking needs nothing shared either: the deck without
+  the low end plays drums only, which the weighted mix never ducks.
+- Blends are 16 bars, not 16 or 32: the mix-in and mix-out are 16.
+- The incoming track's samples are not awaited before its mix-in; a bar that
+  is not ready leaves a gap, as before.
+
+Measured:
+
+- Through the worker (`decks.test.ts`, 24 kHz), the first transition of each
+  type in sets over both styles: the deck without the low end adds between
+  -0.1 and +0.06 dB below 150 Hz to the dominant deck's in any bar of a blend
+  or a filter; across the blend's swap the low end moves at most 1.5 dB from
+  beat to beat (0.6 dB in the bars before), the filter's 0.8; the stems' peak
+  in a transition is at most 0.3 (the impact where it lands; 0.26 before it).
+  A breakdown's second phrase is 20 to 40 dB down below 150 Hz, on purpose.
+- In the browser (Chromium, 48 kHz), output level per transition: a blend
+  about -25 dB throughout; a filter -25; a cut -22 to -26; a breakdown -25,
+  then -35 to -47 dB over its second phrase (a stab and a hat), then back.
+- Render time per bar through the worker in Node, over 700 bars of one set:
+  at 48 kHz, 78 ms with one deck (95th percentile 272, worst 520) and 80 ms
+  with two (95th 96, worst 99); at 24 kHz 39 and 41. A bar is about 1.85 s.
+  The second deck costs little because it plays drums only and both ends are
+  thin; the worst bars were all single-deck bars.
+- Memory: the Node process peaked at 374 MB at 48 kHz (264 at 24 kHz), with
+  both decks' windows (about 7 MB a part at 48 kHz). The page's main thread
+  heap stayed at 11 to 12 MB through a blend; the worker's own memory cannot
+  be read from the page. Not measured on a phone.
+
+Known gaps:
+
+- Nobody has listened. The cut frequencies, the fades, the breakdown's level
+  and the swap's half beat are guesses checked by numbers.
+- A breakdown's pad comes in for its second phrase and may leave again where
+  the incoming grid has no pad after it lands.
+- Berlin techno still has the default bus preset and weight.
+- The delay time of a strip is set at its track's first bar and does not
+  follow a tempo ramp (at most 3% off by the end of an overlap).
+- `Player` and `Bus` still have no tests in Node; the bus split and the
+  player's two-deck path were checked in a browser only.
+- Step 7's page (timeline, the grid scrolling) is not started; the page shows
+  the two decks and the transition only.
+
+Example links, a few bars before each type (both styles, the default pool):
+
+- Blend, minimal into Berlin: `?seed=decks-0&at=1.157`
+- Breakdown, Berlin into minimal: `?seed=decks-0&at=2.157`
+- Filter, minimal into Berlin: `?seed=decks-0&at=3.101`
+- Cut, minimal into Berlin: `?seed=decks-0&at=5.101`
+- Filter, Berlin into minimal: `?seed=decks-1&at=1.133`
+- Blend, Berlin into minimal: `?seed=decks-0&at=4.141`
 
 ## Step 6: travel (M, plus S per style)
 
