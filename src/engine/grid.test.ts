@@ -218,13 +218,17 @@ test("the grid is deterministic, and the same after a seek", () => {
   // And through the set conductor, notes and all, on both decks where tracks overlap.
   const slice = (s: Slice) => JSON.stringify(s.decks.map((d) => key(d.bar)));
   const run = Array.from({ length: 1200 }, ((c) => () => c.nextSlice())(new SetConductor([TECHNO], "seek-parts")));
-  for (const [t, bar] of [[1, 0], [1, 9], [2, 61], [3, 7]] as const) {
+  let reached = 0;
+  for (const [t, bar] of [[1, 0], [1, 9], [2, 61], [3, 7], [1, 20], [2, 20], [3, 20], [4, 20]] as const) {
     const at = run.findIndex((s) => s.decks.some((d) => d.bar.info.pieceIndex === t && d.bar.info.barInPiece === bar));
-    assert.ok(at >= 0);
+    // (A track cut or filtered into starts past its first bars: those are only reached by a seek.)
+    if (at < 0) continue;
+    reached++;
     const c = new SetConductor([TECHNO], "seek-parts");
     c.seek(t, bar);
     for (let j = 0; j < 64; j++) assert.equal(slice(c.nextSlice()), slice(run[at + j]!), `track ${t} bar ${bar} + ${j}`);
   }
+  assert.ok(reached >= 6, `${reached} places reached`);
 });
 
 test("a set over minimal techno: every track mixes in and out by part, and the set's lift thins and fills the grid", () => {

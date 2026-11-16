@@ -4,7 +4,7 @@ import { test } from "node:test";
 import type { Role, StyleBundle } from "../corpus/schema.js";
 import { keysCompatible } from "../theory/theory.js";
 import type { PieceOptions } from "./piece.js";
-import { MAX_LIFT, MAX_TEMPO_STEP, MIX_BARS, PHRASE_BARS, SetConductor, type Slice, WARMUP_SECONDS, deckOf, mixBars, mixLeaveOut } from "./set.js";
+import { BLEND_BARS, MAX_LIFT, MAX_TEMPO_STEP, MIX_BARS, OVERLAP_ROOM, PHRASE_BARS, SetConductor, type Slice, WARMUP_SECONDS, arriving, deckOf, held, interleave, mixBars, mixLeaveOut } from "./set.js";
 import type { Bar, Move, TransitionType } from "./types.js";
 
 const { styles } = JSON.parse(readFileSync("styles/styles.json", "utf8")) as { styles: StyleBundle[] };
@@ -115,7 +115,7 @@ test("seeking to a track and bar gives the slices playing through gives, with bo
   for (const [track, bar] of places) {
     const at = run.findIndex((s) => has(s, track, bar));
     // (A track cut into starts past its mix-in: its first bars are only reached by a seek.)
-    if (at < 0) continue;
+    if (at < 0 || at + 120 > run.length) continue;
     const c = new SetConductor(TECHNO, "seek", SHORT);
     const landing = c.seek(track, bar);
     assert.deepEqual([landing.piece, landing.bar], [track, bar]);
@@ -311,8 +311,10 @@ test("two decks: tracks overlap in transitions of four types, on the phrase, at 
         assert.deepEqual([t.from, t.to], [out.bar.info.pieceIndex, inc.bar.info.pieceIndex]);
         assert.equal(t.to, t.from + 1);
         assert.notEqual(out.deck, inc.deck);
-        // The mix-out over the mix-in, ending with the outgoing track.
-        assert.equal(inc.bar.info.barInPiece, t.bar);
+        // The outgoing track's last bars over the incoming's first (a filter's: the second phrase of its mix-in).
+        assert.equal(inc.bar.info.barInPiece, (t.type === "filter" ? MIX_BARS - PHRASE_BARS : 0) + t.bar);
+        assert.equal(t.bars, t.type === "blend" ? BLEND_BARS : t.type === "filter" ? PHRASE_BARS : MIX_BARS);
+        assert.equal(inc.bar.info.barInPiece + t.bars - t.bar, t.type === "blend" ? BLEND_BARS : MIX_BARS, "the overlap ends where the incoming's body starts, or a blend's two phrases into it");
         assert.equal(out.bar.info.barInPiece, out.bar.info.pieceBars - t.bars + t.bar);
         assert.ok(keysCompatible(out.bar.info, inc.bar.info), `${out.bar.info.keyName} with ${inc.bar.info.keyName}`);
         // It starts and ends on a phrase, and the low end changes hands on one.
@@ -358,52 +360,108 @@ test("two decks: tracks overlap in transitions of four types, on the phrase, at 
   assert.ok(types.get("blend")! > types.get("cut")!, "mostly blends");
 });
 
-test("two decks: one low end, one set of pitched parts, and the styles' limits across both", () => {
-  const arrangement = TECHNO[0]!.corpus.arrangement!;
-  const part = new Map(TECHNO[0]!.corpus.parts!.map((p) => [p.id, p]));
+const BOTH = [byId("minimal_techno"), byId("berlin_techno")];
+const partOf = (styleId: string, id: string) => byId(styleId).corpus.parts!.find((p) => p.id === id)!;
+const kickPart = (styleId: string, id: string) => partOf(styleId, id).lanes?.includes("kick") === true;
+/** Notes of a deck's bar that are neither drums nor bass. */
+const pitched = (bar: Bar) => bar.notes.filter((n) => n.role !== "drums" && n.role !== "bass");
+
+test("two decks: both tracks are in flight in an overlap, with one low end, one deck's pads and the styles' limits across both", () => {
   let bothKicks = 0;
-  let most = 0;
   let noKick = 0;
-  const dropped = new Set<string>();
-  const heard = new Set<string>();
-  for (const [seed, run] of RUNS) {
-    const c = new SetConductor(TECHNO, `decks-${seed}`, SHORT);
+  let most = 0;
+  let overlaps = 0;
+  /** Parts per deck by bar of a long blend, summed: [outgoing, incoming, blends]. */
+  const blend = Array.from({ length: BLEND_BARS }, () => [0, 0, 0, 0, 0]);
+  const startOut: number[] = [];
+  const types = new Map<TransitionType, number>();
+  const runs: [string, StyleBundle[], Slice[]][] = [...RUNS].map(([seed, run]) => [seed, TECHNO, run]);
+  for (const seed of ["f1", "f2", "f3", "f4", "f5", "f6"]) runs.push([seed, BOTH, slices(new SetConductor(BOTH, `flight-${seed}`), 5000)]);
+  for (const [seed, , run] of runs) {
+    /** Per transition: the bars of its middle in which each deck sounded a pitched part. */
+    let middle = [0, 0];
+    let phrase = [0, 0];
+    /** Per deck, the slice until which its latest pitched note sounds (a pad's chord is struck once in many bars). */
+    const until = [0, 0];
     run.forEach((s, i) => {
-      // What each track's grid had, before the decks were interleaved.
-      const whole = c.nextSlice();
-      assert.equal(whole.index, i);
+      for (const d of s.decks) for (const n of pitched(d.bar)) until[d.deck] = Math.max(until[d.deck]!, i + (n.beat + n.dur) / 4);
+      const sounds = (d: Slice["decks"][0]) => (until[d.deck]! > i ? 1 : 0);
       if (s.decks.length < 2) return;
       const t = s.transition!;
+      const [out, inc] = s.decks as [Slice["decks"][0], Slice["decks"][0]];
       const dom = s.decks.find((d) => d.deck === s.dominant)!;
       const other = s.decks.find((d) => d.deck !== s.dominant)!;
       const where = `${seed} slice ${i} (${t.type} ${t.bar}/${t.bars})`;
-      // The other deck plays drums only: never two basses, two pads or two lines.
-      for (const n of other.bar.notes) assert.equal(n.role, "drums", where);
-      assert.ok(!(dom.bar.notes.some((n) => n.role === "bass") && other.bar.notes.some((n) => n.role === "bass")));
+      const styles = s.decks.map((d) => byId(d.bar.info.styleId).corpus);
+      const limits = styles.map((c) => c.arrangement!);
+      const defs = s.decks.flatMap((d) => d.bar.info.parts!.map((id) => ({ deck: d.deck, ...partOf(d.bar.info.styleId, id) })));
+      if (t.bar === 0) {
+        overlaps++;
+        types.set(t.type, (types.get(t.type) ?? 0) + 1);
+        middle = [0, 0];
+        phrase = [0, 0];
+        // The outgoing track comes into the overlap as a track, not as a beat.
+        startOut.push(out.bar.info.parts!.length);
+        assert.ok(out.bar.info.parts!.length >= 3, `${where}: the outgoing has ${out.bar.info.parts}`);
+        assert.ok(out.bar.info.parts!.some((id) => !["drums", "bass"].includes(partOf(out.bar.info.styleId, id).role)), `${where}: the outgoing has ${out.bar.info.parts}`);
+      }
+      // One low end: one bass, and never the other deck's.
+      assert.ok(!other.bar.notes.some((n) => n.role === "bass"), where);
+      assert.ok(!other.bar.info.parts!.some((id) => partOf(other.bar.info.styleId, id).role === "bass"), where);
       for (const d of s.decks) for (const n of d.bar.notes) assert.ok(d.bar.info.parts!.includes(n.part!), `${where}: ${n.part} plays`);
-      // The limits hold for the sum.
-      const ids = s.decks.flatMap((d) => d.bar.info.parts!);
-      assert.ok(ids.length <= arrangement.most!, `${where}: ${ids.length} parts`);
-      most = Math.max(most, ids.length);
-      for (const [g, limit] of Object.entries(arrangement.groups!)) assert.ok(ids.filter((id) => part.get(id)!.group === g).length <= limit, `${where}: group ${g}: ${ids}`);
+      // One deck's pads.
+      assert.ok(new Set(defs.filter((p) => p.role === "pad").map((p) => p.deck)).size <= 1, `${where}: pads on both decks`);
+      // The limits across both: each group's, and `most` with the overlap's room (the second kick apart).
+      const counted = defs.filter((p) => !(p.deck === other.deck && p.lanes?.includes("kick")));
+      const room = Math.min(...limits.map((l) => l.most!)) + OVERLAP_ROOM;
+      assert.ok(counted.length <= room, `${where}: ${counted.length} parts`);
+      most = Math.max(most, counted.length);
+      for (const g of new Set(limits.flatMap((l) => Object.keys(l.groups!)))) {
+        const limit = Math.min(...limits.map((l) => l.groups![g] ?? Infinity));
+        assert.ok(defs.filter((p) => p.group === g).length <= limit, `${where}: group ${g}: ${defs.map((p) => p.id)}`);
+      }
       // Two kicks: the other deck's has its lows cut, but for the half beat in which the low end changes hands.
       const kicks = s.decks.filter((d) => d.bar.notes.some(isKick));
       if (kicks.length === 2) {
         bothKicks++;
         const cut = deckMoves(s, other.deck, "lowCut")[0];
         assert.ok(cut && cut.from >= 150, `${where}: the other kick's lows`);
-        if (cut.to < 150) assert.ok((cut.at ?? 0) >= 3.5 && run[i + 1]!.dominant === other.deck, `${where}: opens only into the swap`);
+        if (cut.to < 150) assert.ok((cut.at ?? 0) >= 3.5 && (run[i + 1]?.dominant ?? other.deck) === other.deck, `${where}: opens only into the swap`);
         assert.equal(deckMoves(s, dom.deck, "lowCut").filter((m) => m.from >= 150 && (m.at ?? 0) === 0).length, 0, `${where}: the dominant kick's lows are open`);
       }
-      // A breakdown's second phrase has no kick and no bass at all.
-      if (t.type === "breakdown" && t.bar >= t.bars / 2) {
+      // Both tracks in flight: around the middle of a blend (the swap) and of a filter, each deck sounds a pitched part of its own.
+      const mid = t.type === "filter" ? t.bars / 2 : t.swap;
+      if (t.type !== "breakdown" && t.bar >= mid - 2 && t.bar < mid + 2) {
+        s.decks.forEach((d, k) => (middle[k]! += sounds(d)));
+        if (t.bar === mid + 1) assert.ok(middle[0]! >= 1 && middle[1]! >= 1, `${where}: pitched parts sounded in ${middle} of the middle 4 bars (outgoing, incoming)`);
+        for (const d of s.decks) assert.ok(d.bar.info.parts!.some((id) => !["drums", "bass"].includes(partOf(d.bar.info.styleId, id).role)), `${where}: deck ${d.deck} has ${d.bar.info.parts}`);
+      }
+      // A breakdown's second phrase has no kick and no bass at all, and pitched parts of both tracks over it.
+      if (t.type === "breakdown" && t.bar >= t.swap) {
         assert.equal(kicks.length, 0, where);
         assert.ok(!s.decks.some((d) => d.bar.notes.some((n) => n.role === "bass")), where);
-        // Over it, something of the incoming track that is not a drum, by the phrase's end.
-        if (dom.bar.notes.some((n) => n.role !== "drums")) heard.add(`${seed}/${t.to}`);
-        if (t.bar === t.bars - 1) assert.ok(heard.has(`${seed}/${t.to}`), `${where}: the breakdown has ${dom.bar.info.parts}`);
+        s.decks.forEach((d, k) => (phrase[k]! += sounds(d)));
+        if (t.bar === t.bars - 1) assert.ok(phrase[0]! >= 2 && phrase[1]! >= 2, `${where}: pitched parts sounded in ${phrase} of the phrase's bars (outgoing, incoming)`);
+        assert.ok(inc.bar.info.parts!.filter((id) => !["drums", "bass"].includes(partOf(inc.bar.info.styleId, id).role)).length >= 2, `${where}: the incoming has ${inc.bar.info.parts}`);
         noKick++;
       }
+      if (t.type === "blend" && t.bars === BLEND_BARS) {
+        const row = blend[t.bar]!;
+        row[0]! += out.bar.info.parts!.length;
+        row[1]! += inc.bar.info.parts!.length;
+        row[2]! += sounds(out);
+        row[3]! += sounds(inc);
+        row[4]!++;
+        // After the swap the outgoing's parts only leave, to its kick, hat and a line at the end (no kick over the incoming's build).
+        if (t.bar > t.swap) assert.ok(out.bar.info.parts!.every((id) => run[i - 1]!.decks[0]!.bar.info.parts!.includes(id)), `${where}: ${out.bar.info.parts} after ${run[i - 1]!.decks[0]!.bar.info.parts}`);
+        if (t.bar === t.bars - 1) assert.ok(out.bar.info.parts!.length <= 3 && out.bar.info.parts!.length >= 1, `${where}: the outgoing ends on ${out.bar.info.parts}`);
+        // Before it the incoming's only come in.
+        if (t.bar > 0 && t.bar < t.swap) assert.ok(run[i - 1]!.decks[1]!.bar.info.parts!.every((id) => inc.bar.info.parts!.includes(id)), where);
+      }
+      // One running line a deck, once both have one.
+      const runs = s.decks.map((d) => d.bar.info.parts!.filter((id) => ["arp", "lead", "counter"].includes(partOf(d.bar.info.styleId, id).role)).length);
+      assert.ok(runs[other === out ? 0 : 1]! <= 1 && runs[0]! + runs[1]! <= Math.max(2, runs[dom === out ? 0 : 1]!), `${where}: running lines ${runs}`);
+      if (runs[0]! && runs[1]!) assert.deepEqual(runs, [1, 1], where);
       // Every move names a deck in the slice, and each deck's bar carries its own.
       for (const m of s.moves) {
         assert.ok(m.scope !== "master" && m.scope.deck !== undefined);
@@ -422,9 +480,74 @@ test("two decks: one low end, one set of pitched parts, and the styles' limits a
       }
     }
   }
-  console.log(`in transitions: ${bothKicks} bars with both kicks, ${noKick} breakdown bars with none; at most ${most} parts across both decks`);
+  const per = (k: number) => blend.filter((_, b) => b % 4 === 0).map((r) => (r[k]! / r[4]!).toFixed(1)).join(" ");
+  console.log(`${overlaps} overlaps (${[...types].map(([t, n]) => `${t} ${n}`).join(", ")}): ${bothKicks} bars with both kicks, ${noKick} breakdown bars with none; at most ${most} parts across both decks (the second kick apart)`);
+  console.log(`the outgoing deck's parts at the start of an overlap: ${Math.min(...startOut)} to ${Math.max(...startOut)}, mean ${(startOut.reduce((a, b) => a + b, 0) / startOut.length).toFixed(1)}`);
+  console.log(`a long blend (${blend[0]![4]} of them), every 4 bars: parts on the outgoing deck ${per(0)}; on the incoming ${per(1)}; share of bars with pitched notes, outgoing ${per(2)}; incoming ${per(3)}`);
   assert.ok(bothKicks > 500 && noKick > 20);
-  void dropped;
+  assert.ok(blend[0]![4]! > 50);
+});
+
+test("two decks: a track that hands over in an overlap holds its body to the end; what comes in over it stays in", () => {
+  let heldBars = 0;
+  for (const [seed, run] of RUNS) {
+    const c = new SetConductor(TECHNO, `decks-${seed}`, SHORT);
+    slices(c, run.length);
+    run.forEach((s, i) => {
+      for (const d of s.decks) {
+        const info = d.bar.info;
+        const plan = c.transitionPlan(info.pieceIndex);
+        const where = `${seed} slice ${i}`;
+        // Alone in its mix-out before a filter: everything its body's last bar had.
+        if (s.decks.length === 1 && plan?.bars && info.barInPiece >= info.pieceBars - MIX_BARS) {
+          assert.equal(plan.type, "filter", where);
+          const before = run.findLast((x) => x.decks.some((y) => y.bar.info.pieceIndex === info.pieceIndex && y.bar.info.barInPiece === info.pieceBars - MIX_BARS - 1))!;
+          const body = before.decks.find((y) => y.bar.info.pieceIndex === info.pieceIndex)!.bar.info.parts!;
+          for (const id of body) if (id !== "roll") assert.ok(info.parts!.includes(id), `${where}: ${id} of ${body} held, in ${info.parts}`);
+          assert.ok(info.parts!.includes("kick") && info.parts!.includes("sub"), where);
+          heldBars++;
+        }
+      }
+    });
+  }
+  assert.ok(heldBars > 100, `${heldBars} bars held alone`);
+  // `held` and `arriving` are the track's grid at the edge of its body, with its low end and what the overlap needs.
+  const c = new SetConductor(BOTH, "held");
+  for (let k = 0; k < 12; k++) {
+    const piece = c.trackPiece(k);
+    const parts = piece.style.corpus.parts!;
+    const role = (id: string) => parts.find((p) => p.id === id)!.role;
+    const h = held(piece);
+    const a = arriving(piece);
+    for (const id of piece.grid!.parts[piece.totalBars - MIX_BARS - 1]!) if (id !== "roll") assert.ok(h.includes(id));
+    for (const id of piece.grid!.parts[MIX_BARS]!) assert.ok(a.includes(id));
+    for (const list of [h, a]) {
+      assert.ok(list.includes("kick") && list.includes("sub") && !list.includes("roll"));
+      assert.ok(list.some((id) => !["drums", "bass", "pad"].includes(role(id))), `a line in ${list}`);
+    }
+    assert.ok(a.some((id) => role(id) === "pad") && a.some((id) => role(id) === "drums" && id !== "kick"), `a hat and a pad in ${a}`);
+  }
+});
+
+test("interleave: the dominant deck is thinned before the limits break, and each deck keeps a line", () => {
+  const [minimal, berlin] = BOTH as [StyleBundle, StyleBundle];
+  const all = (s: StyleBundle) => s.corpus.parts!.filter((p) => !p.roll).map((p) => p.id);
+  // Everything of minimal techno against everything of Berlin techno, the fader half up.
+  const [d, o] = interleave({ style: minimal, parts: all(minimal) }, { style: berlin, parts: all(berlin), room: 4 });
+  assert.ok(d.includes("kick") && d.includes("sub") && o.includes("kick") && !o.includes("sub"));
+  assert.equal(o.length, 5, `${o}`);
+  assert.equal(d.length + o.length - 1, berlin.corpus.arrangement!.most! + OVERLAP_ROOM);
+  const lines = (s: StyleBundle, ids: string[]) => ids.filter((id) => s.corpus.parts!.find((p) => p.id === id)!.group === "line");
+  assert.deepEqual([lines(minimal, d).length, lines(berlin, o).length], [1, 1]);
+  assert.ok(!o.some((id) => kickPart("berlin_techno", id) === false && berlin.corpus.parts!.find((p) => p.id === id)!.role === "pad"), "the other deck's pads stay out");
+  // A breakdown: no low end on either.
+  const [bd, bo] = interleave({ style: berlin, parts: all(berlin), room: 3 }, { style: minimal, parts: all(minimal), room: 3 }, { breakdown: true });
+  assert.deepEqual([bd.length, bo.length], [3, 3]);
+  for (const id of [...bd, ...bo]) assert.ok(id !== "kick" && id !== "sub");
+  // A filter: the pads are the outgoing deck's.
+  const [fd, fo] = interleave({ style: berlin, parts: all(berlin), room: 4 }, { style: minimal, parts: all(minimal), room: 5 }, { pads: "other" });
+  assert.ok(!fd.includes("drone") && !fd.includes("wash"));
+  assert.ok(fo.includes("air") || fo.includes("pad"));
 });
 
 test("two decks: nextBar gives the dominant deck's bar, with the other beside it", () => {
@@ -455,14 +578,14 @@ test("two decks: a skip in a transition goes on with the incoming track alone; o
   c.skip();
   const next = c.nextSlice();
   assert.equal(next.decks.length, 1);
-  assert.deepEqual([next.decks[0]!.bar.info.pieceIndex, next.decks[0]!.bar.info.barInPiece], [run[at]!.transition!.to, 3]);
+  assert.deepEqual([next.decks[0]!.bar.info.pieceIndex, next.decks[0]!.bar.info.barInPiece], [run[at]!.transition!.to, run[at]!.decks[1]!.bar.info.barInPiece + 1]);
   assert.equal(next.moves.length, 0);
   c.skip();
   const after = c.nextSlice();
   assert.deepEqual([after.decks.length, after.decks[0]!.bar.info.pieceIndex, after.decks[0]!.bar.info.barInPiece], [1, run[at]!.transition!.to + 1, 0]);
 });
 
-test("two decks: between two styles, each deck plays its own style and the lower of their limits holds for the sum", () => {
+test("two decks: between two styles, each deck plays its own style and the lower of their limits holds for the sum, with the overlap's room", () => {
   const both = [byId("minimal_techno"), byId("berlin_techno")];
   const most = Math.min(...both.map((s) => s.corpus.arrangement!.most!));
   const types = new Map<string, number>();
@@ -476,7 +599,8 @@ test("two decks: between two styles, each deck plays its own style and the lower
       if (a.styleId === b.styleId) continue;
       across++;
       if (s.transition!.bar === 0) types.set(s.transition!.type, (types.get(s.transition!.type) ?? 0) + 1);
-      assert.ok(a.parts!.length + b.parts!.length <= most, `${seed} slice ${i}: ${a.parts} + ${b.parts}`);
+      // (The deck without the low end has its kick on top.)
+      assert.ok(a.parts!.length + b.parts!.length <= most + OVERLAP_ROOM + 1, `${seed} slice ${i}: ${a.parts} + ${b.parts}`);
       for (const d of s.decks) assert.equal(d.bar.deck, d.deck);
     }
   }

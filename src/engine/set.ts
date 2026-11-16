@@ -6,26 +6,36 @@
  * last out): by role, or for a style with parts one part every 4 bars, in its
  * arrangement grid.
  *
- * Tracks with a grid mix into each other on two decks. The set's unit is a
- * slice: one bar of time holding one track's bar, or two in a transition, at
- * one tempo. A transition is one of four, drawn from the step in energy:
+ * Tracks with a grid mix into each other on two decks, as a DJ mixes two
+ * records: both are whole tracks, and the set's faders do the thinning, not
+ * the tracks' own ends. The set's unit is a slice: one bar of time holding
+ * one track's bar, or two in a transition, at one tempo. A transition is one
+ * of four, drawn from the step in energy:
  *
- *   blend      16 bars. The incoming track's mix-in plays over the outgoing
- *              track's mix-out, its lows cut; half way, on the phrase, the low
- *              end and the pitched parts change hands (the bass swap).
- *   breakdown  A blend whose second phrase has no kick and no bass on either
- *              deck; the incoming low end lands after it, on an impact.
- *   filter     8 bars. The outgoing track is high-passed away while the
- *              incoming enters under a riser, and lands on an impact.
+ *   blend      32 bars. The incoming track's percussion, then a line of its
+ *              own, come in over the outgoing track's last body phrases, its
+ *              lows cut; half way, on the phrase, the low end changes hands
+ *              (the bass swap) and the incoming plays its body while the
+ *              outgoing track's parts leave one a slot.
+ *   breakdown  16 bars. A blend whose second phrase has no kick and no bass
+ *              on either deck, only lines, a pad and hats of both; the
+ *              incoming's body lands after it, on an impact.
+ *   filter     8 bars. The outgoing track, still whole, is high-passed away
+ *              while the incoming plays under it with the low end and a
+ *              riser; its body lands on an impact.
  *   cut        No overlap. The outgoing plays to the phrase before its
  *              mix-out, with an echo throw on its last beat; the incoming
  *              starts past its mix-in, on an impact.
  *
- * In an overlap the two grids are interleaved: the dominant deck plays what
- * its grid says, the other its drums only, under the styles' limits counted
- * across both (see `interleave`). The tempo moves to the incoming track's in
+ * A track that hands over in an overlap does not thin out toward its end: it
+ * holds what its body's last bar had (`held`). A track coming in over another
+ * brings its own parts in one a slot (`arriving`). `interleave` says which of
+ * both decks' parts play in a slice: one low end, one deck's pads, and the
+ * styles' limits across both. The tempo moves to the incoming track's in
  * equal steps a bar across the overlap (the 8 bars before a cut), and both
  * decks play at it. Styles without parts cut at the track's end, as before.
+ * A track's own mix-in (see grid.ts) is heard only where it starts alone:
+ * the set's first track, or after a skip.
  *
  * A position is (track, bar), the dominant deck's. A bar of a track that
  * overlaps the one before is the same slice as that track's bar: a seek to
@@ -44,7 +54,7 @@ import type { Role, StyleBundle } from "../corpus/schema.js";
 import { Rng } from "../theory/rng.js";
 import { type Key, type ModeName, keysCompatible, pitchClass } from "../theory/theory.js";
 import { type BarSource, type Landing, MAX_SEEK_PIECE } from "./conductor.js";
-import { MIX_BARS, PHRASE_BARS, mixBars } from "./grid.js";
+import { MIX_BARS, PHRASE_BARS, SLOT_BARS, mixBars } from "./grid.js";
 import { Piece, type PieceOptions, type Segment } from "./piece.js";
 import { type Bar, CHANNELS, type ControlEvent, type Move, OPEN_LOW, type TransitionInfo, type TransitionType } from "./types.js";
 
@@ -156,7 +166,7 @@ export interface Transition {
   bars: number;
   /** The bar of the overlap from which the incoming is dominant: the bass swap. */
   swap: number;
-  /** The incoming track's first bar: 0, or past its mix-in for a cut. */
+  /** The incoming track's first bar: 0, past its mix-in for a cut, or a phrase into it for a filter. */
   enter: number;
   /** Bars over which the tempo moves to the incoming track's: the overlap, or the outgoing's last bars before a cut. */
   ramp: number;
@@ -167,8 +177,15 @@ export const deckOf = (track: number): 0 | 1 => (track % 2) as 0 | 1;
 
 /** A transition's bars before a cut over which the tempo moves. */
 const CUT_RAMP = PHRASE_BARS;
-/** Bars before a track's end from which its transition is looked up: the longest reach of one (a cut's ramp). */
-const REACH = MIX_BARS + CUT_RAMP;
+/** A long blend: the outgoing track's last body phrases and its mix-out, over the incoming's mix-in and first body phrases. */
+export const BLEND_BARS = 2 * MIX_BARS;
+/** Bars before a track's end from which its transition is looked up: the longest reach of one. */
+const REACH = BLEND_BARS;
+/**
+ * Two tracks in flight may have this many parts more than the lower of their styles' `most` (the second kick,
+ * its lows cut, is not counted): a second hat doubles a pattern more than it adds a layer. Group limits get no allowance.
+ */
+export const OVERLAP_ROOM = 2;
 /**
  * A step in `lift` at least this big is going up or down; one this big is a big step. Successive tracks' lifts
  * differ by 0.12 at the median (the wave moves a lot over a track), so these sit near the 30th and 93rd percentiles.
@@ -181,8 +198,11 @@ const BLEND_CUT = 450;
 const FILTER_CUT = 4000;
 /** Beats over which the low end changes hands, before the swap's barline. */
 const SWAP_BEATS = 0.5;
-/** A deck fades in from and out to this over a phrase half. */
-const FADE = { from: 0.4, to: 0.3, bars: 4 };
+/**
+ * The faders. The deck without the low end comes in from `from` and rides at `ride` while two tracks are in flight;
+ * the outgoing deck ends at `to`. Each ramp takes `bars`.
+ */
+const FADE = { from: 0.4, ride: 0.8, to: 0.3, bars: 4 };
 const RISER = { from: 200, to: 6000 };
 const IMPACT = { from: 90, to: 38 };
 
@@ -349,26 +369,35 @@ export class SetConductor implements BarSource {
       a = this.a = this.open(a.index + 1, 0);
       t = this.outOf(a);
     }
-    if (!this.inc && t && t.bars && a.bar >= t.start) this.inc = this.open(a.index + 1, a.bar - t.start);
+    if (!this.inc && t && t.bars && a.bar >= t.start) this.inc = this.open(a.index + 1, t.enter + a.bar - t.start);
     const inc = this.inc;
     const index = this.barIndex++;
     const bpm = this.bpmAt(a, t);
     const out = deckOf(a.index);
-    let bar = this.render(a, index, bpm);
+    let bar: Bar;
     let slice: Slice;
     if (inc && t) {
       const s = a.bar - t.start;
-      const dominant = s >= t.swap ? deckOf(inc.index) : out;
-      const breakdown = t.type === "breakdown" && s >= t.swap;
-      let other = this.render(inc, index, bpm, breakdown ? breakdownParts(inc.piece) : undefined);
-      if (dominant === out) [bar, other] = interleave(bar, other, a.piece.style, inc.piece.style, breakdown);
-      else [other, bar] = interleave(other, bar, inc.piece.style, a.piece.style, breakdown);
+      const swapped = s >= t.swap;
+      const dominant = swapped ? deckOf(inc.index) : out;
+      // What each deck has to play, and how much of it its fader lets through.
+      // (In its body a track plays its grid, and a line of its own if that has none.)
+      const leaving: Side = { style: a.piece.style, parts: a.bar < a.piece.totalBars - MIX_BARS ? filled(a.piece, partsAt(a.piece, a.bar, t), [isLine], false) : partsAt(a.piece, a.bar, t) };
+      if (swapped) leaving.room = Math.ceil((t.bars - s) / SLOT_BARS) + (t.type === "filter" ? 3 : 1);
+      const coming: Side = { style: inc.piece.style, parts: inc.bar < MIX_BARS ? arriving(inc.piece) : filled(inc.piece, inc.piece.grid?.parts[inc.bar] ?? [], [isLine], false) };
+      if (inc.bar < MIX_BARS) coming.room = Math.floor(inc.bar / SLOT_BARS) + 1;
+      const mode = { breakdown: t.type === "breakdown" && swapped, pads: t.type === "filter" ? ("other" as const) : ("dominant" as const) };
+      const [playOut, playIn] = swapped ? (([i, o]) => [o, i])(interleave(coming, leaving, mode)) : interleave(leaving, coming, mode);
+      bar = this.render(a, index, bpm, playOut);
+      let other = this.render(inc, index, bpm, playIn);
       const moves = overlapMoves(t, s, out, deckOf(inc.index), bar.beats);
       bar = withMoves(bar, moves);
       other = withMoves(other, moves);
       slice = { index, bpm, decks: [{ deck: out, bar }, { deck: deckOf(inc.index), bar: other }], moves, dominant, transition: { type: t.type, from: a.index, to: inc.index, bar: s, bars: t.bars, swap: t.swap } };
       this.piece = dominant === out ? a.piece : inc.piece;
     } else {
+      // A track about to hand over in an overlap holds its body through its mix-out.
+      bar = this.render(a, index, bpm, t?.bars && a.piece.grid ? partsAt(a.piece, a.bar, t) : undefined);
       const moves = this.soloMoves(a, t, bar.beats);
       bar = withMoves(bar, moves);
       slice = { index, bpm, decks: [{ deck: out, bar }], moves, dominant: out };
@@ -403,8 +432,8 @@ export class SetConductor implements BarSource {
   }
 
   /** A bar at a cursor, at the slice's tempo, on its track's deck. */
-  private render(c: Cursor, index: number, bpm: number, extra?: readonly string[]): Bar {
-    let bar = c.piece.renderBar(c.bar, index, mixLeaveOut(c.piece, c.bar), extra);
+  private render(c: Cursor, index: number, bpm: number, play?: readonly string[]): Bar {
+    let bar = c.piece.renderBar(c.bar, index, mixLeaveOut(c.piece, c.bar), play);
     if (c.carry.length) {
       bar = { ...bar, controls: [...c.carry, ...bar.controls] };
       c.carry = [];
@@ -424,7 +453,7 @@ export class SetConductor implements BarSource {
     }
     if (a.index > 0 && a.bar <= MIX_BARS && a.piece.grid) {
       const into = this.out(a.index - 1);
-      const lands = into.type === "filter" ? into.bars : into.type === "breakdown" ? into.bars : into.type === "cut" && into.enter ? into.enter : -1;
+      const lands = into.type === "blend" || !(into.enter + into.bars) ? -1 : into.enter + into.bars;
       if (a.bar === lands) moves.push({ scope: { role: "drums", deck }, target: "impact", from: IMPACT.from, to: IMPACT.to, beats: 0.5 });
     }
     return moves;
@@ -449,12 +478,17 @@ export class SetConductor implements BarSource {
             ? { breakdown: 5, blend: 3, cut: 1, filter: 0 }
             : { blend: 7, filter: 1, breakdown: 1, cut: 1 };
     const type = new Rng(`${this.seed}/mix/${i}`).weighted(["blend", "filter", "cut", "breakdown"] as const, (x) => weights[x]);
+    // A blend is long where both tracks have the bars for it and the outgoing has its kick through the body phrases it starts in.
+    const kick = piece.style.corpus.parts?.find(isKick)?.id;
+    const long = Math.min(total, next.totalBars) >= 3 * BLEND_BARS && kick !== undefined && piece.grid.parts.slice(total - BLEND_BARS, total - MIX_BARS).every((ids) => ids.includes(kick));
     const out: Transition =
       type === "cut"
         ? { type, start: total - MIX_BARS, bars: 0, swap: 0, enter: MIX_BARS, ramp: CUT_RAMP }
         : type === "filter"
-          ? { type, start: total - PHRASE_BARS, bars: PHRASE_BARS, swap: 0, enter: 0, ramp: PHRASE_BARS }
-          : { type, start: total - MIX_BARS, bars: MIX_BARS, swap: MIX_BARS / 2, enter: 0, ramp: MIX_BARS };
+          ? { type, start: total - PHRASE_BARS, bars: PHRASE_BARS, swap: 0, enter: MIX_BARS - PHRASE_BARS, ramp: PHRASE_BARS }
+          : type === "blend" && long
+            ? { type, start: total - BLEND_BARS, bars: BLEND_BARS, swap: BLEND_BARS / 2, enter: 0, ramp: BLEND_BARS }
+            : { type, start: total - MIX_BARS, bars: MIX_BARS, swap: MIX_BARS / 2, enter: 0, ramp: MIX_BARS };
     return (track.out = out);
   }
 
@@ -504,7 +538,7 @@ export class SetConductor implements BarSource {
     this.inc = null;
     // In the overlap with the track before, both play: the next slice brings this one in over it.
     const before = target > 0 ? this.out(target - 1) : undefined;
-    if (before && bar < before.bars) this.a = this.open(target - 1, before.start + bar);
+    if (before && bar >= before.enter && bar < before.enter + before.bars) this.a = this.open(target - 1, before.start + bar - before.enter);
     else this.a = this.open(target, bar);
     this.trackIndex = target + 1;
     const segments = piece.segments;
@@ -552,76 +586,149 @@ const withMoves = (bar: Bar, moves: readonly Move[]): Bar => {
   return own.length ? { ...bar, moves: [...(bar.moves ?? []), ...own] } : bar;
 };
 
-/** A bar with only the parts in `keep`. */
-function only(bar: Bar, keep: string[]): Bar {
-  if (keep.length === (bar.info.parts?.length ?? 0)) return bar;
-  return { ...bar, notes: bar.notes.filter((n) => n.part === undefined || keep.includes(n.part)), info: { ...bar.info, parts: keep } };
-}
+type PartDef = NonNullable<StyleBundle["corpus"]["parts"]>[number];
+const isKick = (p: PartDef) => p.role === "drums" && p.lanes?.includes("kick") === true;
+const isLow = (p: PartDef) => isKick(p) || p.role === "bass";
+const isPerc = (p: PartDef) => p.role === "drums" && !isKick(p) && !p.roll;
+/** A sustained part: one deck's play at a time. */
+const isPad = (p: PartDef) => p.role === "pad";
+/** A short pitched part: a stab, a bell, an acid line. */
+const isLine = (p: PartDef) => p.role !== "drums" && p.role !== "bass" && p.role !== "pad";
+/** A line that runs through every bar (an ostinato or a melody), where a stab may hit once in four. */
+const isRunning = (p: PartDef) => isLine(p) && p.role !== "comp";
 
 /**
- * Two tracks' bars in one slice, thinned so they sound as one mix. The
- * dominant track plays what its grid says. The other plays drums only (no
- * second bass, pad or line), and of those only what fits beside the dominant
- * track under the styles' limits counted across both: `most` in all and each
- * group's own (the lower of the two styles' where both name one). Its kick
- * always plays; the transition's moves take its lows. `breakdown` leaves the
- * low end out of both, kicks and bass (a breakdown's second phrase).
+ * A deck's parts above its low end, in the order its fader lets them through: its coolest percussion (the hat),
+ * its coolest running line (a stab if it has none), its coolest pad, then the rest from the coolest up. They
+ * leave in reverse.
  */
-export function interleave(dominant: Bar, other: Bar, dominantStyle: StyleBundle, otherStyle: StyleBundle, breakdown = false): [Bar, Bar] {
-  const parts = (s: StyleBundle) => new Map((s.corpus.parts ?? []).map((p) => [p.id, p]));
-  const isKick = (p: { lanes?: string[] | undefined } | undefined) => p?.lanes?.includes("kick") === true;
-  const low = (p: { lanes?: string[] | undefined; role: string } | undefined) => isKick(p) || p?.role === "bass";
-  const dp = parts(dominantStyle);
-  const op = parts(otherStyle);
-  const da = dominantStyle.corpus.arrangement;
-  const oa = otherStyle.corpus.arrangement;
-  const most = Math.min(da?.most ?? Infinity, oa?.most ?? Infinity);
-  const limit = (g: string) => Math.min(da?.groups?.[g] ?? Infinity, oa?.groups?.[g] ?? Infinity);
-  const keepD = (dominant.info.parts ?? []).filter((id) => !(breakdown && low(dp.get(id))));
-  const count = new Map<string, number>();
-  for (const id of keepD) {
-    const g = dp.get(id)?.group;
-    if (g !== undefined) count.set(g, (count.get(g) ?? 0) + 1);
-  }
-  let total = keepD.length;
-  const keepO: string[] = [];
-  for (const id of other.info.parts ?? []) {
-    const p = op.get(id);
-    if (!p || p.role !== "drums") continue;
-    if (isKick(p)) {
-      if (breakdown) continue;
-    } else if (total >= most || (p.group !== undefined && (count.get(p.group) ?? 0) >= limit(p.group))) continue;
-    keepO.push(id);
-    total++;
-    if (p.group !== undefined) count.set(p.group, (count.get(p.group) ?? 0) + 1);
-  }
-  return [only(dominant, keepD), only(other, keepO)];
+function ranked(parts: readonly PartDef[]): PartDef[] {
+  const cool = parts.filter((p) => !isLow(p) && !p.roll).sort((a, b) => (a.enters ?? 0) - (b.enters ?? 0));
+  const first = [cool.find(isPerc), cool.find(isRunning) ?? cool.find(isLine), cool.find(isPad)].filter((p): p is PartDef => p !== undefined);
+  return [...first, ...cool.filter((p) => !first.includes(p))];
 }
 
-/**
- * What the incoming track plays over a breakdown's second phrase, where
- * neither deck has a kick or a bass: up to two of its pitched parts (a pad
- * first) from a phrase into its body, else its coolest pad. Without them its
- * mix-in has little but the low end there, and the phrase would be near silent.
- */
-export function breakdownParts(piece: Piece): string[] {
+/** The parts in `ids`, with the style's coolest part of each of `kinds` they lack, and the track's low end if `low`. */
+function filled(piece: Piece, ids: readonly string[], kinds: readonly ((p: PartDef) => boolean)[], low = true): string[] {
   const parts = piece.style.corpus.parts ?? [];
-  const byId = new Map(parts.map((p) => [p.id, p]));
-  const pitched = (id: string) => {
-    const role = byId.get(id)?.role;
-    return role !== undefined && role !== "drums" && role !== "bass";
-  };
-  const body = piece.grid?.parts[Math.min(MIX_BARS + PHRASE_BARS, piece.totalBars - 1)] ?? [];
-  const pick = body.filter(pitched).sort((a, b) => Number(byId.get(b)!.role === "pad") - Number(byId.get(a)!.role === "pad"));
-  if (!pick.length) {
-    const pad = parts.filter((p) => p.role === "pad" && !p.roll).sort((a, b) => (a.enters ?? 0) - (b.enters ?? 0))[0];
-    if (pad) pick.push(pad.id);
+  const bass = parts.find((p) => p.role === "bass");
+  const on = parts.filter((p) => ids.includes(p.id) || (low && (isKick(p) || p === bass)));
+  for (const kind of kinds) {
+    if (on.some(kind)) continue;
+    const coolest = parts.filter((p) => kind(p) && !p.roll).sort((a, b) => (a.enters ?? 0) - (b.enters ?? 0))[0];
+    if (coolest) on.push(coolest);
   }
-  return pick.slice(0, 2);
+  return parts.filter((p) => on.includes(p)).map((p) => p.id);
+}
+
+/**
+ * What a track holds through its mix-out when it hands over in an overlap: what its body's last bar had, with its
+ * low end, and a line if it had none. The set takes parts out of it; the track's own grid does not.
+ */
+export function held(piece: Piece): string[] {
+  return filled(piece, piece.grid?.parts[piece.totalBars - MIX_BARS - 1] ?? [], [isLine]);
+}
+
+/**
+ * What a track coming in over another may play through its mix-in: what its body's first bar has (so what comes in
+ * stays in), with a hat, a line and a pad if that has none.
+ */
+export function arriving(piece: Piece): string[] {
+  return filled(piece, piece.grid?.parts[Math.min(MIX_BARS, piece.totalBars - 1)] ?? [], [isPerc, isLine, isPad]);
+}
+
+/** The parts a track has at `bar` when it hands over by `t`: its grid's, or in its mix-out what it holds. */
+function partsAt(piece: Piece, bar: number, t: Transition): readonly string[] {
+  return t.bars && bar >= piece.totalBars - MIX_BARS ? held(piece) : (piece.grid?.parts[bar] ?? []);
+}
+
+/** One deck in an overlap: the parts it has, and how many of them above the low end its fader lets through (all, if absent). */
+export interface Side {
+  style: StyleBundle;
+  parts: readonly string[];
+  room?: number;
+}
+
+/**
+ * Which parts of two tracks play in one slice, so that both are heard and they sound as one mix: the dominant
+ * deck's, then the other's.
+ *
+ *   - One low end. The dominant deck plays its kick and bass. The other plays its kick (the transition's moves
+ *     take its lows) and never its bass. `breakdown` leaves both out of both.
+ *   - A build on the dominant deck (its roll is in, its kick out) is the track's own: the roll plays, and the
+ *     other deck's kick stops for it too.
+ *   - Each deck plays up to `room` of its parts above the low end, in `ranked` order.
+ *   - One deck's pads: the deck named by `pads`. The other's lines, stabs and bells sound over them.
+ *   - One running line a deck (stabs are free of this): the deck without the low end plays one at most, and the
+ *     dominant deck no second one beside it.
+ *   - The styles' limits hold across both decks (the lower of the two where both name one): each group's as it
+ *     is, `most` with `OVERLAP_ROOM` more. The deck without the low end may fill half of a group (at least one
+ *     part), so each deck keeps a line. The dominant deck's hat and line have first claim, then the other deck's
+ *     share, then the rest of the dominant's: where there is no room, the dominant deck is thinned.
+ */
+export function interleave(dominant: Side, other: Side, mode: { breakdown?: boolean; pads?: "dominant" | "other" } = {}): [string[], string[]] {
+  const defs = (s: Side) => (s.style.corpus.parts ?? []).filter((p) => s.parts.includes(p.id));
+  const d = defs(dominant);
+  const o = defs(other);
+  const da = dominant.style.corpus.arrangement;
+  const oa = other.style.corpus.arrangement;
+  const most = Math.min(da?.most ?? Infinity, oa?.most ?? Infinity) + OVERLAP_ROOM;
+  const limit = (g: string) => Math.min(da?.groups?.[g] ?? Infinity, oa?.groups?.[g] ?? Infinity);
+  const count = new Map<string, number>();
+  const keepD: PartDef[] = [];
+  const keepO: PartDef[] = [];
+  let total = 0;
+  let running = 0;
+  const fits = (p: PartDef) => total < most && (p.group === undefined || (count.get(p.group) ?? 0) < limit(p.group));
+  const take = (keep: PartDef[], p: PartDef) => {
+    keep.push(p);
+    total++;
+    if (isRunning(p)) running++;
+    if (p.group !== undefined) count.set(p.group, (count.get(p.group) ?? 0) + 1);
+  };
+  if (!mode.breakdown) for (const p of d) if (isLow(p)) take(keepD, p);
+  const pads = mode.pads ?? "dominant";
+  const above = (parts: PartDef[], own: boolean) => ranked(parts).filter((p) => own || !isPad(p));
+  const rd = above(d, pads === "dominant");
+  let nd = 0;
+  const claim = (p: PartDef) => {
+    if (nd >= (dominant.room ?? Infinity) || !fits(p)) return;
+    take(keepD, p);
+    nd++;
+  };
+  rd.slice(0, 2).forEach(claim);
+  const mine = new Map<string, number>();
+  let no = 0;
+  for (const p of above(o, pads === "other")) {
+    if (no >= (other.room ?? Infinity)) break;
+    if (p.group !== undefined && (mine.get(p.group) ?? 0) >= Math.max(1, Math.floor(limit(p.group) / 2))) continue;
+    if (!fits(p) || (isRunning(p) && keepO.some(isRunning))) continue;
+    take(keepO, p);
+    no++;
+    if (p.group !== undefined) mine.set(p.group, (mine.get(p.group) ?? 0) + 1);
+  }
+  for (const p of rd.slice(2)) if (!(isRunning(p) && running >= 2)) claim(p);
+  const roll = d.find((p) => p.roll);
+  if (roll) keepD.push(roll);
+  const kick = o.find(isKick);
+  if (kick && !mode.breakdown && !roll) keepO.push(kick);
+  const ids = (all: PartDef[], keep: PartDef[]) => all.filter((p) => keep.includes(p)).map((p) => p.id);
+  return [ids(d, keepD), ids(o, keepO)];
 }
 
 /** Between two values in Hz, in octaves; `x` 0..1. */
 const octaves = (a: number, b: number, x: number) => a * Math.pow(b / a, x);
+
+/** A fader's level at `x`, straight between `points` ([x, level], in order) and flat outside them. */
+function fader(points: readonly (readonly [number, number])[], x: number): number {
+  if (x <= points[0]![0]) return points[0]![1];
+  for (let i = 1; i < points.length; i++) {
+    const [x1, y1] = points[i]!;
+    const [x0, y0] = points[i - 1]!;
+    if (x <= x1) return x1 === x0 ? y1 : y0 + ((y1 - y0) * (x - x0)) / (x1 - x0);
+  }
+  return points[points.length - 1]![1];
+}
 
 /**
  * The moves of bar `s` of a transition's overlap, between the outgoing deck
@@ -631,15 +738,26 @@ const octaves = (a: number, b: number, x: number) => a * Math.pow(b / a, x);
  *   - One low end. Until the swap the incoming deck is cut below `LOW_CUT`;
  *     over the last half beat before the swap that cut opens and the outgoing
  *     deck's closes, and from there the outgoing's rises as it leaves.
- *   - A blend and a breakdown fade the incoming deck in over its first bars
- *     and the outgoing out over its last.
+ *   - The faders. A deck without the low end rides below full, so two tracks
+ *     in flight are about as loud as one: the incoming comes up to `FADE.ride`
+ *     over its first bars and to full over the bar before the swap; the
+ *     outgoing eases to `FADE.ride` after it and out over its last bars.
  *   - A filter sweeps the outgoing deck's cut up across the whole overlap,
  *     under a riser on the incoming.
  */
 export function overlapMoves(t: Transition, s: number, o: 0 | 1, n: 0 | 1, beats: number): Move[] {
   const moves: Move[] = [];
   const rest = t.bars - t.swap;
-  const top = t.type === "filter" ? FILTER_CUT : BLEND_CUT;
+  const filter = t.type === "filter";
+  const top = filter ? FILTER_CUT : BLEND_CUT;
+  const fade = (deck: 0 | 1, points: readonly (readonly [number, number])[]) => {
+    const from = fader(points, s);
+    const to = fader(points, s + 1);
+    if (from !== 1 || to !== 1) moves.push({ scope: { deck }, target: "gain", from, to, beats });
+  };
+  if (t.swap) fade(n, [[0, FADE.from], [Math.min(FADE.bars, t.swap - 1), FADE.ride], [t.swap - 1, FADE.ride], [t.swap, 1]]);
+  const out = filter ? 2 : FADE.bars;
+  fade(o, filter ? [[t.bars - out, 1], [t.bars, FADE.to]] : [[t.swap, 1], [Math.min(t.swap + FADE.bars, t.bars - out), FADE.ride], [t.bars - out, FADE.ride], [t.bars, FADE.to]]);
   if (s < t.swap) {
     const cut: Move = { scope: { deck: n }, target: "lowCut", from: LOW_CUT, to: LOW_CUT, beats, span: { bar: s, of: t.swap } };
     if (s === t.swap - 1) {
@@ -648,15 +766,11 @@ export function overlapMoves(t: Transition, s: number, o: 0 | 1, n: 0 | 1, beats
       moves.push({ scope: { deck: o }, target: "lowCut", from: OPEN_LOW, to: LOW_CUT, at: beats - SWAP_BEATS, beats: SWAP_BEATS, span: { bar: 0, of: rest + 1 } });
     }
     moves.push(cut);
-    if (s < FADE.bars) moves.push({ scope: { deck: n }, target: "gain", from: FADE.from + ((1 - FADE.from) * s) / FADE.bars, to: FADE.from + ((1 - FADE.from) * (s + 1)) / FADE.bars, beats });
   } else {
     const k = s - t.swap;
     // With no bars before the swap (a filter) the cut starts here; else it carries on from the swap's.
     moves.push({ scope: { deck: o }, target: "lowCut", from: octaves(LOW_CUT, top, k / rest), to: octaves(LOW_CUT, top, (k + 1) / rest), beats, span: { bar: t.swap ? k + 1 : k, of: t.swap ? rest + 1 : rest } });
-    const left = t.bars - s;
-    const fade = t.type === "filter" ? 2 : FADE.bars;
-    if (left <= fade) moves.push({ scope: { deck: o }, target: "gain", from: FADE.to + ((1 - FADE.to) * left) / fade, to: FADE.to + ((1 - FADE.to) * (left - 1)) / fade, beats });
-    if (t.type === "filter") moves.push({ scope: { role: "pad", deck: n }, target: "riser", from: octaves(RISER.from, RISER.to, k / rest), to: octaves(RISER.from, RISER.to, (k + 1) / rest), beats, span: { bar: k, of: rest } });
+    if (filter) moves.push({ scope: { role: "pad", deck: n }, target: "riser", from: octaves(RISER.from, RISER.to, k / rest), to: octaves(RISER.from, RISER.to, (k + 1) / rest), beats, span: { bar: k, of: rest } });
   }
   return moves;
 }
