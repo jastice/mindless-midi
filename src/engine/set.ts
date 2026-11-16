@@ -359,8 +359,8 @@ export class SetConductor implements BarSource {
     if (inc && t) {
       const s = a.bar - t.start;
       const dominant = s >= t.swap ? deckOf(inc.index) : out;
-      let other = this.render(inc, index, bpm);
       const breakdown = t.type === "breakdown" && s >= t.swap;
+      let other = this.render(inc, index, bpm, breakdown ? breakdownParts(inc.piece) : undefined);
       if (dominant === out) [bar, other] = interleave(bar, other, a.piece.style, inc.piece.style, breakdown);
       else [other, bar] = interleave(other, bar, inc.piece.style, a.piece.style, breakdown);
       const moves = overlapMoves(t, s, out, deckOf(inc.index), bar.beats);
@@ -403,8 +403,8 @@ export class SetConductor implements BarSource {
   }
 
   /** A bar at a cursor, at the slice's tempo, on its track's deck. */
-  private render(c: Cursor, index: number, bpm: number): Bar {
-    let bar = c.piece.renderBar(c.bar, index, mixLeaveOut(c.piece, c.bar));
+  private render(c: Cursor, index: number, bpm: number, extra?: readonly string[]): Bar {
+    let bar = c.piece.renderBar(c.bar, index, mixLeaveOut(c.piece, c.bar), extra);
     if (c.carry.length) {
       bar = { ...bar, controls: [...c.carry, ...bar.controls] };
       c.carry = [];
@@ -596,6 +596,28 @@ export function interleave(dominant: Bar, other: Bar, dominantStyle: StyleBundle
     if (p.group !== undefined) count.set(p.group, (count.get(p.group) ?? 0) + 1);
   }
   return [only(dominant, keepD), only(other, keepO)];
+}
+
+/**
+ * What the incoming track plays over a breakdown's second phrase, where
+ * neither deck has a kick or a bass: up to two of its pitched parts (a pad
+ * first) from a phrase into its body, else its coolest pad. Without them its
+ * mix-in has little but the low end there, and the phrase would be near silent.
+ */
+export function breakdownParts(piece: Piece): string[] {
+  const parts = piece.style.corpus.parts ?? [];
+  const byId = new Map(parts.map((p) => [p.id, p]));
+  const pitched = (id: string) => {
+    const role = byId.get(id)?.role;
+    return role !== undefined && role !== "drums" && role !== "bass";
+  };
+  const body = piece.grid?.parts[Math.min(MIX_BARS + PHRASE_BARS, piece.totalBars - 1)] ?? [];
+  const pick = body.filter(pitched).sort((a, b) => Number(byId.get(b)!.role === "pad") - Number(byId.get(a)!.role === "pad"));
+  if (!pick.length) {
+    const pad = parts.filter((p) => p.role === "pad" && !p.roll).sort((a, b) => (a.enters ?? 0) - (b.enters ?? 0))[0];
+    if (pad) pick.push(pad.id);
+  }
+  return pick.slice(0, 2);
 }
 
 /** Between two values in Hz, in octaves; `x` 0..1. */

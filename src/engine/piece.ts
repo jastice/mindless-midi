@@ -397,7 +397,7 @@ export class Piece {
    * The notes and controls of a bar. Roles in `leaveOut` are written as usual
    * (so voicings and random streams are the same either way) and then dropped.
    */
-  renderBar(barInPiece: number, globalIndex: number, leaveOut?: ReadonlySet<Role>): Bar {
+  renderBar(barInPiece: number, globalIndex: number, leaveOut?: ReadonlySet<Role>, extra?: readonly string[]): Bar {
     const c = this.corpus;
     const bpb = c.beatsPerBar;
     const notes: NoteEvent[] = [];
@@ -446,7 +446,9 @@ export class Piece {
       });
       if (this.grid && this.parts) {
         // The grid says which parts are in; the section only shaped the grid.
-        const on = this.grid.parts[barInPiece] ?? [];
+        const grid = this.grid.parts[barInPiece] ?? [];
+        // A set may bring in parts the grid has out (`extra`, a breakdown transition's pad); each has its own stream.
+        const on = extra?.length ? [...grid, ...extra.filter((id) => !grid.includes(id))] : grid;
         const thin = this.grid.thin[barInPiece];
         const turn = this.grid.turn[barInPiece];
         const build = this.grid.build?.[barInPiece];

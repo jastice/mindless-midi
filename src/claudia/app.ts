@@ -98,6 +98,7 @@ async function main(): Promise<void> {
     workerUrl: new URL("render-worker.js", import.meta.url).href,
     expression: EXPRESSION,
     weighted: true,
+    decks: true,
   });
   player.setVolume(volume);
   Object.assign(window, { djClaudia: { player, styles } });

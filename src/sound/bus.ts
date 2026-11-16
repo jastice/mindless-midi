@@ -1,8 +1,9 @@
 /**
  * The mix bus: per-style production for every stem-based engine. Each role
  * gets high-pass cleanup, optional chorus, kick-driven ducking, panning and
- * sends to a tempo-synced ping-pong delay and a generated reverb; the master
- * has an optional tape/vinyl chain, glue compression and a limiter.
+ * sends to a tempo-synced ping-pong delay and a generated reverb (a
+ * `DeckStrip`, one per deck in a set); the master has an optional tape/vinyl
+ * chain, glue compression and a limiter.
  *
  * Every per-style setting is an AudioParam change scheduled at a time, so a
  * live stream can switch styles exactly at a piece boundary. The same class
@@ -183,28 +184,28 @@ export interface BusOptions {
    * click survives it, and a soft clipper after it is the actual ceiling.
    */
   openLimiter?: boolean;
+  /** Strips: one, or two for a set (each deck's track has its own style's chains, sends and rooms). */
+  decks?: 1 | 2;
 }
 
-export class Bus {
-  readonly output: GainNode;
-  /** Master trim before the compressor, for a live loudness AGC. */
-  readonly trim: GainNode;
-  /** Taps the bus output (pre-volume) for that AGC. */
-  readonly meter: AnalyserNode;
+const gain = (ctx: BaseAudioContext, v = 1) => {
+  const n = ctx.createGain();
+  n.gain.value = v;
+  return n;
+};
+
+/**
+ * One deck's half of the bus: a chain per role (high-pass, chorus, duck,
+ * pan), its sends, and the reverb and delay they feed, set from one style.
+ * Everything ends in the master's input.
+ */
+export class DeckStrip {
   private readonly roles = new Map<Role, RoleChain>();
   private readonly reverbs: { input: GainNode; conv: ConvolverNode; style: string | null }[] = [];
   private active = 0;
   private readonly delayL: DelayNode;
   private readonly delayR: DelayNode;
   private readonly feedback: GainNode;
-  private readonly dry: GainNode;
-  private readonly wet: GainNode;
-  private readonly drivePre: GainNode;
-  private readonly drivePost: GainNode;
-  private readonly tone: BiquadFilterNode;
-  private readonly wow: GainNode[] = [];
-  private readonly crackle: GainNode;
-  private readonly irCache = new Map<string, AudioBuffer>();
   /** The style whose sends are set, and how far `setSendScale` has them from the preset. */
   private preset: MixPreset | null = null;
   private sendScale = 1;
@@ -213,16 +214,10 @@ export class Bus {
 
   constructor(
     private readonly ctx: BaseAudioContext,
-    opts: BusOptions = {},
+    master: AudioNode,
+    private readonly irCache: Map<string, AudioBuffer>,
   ) {
-    const g = (v = 1) => {
-      const n = ctx.createGain();
-      n.gain.value = v;
-      return n;
-    };
-    const master = g();
-    this.output = g();
-
+    const g = (v = 1) => gain(ctx, v);
     // Reverb: two convolvers; a style change loads the idle one and moves the
     // sends over, so the old tail rings out.
     const reverbIn = g();
@@ -284,79 +279,13 @@ export class Bus {
       pan.connect(delay).connect(delayIn);
       this.roles.set(role, { input, hp, chorus, duck, pan, reverb, delay });
     }
-
-    // Master: dry, or through saturation, a tone filter and tape wow.
-    this.dry = g();
-    this.wet = g(0);
-    this.drivePre = g(0.6);
-    this.drivePost = g(1 / 0.6);
-    const shaper = ctx.createWaveShaper();
-    const curve = new Float32Array(2048);
-    for (let i = 0; i < curve.length; i++) {
-      const x = (i / (curve.length - 1)) * 2 - 1;
-      curve[i] = Math.tanh(x * DRIVE_CURVE) / Math.tanh(DRIVE_CURVE);
-    }
-    shaper.curve = curve;
-    shaper.oversample = "2x";
-    this.tone = ctx.createBiquadFilter();
-    this.tone.type = "lowpass";
-    this.tone.Q.value = 0.5;
-    const tape = ctx.createDelay(0.05);
-    tape.delayTime.value = 0.01;
-    for (const rate of [0.55, 6.5]) {
-      const lfo = ctx.createOscillator();
-      lfo.frequency.value = rate;
-      const depth = g(0);
-      lfo.connect(depth).connect(tape.delayTime);
-      lfo.start();
-      this.wow.push(depth);
-    }
-    const comp = ctx.createDynamicsCompressor();
-    comp.threshold.value = -20;
-    comp.ratio.value = 2.5;
-    comp.knee.value = 8;
-    comp.attack.value = 0.02;
-    comp.release.value = 0.25;
-    const limiter = ctx.createDynamicsCompressor();
-    limiter.threshold.value = -3;
-    limiter.knee.value = 0;
-    limiter.ratio.value = 20;
-    limiter.attack.value = 0.002;
-    limiter.release.value = 0.1;
-    this.trim = g();
-    this.meter = ctx.createAnalyser();
-    this.meter.fftSize = 2048;
-    master.connect(this.dry).connect(this.trim);
-    master.connect(this.drivePre).connect(shaper).connect(this.drivePost).connect(this.tone).connect(tape).connect(this.wet).connect(this.trim);
-    if (opts.openLimiter) {
-      limiter.attack.value = 0.008;
-      const ceiling = ctx.createWaveShaper();
-      const knee = new Float32Array(4097);
-      for (let i = 0; i < knee.length; i++) {
-        // Straight up to 0.7, then bending toward 1 (the shaper clamps past its ends).
-        const x = (i / (knee.length - 1)) * 2 - 1;
-        const a = Math.abs(x);
-        knee[i] = Math.sign(x) * (a <= 0.7 ? a : 0.7 + 0.3 * Math.tanh((a - 0.7) / 0.3));
-      }
-      ceiling.curve = knee;
-      ceiling.oversample = "2x";
-      this.trim.connect(comp).connect(limiter).connect(ceiling).connect(this.output);
-    } else this.trim.connect(comp).connect(limiter).connect(this.output);
-    limiter.connect(this.meter);
-
-    this.crackle = g(0);
-    const vinylSrc = ctx.createBufferSource();
-    vinylSrc.buffer = vinyl(ctx, Math.round(ctx.sampleRate * 7.3));
-    vinylSrc.loop = true;
-    vinylSrc.connect(this.crackle).connect(this.output);
-    vinylSrc.start();
   }
 
   input(role: Role): AudioNode {
     return this.roles.get(role)!.input;
   }
 
-  /** Switch to a style's production at time `at` (seconds on the context clock). */
+  /** Switch to a style's chains, sends and rooms at time `at`. */
   setStyle(styleId: string, bpm: number, pans: Partial<Record<Role, number>>, at: number): void {
     const p = presetFor(styleId);
     this.preset = p;
@@ -385,16 +314,6 @@ export class Bus {
       set(c.reverb.gain, p.reverb.send[role] ?? 0);
       set(c.delay.gain, p.delay?.send[role] ?? 0);
     }
-    const lf = p.lofi;
-    set(this.dry.gain, lf ? 0 : 1);
-    set(this.wet.gain, lf ? 1 : 0);
-    const drive = (lf?.drive ?? DRIVE_CURVE) / DRIVE_CURVE;
-    set(this.drivePre.gain, 0.6 * drive);
-    set(this.drivePost.gain, 1 / (0.6 * drive));
-    set(this.tone.frequency, lf?.lowpass ?? 20000);
-    set(this.wow[0]!.gain, lf?.wow ?? 0);
-    set(this.wow[1]!.gain, lf?.flutter ?? 0);
-    set(this.crackle.gain, lf?.crackle ?? 0);
   }
 
   /** Move every role's reverb send to `scale` times the style's (1 = as set), over a moment from `at`. */
@@ -470,6 +389,147 @@ export class Bus {
         c.duck.gain.setTargetAtTime(1, k + 0.03, d.release / 3);
       }
     }
+  }
+}
+
+/**
+ * The bus: a `DeckStrip` (one, or one per deck in a set) into one master
+ * (an optional tape/vinyl chain, glue compression, a limiter, a trim for the
+ * loudness AGC and a meter). A method that names no deck is deck 0's, which
+ * is all there is outside a set.
+ */
+export class Bus {
+  readonly output: GainNode;
+  /** Master trim before the compressor, for a live loudness AGC. */
+  readonly trim: GainNode;
+  /** Taps the bus output (pre-volume) for that AGC. */
+  readonly meter: AnalyserNode;
+  private readonly strips: DeckStrip[] = [];
+  private readonly dry: GainNode;
+  private readonly wet: GainNode;
+  private readonly drivePre: GainNode;
+  private readonly drivePost: GainNode;
+  private readonly tone: BiquadFilterNode;
+  private readonly wow: GainNode[] = [];
+  private readonly crackle: GainNode;
+  private readonly irCache = new Map<string, AudioBuffer>();
+
+  constructor(ctx: BaseAudioContext, opts: BusOptions = {}) {
+    const g = (v = 1) => gain(ctx, v);
+    const master = g();
+    this.output = g();
+    for (let d = 0; d < (opts.decks ?? 1); d++) this.strips.push(new DeckStrip(ctx, master, this.irCache));
+
+    // Master: dry, or through saturation, a tone filter and tape wow.
+    this.dry = g();
+    this.wet = g(0);
+    this.drivePre = g(0.6);
+    this.drivePost = g(1 / 0.6);
+    const shaper = ctx.createWaveShaper();
+    const curve = new Float32Array(2048);
+    for (let i = 0; i < curve.length; i++) {
+      const x = (i / (curve.length - 1)) * 2 - 1;
+      curve[i] = Math.tanh(x * DRIVE_CURVE) / Math.tanh(DRIVE_CURVE);
+    }
+    shaper.curve = curve;
+    shaper.oversample = "2x";
+    this.tone = ctx.createBiquadFilter();
+    this.tone.type = "lowpass";
+    this.tone.Q.value = 0.5;
+    const tape = ctx.createDelay(0.05);
+    tape.delayTime.value = 0.01;
+    for (const rate of [0.55, 6.5]) {
+      const lfo = ctx.createOscillator();
+      lfo.frequency.value = rate;
+      const depth = g(0);
+      lfo.connect(depth).connect(tape.delayTime);
+      lfo.start();
+      this.wow.push(depth);
+    }
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -20;
+    comp.ratio.value = 2.5;
+    comp.knee.value = 8;
+    comp.attack.value = 0.02;
+    comp.release.value = 0.25;
+    const limiter = ctx.createDynamicsCompressor();
+    limiter.threshold.value = -3;
+    limiter.knee.value = 0;
+    limiter.ratio.value = 20;
+    limiter.attack.value = 0.002;
+    limiter.release.value = 0.1;
+    this.trim = g();
+    this.meter = ctx.createAnalyser();
+    this.meter.fftSize = 2048;
+    master.connect(this.dry).connect(this.trim);
+    master.connect(this.drivePre).connect(shaper).connect(this.drivePost).connect(this.tone).connect(tape).connect(this.wet).connect(this.trim);
+    if (opts.openLimiter) {
+      limiter.attack.value = 0.008;
+      const ceiling = ctx.createWaveShaper();
+      const knee = new Float32Array(4097);
+      for (let i = 0; i < knee.length; i++) {
+        // Straight up to 0.7, then bending toward 1 (the shaper clamps past its ends).
+        const x = (i / (knee.length - 1)) * 2 - 1;
+        const a = Math.abs(x);
+        knee[i] = Math.sign(x) * (a <= 0.7 ? a : 0.7 + 0.3 * Math.tanh((a - 0.7) / 0.3));
+      }
+      ceiling.curve = knee;
+      ceiling.oversample = "2x";
+      this.trim.connect(comp).connect(limiter).connect(ceiling).connect(this.output);
+    } else this.trim.connect(comp).connect(limiter).connect(this.output);
+    limiter.connect(this.meter);
+
+    this.crackle = g(0);
+    const vinylSrc = ctx.createBufferSource();
+    vinylSrc.buffer = vinyl(ctx, Math.round(ctx.sampleRate * 7.3));
+    vinylSrc.loop = true;
+    vinylSrc.connect(this.crackle).connect(this.output);
+    vinylSrc.start();
+  }
+
+  /** A deck's strip (deck 0 is the only one outside a set). */
+  strip(deck: 0 | 1 = 0): DeckStrip {
+    return this.strips[deck] ?? this.strips[0]!;
+  }
+
+  input(role: Role, deck: 0 | 1 = 0): AudioNode {
+    return this.strip(deck).input(role);
+  }
+
+  /** Switch a deck to a style's production at time `at` (seconds on the context clock); the master follows the style too. */
+  setStyle(styleId: string, bpm: number, pans: Partial<Record<Role, number>>, at: number, deck: 0 | 1 = 0): void {
+    this.strip(deck).setStyle(styleId, bpm, pans, at);
+    const set = (param: AudioParam, v: number) => param.setValueAtTime(v, at);
+    const lf = presetFor(styleId).lofi;
+    set(this.dry.gain, lf ? 0 : 1);
+    set(this.wet.gain, lf ? 1 : 0);
+    const drive = (lf?.drive ?? DRIVE_CURVE) / DRIVE_CURVE;
+    set(this.drivePre.gain, 0.6 * drive);
+    set(this.drivePost.gain, 1 / (0.6 * drive));
+    set(this.tone.frequency, lf?.lowpass ?? 20000);
+    set(this.wow[0]!.gain, lf?.wow ?? 0);
+    set(this.wow[1]!.gain, lf?.flutter ?? 0);
+    set(this.crackle.gain, lf?.crackle ?? 0);
+  }
+
+  /** Move a deck's reverb sends to `scale` times its style's (1 = as set), over a moment from `at`. */
+  setSendScale(scale: number, at: number, deck: 0 | 1 = 0): void {
+    this.strip(deck).setSendScale(scale, at);
+  }
+
+  /** A deck's send throws for a bar (see `DeckStrip.throws`). */
+  throws(moves: readonly Move[] | undefined, at: number, spb: number, deck: 0 | 1 = 0): void {
+    this.strip(deck).throws(moves, at, spb);
+  }
+
+  /** A seek: every throw on every deck not yet over is called off. */
+  clearThrows(at: number): void {
+    for (const s of this.strips) s.clearThrows(at);
+  }
+
+  /** Duck a deck's style's ducked roles under each kick (context times). */
+  duck(styleId: string, kicks: number[], deck: 0 | 1 = 0): void {
+    this.strip(deck).duck(styleId, kicks);
   }
 }
 

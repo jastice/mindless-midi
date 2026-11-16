@@ -365,6 +365,7 @@ test("two decks: one low end, one set of pitched parts, and the styles' limits a
   let most = 0;
   let noKick = 0;
   const dropped = new Set<string>();
+  const heard = new Set<string>();
   for (const [seed, run] of RUNS) {
     const c = new SetConductor(TECHNO, `decks-${seed}`, SHORT);
     run.forEach((s, i) => {
@@ -398,6 +399,9 @@ test("two decks: one low end, one set of pitched parts, and the styles' limits a
       if (t.type === "breakdown" && t.bar >= t.bars / 2) {
         assert.equal(kicks.length, 0, where);
         assert.ok(!s.decks.some((d) => d.bar.notes.some((n) => n.role === "bass")), where);
+        // Over it, something of the incoming track that is not a drum, by the phrase's end.
+        if (dom.bar.notes.some((n) => n.role !== "drums")) heard.add(`${seed}/${t.to}`);
+        if (t.bar === t.bars - 1) assert.ok(heard.has(`${seed}/${t.to}`), `${where}: the breakdown has ${dom.bar.info.parts}`);
         noKick++;
       }
       // Every move names a deck in the slice, and each deck's bar carries its own.
