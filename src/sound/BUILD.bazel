@@ -169,3 +169,24 @@ ts_test(
         "//src/engine",
     ],
 )
+
+# Berlin techno (DJ Claudia): its corpus, its sounds measured, a set over both
+# of her styles, and a track through the worker.
+ts_test(
+    name = "berlin_techno_test",
+    size = "medium",
+    src = "berlin_techno.test.ts",
+    data = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+        "//styles:claudia",
+        "//styles/berlin_techno:corpus",
+    ],
+    deps = [
+        ":sound",
+        ":worker",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)

@@ -935,7 +935,7 @@
         "snare": "",
         "rim": "",
         "clap": "",
-        "closedHat": "..o...o...o...o.",
+        "closedHat": "..x...x...x...x.",
         "openHat": "",
         "ride": "",
         "crash": "",
@@ -954,7 +954,7 @@
         "snare": "",
         "rim": "......x.........",
         "clap": "",
-        "closedHat": "..o...o...o...o.",
+        "closedHat": "..x...x...o...x.",
         "openHat": "",
         "ride": "",
         "crash": "",
@@ -992,7 +992,7 @@
         "snare": "",
         "rim": "",
         "clap": "",
-        "closedHat": "..o...o...o...o.",
+        "closedHat": "......x.......x.",
         "openHat": "",
         "ride": "",
         "crash": "",
@@ -1583,7 +1583,7 @@
             "drums",
             "bass",
             "arp",
-            "comp"
+            "pad"
           ]
         },
         {
@@ -1892,14 +1892,14 @@
       "id": "drone",
       "role": "pad",
       "patch": "drone",
-      "enters": 0.15
+      "enters": 0.05
     },
     {
       "id": "wash",
       "role": "pad",
       "patch": "wash",
       "material": "wash",
-      "volume": 0.12,
+      "volume": 0.09,
       "enters": 0.4,
       "group": "noise"
     }
@@ -1931,15 +1931,14 @@
       "osc": {
         "wave": "tri",
         "voices": 1,
-        "detune": 0,
-        "sub": 0.4
+        "detune": 0
       },
       "filter": {
         "type": "low",
-        "cutoff": 120,
+        "cutoff": 160,
         "q": 0.8,
         "keytrack": 1,
-        "env": 260,
+        "env": 400,
         "a": 0.006,
         "d": 0.3,
         "s": 0.3,
@@ -1951,7 +1950,7 @@
         "s": 0.8,
         "r": 0.12
       },
-      "drive": 0.5,
+      "drive": 0.8,
       "mod": [
         {
           "target": "cutoff",
@@ -1987,7 +1986,7 @@
         "s": 0.15,
         "r": 0.7
       },
-      "drive": 1,
+      "drive": 0.3,
       "mod": [
         {
           "target": "cutoff",
@@ -1996,8 +1995,8 @@
           "depth": 0.7
         }
       ],
-      "hp": 170,
-      "level": 0.4
+      "hp": 220,
+      "level": 0.3
     },
     {
       "id": "tone",
@@ -2037,7 +2036,7 @@
         }
       ],
       "hp": 200,
-      "level": 0.35
+      "level": 0.9
     },
     {
       "id": "bell",
@@ -2119,8 +2118,8 @@
           "depth": 0.5
         }
       ],
-      "hp": 120,
-      "level": 0.3
+      "hp": 160,
+      "level": 0.2
     },
     {
       "id": "wash",
@@ -2141,7 +2140,7 @@
         "r": 3
       },
       "amp": {
-        "a": 3,
+        "a": 1.5,
         "d": 1,
         "s": 1,
         "r": 3
@@ -2151,19 +2150,19 @@
           "target": "cutoff",
           "shape": "saw",
           "beats": 32,
-          "depth": 1.6
+          "depth": 1.2
+        },
+        {
+          "target": "amp",
+          "shape": "saw",
+          "beats": 32,
+          "depth": -0.45
         },
         {
           "target": "pan",
           "shape": "sine",
           "beats": 16,
           "depth": 0.4
-        },
-        {
-          "target": "amp",
-          "shape": "sine",
-          "beats": 8,
-          "depth": 0.25
         }
       ],
       "hp": 300,
@@ -2172,22 +2171,22 @@
   ],
   "synthKit": {
     "kick": {
-      "f0": 160,
-      "f1": 44,
-      "sweep": 0.035,
-      "decay": 0.16,
-      "drive": 2.8,
-      "click": 0.2,
+      "f0": 150,
+      "f1": 45,
+      "sweep": 0.04,
+      "decay": 0.12,
+      "drive": 3,
+      "click": 0.18,
       "sub": {
-        "level": 1,
-        "decay": 0.26
+        "level": 0.9,
+        "decay": 0.17
       }
     },
     "rumble": {
-      "level": 0.6,
-      "cutoff": 85,
-      "decay": 2,
-      "duck": 0.11
+      "level": 0.75,
+      "cutoff": 80,
+      "decay": 0.6,
+      "duck": 0.2
     },
     "snare": {
       "tone": 180,
@@ -2199,23 +2198,23 @@
     "hatScale": 0.95,
     "hatDecay": 0.035,
     "hat": {
-      "tone": 8000,
-      "q": 0.9,
-      "hp": 6000,
-      "decay": 0.018,
-      "open": 0.22,
-      "metal": 0.8
+      "tone": 8500,
+      "q": 0.7,
+      "hp": 6500,
+      "decay": 0.02,
+      "open": 0.15,
+      "metal": 0.7
     },
     "clap": {
       "tone": 950,
       "q": 1.6,
       "bursts": 3,
-      "decay": 0.22
+      "decay": 0.18
     },
     "ride": {
-      "hp": 4500,
-      "decay": 0.4,
-      "level": 0.3
+      "hp": 5000,
+      "decay": 0.3,
+      "level": 0.28
     },
     "perc": [
       {
@@ -2223,7 +2222,7 @@
         "freq": 110,
         "bend": 7,
         "sweep": 0.04,
-        "decay": 0.26,
+        "decay": 0.18,
         "tuned": true,
         "pan": -0.25,
         "level": 0.6
@@ -2233,7 +2232,7 @@
         "freq": 165,
         "bend": 6,
         "sweep": 0.035,
-        "decay": 0.2,
+        "decay": 0.15,
         "tuned": true,
         "pan": 0.25,
         "level": 0.5
