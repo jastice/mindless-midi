@@ -2,8 +2,9 @@
  * Two decks through the render worker, as the player sends a set's slices:
  * the dominant deck's bar, with the other deck's beside it. What it asserts
  * is the plan's: during a transition the low end (below 150 Hz) is one deck's,
- * the bass swap makes no step, and two decks do not clip. Nobody has listened
- * to any of it.
+ * the bass swap makes no step, two decks do not clip, and with both tracks'
+ * own parts in flight the sum stays about as loud as one track. It measures;
+ * it does not listen.
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -122,6 +123,8 @@ async function play(slices: Slice[], from: number, to: number): Promise<Heard> {
   return { decks, mix, frames, ms };
 }
 
+/** Bars played past a transition's end: the incoming track's body alone. */
+const AFTER = 8;
 const cut = (s: Stereo, a: number, b: number): Stereo => ({ l: s.l.slice(a, b), r: s.r.slice(a, b) });
 const power = (s: Stereo) => {
   let e = 0;
@@ -145,9 +148,9 @@ function transitions(): Map<TransitionType, { seed: string; slices: Slice[]; sta
       slices.push(s);
       const t = s.transition;
       if (!t || t.bar !== 0 || found.has(t.type)) continue;
-      // Its whole length and four bars after.
+      // Its whole length and eight bars after.
       const plan = c.transitionPlan(t.from)!;
-      for (let j = 0; j < t.bars + 4; j++) slices.push(c.nextSlice());
+      for (let j = 0; j < t.bars + AFTER; j++) slices.push(c.nextSlice());
       found.set(t.type, { seed, slices, start: i, bars: t.type === "cut" ? t.bars : plan.bars, swap: plan.swap });
       break;
     }
@@ -161,7 +164,7 @@ test("two decks through the worker: one low end in a transition, a swap without 
   const one: number[] = [];
   const two: number[] = [];
   for (const [type, { seed, slices, start, bars, swap }] of found) {
-    // From 16 bars before (the levellers settle) to 4 after.
+    // From 16 bars before (the levellers settle) to 8 after.
     const from = Math.max(0, start - 16);
     const heard = await play(slices, from, slices.length);
     const offset = (i: number) => heard.frames.slice(0, i - from).reduce((x, y) => x + y, 0);
@@ -191,6 +194,55 @@ test("two decks through the worker: one low end in a transition, a swap without 
       lines.push(`  the other deck adds below 150 Hz, per bar: ${added.map((x) => x.toFixed(2)).join(" ")} dB`);
       lines.push(`  below 150 Hz against the 8 bars before, per bar: ${levels.map((x) => x.toFixed(1)).join(" ")} dB`);
       for (const [k, x] of added.entries()) assert.ok(x < 1, `${type} bar ${k}: the other deck adds ${x.toFixed(2)} dB below 150 Hz`);
+    }
+    if (type !== "cut") {
+      // Loudness: the sum of both decks bar by bar, against the outgoing track's body before the overlap and the
+      // incoming's after it. Two tracks in flight are about as loud as one.
+      const level = (s: Stereo, i: number) => db(power(barOf(s, i)));
+      const mean = (xs: number[]) => db(xs.reduce((a, x) => a + 10 ** (x / 10), 0) / xs.length);
+      const bodyBefore = mean(Array.from({ length: 8 }, (_, k) => level(heard.mix, start - 8 + k)));
+      const bodyAfter = mean(Array.from({ length: AFTER }, (_, k) => level(heard.mix, start + bars + k)));
+      const sum = Array.from({ length: bars }, (_, k) => level(heard.mix, start + k));
+      const out = slices[start]!.decks[0]!.deck;
+      const each = (deck: number) => Array.from({ length: bars }, (_, k) => level(heard.decks[deck]!, start + k) - bodyBefore);
+      lines.push(`  level, the 8 bars before ${bodyBefore.toFixed(1)} dB, the 8 after ${bodyAfter.toFixed(1)} dB; per bar against the bars before:`);
+      lines.push(`    both decks ${sum.map((x) => (x - bodyBefore).toFixed(1)).join(" ")}`);
+      lines.push(`    outgoing   ${each(out).map((x) => x.toFixed(1)).join(" ")}`);
+      lines.push(`    incoming   ${each(1 - out).map((x) => x.toFixed(1)).join(" ")}`);
+      // Above the low end, where a track's own parts are: each deck against the outgoing's body.
+      const above = (x: Stereo) => db((1 - bandShare(x, SR, 0, 200)) * power(x));
+      const aboveBefore = mean(Array.from({ length: 8 }, (_, k) => above(barOf(heard.mix, start - 8 + k))));
+      const high = (deck: number) => Array.from({ length: bars }, (_, k) => above(barOf(heard.decks[deck]!, start + k)) - aboveBefore);
+      lines.push(`  above 200 Hz, per bar against the bars before (${aboveBefore.toFixed(1)} dB):`);
+      lines.push(`    outgoing   ${high(out).map((x) => x.toFixed(1)).join(" ")}`);
+      lines.push(`    incoming   ${high(1 - out).map((x) => x.toFixed(1)).join(" ")}`);
+      const steps = sum.slice(1).map((x, k) => x - sum[k]!);
+      lines.push(`  level steps from bar to bar: up to +${Math.max(...steps).toFixed(1)}, down to ${Math.min(...steps).toFixed(1)} dB; into the overlap ${(sum[0]! - level(heard.mix, start - 1)).toFixed(1)}, out of it ${(level(heard.mix, start + bars) - sum[bars - 1]!).toFixed(1)}`);
+      // Pitched parts on both decks: what each sounds apart from its drums and bass.
+      const pitchedOf = (k: number, deck: number) => slices[start + k]!.decks.find((d) => d.deck === deck)!.bar.info.parts!.filter((id) => !["drums", "bass"].includes(byId.get(slices[start + k]!.decks.find((d) => d.deck === deck)!.bar.info.styleId)!.corpus.parts!.find((p) => p.id === id)!.role));
+      const into = sum[0]! - level(heard.mix, start - 1);
+      const outOf = level(heard.mix, start + bars) - sum[bars - 1]!;
+      const avg = (xs: number[], a: number, b: number) => mean(xs.slice(a, b));
+      if (type === "breakdown") {
+        // Its second phrase has no low end, and is not empty: both tracks' lines and hats.
+        const phrase = avg(sum, swap, bars) - bodyBefore;
+        assert.ok(phrase > -20 && phrase < -3, `breakdown: its second phrase is ${phrase.toFixed(1)} dB against the body before`);
+        for (const deck of [out, 1 - out]) assert.ok(avg(high(deck), swap, bars) > -20, `breakdown: deck ${deck} above 200 Hz in the second phrase`);
+      } else {
+        // No jump in loudness: at the start, at the swap, at the end, or anywhere between.
+        const lo = Math.min(bodyBefore, bodyAfter) - 3;
+        const hi = Math.max(bodyBefore, bodyAfter) + 3;
+        for (const [k, x] of sum.entries()) assert.ok(x > lo && x < hi, `${type} bar ${k}: ${x.toFixed(1)} dB, the bodies either side ${bodyBefore.toFixed(1)} and ${bodyAfter.toFixed(1)}`);
+        for (const x of [...steps, into, outOf]) assert.ok(Math.abs(x) < 3.5, `${type}: a step of ${x.toFixed(1)} dB`);
+        // Both tracks in flight: around the middle each deck's own parts are within 12 dB of a whole track's.
+        const mid = type === "filter" ? [0, bars / 2] : [swap - 4, swap + 4];
+        for (const deck of [out, 1 - out]) {
+          const x = avg(high(deck), mid[0]!, mid[1]!);
+          assert.ok(x > -12, `${type}: deck ${deck} is ${x.toFixed(1)} dB above 200 Hz around the middle`);
+        }
+      }
+      lines.push(`    pitched parts, every 4 bars: outgoing ${Array.from({ length: bars / 4 }, (_, k) => pitchedOf(4 * k, out).join("+") || "-").join(" | ")}`);
+      lines.push(`                                 incoming ${Array.from({ length: bars / 4 }, (_, k) => pitchedOf(4 * k, 1 - out).join("+") || "-").join(" | ")}`);
     }
     // The swap (and a cut's change of tracks): the low end beat by beat across it, against beat-to-beat changes before.
     const at = type === "cut" ? start + bars : start + swap;

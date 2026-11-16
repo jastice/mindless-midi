@@ -202,7 +202,7 @@ const SWAP_BEATS = 0.5;
  * The faders. The deck without the low end comes in from `from` and rides at `ride` while two tracks are in flight;
  * the outgoing deck ends at `to`. Each ramp takes `bars`.
  */
-const FADE = { from: 0.4, ride: 0.8, to: 0.3, bars: 4 };
+const FADE = { from: 0.4, ride: 1, to: 0.3, bars: 4 };
 const RISER = { from: 200, to: 6000 };
 const IMPACT = { from: 90, to: 38 };
 
@@ -385,7 +385,7 @@ export class SetConductor implements BarSource {
       const leaving: Side = { style: a.piece.style, parts: a.bar < a.piece.totalBars - MIX_BARS ? filled(a.piece, partsAt(a.piece, a.bar, t), [isLine], false) : partsAt(a.piece, a.bar, t) };
       if (swapped) leaving.room = Math.ceil((t.bars - s) / SLOT_BARS) + (t.type === "filter" ? 3 : 1);
       const coming: Side = { style: inc.piece.style, parts: inc.bar < MIX_BARS ? arriving(inc.piece) : filled(inc.piece, inc.piece.grid?.parts[inc.bar] ?? [], [isLine], false) };
-      if (inc.bar < MIX_BARS) coming.room = Math.floor(inc.bar / SLOT_BARS) + 1;
+      if (inc.bar < MIX_BARS) coming.room = Math.floor(inc.bar / SLOT_BARS) + 2;
       const mode = { breakdown: t.type === "breakdown" && swapped, pads: t.type === "filter" ? ("other" as const) : ("dominant" as const) };
       const [playOut, playIn] = swapped ? (([i, o]) => [o, i])(interleave(coming, leaving, mode)) : interleave(leaving, coming, mode);
       bar = this.render(a, index, bpm, playOut);
