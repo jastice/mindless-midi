@@ -88,6 +88,24 @@ ts_test(
     ],
 )
 
+# Two decks through the worker, as the player sends a set's slices.
+ts_test(
+    name = "decks_test",
+    size = "medium",
+    src = "decks.test.ts",
+    data = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+        "//styles:claudia",
+    ],
+    deps = [
+        ":sound",
+        ":worker",
+        "//src/corpus",
+        "//src/engine",
+    ],
+)
+
 ts_lib(
     name = "worker",
     srcs = [
