@@ -805,6 +805,28 @@ bridges (one style so far), and a smooth step in energy where legs meet.
 | Electro | 124 to 134 | Syncopated 808 kick, snare on 2 and 4, arpeggiated bass | Sampled or modelled 808 kit |
 | Big beat | 105 to 140 | Breakbeat drums, distorted bass, stutters | Programmed breaks from one-shots, drive, stutter |
 
+**Berlin techno, built (2026-11-16)**, by hand, in `styles/berlin_techno`
+and in the `//styles:claudia` pack. Nobody has listened: the sounds were
+tuned by measurement (`src/sound/berlin_techno.test.ts`).
+
+- 14 keys, aeolian and phrygian; each of minimal techno's keys has a
+  compatible one. One chord held for 7 or 8 bars, so a held note is not cut
+  at each barline. Six forms of 128 to 176 bars: a breakdown without the
+  kick, a build, a peak without the pad role.
+- 14 parts: kick, hat, open hat, ride (from 0.8), clap, tick, tuned toms,
+  roll, sub, stab, tone, bell (loops of 3 and 5 bars), drone, wash. `most` 8;
+  `line` 2, `perc` 2, `noise` 2 (open hat, ride, wash).
+- The rumble is short and loud (0.6 s, level 0.75, in after 0.2 s): 6 dB
+  fuller before the next kick than minimal techno's, as far under the punch.
+  The sub is a plain triangle in the octave above it.
+- The mix preset and weight are keyed by style id in `src/sound/bus.ts` and
+  `weight.ts`, which step 5 is rebuilding, so this style has none yet and
+  plays with the defaults: no delay, reverb on the pad only. The stab's tail
+  is its own release. A preset is the first thing to add once step 5 lands.
+- With two styles the set alternates them at every track (`choose` leaves
+  out the style just played), so Berlin techno plays at 130 to 135 after
+  minimal techno and reaches 136 and up only as a first track.
+
 Big beat is the one that strains the scope. Its drums are traditionally
 sampled breaks, which this plan excludes. Programmed break patterns from
 one-shots, with drive and room, get the rhythm but not the grit of a real
