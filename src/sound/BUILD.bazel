@@ -208,3 +208,24 @@ ts_test(
         "//src/theory",
     ],
 )
+
+# Her third style, the same way: the corpus, its sounds, a set over all three
+# styles, and a track through the worker.
+ts_test(
+    name = "psychedelic_house_test",
+    size = "medium",
+    src = "psychedelic_house.test.ts",
+    data = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+        "//styles:claudia",
+        "//styles/psychedelic_house:corpus",
+    ],
+    deps = [
+        ":sound",
+        ":worker",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)

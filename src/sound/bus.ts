@@ -154,6 +154,14 @@ Object.assign(PRESETS, {
     duck: { depth: { bass: 0.35, pad: 0.5, comp: 0.3, arp: 0.2 }, release: 0.18 },
     highpass: { arp: 200, comp: 180, pad: 200 },
   },
+  // A warmer room: long dotted-eighth echoes on the acid line, the pluck and the stabs, a chorused pad, a gentler pump.
+  psychedelic_house: {
+    reverb: { seconds: 2.2, predelay: 0.02, bright: 0.5, send: { arp: 0.2, comp: 0.25, pad: 0.4, drums: 0.08 } },
+    delay: { beats: 0.75, feedback: 0.5, send: { arp: 0.32, comp: 0.3 } },
+    chorus: ["pad"],
+    duck: { depth: { bass: 0.15, pad: 0.4, comp: 0.2, arp: 0.15 }, release: 0.22 },
+    highpass: { arp: 140, comp: 180, pad: 220 },
+  },
 } satisfies Record<string, MixPreset>);
 
 const DEFAULT_PRESET: MixPreset = { reverb: { seconds: 1.8, predelay: 0.02, bright: 0.5, send: { lead: 0.2, pad: 0.3 } }, highpass: {} };
