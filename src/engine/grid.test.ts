@@ -60,9 +60,10 @@ test("minimal techno declares its parts, and a track's bars carry the grid and n
   }
 });
 
-test("no more than two parts change in a phrase outside a turn or the start of a build, and only every four bars", () => {
+test("no more than two parts change in a phrase outside a turn, the start of a build or the end of a set's mix-in, and only every four bars", () => {
   let turns = 0;
   let changes = 0;
+  let arrivals = 0;
   for (const seed of SEEDS) {
     for (const lift of LIFTS) {
       const p = track(seed, lift);
@@ -82,6 +83,11 @@ test("no more than two parts change in a phrase outside a turn or the start of a
           assert.ok(diff.includes("roll") && diff.every((id) => id === "roll" || id === "kick"), `${seed}: ${diff} as a build starts on bar ${b}`);
           return;
         }
+        // A set's track arrives whole: where its mix-in ends, everything that may play comes in.
+        if (b === mixBars(p.totalBars)) {
+          arrivals++;
+          return;
+        }
         changes += diff.length;
         assert.ok(diff.length <= 2, `${seed} lift ${lift}: ${diff} change at once on bar ${b}`);
         const phrase = Math.floor(b / PHRASE_BARS);
@@ -97,7 +103,7 @@ test("no more than two parts change in a phrase outside a turn or the start of a
       });
     }
   }
-  assert.ok(turns > 100 && changes > 1000, `${turns} turns, ${changes} changes`);
+  assert.ok(turns > 100 && changes > 1000 && arrivals > 0, `${turns} turns, ${changes} changes, ${arrivals} arrivals`);
 });
 
 test("the kick and the bass are absent only in a breakdown or a build, or while the track mixes in and out", () => {

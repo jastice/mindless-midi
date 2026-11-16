@@ -21,6 +21,9 @@
  *     drop brings the kick back and sends the roll out.
  *   - A set's track mixes in and out: it starts on the kick alone, adds a
  *     part every 4 bars with the bass half way, and ends the same way round.
+ *     Its body starts with everything that may play. (The set plays these
+ *     ends only where a track starts alone or is cut out of: in an overlap
+ *     it says itself which parts of both tracks play, see set.ts.)
  *
  * It is planned once, up front, from its own random stream, so it is the same
  * however a bar is reached.
@@ -213,6 +216,11 @@ export function planGrid(parts: readonly GridPart[], sections: readonly GridSect
         } else if (at === 0) {
           // An ordinary boundary: the low end is where it was.
           for (const p of [kick, bass]) if (p && may.includes(p) && !on.includes(p) && !mixOut) enter(p, bar, true);
+        }
+        if (mix > 0 && bar === mix && !turn) {
+          // A set's track arrives whole: the set mixed it in over the track before (see set.ts), so its body
+          // starts with everything that may play, the coolest first, and does not build up from the low end again.
+          for (const p of others(may).filter((x) => !on.includes(x)).sort(byEnters)) if (room(p, on) && on.length < cap) enter(p, bar, true);
         }
         if (bass && bassOut && on.includes(bass)) leave(bass, bar, turn !== undefined);
         if (build?.bar === 0) {
