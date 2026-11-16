@@ -8,9 +8,10 @@ four more sounds for minimal techno, a light per part on the page), and so is
 step 4 (moves: sweeps, drift, builds with a roll, riser and impact, stutters
 and send throws). Steps 2 to 4 were first heard on 2026-11-15 (see "Heard"
 under step 3). Step 5 is built (2026-11-16): tracks overlap on two decks in
-four kinds of transition, with one low end and the two grids interleaved; it
-has been checked in a browser and by measurement, and nobody has listened to
-it yet (see "Built" under step 5). This was first written against `main` at `b4dabe6`; where it says "new", check first whether later work already has it.
+four kinds of transition, with one low end and the two grids interleaved. It
+was heard on 2026-11-16 and the overlaps were reworked so that two tracks are
+in flight together; the rework has been measured and not yet heard (see
+"Built" and "Heard" under step 5). This was first written against `main` at `b4dabe6`; where it says "new", check first whether later work already has it.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
 
@@ -760,15 +761,17 @@ the most intricate part of `Player`.
 ### Built (2026-11-16)
 
 Written by Opus, from a first draft of the set conductor that Fable left
-unfinished. `bazel test //...` passes (23 targets). Nobody has listened to it:
-the transitions were tuned by measurement and checked in a browser by their
-levels per deck, not by ear.
+unfinished. `bazel test //...` passes (23 targets). The transitions were
+tuned by measurement and checked in a browser by their levels per deck, not
+by ear. It was then listened to, and the overlaps reworked: the tables and
+"Interleaving" below describe it after the rework (see "Heard" for what it
+was before and why it changed).
 
 | What | Where |
 | --- | --- |
-| `Slice`, `Transition`, `nextSlice`, `interleave`, `overlapMoves`, `breakdownParts`, `trackPiece` | `src/engine/set.ts` |
+| `Slice`, `Transition`, `nextSlice`, `interleave`, `held`, `arriving`, `overlapMoves`, `trackPiece` | `src/engine/set.ts` |
 | `TransitionInfo`, `bar.deck`, `bar.with`, `bar.transition`; a deck-only `Move` scope covers the deck | `src/engine/types.ts`, `moves.ts` |
-| `extra` parts on `renderBar` (a breakdown's pad) | `src/engine/piece.ts` |
+| `play` on `renderBar`: the set says which parts play in an overlap | `src/engine/piece.ts` |
 | `StemDeck` (all the worker's old module state), `SetMix` (two decks, tails) | `src/sound/worker.ts` |
 | `DeckBar`, `deck` and `with` on a bar message | `src/sound/protocol.ts` |
 | `DeckStrip` per deck and one master in `Bus` | `src/sound/bus.ts` |
@@ -782,26 +785,67 @@ track hands over is drawn once per pair, on a stream of its own
 mostly a filter, going down mostly a breakdown; 0.22 or more mostly a cut.
 Successive lifts differ by 0.12 at the median (the energy wave moves a lot in
 a track), so those thresholds sit near the 30th and 93rd percentiles. Over 6
-sets of 5000 bars: 101 blends, 61 breakdowns, 55 filters, 28 cuts.
+sets of 5000 bars: 108 blends, 66 breakdowns, 60 filters, 31 cuts.
 
 | Type | Overlap | Swap | What happens |
 | --- | --- | --- | --- |
-| Blend | 16 bars (both mixes) | bar 8 | The incoming plays its mix-in, lows cut below 180 Hz and faded in from 0.4 over 4 bars; the low end changes hands over the last half beat before the swap; then the outgoing's cut rises to 450 Hz and it fades to 0.3 over its last 4 bars |
-| Breakdown | 16 bars | bar 8 | A blend whose second phrase has no kick and no bass on either deck; up to two pitched parts of the incoming (a pad first) play over it; the incoming's low end lands after it on an impact |
-| Filter | 8 bars | bar 0 | The incoming has the low end from the start; the outgoing is high-passed from 180 Hz to 4 kHz and fades over its last 2 bars; a riser on the incoming lands on an impact |
+| Blend | 32 bars: the outgoing's last body phrases and its mix-out, over the incoming's mix-in and first body phrases | bar 16 | The incoming's hat and a line of its own come in over the outgoing's body, lows cut below 180 Hz and faded in from 0.4 over 4 bars, then more of it, one part a slot; the low end changes hands over the last half beat before the swap; from there the incoming plays its body and the outgoing's parts leave one a slot (5, 4, 3, then 2 above its kick), its cut rising to 450 Hz, fading to 0.3 over its last 4 bars |
+| Breakdown | 16 bars | bar 8 | The outgoing holds its body through the first phrase with the incoming's hat and line over it; the second phrase has no kick and no bass on either deck: lines and hats of both and the incoming's pad; the incoming's body lands after it on an impact |
+| Filter | 8 bars, the incoming from bar 8 of its mix-in | bar 0 | The outgoing, still whole (it holds its body through its mix-out), is high-passed from 180 Hz to 4 kHz and fades over its last 2 bars; the incoming plays under it with the low end, a hat and a line, and a riser; its body lands on an impact |
 | Cut | none | | The outgoing stops a phrase short of its mix-out with a delay throw on its last beat; the incoming starts past its mix-in, on an impact |
+
+A blend is 16 bars with the swap at 8 where a track is shorter than 96 bars
+or the outgoing has no kick in the body phrases a long one would start in
+(neither happens with the two styles' forms).
 
 Styles without parts (or tracks too short to mix) cut at the track's end, as
 before, and their bars name no deck.
 
-**Interleaving.** In an overlap the dominant deck (the one with the low end)
-plays what its grid says; the other plays drums only, so there are never two
-basses, pads or lines. Of its drums its kick always plays (its lows cut), and
-the rest only while the sum of both decks stays within `most` and each group's
-limit, the lower of the two styles' where both name one. At most 7 parts
-across both decks were seen in 6 sets. The pitched parts change hands with the
-low end at the swap, and each grid keeps adding or taking out one part a slot,
-so a blend hands over part by part.
+**Interleaving.** Both tracks are whole in an overlap, and the set does the
+thinning, as a DJ's faders and EQ do; a track's own grid does not thin it.
+
+- *What each deck has.* In its body a track has what its grid says (and its
+  coolest line if the grid has none). Through its mix-out a track that hands
+  over in an overlap holds what its body's last bar had, with its low end
+  (`held`). Through its mix-in a track coming in has what its body's first
+  bar has, so what comes in stays in, with a hat, a line and a pad if that
+  has none (`arriving`). The grid's own mix-in is heard only where a track
+  starts alone (the set's first, or after a skip); its mix-out only past a
+  cut, which a seek alone reaches.
+- *The faders.* Above its low end a deck plays its parts in a fixed order:
+  its coolest percussion (the hat), its coolest running line (a stab if it
+  has none), its coolest pad, then the rest from the coolest up. The incoming
+  gets 2 of them at its first bar and one more every 4 bars of its mix-in.
+  After the swap the outgoing keeps as many as it has slots left plus one
+  (plus three in a filter, which thins by its sweep), so they leave in
+  reverse order and its hat and line go last.
+- *One low end.* The dominant deck plays its kick and bass. The other never
+  plays its bass; its kick plays with its lows cut by the transition's
+  moves. A build on the dominant deck stops the other deck's kick too.
+- *Crowding.* The styles' limits hold across both decks, the lower of the two
+  styles' where both name one. Each group's limit is as it is, so there are
+  never more noise layers or lines at once than one track may have. `most`
+  gets 2 more (`OVERLAP_ROOM`), and the second kick is not counted: a second
+  hat doubles a pattern more than it adds a layer. The deck without the low
+  end may fill half of a group (at least one part). The dominant deck's hat
+  and line claim first, then the other deck's share, then the rest of the
+  dominant's: where there is no room it is the dominant deck that is thinned.
+  At most 11 parts beside the second kick were seen in 12 sets.
+- *Pitched parts.* One deck's pads at a time: the dominant deck's in a blend
+  and a breakdown (they change hands with the low end), the outgoing's in a
+  filter (they are swept away). One running line (an ostinato) a deck: the
+  deck without the low end plays one at most, and the dominant no second one
+  beside it. Stabs are free of that rule and counted by the `line` group.
+  So mid-blend there is one deck's pad under a line of each track.
+- *Levels.* The deck without the low end has its lows cut and no bass, so it
+  adds little level; its fader is at full once it is in. Measured through the
+  worker, the sum stays within 1 dB of the bodies either side across a blend
+  (see "Heard").
+
+A set's track now arrives whole: where its mix-in ends its grid brings in
+everything that may play, instead of going on one part a slot from the low
+end (`grid.ts`). Without that a cool track fell back to kick and bass for 20
+bars where an overlap landed.
 
 **Tempo.** One per slice. Across an overlap it moves from the outgoing
 track's to the incoming's in equal steps a bar (rounded to 0.01 bpm), and both
@@ -813,8 +857,10 @@ are within 3% of each other, so a step is at most about 0.2% a bar (a filter's
 of a blend names the incoming track. Seeking to a bar inside an overlap lands
 in the transition with both decks playing; `skip` in a transition goes on with
 the incoming alone. The page's next-track control seeks to the next track's
-first bar, which is inside its overlap with this one: it jumps to this track's
-mix-out and mixes from there, on the phrase.
+first bar. Where that is inside its overlap with this one (a blend, a
+breakdown) it jumps to the start of the overlap and mixes from there, on the
+phrase. Into a track that is cut or filtered into, bar 0 is not in any
+overlap: the track starts alone from its own mix-in, the kick first.
 
 **The worker.** Everything the worker kept at module level is one `StemDeck`.
 A bar message without `deck` (Mindless Midi, Mighty Midi, any non-set bar) is
@@ -852,13 +898,13 @@ Decisions and deviations from the plan above:
 - **No separate low-end stage.** The low end is the conductor's moves on each
   deck (a 24 dB/octave low cut at 180 Hz on the deck without it, opened over
   half a beat at the swap), so it is pure data, seek-safe and tested in the
-  engine. The kick's ducking needs nothing shared either: the deck without
-  the low end plays drums only, which the weighted mix never ducks.
-- Blends are 16 bars, not 16 or 32: the mix-in and mix-out are 16.
+  engine. The kick's ducking is not shared: each deck's parts are ducked by
+  its own kick, which plays in time with the other.
+- Blends are 32 bars (16 for a short track), since the rework.
 - The incoming track's samples are not awaited before its mix-in; a bar that
   is not ready leaves a gap, as before.
 
-Measured:
+Measured, before the rework (see "Heard" for the numbers after it):
 
 - Through the worker (`decks.test.ts`, 24 kHz), the first transition of each
   type in sets over both styles: the deck without the low end adds between
@@ -873,8 +919,11 @@ Measured:
 - Render time per bar through the worker in Node, over 700 bars of one set:
   at 48 kHz, 78 ms with one deck (95th percentile 272, worst 520) and 80 ms
   with two (95th 96, worst 99); at 24 kHz 39 and 41. A bar is about 1.85 s.
-  The second deck costs little because it plays drums only and both ends are
-  thin; the worst bars were all single-deck bars.
+  The second deck cost little because it played drums only and both ends
+  were thin; the worst bars were all single-deck bars. (After the rework, at
+  24 kHz: 39 to 92 ms with one deck and 62 to 139 ms with two, over four runs
+  of the decks test on a busy machine: the second deck now costs about half
+  as much again.)
 - Memory: the Node process peaked at 374 MB at 48 kHz (264 at 24 kHz), with
   both decks' windows (about 7 MB a part at 48 kHz). The page's main thread
   heap stayed at 11 to 12 MB through a blend; the worker's own memory cannot
@@ -882,10 +931,11 @@ Measured:
 
 Known gaps:
 
-- Nobody has listened. The cut frequencies, the fades, the breakdown's level
-  and the swap's half beat are guesses checked by numbers.
-- A breakdown's pad comes in for its second phrase and may leave again where
-  the incoming grid has no pad after it lands.
+- The cut frequencies, the fades, the breakdown's level and the swap's half
+  beat are guesses checked by numbers.
+- What the set adds to a deck for an overlap (a line where the grid has none,
+  a breakdown's pad) leaves again where the overlap ends if the track's grid
+  does not have it there.
 - Berlin techno still has the default bus preset and weight.
 - The delay time of a strip is set at its track's first bar and does not
   follow a tempo ramp (at most 3% off by the end of an overlap).
@@ -894,14 +944,74 @@ Known gaps:
 - Step 7's page (timeline, the grid scrolling) is not started; the page shows
   the two decks and the transition only.
 
-Example links, a few bars before each type (both styles, the default pool):
+Example links, a few bars before each type (both styles, the default pool;
+the set test prints them):
 
-- Blend, minimal into Berlin: `?seed=decks-0&at=1.157`
-- Breakdown, Berlin into minimal: `?seed=decks-0&at=2.157`
-- Filter, minimal into Berlin: `?seed=decks-0&at=3.101`
-- Cut, minimal into Berlin: `?seed=decks-0&at=5.101`
-- Filter, Berlin into minimal: `?seed=decks-1&at=1.133`
-- Blend, Berlin into minimal: `?seed=decks-0&at=4.141`
+- Blend, minimal into Berlin: `?seed=decks-0&at=1.140`
+- Blend, Berlin into minimal: `?seed=decks-0&at=4.124`
+- Breakdown, minimal into Berlin: `?seed=decks-1&at=2.124`
+- Breakdown, Berlin into minimal: `?seed=decks-0&at=2.156`
+- Filter, minimal into Berlin: `?seed=decks-0&at=3.100`
+- Filter, Berlin into minimal: `?seed=decks-0&at=12.132`
+- Cut, minimal into Berlin: `?seed=decks-0&at=5.100`
+- Cut, Berlin into minimal: `?seed=decks-3&at=8.132`
+
+### Heard (2026-11-16), and the overlaps reworked
+
+The two-deck set was listened to. Verdict: "bass swap is fine, it's not much
+of a mix because low-end / mix-in basically always goes back to pure beat
+rather than actually mixing 2 things in flight." Berlin techno sounds
+distinct, and the builds into drops are still fat.
+
+Why it sounded that way: each track's grid thinned it to the kick over its
+last 16 bars and started it from the kick over its first 16, and the deck
+without the low end played drums only. Every transition passed through
+little more than two kicks.
+
+What changed, in `src/engine/set.ts` (and one rule in `grid.ts`):
+
+- A track no longer thins toward its end, and the set, not the grid, brings
+  the incoming in. Both decks play pitched parts in an overlap. The rules
+  are under "Interleaving" above.
+- Blends are 32 bars and start in the outgoing track's body. A filter's
+  overlap ends where the incoming's body starts, so it lands on a body and
+  not on the second phrase of a mix-in.
+- A breakdown's second phrase has lines and hats of both tracks and the
+  incoming's pad, not a stab and a hat.
+- A set's track arrives whole (see above).
+- A deck's levellers reset at its first bar of a track, whichever bar that
+  is (`player.ts`): a track cut or filtered into never sends its bar 0.
+
+The same seed gives the same tracks in the same order with the same kinds of
+transition, and a different arrangement in and after each overlap.
+
+Measured after the rework (nobody has listened to it):
+
+- Parts per deck across a long blend, every 4 bars, mean of 203 blends in 12
+  sets: outgoing 6.8 6.3 5.9 5.6, then after the swap 4.0 4.0 3.6 2.7;
+  incoming 3.0 3.7 4.1 4.1, then 5.3 5.3 5.3 5.4. The outgoing has 3 to 9
+  parts at the start of an overlap (mean 5.9). A pitched part of each deck
+  sounds in 80 to 90% of a blend's bars (a stab may hit once in four).
+- Through the worker (`decks.test.ts`, 24 kHz, the first transition of each
+  type): the sum of both decks stays within -0.3 and +0.9 dB of the body
+  before across the blend, with no step over 0.5 dB from bar to bar, into or
+  out of it; a filter sits 2 to 3 dB above the outgoing's held mix-out, and
+  the incoming's body it lands on is 1.5 dB above that. Stems peak at 0.19 in the
+  blend and 0.30 at most (an impact).
+- Above 200 Hz, where a track's own parts are, against the outgoing's body:
+  before the swap the incoming is 6 to 10 dB down once its line is in; after
+  it the outgoing is 8 to 18 dB down, bar by bar with its stab, until it
+  fades. In a filter the outgoing is 3 to 5 dB down for the first half.
+- The low end is one deck's as before: the other deck adds under 0.1 dB
+  below 150 Hz in any bar; across the swap it moves 1.3 dB beat to beat.
+- A breakdown's second phrase is 10 to 15 dB below the body before it (it
+  was 35 to 47 dB down in the browser before), and 20 to 30 dB down below
+  150 Hz, on purpose.
+
+Not known until it is heard: whether a deck 6 dB under the other above
+200 Hz reads as a second track or as a background; whether two running lines
+in neighbouring keys clash (the rule allows one a deck); whether 32 bars is
+too long a blend for a track of 112.
 
 ## Step 6: travel (M, plus S per style)
 
@@ -1054,8 +1164,9 @@ Sound, in Node through the synth:
   goal asks for constant change. The arrangement grid's rates decide which
   side a style falls on; they belong in the style, not in the code.
 - **Blends that clash.** Compatible keys do not guarantee two tracks sound
-  good together. Interleaving parts keeps leads out of the overlap; if pads
-  still muddy, only one deck's pad plays at a time, like the bass.
+  good together. Since the rework both decks play pitched parts in an
+  overlap: one deck's pads at a time and one running line a deck (see
+  "Interleaving" under step 5). Whether that clashes is not known by ear.
 - **`Player` extraction** at step 5 touches the two shipped apps. It needs
   the same bit-identical discipline as the last round, plus a browser check
   of both.
