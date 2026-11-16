@@ -394,9 +394,10 @@ test("two decks: one low end, one set of pitched parts, and the styles' limits a
         if (cut.to < 150) assert.ok((cut.at ?? 0) >= 3.5 && run[i + 1]!.dominant === other.deck, `${where}: opens only into the swap`);
         assert.equal(deckMoves(s, dom.deck, "lowCut").filter((m) => m.from >= 150 && (m.at ?? 0) === 0).length, 0, `${where}: the dominant kick's lows are open`);
       }
-      // A breakdown's second phrase has no kick at all.
+      // A breakdown's second phrase has no kick and no bass at all.
       if (t.type === "breakdown" && t.bar >= t.bars / 2) {
         assert.equal(kicks.length, 0, where);
+        assert.ok(!s.decks.some((d) => d.bar.notes.some((n) => n.role === "bass")), where);
         noKick++;
       }
       // Every move names a deck in the slice, and each deck's bar carries its own.
@@ -455,4 +456,26 @@ test("two decks: a skip in a transition goes on with the incoming track alone; o
   c.skip();
   const after = c.nextSlice();
   assert.deepEqual([after.decks.length, after.decks[0]!.bar.info.pieceIndex, after.decks[0]!.bar.info.barInPiece], [1, run[at]!.transition!.to + 1, 0]);
+});
+
+test("two decks: between two styles, each deck plays its own style and the lower of their limits holds for the sum", () => {
+  const both = [byId("minimal_techno"), byId("berlin_techno")];
+  const most = Math.min(...both.map((s) => s.corpus.arrangement!.most!));
+  const types = new Map<string, number>();
+  let across = 0;
+  for (const seed of ["x1", "x2", "x3"]) {
+    const c = new SetConductor(both, `styles-${seed}`);
+    for (let i = 0; i < 3000; i++) {
+      const s = c.nextSlice();
+      if (s.decks.length < 2) continue;
+      const [a, b] = s.decks.map((d) => d.bar.info) as [Bar["info"], Bar["info"]];
+      if (a.styleId === b.styleId) continue;
+      across++;
+      if (s.transition!.bar === 0) types.set(s.transition!.type, (types.get(s.transition!.type) ?? 0) + 1);
+      assert.ok(a.parts!.length + b.parts!.length <= most, `${seed} slice ${i}: ${a.parts} + ${b.parts}`);
+      for (const d of s.decks) assert.equal(d.bar.deck, d.deck);
+    }
+  }
+  console.log(`between the two styles: ${across} bars with both, ${[...types].map(([t, n]) => `${t} ${n}`).join(", ")}`);
+  assert.ok(across > 200 && types.size >= 3);
 });

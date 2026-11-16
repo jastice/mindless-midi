@@ -105,7 +105,8 @@ test("a set over both styles: both play, every change keeps tempo and key, and t
       if (info.pieceIndex !== last) {
         last = info.pieceIndex;
         assert.equal(i % PHRASE_BARS, 0, "a track starts on a phrase");
-        const track = { style: info.styleId, bpm: bar.bpm, key: { tonic: info.tonic, mode: info.mode }, bars: info.pieceBars };
+        // (The bar's own tempo may be part way through the ramp from the track before: the track's is its plan's.)
+        const track = { style: info.styleId, bpm: c.trackPlan(info.pieceIndex)!.bpm, key: { tonic: info.tonic, mode: info.mode }, bars: info.pieceBars };
         if (before) {
           assert.ok(Math.abs(track.bpm / before.bpm - 1) <= MAX_TEMPO_STEP + 1e-9, `${seed}: ${before.bpm} to ${track.bpm}`);
           assert.ok(keysCompatible(track.key, before.key), `${seed}: ${JSON.stringify(before.key)} to ${JSON.stringify(track.key)}`);
@@ -564,13 +565,9 @@ async function run(style: StyleBundle, bars: Bar[]): Promise<{ roles: Map<Role, 
 /** The first whole track of a set over one style, at a tempo both styles can play. */
 function track(style: StyleBundle, seed: string): Bar[] {
   const opts: PieceOptions = { minSeconds: 180, maxSeconds: 360, expression: { gestures: true, velocityFloor: FLOOR } };
-  const c = new SetConductor([style], seed, opts);
-  const bars: Bar[] = [];
-  for (;;) {
-    const bar = c.nextBar();
-    if (bar.info.pieceIndex > 0) return bars;
-    bars.push(bar);
-  }
+  // The track's own bars, at its own tempo: in the set its last bars overlap the next track's.
+  const piece = new SetConductor([style], seed, opts).trackPiece(0);
+  return Array.from({ length: piece.totalBars }, (_, b) => piece.renderBar(b, b));
 }
 
 test("a whole track through the worker: near minimal techno's level, heavier below 100 Hz, mono lows, nothing clipping", async () => {

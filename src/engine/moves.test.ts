@@ -11,7 +11,7 @@ import { Conductor } from "./conductor.js";
 import { mixBars } from "./grid.js";
 import { moveValue } from "./moves.js";
 import { DEFAULT_PIECE_OPTIONS, Piece, type PieceOptions } from "./piece.js";
-import { SetConductor } from "./set.js";
+import { SetConductor, type Slice } from "./set.js";
 import { type Bar, type Move, OPEN_HIGH, OPEN_LOW } from "./types.js";
 
 const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles;
@@ -178,14 +178,16 @@ test("moves are deterministic and the same after a seek, through the set conduct
   const p = track("same");
   const all = barsOf(track("same"));
   for (const b of [90, 7, 140, 60, 61, 62, 63]) assert.deepEqual(p.renderBar(b, b).moves, all[b]!.moves);
-  const run = Array.from({ length: 1500 }, ((c) => () => c.nextBar())(new SetConductor([TECHNO], "seek-moves")));
-  assert.ok(run.some((b) => b.info.build) && run.some((b) => b.moves?.length));
-  for (const [t, bar] of [[1, 0], [2, 61], [3, 7], [4, 100]] as const) {
-    const at = run.findIndex((b) => b.info.pieceIndex === t && b.info.barInPiece === bar);
+  // Through the set conductor, on both decks where tracks overlap (with the transition's moves on them).
+  const slice = (s: Slice) => JSON.stringify([s.moves, s.decks.map((d) => key(d.bar))]);
+  const run = Array.from({ length: 1500 }, ((c) => () => c.nextSlice())(new SetConductor([TECHNO], "seek-moves")));
+  assert.ok(run.some((s) => s.decks[0]!.bar.info.build) && run.some((s) => s.decks[0]!.bar.moves?.length));
+  for (const [t, bar] of [[1, 0], [1, 5], [2, 61], [3, 7], [4, 100]] as const) {
+    const at = run.findIndex((s) => s.decks.some((d) => d.bar.info.pieceIndex === t && d.bar.info.barInPiece === bar));
     assert.ok(at >= 0);
     const c = new SetConductor([TECHNO], "seek-moves");
     c.seek(t, bar);
-    for (let j = 0; j < 64; j++) assert.equal(key(c.nextBar()), key(run[at + j]!), `track ${t} bar ${bar} + ${j}`);
+    for (let j = 0; j < 64; j++) assert.equal(slice(c.nextSlice()), slice(run[at + j]!), `track ${t} bar ${bar} + ${j}`);
   }
 });
 

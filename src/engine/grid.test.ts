@@ -11,7 +11,7 @@ import { Conductor } from "./conductor.js";
 import { type GridPart, type GridSection, PHRASE_BARS, SLOT_BARS, TURN_STEP, mixBars, planGrid } from "./grid.js";
 import { evolveLanes, evolveMotif } from "./parts.js";
 import { DEFAULT_PIECE_OPTIONS, Piece, type PieceOptions } from "./piece.js";
-import { SetConductor, mixLeaveOut } from "./set.js";
+import { SetConductor, type Slice, mixLeaveOut } from "./set.js";
 import type { Bar } from "./types.js";
 
 const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles;
@@ -215,37 +215,40 @@ test("the grid is deterministic, and the same after a seek", () => {
   const p = track("same");
   const q = track("same");
   for (const b of [57, 3, 120, 16]) assert.deepEqual(q.renderBar(b, 0).info, barsOf(p)[b]!.info);
-  // And through the set conductor, notes and all.
-  const run = Array.from({ length: 1200 }, ((c) => () => c.nextBar())(new SetConductor([TECHNO], "seek-parts")));
-  for (const [t, bar] of [[1, 0], [2, 61], [3, 7]] as const) {
-    const at = run.findIndex((b) => b.info.pieceIndex === t && b.info.barInPiece === bar);
+  // And through the set conductor, notes and all, on both decks where tracks overlap.
+  const slice = (s: Slice) => JSON.stringify(s.decks.map((d) => key(d.bar)));
+  const run = Array.from({ length: 1200 }, ((c) => () => c.nextSlice())(new SetConductor([TECHNO], "seek-parts")));
+  for (const [t, bar] of [[1, 0], [1, 9], [2, 61], [3, 7]] as const) {
+    const at = run.findIndex((s) => s.decks.some((d) => d.bar.info.pieceIndex === t && d.bar.info.barInPiece === bar));
     assert.ok(at >= 0);
     const c = new SetConductor([TECHNO], "seek-parts");
     c.seek(t, bar);
-    for (let j = 0; j < 64; j++) assert.equal(key(c.nextBar()), key(run[at + j]!), `track ${t} bar ${bar} + ${j}`);
+    for (let j = 0; j < 64; j++) assert.equal(slice(c.nextSlice()), slice(run[at + j]!), `track ${t} bar ${bar} + ${j}`);
   }
 });
 
 test("a set over minimal techno: every track mixes in and out by part, and the set's lift thins and fills the grid", () => {
+  // Each track's own grid, before the set's decks interleave two of them (see set.test.ts for that).
   const c = new SetConductor([TECHNO], "set-parts");
   const perTrack = new Map<number, { lift: number; parts: number; bars: number; firsts: string[][] }>();
   let last: Bar | undefined;
-  for (let i = 0; i < 6000; i++) {
-    const bar = c.nextBar();
-    const t = bar.info.pieceIndex;
-    const b = bar.info.barInPiece;
-    const rec = perTrack.get(t) ?? { lift: c.trackPlan(t)!.lift, parts: 0, bars: 0, firsts: [] };
-    perTrack.set(t, rec);
-    rec.parts += bar.info.parts!.length;
-    rec.bars++;
-    if (b === 0) {
-      assert.deepEqual(bar.info.parts, ["kick"], `track ${t} starts on its kick`);
-      // The track before ended on little: the cut is from a kick and one more to a kick.
-      if (last) assert.ok(last.info.parts!.length <= 2, `track ${t - 1} ends on ${last.info.parts}`);
+  for (let t = 0; t < 30; t++) {
+    const piece = c.trackPiece(t);
+    for (let b = 0; b < piece.totalBars; b++) {
+      const bar = piece.renderBar(b, b);
+      const rec = perTrack.get(t) ?? { lift: c.trackPlan(t)!.lift, parts: 0, bars: 0, firsts: [] };
+      perTrack.set(t, rec);
+      rec.parts += bar.info.parts!.length;
+      rec.bars++;
+      if (b === 0) {
+        assert.deepEqual(bar.info.parts, ["kick"], `track ${t} starts on its kick`);
+        // The track before ended on little: a kick and one more.
+        if (last) assert.ok(last.info.parts!.length <= 2, `track ${t - 1} ends on ${last.info.parts}`);
+      }
+      if (b < 16 && b % 4 === 0) rec.firsts.push(bar.info.parts!);
+      for (const n of bar.notes) assert.ok(bar.info.parts!.includes(n.part!));
+      last = bar;
     }
-    if (b < 16 && b % 4 === 0) rec.firsts.push(bar.info.parts!);
-    for (const n of bar.notes) assert.ok(bar.info.parts!.includes(n.part!));
-    last = bar;
   }
   const tracks = [...perTrack.values()].filter((r) => r.bars > 100);
   assert.ok(tracks.length >= 20, `${tracks.length} tracks`);

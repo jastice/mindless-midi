@@ -13,8 +13,8 @@
  *   blend      16 bars. The incoming track's mix-in plays over the outgoing
  *              track's mix-out, its lows cut; half way, on the phrase, the low
  *              end and the pitched parts change hands (the bass swap).
- *   breakdown  A blend whose second phrase has no kick on either deck; the
- *              incoming kick lands after it, on an impact.
+ *   breakdown  A blend whose second phrase has no kick and no bass on either
+ *              deck; the incoming low end lands after it, on an impact.
  *   filter     8 bars. The outgoing track is high-passed away while the
  *              incoming enters under a riser, and lands on an impact.
  *   cut        No overlap. The outgoing plays to the phrase before its
@@ -169,9 +169,12 @@ export const deckOf = (track: number): 0 | 1 => (track % 2) as 0 | 1;
 const CUT_RAMP = PHRASE_BARS;
 /** Bars before a track's end from which its transition is looked up: the longest reach of one (a cut's ramp). */
 const REACH = MIX_BARS + CUT_RAMP;
-/** A step in `lift` at least this big is going up or down; one this big is a big step. */
-const STEP = 0.04;
-const BIG_STEP = 0.14;
+/**
+ * A step in `lift` at least this big is going up or down; one this big is a big step. Successive tracks' lifts
+ * differ by 0.12 at the median (the wave moves a lot over a track), so these sit near the 30th and 93rd percentiles.
+ */
+const STEP = 0.08;
+const BIG_STEP = 0.22;
 /** The deck without the low end is cut below this, Hz; and where the cut ends up in a blend's and a filter's last bar. */
 const LOW_CUT = 180;
 const BLEND_CUT = 450;
@@ -228,6 +231,11 @@ export class SetConductor implements BarSource {
     const t = this.chosen[i];
     if (!t) return null;
     return { styleId: t.style.id, bpm: t.bpm, lift: t.lift, target: t.target, start: t.start, seconds: t.seconds };
+  }
+
+  /** Track `i`'s piece, as the set plays it before the decks are interleaved (choosing it first if need be). */
+  trackPiece(i: number): Piece {
+    return this.pieceOf(i);
   }
 
   /** How track `i` hands over to the next, once both have been chosen (null before). */
@@ -352,9 +360,9 @@ export class SetConductor implements BarSource {
       const s = a.bar - t.start;
       const dominant = s >= t.swap ? deckOf(inc.index) : out;
       let other = this.render(inc, index, bpm);
-      const noKick = t.type === "breakdown" && s >= t.swap;
-      if (dominant === out) [bar, other] = interleave(bar, other, a.piece.style, inc.piece.style, noKick);
-      else [other, bar] = interleave(other, bar, inc.piece.style, a.piece.style, noKick);
+      const breakdown = t.type === "breakdown" && s >= t.swap;
+      if (dominant === out) [bar, other] = interleave(bar, other, a.piece.style, inc.piece.style, breakdown);
+      else [other, bar] = interleave(other, bar, inc.piece.style, a.piece.style, breakdown);
       const moves = overlapMoves(t, s, out, deckOf(inc.index), bar.beats);
       bar = withMoves(bar, moves);
       other = withMoves(other, moves);
@@ -556,19 +564,20 @@ function only(bar: Bar, keep: string[]): Bar {
  * second bass, pad or line), and of those only what fits beside the dominant
  * track under the styles' limits counted across both: `most` in all and each
  * group's own (the lower of the two styles' where both name one). Its kick
- * always plays; the transition's moves take its lows. `noKick` leaves both
- * kicks out (a breakdown).
+ * always plays; the transition's moves take its lows. `breakdown` leaves the
+ * low end out of both, kicks and bass (a breakdown's second phrase).
  */
-export function interleave(dominant: Bar, other: Bar, dominantStyle: StyleBundle, otherStyle: StyleBundle, noKick = false): [Bar, Bar] {
+export function interleave(dominant: Bar, other: Bar, dominantStyle: StyleBundle, otherStyle: StyleBundle, breakdown = false): [Bar, Bar] {
   const parts = (s: StyleBundle) => new Map((s.corpus.parts ?? []).map((p) => [p.id, p]));
   const isKick = (p: { lanes?: string[] | undefined } | undefined) => p?.lanes?.includes("kick") === true;
+  const low = (p: { lanes?: string[] | undefined; role: string } | undefined) => isKick(p) || p?.role === "bass";
   const dp = parts(dominantStyle);
   const op = parts(otherStyle);
   const da = dominantStyle.corpus.arrangement;
   const oa = otherStyle.corpus.arrangement;
   const most = Math.min(da?.most ?? Infinity, oa?.most ?? Infinity);
   const limit = (g: string) => Math.min(da?.groups?.[g] ?? Infinity, oa?.groups?.[g] ?? Infinity);
-  const keepD = (dominant.info.parts ?? []).filter((id) => !(noKick && isKick(dp.get(id))));
+  const keepD = (dominant.info.parts ?? []).filter((id) => !(breakdown && low(dp.get(id))));
   const count = new Map<string, number>();
   for (const id of keepD) {
     const g = dp.get(id)?.group;
@@ -580,7 +589,7 @@ export function interleave(dominant: Bar, other: Bar, dominantStyle: StyleBundle
     const p = op.get(id);
     if (!p || p.role !== "drums") continue;
     if (isKick(p)) {
-      if (noKick) continue;
+      if (breakdown) continue;
     } else if (total >= most || (p.group !== undefined && (count.get(p.group) ?? 0) >= limit(p.group))) continue;
     keepO.push(id);
     total++;
