@@ -90,7 +90,24 @@ async function run(style: StyleBundle, engine: StemEngine, weighted: boolean, ba
     cleared = resolve;
     send({ type: "clear", from: start });
   });
+  if (process.env.PRINT_EXACT) console.log(`exact ${exact.length} ${style.id}/${engine}/${weighted ? "weighted" : "plain"}/${bars}: ${exactHash(posted)}`);
+  exact.push(style.id);
   return fingerprint(posted);
+}
+
+/**
+ * Every sample the worker posted, bit for bit. Not asserted (the last bits differ between CPUs): with
+ * PRINT_EXACT set each run prints it, to compare by hand on one machine before and after a change to the worker.
+ */
+const exact: string[] = [];
+function exactHash(msgs: ToStems[]): string {
+  const h = createHash("sha256");
+  for (const msg of msgs) {
+    if (msg.type !== "pcm") continue;
+    h.update(`${msg.start}/${msg.frames}/${msg.roles.join(",")}`);
+    for (const d of msg.data) h.update(new Uint8Array(d.buffer, d.byteOffset, d.byteLength));
+  }
+  return h.digest("hex").slice(0, 24);
 }
 
 /**
