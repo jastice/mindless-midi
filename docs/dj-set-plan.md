@@ -1013,6 +1013,15 @@ Not known until it is heard: whether a deck 6 dB under the other above
 in neighbouring keys clash (the rule allows one a deck); whether 32 bars is
 too long a blend for a track of 112.
 
+Heard again after the rework: "crossmixing seems to work fine most of the
+time, but the blend just before 4.130 sounds broken" (`?seed=decks-0`). There
+the blend began exactly where the outgoing track's own form cooled from its
+peak (0.72 to 0.42): its hats fell from 13 hits a bar to 4 and half its parts
+went silent just as the incoming track came in quietly. Fixed in
+`src/engine/piece.ts`: for a set's track with parts, the section before the
+last cools by at most 0.1 (`TAIL_COOLING`) from the one before it, so the mix
+does the cooling. Not heard yet.
+
 ## Step 6: travel (M, plus S per style)
 
 Model: Opus for the conductor rules; Fable for the first corpus and the patches of each new

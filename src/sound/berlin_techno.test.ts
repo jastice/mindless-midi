@@ -126,8 +126,8 @@ test("a set over both styles: both play, every change keeps tempo and key, and t
         builds++;
         assert.ok(!on.includes("kick") && on.includes("roll"), "a build: kick out, roll in");
       }
-      // The ride waits for a hot section.
-      if (on.includes("ride")) assert.ok(info.intensity >= 0.8 - 1e-9, `ride at ${info.intensity}`);
+      // The ride waits for a hot section (a mix-out holds what the body's last bar had, so not there).
+      if (on.includes("ride") && info.barInPiece < info.pieceBars - 16) assert.ok(info.intensity >= 0.8 - 1e-9, `ride at ${info.intensity}`);
     }
   }
   const berlin = tracks.filter((t) => t.style === "berlin_techno");

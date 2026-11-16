@@ -91,6 +91,8 @@ interface PartMaterial {
 
 /** Chance per phrase that a part's pattern takes one small step, where the style does not say. */
 const DEFAULT_EVOLVE = 0.2;
+/** Most a set's track cools going into the section before its last, where the next track is mixed in. */
+export const TAIL_COOLING = 0.1;
 
 /** A stretch of a piece: a section, or the ending. */
 export interface Segment {
@@ -205,7 +207,7 @@ export class Piece {
     const sections: PlannedSection[] = [];
     let bar = 0;
     let transpose = 0;
-    const push = (s: (typeof body)[number], pass: number, vary: Rng) => {
+    const push = (s: (typeof body)[number], pass: number, vary: Rng, hold = false) => {
       let roles = [...s.roles];
       let intensity = s.intensity;
       if (pass > 0 && !FRAME_LABELS.test(s.label)) {
@@ -213,6 +215,9 @@ export class Piece {
         intensity = clamp01(intensity + vary.float(-0.08, 0.12));
       }
       if (opts.lift) intensity = clamp01(intensity + opts.lift);
+      // A set mixes out of a track's body: the section before its last stays near the one before it, and the mix does the cooling.
+      const before = sections[sections.length - 1];
+      if (hold && before) intensity = Math.max(intensity, before.intensity - TAIL_COOLING);
       const bars = this.set ? Math.ceil(s.bars / 4) * 4 : s.bars;
       const material = materialFor(s.label, s.progression);
       const harmony = new Harmony(material.progression, bars * c.beatsPerBar);
@@ -236,6 +241,8 @@ export class Piece {
       });
       bar += bars;
     };
+    // Only a set's track with parts hands over in an overlap (see set.ts).
+    const holdsTail = this.set && c.parts !== undefined && tail.length === 0;
     for (const s of head) push(s, 0, plan.fork(`head:${s.label}`));
     for (let p = 0; p < passes; p++) {
       const vary = plan.fork(`pass:${p}`);
@@ -243,7 +250,7 @@ export class Piece {
         const step = vary.pick([2, -2, 5, -3, 1]);
         if (!this.set) transpose += step;
       }
-      for (const s of body) push(s, p, vary.fork(`${s.label}:${sections.length}`));
+      for (const [i, s] of body.entries()) push(s, p, vary.fork(`${s.label}:${sections.length}`), holdsTail && p === passes - 1 && i === body.length - 2);
     }
     for (const s of tail) push(s, 0, plan.fork(`tail:${s.label}`));
     const last = sections[sections.length - 1]!;

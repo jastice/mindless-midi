@@ -625,3 +625,23 @@ test("two decks: between two styles, each deck plays its own style and the lower
   console.log(`between the two styles: ${across} bars with both, ${[...types].map(([t, n]) => `${t} ${n}`).join(", ")}`);
   assert.ok(across > 200 && types.size >= 3);
 });
+
+test("a track does not thin out under the start of a blend: the section before its last stays near the one before it", () => {
+  let blends = 0;
+  for (let k = 0; k < 6; k++) {
+    const c = new SetConductor(claudia, `decks-${k}`);
+    const bars = take(c, 3000);
+    for (const [i, bar] of bars.entries()) {
+      const t = bar.transition;
+      if (!t || t.type !== "blend" || t.bar !== 0 || !bars[i - 1]) continue;
+      blends++;
+      // The outgoing track, on whichever side of the slice it is.
+      const out = bar.info.pieceIndex === t.from ? bar : bar.with!;
+      const before = bars[i - 1]!;
+      assert.equal(before.info.pieceIndex, t.from);
+      assert.ok(out.info.intensity >= before.info.intensity - 0.1 - 1e-9, `decks-${k} track ${t.from + 1} bar ${out.info.barInPiece + 1}: ${before.info.intensity} -> ${out.info.intensity}`);
+      assert.ok((out.info.parts ?? []).length >= 4, `decks-${k} track ${t.from + 1}: ${out.info.parts}`);
+    }
+  }
+  assert.ok(blends > 10, `${blends} blends`);
+});
