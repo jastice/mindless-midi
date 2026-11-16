@@ -60,6 +60,7 @@ filegroup(
 CLAUDIA_STYLES = [
     "minimal_techno",
     "berlin_techno",
+    "psychedelic_house",
 ]
 
 style_pack(
