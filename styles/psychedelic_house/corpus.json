@@ -78,7 +78,7 @@
       "program": 80,
       "octave": 5,
       "patch": "pluck",
-      "volume": 0.3,
+      "volume": 0.26,
       "pan": 0.2
     },
     {
@@ -87,7 +87,7 @@
       "program": 89,
       "octave": 4,
       "patch": "pad",
-      "volume": 0.26,
+      "volume": 0.22,
       "pan": -0.1
     },
     {
@@ -96,7 +96,7 @@
       "program": 90,
       "octave": 4,
       "patch": "organ",
-      "volume": 0.36,
+      "volume": 0.3,
       "pan": -0.15
     },
     {
@@ -105,7 +105,7 @@
       "program": 38,
       "octave": 2,
       "patch": "bass",
-      "volume": 0.7,
+      "volume": 0.8,
       "pan": 0
     },
     {
@@ -1786,7 +1786,7 @@
         {
           "label": "a",
           "bars": 16,
-          "intensity": 0.2,
+          "intensity": 0.3,
           "roles": [
             "drums",
             "bass"
@@ -1866,7 +1866,7 @@
         {
           "label": "a",
           "bars": 16,
-          "intensity": 0.2,
+          "intensity": 0.3,
           "roles": [
             "drums",
             "bass"
@@ -1875,7 +1875,7 @@
         {
           "label": "a",
           "bars": 32,
-          "intensity": 0.55,
+          "intensity": 0.45,
           "roles": [
             "drums",
             "bass",
@@ -1934,7 +1934,7 @@
         {
           "label": "a",
           "bars": 16,
-          "intensity": 0.2,
+          "intensity": 0.3,
           "roles": [
             "drums",
             "bass"
@@ -2012,7 +2012,7 @@
         {
           "label": "a",
           "bars": 16,
-          "intensity": 0.2,
+          "intensity": 0.3,
           "roles": [
             "drums",
             "bass"
@@ -2091,7 +2091,7 @@
         {
           "label": "a",
           "bars": 16,
-          "intensity": 0.2,
+          "intensity": 0.3,
           "roles": [
             "drums",
             "bass"
@@ -2170,7 +2170,7 @@
         {
           "label": "a",
           "bars": 16,
-          "intensity": 0.2,
+          "intensity": 0.3,
           "roles": [
             "drums",
             "bass"
@@ -2179,7 +2179,7 @@
         {
           "label": "a",
           "bars": 32,
-          "intensity": 0.55,
+          "intensity": 0.45,
           "roles": [
             "drums",
             "bass",
@@ -2335,7 +2335,7 @@
       "patch": "acid",
       "material": "acid",
       "octave": 3,
-      "volume": 0.28,
+      "volume": 0.25,
       "enters": 0.4,
       "group": "line"
     },
@@ -2351,7 +2351,7 @@
       "role": "comp",
       "patch": "keys",
       "material": "keys",
-      "volume": 0.26,
+      "volume": 0.22,
       "enters": 0.55,
       "group": "line"
     },
