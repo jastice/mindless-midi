@@ -11,7 +11,9 @@ under step 3). Step 5 is built (2026-11-16): tracks overlap on two decks in
 four kinds of transition, with one low end and the two grids interleaved. It
 was heard on 2026-11-16 and the overlaps were reworked so that two tracks are
 in flight together; the rework has been measured and not yet heard (see
-"Built" and "Heard" under step 5). This was first written against `main` at `b4dabe6`; where it says "new", check first whether later work already has it.
+"Built" and "Heard" under step 5). The set now travels between three styles:
+psychedelic house was added on 2026-11-17 (under step 6), and a slid note on
+a patch with `glide` is tied (under step 2); neither has been heard. This was first written against `main` at `b4dabe6`; where it says "new", check first whether later work already has it.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
 
@@ -1107,6 +1109,59 @@ tuned by measurement (`src/sound/berlin_techno.test.ts`).
 - With two styles the set alternates them at every track (`choose` leaves
   out the style just played), so Berlin techno plays at 130 to 135 after
   minimal techno and reaches 136 and up only as a first track.
+
+**Psychedelic house, built (2026-11-17)**, by hand, in
+`styles/psychedelic_house` and in the `//styles:claudia` pack. Nobody has
+listened: the sounds were tuned by measurement
+(`src/sound/psychedelic_house.test.ts`). It was played in a browser from the
+worktree (Synth): a track, a blend into it and one out of it, no console
+errors.
+
+- 118 to 126 bpm, swing 0.2 on sixteenths (under 11 ms). 15 keys: a dorian,
+  an aeolian and a mixolydian on each of five scales a fifth apart (C, G, F,
+  D, B flat), so every key has neighbours here and in both technos. The
+  chords have no third of their own (`i7sus4`, `i9sus4`, `i5`, `Isus2`,
+  `bVII`, `v7`), so one set of progressions serves the three modes and the
+  mode's colour is in the lines. Six forms of 128 to 160 bars: a breakdown
+  without the low end, a build (8 bars for 0.85 of them, the longest the
+  grid has), a peak. The mix-in section is at 0.3, not 0.2: at 0.2 a filter
+  landed on the body 3.8 dB up (`decks.test.ts` allows 3.5).
+- 14 parts: kick, hat, open hat, clap, shaker, congas (tuned), bongo
+  (tuned), roll, bass, pluck, acid, organ, keys, pad. `most` 9; `line` 3,
+  `perc` 2, `noise` 2 (open hat and shaker are the only noise parts).
+- The kick is soft and has no rumble: 93% under 80 Hz, a strike a third as
+  bright as Berlin techno's, gone in 0.42 s. The bass is a sine with FM at
+  twice its pitch, and every bass note is off the beat: on the beat the kick
+  has the low end alone, off it the bass is 8 dB over what is left of the
+  kick. A whole track is at the technos' level (-24 dB) with less of it
+  under 100 Hz (59% against 66% and 69%).
+- The acid line is a square through a low-pass at q 9 with `glide` and
+  `accent`; every slide in its figures touches the note before, so it is
+  tied. Its cutoff moves three ways: inside a note, over 24 bars (the
+  patch's modulator), and across a section (`drift` 0.6). It plays in 56% of
+  the style's bars.
+- **The acid line in an overlap.** The set plays one running line on the
+  deck without the low end: a deck's coolest. That is the pluck (`enters`
+  0.2, the acid line 0.4), which keeps to the tonic, fourth, fifth and
+  octave, the degrees every compatible key shares, a few notes in loops of
+  two, three and five bars. Over 4 sets of 5000 bars the deck without the
+  low end played the pluck in 776 of 960 bars and the acid line in 32 (where
+  the track's body had the acid line and no pluck). The acid line is in the
+  `line` group, an octave above the bass, at most nine notes a bar.
+- It has a mix preset (`PRESETS` in `src/sound/bus.ts`): dotted-eighth
+  echoes on the arp and comp roles, a chorused pad, light ducking. It has no
+  entry in `weight.ts` and takes the middle weight.
+- With three styles a set no longer alternates two. Over those sets: 59
+  minimal, 56 Berlin, 52 psychedelic house tracks; every ordered pair
+  overlaps (17 to 32 times); a style waits 12 tracks at most, while a leg
+  heads for the other end of the tempo span. The 3% step wins over a style's
+  range, so psychedelic house plays at 120 to 131 bpm (in its own range 37
+  times of 52) and Berlin techno down to 126. Keeping a style inside its
+  range is the "style neighbours" rule, not built.
+- Unheard: everything. The first suspects are the acid line's resonance, the
+  level of the kit's hats and clap against the soft kick, whether chords
+  without thirds are warm enough, and the acid line against another track's
+  line when psychedelic house has the low end.
 
 Big beat is the one that strains the scope. Its drums are traditionally
 sampled breaks, which this plan excludes. Programmed break patterns from
