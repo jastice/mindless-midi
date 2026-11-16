@@ -47,7 +47,19 @@
             <div class="beats" id="beats" aria-hidden="true" title="Beats of this bar"></div>
           </div>
           <div class="strip" id="strip" aria-hidden="true" title="The track in phrases: mix-in, body, mix-out"></div>
-          <div class="roles mono" id="roles" aria-label="Parts sounding in this bar"></div>
+          <p class="transition mono" id="transition" aria-live="polite" hidden></p>
+          <div class="decks" aria-label="Decks">
+            <div class="deck-card" id="deck-0">
+              <div class="dc-head mono"><b>Deck A</b><span class="dc-track"></span><span class="dc-tag"></span></div>
+              <div class="dc-meta mono dim"></div>
+              <div class="roles mono" aria-label="Parts sounding on deck A"></div>
+            </div>
+            <div class="deck-card" id="deck-1">
+              <div class="dc-head mono"><b>Deck B</b><span class="dc-track"></span><span class="dc-tag"></span></div>
+              <div class="dc-meta mono dim"></div>
+              <div class="roles mono" aria-label="Parts sounding on deck B"></div>
+            </div>
+          </div>
 
           <div class="transport">
             <button id="play" class="play" type="button" aria-label="Play"><span id="play-glyph" aria-hidden="true">▶</span></button>

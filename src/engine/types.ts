@@ -146,6 +146,8 @@ export interface TransitionInfo {
   to: number;
   bar: number;
   bars: number;
+  /** The bar of it from which the incoming track has the low end (a cut: `bars`, where it takes over). */
+  swap: number;
 }
 
 export interface Bar {

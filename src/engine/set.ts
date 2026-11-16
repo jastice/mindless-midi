@@ -366,14 +366,14 @@ export class SetConductor implements BarSource {
       const moves = overlapMoves(t, s, out, deckOf(inc.index), bar.beats);
       bar = withMoves(bar, moves);
       other = withMoves(other, moves);
-      slice = { index, bpm, decks: [{ deck: out, bar }, { deck: deckOf(inc.index), bar: other }], moves, dominant, transition: { type: t.type, from: a.index, to: inc.index, bar: s, bars: t.bars } };
+      slice = { index, bpm, decks: [{ deck: out, bar }, { deck: deckOf(inc.index), bar: other }], moves, dominant, transition: { type: t.type, from: a.index, to: inc.index, bar: s, bars: t.bars, swap: t.swap } };
       this.piece = dominant === out ? a.piece : inc.piece;
     } else {
       const moves = this.soloMoves(a, t, bar.beats);
       bar = withMoves(bar, moves);
       slice = { index, bpm, decks: [{ deck: out, bar }], moves, dominant: out };
       // A cut announces itself while the tempo moves toward it.
-      if (t && !t.bars && t.ramp && a.bar >= t.start - t.ramp && a.bar < t.start) slice.transition = { type: t.type, from: a.index, to: a.index + 1, bar: a.bar - (t.start - t.ramp), bars: t.ramp };
+      if (t && !t.bars && t.ramp && a.bar >= t.start - t.ramp && a.bar < t.start) slice.transition = { type: t.type, from: a.index, to: a.index + 1, bar: a.bar - (t.start - t.ramp), bars: t.ramp, swap: t.ramp };
       this.piece = a.piece;
     }
     a.bar++;
