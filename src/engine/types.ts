@@ -113,7 +113,10 @@ export type MoveTarget = "gain" | "lowCut" | "highCut" | "lows" | "reverbSend" |
  * the sound as it is.
  */
 export interface Move {
-  /** A part, a role, or everything. (`deck` is for two decks, later; nothing reads it yet.) */
+  /**
+   * A part, a role, or everything. In a set, `deck` says which deck's track it is on; with neither a part nor a
+   * role it is everything on that deck. (A track's own moves name no deck: they ride on its bar.)
+   */
   scope: { part?: string; role?: Role; deck?: 0 | 1 } | "master";
   target: MoveTarget;
   param?: string;
@@ -133,6 +136,18 @@ export interface Move {
 export const OPEN_LOW = 20;
 export const OPEN_HIGH = 20000;
 
+/** How a set gets from one track to the next (see set.ts). */
+export type TransitionType = "blend" | "filter" | "cut" | "breakdown";
+
+/** Where a bar of a set is in a transition: this bar of how many, between which tracks. */
+export interface TransitionInfo {
+  type: TransitionType;
+  from: number;
+  to: number;
+  bar: number;
+  bars: number;
+}
+
 export interface Bar {
   /** Global bar counter since the session started. */
   index: number;
@@ -143,6 +158,11 @@ export interface Bar {
   info: BarInfo;
   /** What changes in the sound over the bar, in a style with `moves`. Absent otherwise. */
   moves?: Move[];
+  /** In a set: the deck this bar's track plays on. Absent everywhere else. */
+  deck?: 0 | 1;
+  /** In a set's transition: the other deck's bar, sounding at the same time and tempo. */
+  with?: Bar;
+  transition?: TransitionInfo;
 }
 
 export function barSeconds(bar: Pick<Bar, "beats" | "bpm">): number {

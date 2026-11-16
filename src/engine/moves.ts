@@ -186,9 +186,9 @@ export function moveValue(m: Move, beat: number): number {
   return hz && m.from > 0 && m.to > 0 ? octaves(m.from, m.to, x) : m.from + (m.to - m.from) * x;
 }
 
-/** Whether a move's scope covers a part or role. "master" covers everything. */
+/** Whether a move's scope covers a part or role. "master" covers everything, and so does a scope that names only a deck. */
 export function covers(m: Move, what: { part?: string | undefined; role: Role }): boolean {
   if (m.scope === "master") return true;
   if (m.scope.part !== undefined) return m.scope.part === what.part;
-  return m.scope.role === what.role;
+  return m.scope.role === undefined || m.scope.role === what.role;
 }
