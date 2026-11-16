@@ -324,6 +324,19 @@ Decisions and gaps:
 - With `glide`, a slide starts from the previous note's pitch; the envelopes
   still retrigger (no tied 303 slide). An accent adds filter depth and
   resonance; it does not shorten the decay.
+  **Since 2026-11-16 slides are tied**, for a declared patch with `glide`
+  only: a slid note that starts within 30 ms of the end of the note before
+  carries on as that note. The voice remembers where each note ended (`Tie`
+  in `synth.ts`), takes back the release it wrote and runs on from there, so
+  the oscillator, the filter and both envelopes are one note's and only the
+  pitch moves. The filter envelope never restarts on a tie (a note has one
+  gesture, so a slid note is never also accented), and the velocity, accent
+  depth and resonance of the first note of the chain carry through it. A
+  slide after a gap, a swell, a patch without `glide` and every GM program
+  are as before. Minimal techno's acid and bass change on purpose: a slid
+  pair on the acid patch peaked at 0.50 with a 4 dB bump at the join and now
+  peaks at 0.30 with none; the pair is 0.9 dB quieter and as long as it was.
+  Not heard. An accent still does not shorten the decay.
 - A swell on a patched note is cut 2.5 s after the note ends (`renderShaped`).
 - The patch schema has not been through the generator's structured output.
 

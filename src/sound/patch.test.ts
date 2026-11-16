@@ -208,6 +208,87 @@ test("a slide on a patch with glide comes in from the note before, and an accent
   assert.ok(top({ gesture: "accent" }) > 4 * top({}), `accent: ${top({ gesture: "accent" })} against ${top({})}`);
 });
 
+test("with glide, a slid note is tied to the one it touches: one envelope, no new attack, and the pitch moves", () => {
+  // A pluck: a closing filter and a falling level, so a second attack would show in both.
+  const acid: Patch = {
+    ...BASE,
+    filter: { ...BASE.filter, cutoff: 300, q: 4, env: 3000, d: 0.08, s: 0.1 },
+    amp: { a: 0.002, d: 0.3, s: 0.3, r: 0.05 },
+    glide: 0.05,
+    accent: { cutoff: 3000, q: 4 },
+  };
+  const slide = { gesture: "slide" as const, curves: { bend: [[0, 2], [0.06, 0]] as [number, number][] } };
+  const first = () => note(0, 0.25, 50);
+  const tied = render(acid, [first(), note(0.25, 0.25, 45, slide)], 1);
+  const struck = render(acid, [first(), note(0.25, 0.25, 45)], 1);
+  const long = render(acid, [note(0, 0.5, 50)], 1);
+  const db = (x: number) => 20 * Math.log10(x);
+
+  // One envelope: the pair's level follows one note of the pair's length, and ends where it does.
+  const level = (s: Stereo) => envelope(cut(s, 0, 0.6), SR / 100);
+  const worst = Math.max(...level(tied).map((x, i) => Math.abs(db(x / level(long)[i]!))).slice(0, 50));
+  assert.ok(worst < 3, `tied against one long note: ${worst.toFixed(1)} dB`);
+  assert.ok(rms(cut(tied, 0.56, 0.6)) < 1e-6 && rms(cut(tied, 0.5, 0.54)) > 1e-3, "the pair ends with the second note's release");
+  // No attack at the join: the filter does not open again (a struck note is several times brighter there) and the level does not jump.
+  const bright = (s: Stereo) => bandShare(cut(s, 0.25, 0.29), SR, 1500, Infinity);
+  assert.ok(bright(struck) > 3 * bright(tied), `brightness after the join: struck ${bright(struck).toFixed(3)}, tied ${bright(tied).toFixed(3)}`);
+  const join = (s: Stereo) => db(rms(cut(s, 0.25, 0.26)) / rms(cut(s, 0.24, 0.25)));
+  assert.ok(join(tied) < 1 && join(struck) > join(tied) + 3, `level across the join: tied ${join(tied).toFixed(1)} dB, struck ${join(struck).toFixed(1)} dB`);
+  // No click: the waveform runs on, with no step at the join bigger than the note has anyway.
+  const step = (s: Stereo, from: number, to: number) => {
+    let m = 0;
+    for (let i = Math.round(from * SR); i < Math.round(to * SR); i++) m = Math.max(m, Math.abs(s.l[i]! - s.l[i - 1]!));
+    return m;
+  };
+  assert.ok(step(tied, 0.245, 0.255) <= step(tied, 0.2, 0.245) * 1.05, `step at the join ${step(tied, 0.245, 0.255)}, before it ${step(tied, 0.2, 0.245)}`);
+  // The pitch moves: D3 (146.8 Hz) to A2 (110 Hz).
+  const tone: Patch = { ...acid, osc: { wave: "sine", voices: 1, detune: 0 }, filter: { ...BASE.filter, cutoff: 16000 }, amp: BASE.amp };
+  const glided = render(tone, [first(), note(0.25, 0.4, 45, slide)], 1);
+  assert.ok(Math.abs(pitch(cut(glided, 0.05, 0.25)) - 146.8) < 6, `before: ${pitch(cut(glided, 0.05, 0.25))}`);
+  assert.ok(Math.abs(pitch(cut(glided, 0.45, 0.65)) - 110) < 6, `after: ${pitch(cut(glided, 0.45, 0.65))}`);
+  console.log(`tied slide: within ${worst.toFixed(1)} dB of one long note; ${join(tied).toFixed(1)} dB across the join (struck ${join(struck).toFixed(1)}); share above 1.5 kHz after it ${bright(tied).toFixed(3)} (struck ${bright(struck).toFixed(3)})`);
+
+  // Ties chain: three notes are still one envelope.
+  const chain = render(acid, [first(), note(0.25, 0.125, 45, slide), note(0.375, 0.125, 52, slide)], 1);
+  const chained = Math.max(...level(chain).map((x, i) => Math.abs(db(x / level(long)[i]!))).slice(0, 50));
+  assert.ok(chained < 3, `a chain against one long note: ${chained.toFixed(1)} dB`);
+});
+
+test("a tie changes nothing else: unslid notes, slides that do not touch, and patches without glide are the same samples", () => {
+  const acid: Patch = { ...BASE, filter: { ...BASE.filter, cutoff: 300, q: 4, env: 3000, d: 0.08, s: 0.1 }, amp: { a: 0.002, d: 0.3, s: 0.3, r: 0.05 }, glide: 0.05, accent: { cutoff: 3000, q: 4 } };
+  const { glide: _, ...fixed } = acid;
+  const slide = { gesture: "slide" as const, curves: { bend: [[0, 2], [0.06, 0]] as [number, number][] } };
+  const same = (a: Stereo, b: Stereo, from = 0) => {
+    for (let i = Math.round(from * SR); i < a.l.length; i++) if (a.l[i] !== b.l[i] || a.r[i] !== b.r[i]) return false;
+    return true;
+  };
+  // An unslid note after a tied pair is the note it is alone.
+  const after = note(0.6, 0.2, 48);
+  assert.ok(same(render(acid, [note(0, 0.25, 50), note(0.25, 0.25, 45, slide), after], 1), render(acid, [after], 1), 0.6), "an unslid note");
+  // A plain second note is two plain notes added, as it always was.
+  const two = render(acid, [note(0, 0.25, 50), note(0.25, 0.25, 45)], 1);
+  const a = render(acid, [note(0, 0.25, 50)], 1);
+  const b = render(acid, [note(0.25, 0.25, 45)], 1);
+  assert.ok(two.l.every((x, i) => Math.abs(x - (a.l[i]! + b.l[i]!)) < 1e-6), "two plain notes");
+  // A slide after a gap is not tied: the first note keeps its release.
+  const apart = render(acid, [note(0, 0.2, 50), note(0.25, 0.25, 45, slide)], 1);
+  assert.ok(same(cut(apart, 0, 0.25), cut(render(acid, [note(0, 0.2, 50)], 1), 0, 0.25)), "a slide after a gap");
+  // Without glide a touching slide is the note's own curve, struck anew: brighter after the join than the tied one.
+  const bright = (s: Stereo) => bandShare(cut(s, 0.25, 0.29), SR, 1500, Infinity);
+  const unglided = render(fixed, [note(0, 0.25, 50), note(0.25, 0.25, 45, slide)], 1);
+  assert.ok(same(cut(unglided, 0, 0.25), cut(render(fixed, [note(0, 0.25, 50)], 1), 0, 0.25)), "no glide: the first note");
+  assert.ok(bright(unglided) > 3 * bright(render(acid, [note(0, 0.25, 50), note(0.25, 0.25, 45, slide)], 1)), "no glide: struck");
+});
+
+test("an accent still brightens, and its bark carries through a tie", () => {
+  const acid: Patch = { ...BASE, filter: { ...BASE.filter, cutoff: 200, q: 2, env: 800, d: 0.15, s: 0.3 }, glide: 0.05, accent: { cutoff: 3000, q: 4 } };
+  const slide = { gesture: "slide" as const, curves: { bend: [[0, 2], [0.06, 0]] as [number, number][] } };
+  const top = (more: Partial<ScoreNote>) => bandShare(render(acid, [note(0, 0.3, 36, more)], 0.5), SR, 800, Infinity);
+  assert.ok(top({ gesture: "accent" }) > 4 * top({}), `accent: ${top({ gesture: "accent" })} against ${top({})}`);
+  const tail = (more: Partial<ScoreNote>) => bandShare(cut(render(acid, [note(0, 0.25, 36, more), note(0.25, 0.25, 38, slide)], 1), 0.25, 0.5), SR, 800, Infinity);
+  assert.ok(tail({ gesture: "accent" }) > 2 * tail({}), `tied to an accent: ${tail({ gesture: "accent" })} against ${tail({})}`);
+});
+
 test("spread is stereo that sums to the mono sound; pan and width modulators move it", () => {
   const mono: Patch = { ...BASE, osc: { wave: "saw", voices: 3, detune: 12 } };
   const wide: Patch = { ...mono, osc: { ...mono.osc, spread: 0.8 } };

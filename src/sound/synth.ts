@@ -367,9 +367,41 @@ export function modValue(m: PatchMod, at: number, salt = 0): number {
 }
 
 /**
+ * Where a note on a designed patch with `glide` ended: the voice as it stood there and the release it then wrote,
+ * so a slid note can take the release back and carry on as the same note (a tie, as on a 303).
+ */
+interface Tie {
+  out: Stereo;
+  /** Absolute frames: where the note ended, and where the first note of its chain of ties began. */
+  end: number;
+  from: number;
+  /** The pitch it had reached. */
+  key: number;
+  /** What the chain's first note decided from its velocity and accent. */
+  head: { gain: number; open: number; rest: number; track: number; fD: number; envAmt: number; q: number };
+  oscs: number[];
+  sub: number;
+  fm: number;
+  filt: Svf;
+  side: Svf | null;
+  hp: Svf | null;
+  forms: Svf[];
+  breath: Svf;
+  noise: Noise;
+  hiss: Noise | null;
+  sideHiss: Noise | null;
+  tail: Stereo;
+}
+const ties = new WeakMap<ScoreNote, Tie>();
+/** A slid note is tied where it starts within this of the end of the note before, seconds. */
+const TIE_REACH = 0.03;
+
+/**
  * One subtractive voice from a patch. `designed` is a patch a style declared:
  * its slides are real glides and its accents open the filter, where a GM
- * family leaves both to the note's curves and velocity.
+ * family leaves both to the note's curves and velocity. With `glide`, a slid
+ * note that starts where the last ended is tied to it: the pitch moves and
+ * neither envelope starts again, so the pair is one note (see `Tie`).
  *
  * A GM family uses none of the newer parts (modulators, FM, drive, stereo,
  * band and high-pass), and each is skipped outright when absent, so those
@@ -383,49 +415,71 @@ function sub(spec: Patch, designed = false): Voice {
   return (out, n, sr, prev, touch) => {
     const v = n.vel / 127;
     const f = mtof(n.key);
+    const base = out.base ?? 0;
+    // A patch with glide remembers where each note ended, and ties a slid note to the one it touches.
+    const tying = designed && spec.glide !== undefined;
+    const before = tying && n.gesture === "slide" && prev ? ties.get(prev) : undefined;
+    const fits = before !== undefined && before.oscs.length === so.voices && (before.hiss !== null) === (wave === "noise");
+    const tie = before && fits && before.out === out && before.end >= base && Math.abs(before.end - Math.round(n.t * sr)) < TIE_REACH * sr ? before : undefined;
     // How far velocity opens the filter envelope, where the filter rests, and how fast it closes.
-    const open = touch ? 0.12 + 1.2 * Math.pow(v, 1.6) : 0.4 + 0.6 * v;
-    const rest = touch ? sf.cutoff * (0.6 + 0.6 * v) : sf.cutoff;
-    const track = touch ? sf.keytrack * (0.6 + 0.6 * v) : sf.keytrack;
-    const fD = touch ? sf.d * (1.35 - 0.7 * v) : sf.d;
+    const open = tie ? tie.head.open : touch ? 0.12 + 1.2 * Math.pow(v, 1.6) : 0.4 + 0.6 * v;
+    const rest = tie ? tie.head.rest : touch ? sf.cutoff * (0.6 + 0.6 * v) : sf.cutoff;
+    const track = tie ? tie.head.track : touch ? sf.keytrack * (0.6 + 0.6 * v) : sf.keytrack;
+    const fD = tie ? tie.head.fD : touch ? sf.d * (1.35 - 0.7 * v) : sf.d;
     let fromKey = spec.glide && prev?.legato && Math.abs(prev.t + prev.dur - n.t) < 0.03 ? prev.key : n.key;
     // A slide on a designed patch glides in from the note before (or, with none, from where its curve starts).
     if (designed && spec.glide && n.gesture === "slide") fromKey = prev && prev.key !== n.key ? prev.key : n.key + (n.curves?.bend?.[0]?.[1] ?? -1);
+    if (tie) fromKey = tie.key;
     const accent = designed && n.gesture === "accent" ? spec.accent : undefined;
-    const envAmt = accent ? sf.env + accent.cutoff : sf.env;
-    const q = accent ? sf.q + accent.q : sf.q;
-    const len = Math.ceil((n.dur + sa.r) * sr);
-    const start = Math.round(n.t * sr) - (out.base ?? 0);
-    const oscs = Array.from({ length: so.voices }, (_, i) => new Osc((i * 0.37 + n.key * 0.01) % 1));
-    const subOsc = new Osc();
-    const filt = new Svf(sr);
-    const forms = (spec.formants ?? []).map(({ freq, q }) => {
-      const s = new Svf(sr);
-      s.set(freq, q);
-      return s;
-    });
-    const hp = spec.hp ? new Svf(sr) : null;
-    hp?.set(spec.hp!, 0.7);
-    const breathFilt = new Svf(sr);
-    breathFilt.set(Math.min(9000, f * 2.5), 1.5);
-    const noise = new Noise(n.key * 15485863 + Math.round(n.t * 1000));
-    const gain = spec.level * Math.pow(v, 1.2);
+    const envAmt = tie ? tie.head.envAmt : accent ? sf.env + accent.cutoff : sf.env;
+    const q = tie ? tie.head.q : accent ? sf.q + accent.q : sf.q;
+    // A tied note starts where the last ended and its envelopes run on from the start of the chain: `lead` seconds in.
+    const start = tie ? tie.end - base : Math.round(n.t * sr) - base;
+    const lead = tie ? (tie.end - tie.from) / sr : 0;
+    const off = tie ? lead + Math.max(1, Math.round((n.t + n.dur) * sr) - tie.end) / sr : n.dur;
+    const len = tie ? Math.ceil((off - lead + sa.r) * sr) : Math.ceil((n.dur + sa.r) * sr);
+    const oscs = tie ? tie.oscs.map((p) => new Osc(p)) : Array.from({ length: so.voices }, (_, i) => new Osc((i * 0.37 + n.key * 0.01) % 1));
+    const subOsc = new Osc(tie ? tie.sub : 0);
+    const filt = tie ? tie.filt.clone() : new Svf(sr);
+    const forms = tie
+      ? tie.forms.map((s) => s.clone())
+      : (spec.formants ?? []).map(({ freq, q }) => {
+          const s = new Svf(sr);
+          s.set(freq, q);
+          return s;
+        });
+    const hp = tie ? (tie.hp?.clone() ?? null) : spec.hp ? new Svf(sr) : null;
+    if (!tie) hp?.set(spec.hp!, 0.7);
+    const breathFilt = tie ? tie.breath.clone() : new Svf(sr);
+    if (!tie) breathFilt.set(Math.min(9000, f * 2.5), 1.5);
+    const noise = tie ? tie.noise.clone() : new Noise(n.key * 15485863 + Math.round(n.t * 1000));
+    const gain = tie ? tie.head.gain : spec.level * Math.pow(v, 1.2);
     const vib = spec.vibrato;
     const vibPhase = (n.t * 1.7) % 1;
     // The newer parts.
-    const hiss = wave === "noise" ? new Noise(n.key * 7919 + Math.round(n.t * 1000) + 17) : null;
+    const hiss = wave !== "noise" ? null : tie ? tie.hiss!.clone() : new Noise(n.key * 7919 + Math.round(n.t * 1000) + 17);
     const fm = so.fm && wave !== "noise" ? so.fm : undefined;
-    let fmPhase = 0;
+    let fmPhase = tie ? tie.fm : 0;
     const lowpass = sf.type === "low";
     const band = sf.type === "band";
     const drive = spec.drive ? 1 + spec.drive : 0;
     // Stereo: the unison's side signal runs through a filter of its own and is added left, taken away right.
     const spread = so.spread && (so.voices > 1 || hiss) ? so.spread : 0;
-    const sideFilt = spread ? new Svf(sr) : null;
-    const sideHiss = spread && hiss ? new Noise(n.key * 104729 + Math.round(n.t * 1000) + 29) : null;
+    const sideFilt = !spread ? null : tie?.side ? tie.side.clone() : new Svf(sr);
+    const sideHiss = !(spread && hiss) ? null : tie?.sideHiss ? tie.sideHiss.clone() : new Noise(n.key * 104729 + Math.round(n.t * 1000) + 29);
     // Modulators run on the track's beat clock: where the note starts in beats, and how long a beat is.
     const beat = n.beat ?? DEFAULT_BEAT;
-    const pos = n.pos ?? n.t / beat;
+    const pos = tie ? (n.pos ?? n.t / beat) + (tie.end / sr - n.t) / beat : (n.pos ?? n.t / beat);
+    if (tie) {
+      // The note before goes on as this one: take back the release it wrote.
+      const at = tie.end - base;
+      for (let k = 0; k < tie.tail.l.length && at + k < out.l.length; k++) {
+        out.l[at + k]! -= tie.tail.l[k]!;
+        out.r[at + k]! -= tie.tail.r[k]!;
+      }
+    }
+    let tail: Stereo | null = null;
+    let tailAt = 0;
     let mCut = 0;
     let mPitch = 0;
     let mPw = 0;
@@ -434,6 +488,32 @@ function sub(spec: Patch, designed = false): Voice {
     let mWidth = 0;
     for (let i = 0; i < len && start + i < out.l.length; i++) {
       const t = i / sr;
+      // Time on the envelopes' clock.
+      const te = tie ? t + lead : t;
+      if (tying && !tail && te >= off) {
+        // The note ends here: remember the voice as it stands, and from here on what its release adds.
+        tail = stereo(len - i);
+        tailAt = i;
+        ties.set(n, {
+          out,
+          end: base + start + i,
+          from: tie ? tie.from : base + start,
+          key: fromKey !== n.key ? n.key + (fromKey - n.key) * Math.exp(-t / spec.glide!) : n.key,
+          head: { gain, open, rest, track, fD, envAmt, q },
+          oscs: oscs.map((o) => o.phase),
+          sub: subOsc.phase,
+          fm: fmPhase,
+          filt: filt.clone(),
+          side: sideFilt?.clone() ?? null,
+          hp: hp?.clone() ?? null,
+          forms: forms.map((s) => s.clone()),
+          breath: breathFilt.clone(),
+          noise: noise.clone(),
+          hiss: hiss?.clone() ?? null,
+          sideHiss: sideHiss?.clone() ?? null,
+          tail,
+        });
+      }
       if (mods) {
         const at = pos + t / beat;
         mCut = mPitch = mPw = mAmp = mPan = mWidth = 0;
@@ -453,10 +533,10 @@ function sub(spec: Patch, designed = false): Voice {
       if (fromKey !== n.key) key = n.key + (fromKey - n.key) * Math.exp(-t / spec.glide!);
       if (mods) key += mPitch;
       let cents = 0;
-      if (spec.scoop && fromKey === n.key) cents += spec.scoop * Math.exp(-t / 0.03);
-      if (vib && t > vib.delay) {
-        const depth = vib.depth * Math.min(1, (t - vib.delay) / 0.3);
-        cents += depth * Math.sin(2 * Math.PI * (vib.rate * t + vibPhase));
+      if (spec.scoop && fromKey === n.key && !tie) cents += spec.scoop * Math.exp(-t / 0.03);
+      if (vib && te > vib.delay) {
+        const depth = vib.depth * Math.min(1, (te - vib.delay) / 0.3);
+        cents += depth * Math.sin(2 * Math.PI * (vib.rate * te + vibPhase));
       }
       const hz = mtof(key + cents / 100);
       let y = 0;
@@ -470,7 +550,7 @@ function sub(spec: Patch, designed = false): Voice {
         if (fm) {
           fmPhase += (hz * fm.ratio) / sr;
           if (fmPhase >= 1) fmPhase -= Math.floor(fmPhase);
-          bent = (fm.decay ? fm.amount * Math.exp(-t / fm.decay) : fm.amount) * Math.sin(2 * Math.PI * fmPhase);
+          bent = (fm.decay ? fm.amount * Math.exp(-te / fm.decay) : fm.amount) * Math.sin(2 * Math.PI * fmPhase);
         }
         for (let o = 0; o < oscs.length; o++) {
           const at = oscs.length > 1 ? (o / (oscs.length - 1)) * 2 - 1 : 0;
@@ -497,7 +577,7 @@ function sub(spec: Patch, designed = false): Voice {
       }
       if (so.sub) y += so.sub * subOsc.pulse(hz / 2 / sr);
       if (spec.breath) y += spec.breath * breathFilt.tick(noise.next()) * 4;
-      const fenv = adsr(t, n.dur, sf.a, fD, sf.s, sf.r);
+      const fenv = adsr(te, off, sf.a, fD, sf.s, sf.r);
       let cutoff = rest + track * hz + envAmt * fenv * open;
       if (mods) cutoff = Math.max(20, cutoff * Math.pow(2, mCut));
       filt.set(cutoff, q);
@@ -513,12 +593,13 @@ function sub(spec: Patch, designed = false): Voice {
         s = hp.hp;
       }
       if (drive) s = Math.tanh(s * drive);
-      let env = adsr(t, n.dur, sa.a, sa.d, sa.s, sa.r) * gain;
+      let env = adsr(te, off, sa.a, sa.d, sa.s, sa.r) * gain;
       if (mods && mAmp !== 0) env *= Math.max(0, 1 + mAmp);
       s *= env;
       if (!sideFilt && !mods) {
         out.l[start + i]! += s;
         out.r[start + i]! += s;
+        if (tail) tail.l[i - tailAt] = tail.r[i - tailAt] = s;
         continue;
       }
       let l = s;
@@ -538,6 +619,10 @@ function sub(spec: Patch, designed = false): Voice {
       }
       out.l[start + i]! += l;
       out.r[start + i]! += r;
+      if (tail) {
+        tail.l[i - tailAt] = l;
+        tail.r[i - tailAt] = r;
+      }
     }
   };
 }
