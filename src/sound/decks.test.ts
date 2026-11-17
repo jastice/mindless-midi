@@ -242,7 +242,8 @@ test("two decks through the worker: one low end in a transition, a swap without 
         const lo = Math.min(bodyBefore, bodyAfter) - 3;
         const hi = Math.max(bodyBefore, bodyAfter) + 3;
         for (const [k, x] of sum.entries()) assert.ok(x > lo && x < hi, `${type} bar ${k}: ${x.toFixed(1)} dB, the bodies either side ${bodyBefore.toFixed(1)} and ${bodyAfter.toFixed(1)}`);
-        for (const x of [...steps, into, outOf]) assert.ok(Math.abs(x) < 3.5, `${type}: a step of ${x.toFixed(1)} dB`);
+        for (const [k, x] of [...steps, into, outOf].entries()) assert.ok(Math.abs(x) < 3.5,
+          `${type} (${seed}, ${slices[start]!.decks.map((d) => d.bar.info.styleId).join(" > ")}), step ${k}: ${x.toFixed(1)} dB\n${lines.join("\n")}`);
         // Both tracks in flight: around the middle each deck's own parts are within 12 dB of a whole track's.
         const mid = type === "filter" ? [0, bars / 2] : [swap - 4, swap + 4];
         for (const deck of [out, 1 - out]) {

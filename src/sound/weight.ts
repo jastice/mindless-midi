@@ -43,6 +43,7 @@ const TIERS: Record<string, Weight> = {
   // A dusty kit: thump and pump, little grit.
   lofi: { ...HARD, kickDrive: 1.2, bassDrive: 0.9 },
   minimal_techno: HARD,
+  big_beat: { ...HARD, kickDrive: 1.6, bassDrive: 1.2, crush: 0.42, thump: 1.5 },
   jazz_trio: SOFT, minimalist: SOFT, baroque: SOFT, celtic: SOFT, musette: SOFT, midnight_platform: SOFT, bossa_nova: SOFT,
 };
 

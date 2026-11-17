@@ -229,3 +229,19 @@ ts_test(
         "//src/theory",
     ],
 )
+
+ts_test(
+    name = "big_beat_test",
+    size = "medium",
+    src = "big_beat.test.ts",
+    data = [
+        "//styles:claudia",
+        "//styles/big_beat:corpus",
+    ],
+    deps = [
+        ":sound",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)

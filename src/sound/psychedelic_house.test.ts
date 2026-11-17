@@ -26,7 +26,10 @@ import { partLevels, styleSound } from "./sound_set.js";
 import { type SoundSet, renderSynthNote } from "./synth.js";
 import type { ScoreNote } from "./types.js";
 
-const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles;
+// Keep this three-style regression fixture stable as Claudia's live pool grows.
+// big_beat.test.ts exercises travel through the complete current pool.
+const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles
+  .filter((s) => ["minimal_techno", "berlin_techno", "psychedelic_house"].includes(s.id));
 const PSY = claudia.find((s) => s.id === "psychedelic_house")!;
 const MINIMAL = claudia.find((s) => s.id === "minimal_techno")!;
 const BERLIN = claudia.find((s) => s.id === "berlin_techno")!;

@@ -7,7 +7,7 @@ import { MAX_NAME_LENGTH, MIN_NAMES, validateCorpus } from "./validate.js";
 
 const corpus = (id: string) => JSON.parse(readFileSync(`styles/${id}/corpus.json`, "utf8")) as StyleCorpus;
 const style = (id: string) => ({ id, corpus: corpus(id) });
-const THEMED = ["minimal_techno", "berlin_techno", "psychedelic_house"];
+const THEMED = ["minimal_techno", "berlin_techno", "psychedelic_house", "big_beat"];
 
 test("a theme numbers every combination of its patterns", () => {
   const theme = { patterns: ["{a} {n}", "Fixed"], lists: { a: ["Dot", "Grid"], n: ["1", "2", "3"] } };

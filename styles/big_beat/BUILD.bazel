@@ -1,0 +1,52 @@
+load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+# Short 909 kick and snare, dark hats, LM-2 ride and 808 toms.
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": "@samples//danigb-sampled/tr909-detroit:kick-short",
+        "38": "@samples//danigb-sampled/tr909-detroit:snare",
+        "37": "@samples//danigb-samples/tr-808:cl",
+        "39": {
+            "default": "@samples//danigb-sampled/tr909-detroit:clap-2",
+            "soft": "@samples//danigb-sampled/tr909-detroit:clap-1",
+        },
+        "42": {
+            "default": "@samples//danigb-sampled/tr909-detroit:hihat-close",
+            "soft": "@samples//danigb-sampled/tr909-detroit:hihat-closed",
+        },
+        "46": {
+            "default": "@samples//danigb-sampled/tr909-detroit:hihat-open-2",
+            "soft": "@samples//danigb-sampled/tr909-detroit:hihat-open-1",
+        },
+        "51": "@samples//danigb-samples/lm-2:ride",
+        "49": "@samples//danigb-sampled/tr909-detroit:cymbal",
+        "45": "@samples//danigb-samples/tr-808:lt50",
+        "50": "@samples//danigb-samples/tr-808:mt50",
+    },
+)
+
+music_style(
+    name = "style",
+    bank = 68,
+    brief = "brief.md",
+    color = "#e5e83d",
+    corpus = "corpus.json",
+    kit = ":kit",
+    packs = [
+        "@samples//gleitz-musyngkite/lead-1-square",
+        "@samples//gleitz-musyngkite/pad-2-warm",
+        "@samples//gleitz-musyngkite/pad-3-polysynth",
+        "@samples//gleitz-musyngkite/synth-bass-1",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# For JS tests that read the raw corpus from runfiles.
+copy_to_bin(
+    name = "corpus",
+    srcs = ["corpus.json"],
+    visibility = ["//visibility:public"],
+)

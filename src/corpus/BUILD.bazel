@@ -37,6 +37,7 @@ ts_test(
     src = "names.test.ts",
     data = [
         "//styles/berlin_techno:corpus",
+        "//styles/big_beat:corpus",
         "//styles/minimal_techno:corpus",
         "//styles/psychedelic_house:corpus",
     ],
