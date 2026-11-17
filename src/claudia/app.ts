@@ -110,7 +110,7 @@ async function main(): Promise<void> {
   player.setVolume(volume);
 
   // --- Booth cam ----------------------------------------------------------
-  // Clips come from the content-addressed store; until it exists, the dev server serves them at clips/.
+  // Clips ship with the site at clips/ (bazel run //tools/clips:prep); ?clips= points elsewhere.
   const clipBase = new URL(params.get("clips") ?? "clips/", document.baseURI);
   let booth: BoothCam | null = null;
   try {

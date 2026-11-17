@@ -5,22 +5,24 @@
  *   bazel run //tools/clips:prep -- --takes DIR --out DIR --config FILE --json FILE
  *
  * Per take named in the config (art/claudia-dj/selects.json): decode small
- * grey frames, find the loop (or use the whole take for a transition), check
- * its first and last frame against its poses, estimate the beat phase from
- * the nods, and transcode the usable range without audio to H.264 at the
- * set's frame size and 24 fps, keyframe every 12 frames. Each output file is
- * named by the SHA-256 of its bytes, as the content-addressed store will name
- * it; a pose still is written the same way. Then `clips.json` (the ClipSet)
- * goes to --json, which is the one file that is committed.
+ * grey frames, take the clip (the whole take by default: a Grok take's last
+ * frame is its end pose, which the next clip starts on), check its first and
+ * last frame against its poses, estimate the beat phase from the nods, and
+ * transcode it without audio to H.264 at the set's frame size and 24 fps,
+ * keyframe every second. Each output file is named by the SHA-256 of its
+ * bytes, as a content-addressed store would name it; a pose still is written
+ * the same way. Then `clips.json` (the ClipSet) goes to --json.
  *
- * Media never goes into the repository: --out defaults to ~/workspace/claudia/clips/.
+ * Takes come from ~/workspace/claudia/clips/ and stay there; the encoded
+ * clips go to src/claudia/clips/ in the repository, and files there that the
+ * new clips.json does not name are removed.
  */
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
-import type { Clip, ClipKind, ClipSet, Energy, Pose, Scene } from "../../src/claudia/director.js";
+import type { Clip, ClipKind, ClipSet, Energy, Pose } from "../../src/claudia/director.js";
 import { DEFAULT_LOOP, type Frame, JOIN_LIMIT, beatPhase, clipBpm, diff, findBoomerang, findLoop, motion } from "./analyse.js";
 
 const FFMPEG = process.env.FFMPEG ?? (existsSync("/opt/homebrew/bin/ffmpeg") ? "/opt/homebrew/bin/ffmpeg" : "ffmpeg");
@@ -36,7 +38,6 @@ interface Select {
   from: Pose;
   to: Pose;
   energy?: Energy;
-  scene?: Scene;
   /** Override the measured beat phase, in frames. */
   beatPhase?: number;
   /** Use exactly these frames of the take instead of searching (for transitions, or to pin a loop). */
@@ -45,14 +46,21 @@ interface Select {
   bars?: number;
   /** Play the take forward from `range[0]` (or 0) and back, for takes that never return to their first frame. */
   boomerang?: boolean;
+  /** Search the take for the best loop instead of using all of it (for takes made without Grok's loop option). */
+  search?: boolean;
+  /** Fastest the clip may play, when it is not MAX_RATE (a trimmed drop). */
+  maxRate?: number;
 }
+
+/** A pose's still: an image, or a frame of a take. */
+type PoseRef = { image: string } | { take: string; frame: number };
 
 interface Config {
   /** Output frame size; sources of another aspect are cropped to it around the centre, then scaled. */
   width: number;
   height: number;
   /** Each pose's still: a take and a frame of it. */
-  poses: Partial<Record<Pose, { take: string; frame: number }>>;
+  poses: Partial<Record<Pose, PoseRef>>;
   clips: Select[];
 }
 
@@ -74,8 +82,9 @@ function fit(cfg: Config): string {
   return `crop='min(iw,ih*${ar})':'min(ih,iw/${ar})',scale=${cfg.width}:${cfg.height}:flags=lanczos,setsar=1`;
 }
 
-function greyFrames(file: string, cfg: Config): Frame[] {
-  const buf = execFileSync(FFMPEG, ["-v", "error", "-i", file, "-vf", `${fit(cfg)},fps=${FPS},scale=${GW}:${GH},format=gray`, "-f", "rawvideo", "-"], { maxBuffer: 1 << 30 });
+function greyFrames(file: string, cfg: Config, still = false): Frame[] {
+  const rate = still ? "" : `,fps=${FPS}`;
+  const buf = execFileSync(FFMPEG, ["-v", "error", "-i", file, "-vf", `${fit(cfg)}${rate},scale=${GW}:${GH},format=gray`, "-f", "rawvideo", "-"], { maxBuffer: 1 << 30 });
   const n = GW * GH;
   const frames: Frame[] = [];
   for (let i = 0; i + n <= buf.length; i += n) frames.push(new Uint8Array(buf.subarray(i, i + n)));
@@ -107,24 +116,25 @@ function transcode(file: string, start: number, frames: number, cfg: Config, out
   execFileSync(FFMPEG, [
     "-v", "error", "-y", "-i", file, "-an",
     ...graph,
-    "-c:v", "libx264", "-preset", "slow", "-crf", "26", "-pix_fmt", "yuv420p",
-    "-g", "12", "-keyint_min", "12", "-sc_threshold", "0", "-bf", "0",
+    "-c:v", "libx264", "-preset", "slow", "-crf", "27", "-pix_fmt", "yuv420p",
+    "-g", "24", "-keyint_min", "24", "-sc_threshold", "0", "-bf", "0",
     "-movflags", "+faststart", "-map_metadata", "-1", "-fflags", "+bitexact", "-flags:v", "+bitexact",
     tmp,
   ]);
   return hashed(tmp, out, "mp4");
 }
 
-function still(file: string, frame: number, cfg: Config, out: string): string {
+function still(file: string, frame: number | null, cfg: Config, out: string): string {
   const tmp = join(out, `.tmp-${process.pid}.jpg`);
-  execFileSync(FFMPEG, ["-v", "error", "-y", "-i", file, "-vf", `${fit(cfg)},fps=${FPS},select=eq(n\\,${frame})`, "-frames:v", "1", "-q:v", "3", "-map_metadata", "-1", "-fflags", "+bitexact", tmp]);
+  const pick = frame === null ? "" : `,fps=${FPS},select=eq(n\\,${frame})`;
+  execFileSync(FFMPEG, ["-v", "error", "-y", "-i", file, "-vf", `${fit(cfg)}${pick}`, "-frames:v", "1", "-q:v", "3", "-map_metadata", "-1", "-fflags", "+bitexact", tmp]);
   return hashed(tmp, out, "jpg");
 }
 
 function main(): void {
   const a = args();
-  const takes = here(a.takes ?? "~/workspace/claudia/takes");
-  const out = here(a.out ?? "~/workspace/claudia/clips");
+  const takes = here(a.takes ?? "~/workspace/claudia/clips");
+  const out = a.out ? here(a.out) : repo("src/claudia/clips");
   const cfg = JSON.parse(readFileSync(a.config ? here(a.config) : repo("art/claudia-dj/selects.json"), "utf8")) as Config;
   const jsonOut = a.json ? here(a.json) : repo("src/claudia/clips.json");
   mkdirSync(out, { recursive: true });
@@ -138,9 +148,14 @@ function main(): void {
 
   const poseFrames = new Map<Pose, Frame>();
   const stills: Partial<Record<Pose, string>> = {};
-  for (const [pose, ref] of Object.entries(cfg.poses) as [Pose, { take: string; frame: number }][]) {
-    poseFrames.set(pose, framesOf(ref.take)[ref.frame]!);
-    stills[pose] = still(join(takes, ref.take), ref.frame, cfg, out);
+  for (const [pose, ref] of Object.entries(cfg.poses) as [Pose, PoseRef][]) {
+    if ("image" in ref) {
+      poseFrames.set(pose, greyFrames(here(ref.image), cfg, true)[0]!);
+      stills[pose] = still(here(ref.image), null, cfg, out);
+    } else {
+      poseFrames.set(pose, framesOf(ref.take)[ref.frame]!);
+      stills[pose] = still(join(takes, ref.take), ref.frame, cfg, out);
+    }
   }
 
   const clips: Clip[] = [];
@@ -166,6 +181,10 @@ function main(): void {
       console.log(`${sel.id}: boomerang ${b.start}..${b.turn}, turn motion ${b.turnMotion.toFixed(2)}× the median`);
     } else if (sel.range) {
       [start, count] = [sel.range[0], sel.range[1] - sel.range[0]];
+      bars = takeBars;
+    } else if (!sel.search) {
+      // The whole take: its last frame is the end pose, the next clip's first.
+      [start, count] = [0, frames.length - 1];
       bars = takeBars;
     } else {
       const loop = findLoop(frames, barsOpt);
@@ -201,18 +220,20 @@ function main(): void {
       from: sel.from,
       to: sel.to,
       ...(sel.energy && { energy: sel.energy }),
-      ...(sel.scene && { scene: sel.scene }),
       file,
       frames: count,
       bars,
       bpm: Math.round(bpm * 1000) / 1000,
       beatPhase: phase,
       fadeFrames: 6,
+      ...(sel.maxRate && { maxRate: sel.maxRate }),
       source: { take: sel.take, start: turn === undefined ? start : (sel.range?.[0] ?? 0), ...(turn !== undefined && { boomerangTurn: turn }), closeDiff: round2(closes), fromDiff: round2(fromDiff), toDiff: round2(toDiff), beatStrength: round2(beat.strength) },
     });
   }
   const set: ClipSet = { fps: FPS, width: cfg.width, height: cfg.height, stills, clips };
   writeFileSync(jsonOut, `${JSON.stringify(set, null, 2)}\n`);
+  const keep = new Set([...clips.map((c) => c.file), ...Object.values(stills)]);
+  for (const f of readdirSync(out)) if (/^[0-9a-f]{64}\.(mp4|jpg)$/.test(f) && !keep.has(f)) rmSync(join(out, f));
   console.log(`\n${clips.length} clips to ${out}, clips.json to ${jsonOut}${problems ? `, ${problems} join problem(s)` : ""}`);
 }
 

@@ -4,49 +4,16 @@ import { test } from "node:test";
 import type { StyleBundle } from "../corpus/schema.js";
 import { SetConductor } from "../engine/set.js";
 import type { Bar } from "../engine/types.js";
-import { type Clip, type ClipSet, type Cue, Director, MAX_RATE, MIN_RATE, PHRASE, type Placement, RollingPlan, cuesFor, rateOf } from "./director.js";
+import { type ClipSet, type Cue, Director, MAX_RATE, MIN_RATE, PHRASE, type Placement, RollingPlan, cuesFor, isDrop, rateOf } from "./director.js";
 
 const clips = JSON.parse(readFileSync("src/claudia/clips.json", "utf8")) as ClipSet;
 const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles;
 const SHORT = { minSeconds: 60, maxSeconds: 150 };
 
-/** A synthetic clip set with real poses and transitions, as the full shot list will have. */
-const FULL: ClipSet = {
-  fps: 24,
-  width: 752,
-  height: 416,
-  stills: {},
-  clips: (
-    [
-      // Each pose has a 6 s (3-bar) and a 10 s (5-bar) loop; transitions and flourishes are 6 s.
-      ["L1", "loop", "home", "home", 5, "low"],
-      ["L2", "loop", "home", "home", 5, "mid"],
-      ["L2s", "loop", "home", "home", 3, "mid"],
-      ["L3", "loop", "home", "home", 3, "high"],
-      ["L4", "loop", "cue", "cue", 5],
-      ["L4s", "loop", "cue", "cue", 3],
-      ["L6", "loop", "peak", "peak", 5],
-      ["L6s", "loop", "peak", "peak", 3],
-      ["T1", "transition", "home", "cue", 3],
-      ["T2", "transition", "cue", "home", 3],
-      ["T5", "transition", "home", "peak", 3],
-      ["T6", "transition", "peak", "home", 3],
-      ["F1", "flourish", "home", "home", 3],
-    ] as const
-  ).map(([id, kind, from, to, bars, energy]) => ({
-    id,
-    kind,
-    from,
-    to,
-    ...(energy && { energy }),
-    file: `${id}.mp4`,
-    frames: bars * 45,
-    bars,
-    bpm: 128,
-    beatPhase: 0,
-    fadeFrames: 6,
-  })) as Clip[],
-};
+/** The shot list's MVP: Home, Vinyl and Peak only, no build, cue or look. */
+const MVP: ClipSet = { ...clips, clips: clips.clips.filter((c) => /^(L01|L02|L05|L08|T01|T02|T07|T08)-/.test(c.id)) };
+const SETS = [clips, MVP];
+const posed = (p: Placement, ...poses: string[]) => poses.includes(p.clip.from) || poses.includes(p.clip.to);
 
 interface Run {
   bars: Bar[];
@@ -75,7 +42,7 @@ function run(set: ClipSet, seed: string, n: number, opts = SHORT): Run {
 }
 
 test("every clip starts on the pose the one before ended on, on a bar line, back to back", () => {
-  for (const set of [clips, FULL]) {
+  for (const set of SETS) {
     for (const seed of ["a", "b", "c"]) {
       const { plan } = run(set, `booth-${seed}`, 3000);
       assert.ok(plan.length > 300, `${plan.length} clips`);
@@ -90,12 +57,12 @@ test("every clip starts on the pose the one before ended on, on a bar line, back
   }
 });
 
-test("clips are 3 or 5 bars, and every phrase starts on a clip boundary", () => {
-  for (const set of [clips, FULL]) {
+test("clips are 3 or 5 bars (a drop clip 2), and every phrase starts on a clip boundary", () => {
+  for (const set of SETS) {
     for (const seed of ["a", "b"]) {
       const { cues, plan } = run(set, `phrase-${seed}`, 3000);
       const starts = new Set(plan.map((p) => p.bar));
-      for (const p of plan) assert.ok(p.clip.bars === 3 || p.clip.bars === 5, `${p.clip.id}: ${p.clip.bars} bars`);
+      for (const p of plan) assert.ok(p.clip.bars === 3 || p.clip.bars === 5 || (isDrop(p.clip) && p.clip.bars === 2), `${p.clip.id}: ${p.clip.bars} bars`);
       let missed = 0;
       cues.forEach((cue, b) => {
         if (cue.barInPiece % PHRASE === 0 && !starts.has(b)) missed++;
@@ -115,67 +82,74 @@ test("a plan starting mid-phrase is on the phrase grid by the end of the next ph
   }
 });
 
-test("drops land on the section's first bar, and most drops get one", () => {
-  for (const set of [clips, FULL]) {
+test("drops land on the section's first bar, out of a build when the set has one, and the peak holds its phrase", () => {
+  for (const set of SETS) {
     let drops = 0;
     let landed = 0;
+    let built = 0;
+    let peakBars = 0;
     for (const seed of ["a", "b", "c", "d"]) {
       const { cues, plan } = run(set, `drop-${seed}`, 3000);
       const startsAt = new Map(plan.map((p) => [p.bar, p]));
+      const covering = (b: number) => plan.find((p) => p.bar <= b && b < p.bar + p.clip.bars)!;
       cues.forEach((cue, b) => {
         if (!cue.drop || b < 8) return;
         drops++;
         const p = startsAt.get(b);
-        if (p && (p.clip.scene === "drop" || p.clip.to === "peak")) landed++;
+        if (!p || !isDrop(p.clip)) return;
+        landed++;
+        if (p.clip.from === "build") built++;
+        for (let k = b; k < b + PHRASE; k++) if (covering(k).clip.to === "peak") peakBars++;
       });
-      for (const p of plan) {
-        if (p.clip.scene !== "drop") continue;
-        // A drop scene off a drop is a rare flourish; count them.
-        assert.ok(p.bar >= 0);
-      }
+      // Drop clips play only on drops.
+      for (const p of plan) if (isDrop(p.clip)) assert.ok(cues[p.bar]!.drop, `${p.clip.id} at bar ${p.bar} is not on a drop`);
     }
     assert.ok(drops > 20, `${drops} drops in the sets`);
     assert.ok(landed / drops > 0.8, `${landed} of ${drops} drops landed`);
+    assert.ok(peakBars / (landed * PHRASE) > 0.6, `${peakBars} of ${landed * PHRASE} bars after a drop at the peak`);
+    // Build is 3-bar clips only, so the phrase before a drop builds only when it starts at Home (5 bars, then T05);
+    // from Vinyl, Cue, Peak or Look the drop comes straight from Home (T07).
+    if (set === clips) assert.ok(built / landed > 0.5, `${built} of ${landed} drops out of a build`);
   }
 });
 
-test("blend zones get the cue: scenes at Home now, the Cue pose with the full set", () => {
-  // With only a 3-bar cue scene, a phrase (3 + 5) can cue for at most 3 of its 8 bars.
-  for (const [set, inBlend, least] of [
-    [clips, (p: Placement) => p.clip.scene === "blend", 0.28],
-    [FULL, (p: Placement) => p.clip.from === "cue" || p.clip.to === "cue", 0.35],
+test("blend zones work the record; the body stays at the decks, with a look now and then", () => {
+  for (const [set, least] of [
+    [clips, 0.5],
+    [MVP, 0.5],
   ] as const) {
     const { cues, plan } = run(set, "blend", 3000);
     let blendBars = 0;
-    let cueBars = 0;
+    let recordBars = 0;
     let bodyBars = 0;
-    let bodyCue = 0;
+    let bodyRecord = 0;
+    let bodyLook = 0;
     for (const p of plan) {
       const cue = cues[p.bar];
-      if (!cue) continue;
+      if (!cue || cue.moment) continue;
       if (cue.mix !== "body") {
         blendBars += p.clip.bars;
-        if (inBlend(p)) cueBars += p.clip.bars;
+        if (posed(p, "vinyl", "cue")) recordBars += p.clip.bars;
       } else {
         bodyBars += p.clip.bars;
-        if (inBlend(p)) bodyCue += p.clip.bars;
+        if (posed(p, "vinyl", "cue")) bodyRecord += p.clip.bars;
+        if (posed(p, "look")) bodyLook += p.clip.bars;
       }
     }
-    assert.ok(cueBars / blendBars > least, `${cueBars} of ${blendBars} blend bars cueing`);
-    assert.ok(bodyCue / bodyBars < 0.15, `${bodyCue} of ${bodyBars} body bars cueing`);
+    assert.ok(recordBars / blendBars > least, `${recordBars} of ${blendBars} blend bars at the record`);
+    assert.ok(bodyRecord / bodyBars < 0.15, `${bodyRecord} of ${bodyBars} body bars at the record`);
+    if (set === clips) assert.ok(bodyLook / bodyBars > 0.02 && bodyLook / bodyBars < 0.2, `${bodyLook} of ${bodyBars} body bars looking`);
   }
 });
 
-test("never two flourishes in a row, and no scene twice in a row outside a blend", () => {
-  for (const set of [clips, FULL]) {
-    const { cues, plan } = run(set, "flourish", 3000);
-    plan.forEach((p, i) => {
-      const before = plan[i - 1];
-      if (!before) return;
-      assert.ok(!(p.clip.kind === "flourish" && before.clip.kind === "flourish"), `two flourishes at ${p.bar}`);
-      if (p.clip.scene && p.clip.id === before.clip.id) assert.notEqual(cues[p.bar]?.mix, "body", `${p.clip.id} twice at ${p.bar}`);
-    });
-  }
+test("flourishes play, but never two in a row", () => {
+  const { plan } = run(clips, "flourish", 3000);
+  plan.forEach((p, i) => {
+    const before = plan[i - 1];
+    if (before) assert.ok(!(p.clip.kind === "flourish" && before.clip.kind === "flourish"), `two flourishes at ${p.bar}`);
+  });
+  const ids = new Set(plan.filter((p) => p.clip.kind === "flourish").map((p) => p.clip.id));
+  assert.equal(ids.size, 3, `flourishes played: ${[...ids].join(", ")}`);
 });
 
 test("the same seed from the same bar gives the same booth cam", () => {
@@ -191,7 +165,7 @@ test("rates stay within limits at the set's tempos", () => {
   for (const p of plan) {
     const bpm = bars[p.bar]!.bpm;
     const r = rateOf(p.clip, bpm);
-    assert.ok(r >= MIN_RATE && r <= MAX_RATE, `${p.clip.id} at ${bpm} bpm: ×${r.toFixed(3)}`);
+    assert.ok(r >= MIN_RATE && r <= (p.clip.maxRate ?? MAX_RATE), `${p.clip.id} at ${bpm} bpm: ×${r.toFixed(3)}`);
   }
 });
 
@@ -224,6 +198,10 @@ test("cues mark blend zones, drops and the next track", () => {
   assert.deepEqual(
     cues.flatMap((c, i) => (c.drop ? [i] : [])),
     [32],
+  );
+  assert.deepEqual(
+    [23, 24, 31, 32, 39, 40].map((b) => cues[b]!.moment),
+    [null, "build", "build", "peak", "peak", null],
   );
   assert.equal(cues[96]!.piece, 4);
   assert.equal(cues[96]!.mix, "in");

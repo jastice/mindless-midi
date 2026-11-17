@@ -1,13 +1,37 @@
 {
-  "width": 752,
-  "height": 416,
+  "width": 1280,
+  "height": 720,
   "poses": {
-    "home": { "take": "generated_video.mp4", "frame": 0 }
+    "home": { "image": "~/workspace/claudia/poses/P0-home.png" },
+    "look": { "image": "~/workspace/claudia/poses/P1-look.png" },
+    "vinyl": { "image": "~/workspace/claudia/poses/P2-vinyl.png" },
+    "cue": { "image": "~/workspace/claudia/poses/P3-cue.png" },
+    "build": { "image": "~/workspace/claudia/poses/P4-build.png" },
+    "peak": { "image": "~/workspace/claudia/poses/P5-peak.png" }
   },
   "clips": [
-    { "id": "L2-home-mid", "take": "generated_video (2).mp4", "kind": "loop", "from": "home", "to": "home", "energy": "mid", "boomerang": true },
-    { "id": "L2s-home-mid", "take": "generated_video (2).mp4", "kind": "loop", "from": "home", "to": "home", "energy": "mid", "boomerang": true, "bars": 3 },
-    { "id": "S1-home-cue", "take": "generated_video.mp4", "kind": "loop", "from": "home", "to": "home", "energy": "mid", "scene": "blend" },
-    { "id": "S2-home-peak", "take": "generated_video (1).mp4", "kind": "loop", "from": "home", "to": "home", "energy": "high", "scene": "drop" }
+    { "id": "L01-home", "take": "L01-home.mp4", "kind": "loop", "from": "home", "to": "home", "energy": "mid" },
+    { "id": "L02-home", "take": "L02-home.mp4", "kind": "loop", "from": "home", "to": "home", "energy": "mid" },
+    { "id": "L03-home-low", "take": "L03-home-low.mp4", "kind": "loop", "from": "home", "to": "home", "energy": "low" },
+    { "id": "L04-home-high", "take": "L04-home-high.mp4", "kind": "loop", "from": "home", "to": "home", "energy": "high" },
+    { "id": "L05-vinyl", "take": "L05-vinyl.mp4", "kind": "loop", "from": "vinyl", "to": "vinyl" },
+    { "id": "L06-cue", "take": "L06-cue.mp4", "kind": "loop", "from": "cue", "to": "cue" },
+    { "id": "L07-build", "take": "L07-build.mp4", "kind": "loop", "from": "build", "to": "build" },
+    { "id": "L08-peak", "take": "L08-peak.mp4", "kind": "loop", "from": "peak", "to": "peak" },
+    { "id": "L09-look", "take": "L09-look.mp4", "kind": "loop", "from": "look", "to": "look" },
+    { "id": "T01-home-vinyl", "take": "T01-home-vinyl.mp4", "kind": "transition", "from": "home", "to": "vinyl" },
+    { "id": "T02-vinyl-home", "take": "T02-vinyl-home.mp4", "kind": "transition", "from": "vinyl", "to": "home" },
+    { "id": "T03-vinyl-cue", "take": "T03-vinyl-cue.mp4", "kind": "transition", "from": "vinyl", "to": "cue" },
+    { "id": "T04-cue-home", "take": "T04-cue-home.mp4", "kind": "transition", "from": "cue", "to": "home" },
+    { "id": "T05-home-build", "take": "T05-home-build.mp4", "kind": "transition", "from": "home", "to": "build" },
+    { "id": "T06-build-peak", "take": "T06-build-peak.mp4", "kind": "transition", "from": "build", "to": "peak", "range": [48, 144], "bars": 2, "maxRate": 1.25 },
+    { "id": "T07-home-peak", "take": "T07-home-peak.mp4", "kind": "transition", "from": "home", "to": "peak", "range": [40, 144], "bars": 2, "maxRate": 1.25 },
+    { "id": "T08-peak-home", "take": "T08-peak-home.mp4", "kind": "transition", "from": "peak", "to": "home" },
+    { "id": "T09-build-home", "take": "T09-build-home.mp4", "kind": "transition", "from": "build", "to": "home" },
+    { "id": "T10-home-look", "take": "T10-home-look.mp4", "kind": "transition", "from": "home", "to": "look" },
+    { "id": "T11-look-home", "take": "T11-look-home.mp4", "kind": "transition", "from": "look", "to": "home" },
+    { "id": "F01-glance", "take": "F01-glance.mp4", "kind": "flourish", "from": "home", "to": "home" },
+    { "id": "F02-fist", "take": "F02-fist.mp4", "kind": "flourish", "from": "home", "to": "home" },
+    { "id": "F03-sip", "take": "F03-sip.mp4", "kind": "flourish", "from": "home", "to": "home" }
   ]
 }

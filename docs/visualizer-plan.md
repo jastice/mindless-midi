@@ -58,7 +58,8 @@ interface ClipSet { fps: number; clips: Clip[] }
 
 `bpm` is `bars * beats * 60 * fps / frames`; a clip plays at
 `rate = setBpm / clip.bpm`. A clip is usable only when the rate is within
-0.9–1.11 (raised from 1.10: see clip lengths below).
+0.9–1.16 (raised from 1.10, then 1.11: see clip lengths below); a trimmed
+drop clip may set its own limit (`maxRate`).
 
 **Clip lengths: 3 and 5 bars.** Grok makes 6.04 s and 10.04 s takes. At
 128 BPM those become 3 bars (5.625 s, ×1.074) and 5 bars (9.375 s,
@@ -67,9 +68,11 @@ bars, never slowed to 4. A phrase is 3 + 5 or 5 + 3 (loop + loop,
 transition + loop, loop + transition), 16 bars is 3 + 5 + 3 + 5, and every
 phrase starts on a pose frame. Transitions and flourishes are 6 s, so they
 pair with a 5-bar loop in the same phrase. Each pose should get a 6 s and
-a 10 s loop, which also gives variety. Across 126–132 BPM the rates stay
-within about 1.06–1.11, hence the 1.11 limit. Outside that range the director stays on the Home loop that comes
-closest, until a second batch of clips exists for another tempo band.
+a 10 s loop, which also gives variety. The takes come out at 144 and 240
+frames plus a closing pose frame, so every clip plays at 120 BPM at ×1:
+×0.98–1.15 across Claudia's 118–138 BPM (psychedelic house to Berlin
+techno), hence the 1.16 limit (2026-11-17; 1.11 covered only 126–132).
+Outside it the director stays on the Home loop that comes closest.
 
 ## Parts
 
@@ -153,7 +156,7 @@ Tests (`node:test`, as in `set.test.ts`): over long seeded sets,
 - every clip starts on a bar line and fills whole bars;
 - Build → Peak ends exactly on the section start it was planned for;
 - the same seed and starting bar give the same plan;
-- rates stay within 0.9–1.11 at the styles' tempos;
+- rates stay within 0.9–1.16 (a clip's own `maxRate` for trimmed drops) at the styles' tempos;
 - every phrase starts on a clip boundary.
 
 ### 3. Player for clips (M)
@@ -301,26 +304,70 @@ captures of the page.
 
 **Open problems.**
 
-- A Home groove loop that starts and ends on the Home still (the
-  boomerang is a stopgap), then the Cue and Peak poses and transitions.
+- ~~A Home groove loop, then the other poses~~: done with the full shot
+  list, below.
 - iOS Safari: `playbackRate` bending and seeks on muted inline video.
 - The spike after a skip, above.
 - The next track's sections are unknown until it starts, so a drop in its
   first 16 bars (inside the mix-in, rare) can be missed.
 - Bars are counted by the page as they become audible; a link to a bar
   starts at Home there rather than where an uninterrupted session would be.
-- The dev server's `clips/` mount points at a home folder; the R2 store
-  replaces it.
+
+## The full shot list (2026-11-17)
+
+All 23 clips of [SHOTLIST.md](../art/claudia-dj/SHOTLIST.md) over six poses
+(Home, Look, Vinyl, Cue, Build, Peak), in `art/claudia-dj/selects.json`.
+The takes stay in `~/workspace/claudia/clips/`; prep encodes them to
+`src/claudia/clips/` in the repository (see hosting below): 1280×720, CRF
+27, a keyframe a second, 24 MB for all 23 (SSIM 0.985 against the takes;
+CRF 24 with a keyframe every 12 frames was twice the size). Pose stills come
+from the pose PNGs.
+
+- **Every take is whole:** a Grok take's last frame is its end pose, so a
+  clip is frames 0–143 (or 0–239) and the next clip starts on the pose.
+  Loops close at 0.9–1.6 (the scale above), every first and last frame is
+  within 2.0–2.9 of its pose PNG (a video frame never matches the PNG
+  closer than about 2), and joins between clips measure median 1.7, p90
+  2.7, against 0.4 between frames inside a clip; the 6-frame crossfade
+  carries them.
+- **Drop clips are trimmed:** in T06 and T07 the arms go up a bar in (frame
+  52 and 44). Played from the drop, the gesture would land a bar late, so
+  T06 is frames 48–144 and T07 frames 40–144, 2 bars each, starting on the
+  drop: the drop phrase is 2 + 3 + 3. T07 then plays at 110.8 BPM at ×1, so
+  it may run to ×1.25 (×1.15 at 128). Their starts are 3.1–4.6 from the
+  clip before, the largest joins in the set, on the drop itself. F03 (the
+  sip) ends 3.4 off Home, the only other one over 3.
+- **The director** wants a pose per bar: Home in a track's body (Look
+  allowed except at low energy), Vinyl or Cue in the blend zones, Build in
+  the 8 bars before a drop and Peak in the 8 after (`Cue.moment`). A clip's
+  weight is its end pose's affinity, ×4 when it arrives somewhere better,
+  times its energy match. Paths are chosen by weight among the clips that
+  leave a way to the phrase end; weighting by the number of ways onward
+  pulled her back to Home within a bar of every drop.
+- **Measured** over 4 × 3000-bar seeded runs: 83% of drops land on their
+  first bar (52% of those out of a build), 73% of the drop phrase at the
+  peak, 77% of blend-zone bars at the record, Look 2.9% and flourishes 5%
+  of body bars. With only the 8 MVP clips: 84% of drops, 88% of blend bars.
+  In headless Chrome at 132 BPM (×1.10), 2 minutes: 17 joins, drift mean
+  0.23, max 1.07 frames, no seeks.
+
+**What the shot list cannot do yet.** A phrase of 3 + 5 holds one 6 s clip,
+and only Home and Vinyl have 10 s clips, so a visit to Look, Cue or Build is
+always transition in, transition out: **L06-cue, L07-build and L09-look
+never play**, and L08-peak only right after a drop (2 + 3 + 3). 10 s
+versions of L06, L07 and L09 fix it: a look becomes T10 + L09 (3 + 5),
+the whole phrase before a drop T05 + L07, and a blend can stay on the
+headphones. A build is also reached only from Home 8 bars before the drop,
+which is why half the drops come straight from Home (T07).
 
 ## Hosting the clips
 
-Decided: the finished clips (about 20 MB, changing rarely) live on R2 in
-content-addressed storage, named by the hash of their bytes. Samples may
-move there too, so the store is shared and not clip-specific. `clips.json`
-is committed and refers to each clip by hash, so the page and the tests know
-exactly which bytes to expect, and a new take never overwrites an old one.
-Until the store exists, the prototype serves clips from a local folder
-through the dev server.
+The clips (24 MB) are committed in `src/claudia/clips/`, named by the
+SHA-256 of their bytes, and ship with the site at `clips/`;
+`clips.json` refers to each by hash, so a new take never overwrites an old
+one, and prep removes files the new `clips.json` no longer names. Earlier
+plan: content-addressed storage on R2, shared with samples; the names
+already fit it, and `?clips=<url>` points the page elsewhere.
 
 ## Order of work
 

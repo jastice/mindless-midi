@@ -69,7 +69,7 @@ stamp_build_info(
 # as samples/, where the page and the Player look for them.
 copy_to_directory(
     name = "site",
-    srcs = [
+    srcs = glob(["clips/*"]) + [
         "clips.json",
         "favicon.svg",
         "styles.css",
@@ -102,8 +102,6 @@ js_binary(
     args = [
         "src/claudia/site",
         "samples=styles/claudia_samples_superset",
-        # Booth cam clips, outside the repo until the content-addressed store exists (bazel run //tools/clips:prep).
-        "clips=~/workspace/claudia/clips?",
     ],
     data = [
         ":site",

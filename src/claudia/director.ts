@@ -9,6 +9,13 @@
  * that the drop clip starts exactly on its section's first bar, and if no
  * combination of clips gets there, the drop is skipped and she stays put.
  *
+ * Where she should be follows the music: at the decks (Home) through a
+ * track's body, with now and then a look at the camera or a flourish; working
+ * the record (Vinyl, then Cue) in the blend zones at a track's ends; the
+ * build pose in the phrase before a drop and the peak in the phrase after.
+ * A drop clip (a transition to Peak) is trimmed so the arms go up on its
+ * first bar, which starts on the drop.
+ *
  * Phrases are filled exactly: with 3- and 5-bar clips (Grok's 6 s and 10 s
  * takes) an 8-bar phrase is 3 + 5 or 5 + 3, so every phrase starts on a pose
  * frame. A plan that starts mid-phrase (after a seek) runs to the end of the
@@ -19,15 +26,9 @@
  */
 import { Rng } from "../theory/rng.js";
 
-export type Pose = "home" | "cue" | "build" | "peak";
+export type Pose = "home" | "look" | "vinyl" | "cue" | "build" | "peak";
 export type ClipKind = "loop" | "transition" | "flourish";
 export type Energy = "low" | "mid" | "high";
-/**
- * What a clip acts out between two frames of the same pose. These stand in
- * for real transitions until the full shot list exists: the cue gesture for
- * a blend, the hands-up for a drop, both starting and ending at Home.
- */
-export type Scene = "blend" | "drop";
 
 export interface Clip {
   id: string;
@@ -36,7 +37,6 @@ export interface Clip {
   to: Pose;
   /** For loops: the energy they suit. */
   energy?: Energy;
-  scene?: Scene;
   /** Relative to the clips base URL; named by the SHA-256 of its bytes. */
   file: string;
   /** Frames in the file; frame `frames` would be the `to` pose again. */
@@ -48,6 +48,8 @@ export interface Clip {
   beatPhase: number;
   /** Crossfade when it follows another clip, frames. */
   fadeFrames: number;
+  /** Fastest it may play, when not MAX_RATE: a trimmed drop clip may throw its arms up faster. */
+  maxRate?: number;
   /** What the prep tool measured, for the record. */
   source?: Record<string, unknown>;
 }
@@ -63,12 +65,17 @@ export interface ClipSet {
 
 /** Rates a clip may play at; outside them it is not used. */
 export const MIN_RATE = 0.9;
-/** 1.11, not 1.10: Grok's 6 s and 10 s takes as 3 and 5 bars play at about ×1.06–1.11 across 126–132 BPM. */
-export const MAX_RATE = 1.11;
+/**
+ * Grok's 6 s and 10 s takes play as 3 and 5 bars at 120 BPM at ×1, so ×0.98–1.15
+ * across Claudia's 118–138 BPM; 1.16 lets Berlin techno's fastest tracks use them.
+ */
+export const MAX_RATE = 1.16;
 /** Bars in a phrase (as `PHRASE_BARS` in the set conductor). Every phrase starts on a clip boundary, on a pose frame. */
 export const PHRASE = 8;
 /** A section at least this much more intense than the one before is a drop. */
 export const DROP_RISE = 0.2;
+/** Bars before a drop that call for the build pose, and bars after it for the peak. */
+export const MOMENT_BARS = 8;
 /** Bars of a track's start and end the director treats as a blend zone. */
 export const BLEND_BARS = 16;
 /** Plan at least this many bars ahead. */
@@ -82,6 +89,8 @@ export interface Cue {
   mix: "in" | "body" | "out";
   /** The bar starts a section that rises at least DROP_RISE. */
   drop: boolean;
+  /** Within MOMENT_BARS before a drop of this track, or from its first bar to MOMENT_BARS after. */
+  moment: "build" | "peak" | null;
   /** Which track and bar this is, to tell when the music turned out other than planned. */
   piece: number;
   barInPiece: number;
@@ -116,6 +125,7 @@ export function cuesFor(bar: BarFacts, bpm: number, sections: readonly Section[]
   const out: Cue[] = [];
   const secs = sections?.length ? sections : [{ start: 0, bars: bar.pieceBars, intensity: bar.intensity }];
   const blend = Math.min(BLEND_BARS, Math.floor(bar.pieceBars / 3));
+  const drops = secs.filter((s, k) => k > 0 && s.intensity - secs[k - 1]!.intensity >= DROP_RISE).map((s) => s.start);
   for (let b = bar.barInPiece; b < bar.pieceBars; b++) {
     let k = 0;
     while (k + 1 < secs.length && secs[k + 1]!.start <= b) k++;
@@ -126,11 +136,12 @@ export function cuesFor(bar: BarFacts, bpm: number, sections: readonly Section[]
       intensity: sec.intensity,
       mix: b < blend ? "in" : bar.pieceBars - b <= blend ? "out" : "body",
       drop: !!before && sec.start === b && sec.intensity - before.intensity >= DROP_RISE,
+      moment: drops.some((d) => d > b && d - b <= MOMENT_BARS) ? "build" : drops.some((d) => b >= d && b - d < MOMENT_BARS) ? "peak" : null,
       piece: bar.pieceIndex,
       barInPiece: b,
     });
   }
-  for (let b = 0; b < nextBars; b++) out.push({ bpm, intensity: 0.5, mix: b < BLEND_BARS ? "in" : "body", drop: false, piece: bar.pieceIndex + 1, barInPiece: b });
+  for (let b = 0; b < nextBars; b++) out.push({ bpm, intensity: 0.5, mix: b < BLEND_BARS ? "in" : "body", drop: false, moment: null, piece: bar.pieceIndex + 1, barInPiece: b });
   return out;
 }
 
@@ -141,8 +152,11 @@ export function energyOf(intensity: number): Energy {
 export const rateOf = (clip: Clip, bpm: number) => bpm / clip.bpm;
 const usable = (clip: Clip, bpm: number) => {
   const r = rateOf(clip, bpm);
-  return r >= MIN_RATE && r <= MAX_RATE;
+  return r >= MIN_RATE && r <= (clip.maxRate ?? MAX_RATE);
 };
+/** A drop clip: the arms go up. Saved for drops. */
+export const isDrop = (clip: Clip) => clip.kind === "transition" && clip.to === "peak";
+
 
 const ENERGY_STEP: Record<Energy, number> = { low: 0, mid: 1, high: 2 };
 
@@ -163,40 +177,41 @@ export class Director {
     const from = this.set.clips.filter((c) => c.from === pose);
     const ok = from.filter((c) => usable(c, bpm));
     if (ok.length) return ok;
-    const loops = from.filter((c) => c.from === c.to && !c.scene);
+    const loops = from.filter((c) => c.kind === "loop");
     const pool = loops.length ? loops : from;
     if (!pool.length) return [];
     const off = (c: Clip) => Math.abs(Math.log(rateOf(c, bpm)));
     return [pool.reduce((a, b) => (off(b) < off(a) ? b : a))];
   }
 
-  /** Where she should be during a bar. */
-  private wantedPose(cue: Cue): Pose {
-    if (cue.mix !== "body" && this.poses.has("cue")) return "cue";
-    return "home";
+  /** How well each pose suits a bar, 0.1 to 1, with 1 for the best pose the set has. */
+  affinity(cue: Cue): (pose: Pose) => number {
+    const want: Partial<Record<Pose, number>> =
+      cue.moment === "peak"
+        ? { peak: 1, home: 0.3 }
+        : cue.moment === "build"
+          ? { build: 1, home: 0.3 }
+          : cue.mix !== "body"
+            ? { vinyl: 1, cue: 1, home: 0.3 }
+            : { home: 1, look: energyOf(cue.intensity) === "low" ? 0.1 : 1 };
+    const top = Math.max(...[...this.poses].map((p) => want[p] ?? 0.1));
+    return (p) => Math.min(1, (want[p] ?? 0.1) / top);
   }
 
   /** How much a clip suits starting on `cue` after `prev` (0: never). */
   weight(clip: Clip, cue: Cue, prev?: Clip): number {
     let w = 1;
-    const blendZone = cue.mix !== "body";
-    if (clip.scene === "drop") w *= 0.06; // a drop scene away from a drop: a rare flourish
-    if (clip.scene === "blend") w *= blendZone ? 8 : 0.08;
-    if (clip.kind === "flourish") w *= 0.25;
-    if (clip.energy && !clip.scene) {
+    if (clip.kind === "flourish") w *= cue.mix === "body" && !cue.moment ? 0.25 : 0.02;
+    if (clip.energy) {
       const d = Math.abs(ENERGY_STEP[clip.energy] - ENERGY_STEP[energyOf(cue.intensity)]);
       w *= [3, 1, 0.3][d]!;
     }
-    const want = this.wantedPose(cue);
-    if (clip.to === want) w *= clip.from === want ? 1 : 4;
-    else w *= clip.from === want ? 0.1 : 0.15; // leaving the pose wanted, or staying away from it
-    if (prev?.id === clip.id && (clip.scene || clip.kind === "flourish")) w *= blendZone && clip.scene === "blend" ? 0.4 : 0;
+    const aff = this.affinity(cue);
+    const to = aff(clip.to);
+    w *= to;
+    if (clip.from !== clip.to && to > aff(clip.from)) w *= 4; // arriving where she should be
     if (prev?.kind === "flourish" && clip.kind === "flourish") w = 0;
     return w;
-  }
-
-  private drops(clipsFrom: (pose: Pose) => Clip[]): Clip[] {
-    return [...this.poses].flatMap(clipsFrom).filter((c) => c.scene === "drop" || (c.kind === "transition" && c.to === "peak"));
   }
 
   /**
@@ -222,14 +237,18 @@ export class Director {
       const phrases = this.phraseStarts(cues, b);
       const target = this.nextDrop(cues, b, skipBefore);
       if (target && target.at <= (phrases[0] ?? Infinity)) {
-        const path = this.pathTo(start + b, at, cues.slice(b, target.at), target.clip.from, last);
-        if (path) {
+        // The first drop clip in seeded order that a path of clips can reach.
+        let landed = false;
+        for (const clip of target.clips) {
+          const path = this.pathTo(start + b, at, cues.slice(b, target.at), clip.from, last);
+          if (!path) continue;
           for (const c of path) place(c);
-          place(target.clip);
-          continue;
+          place(clip);
+          landed = true;
+          break;
         }
         // No way to land on it: carry on as if it were not there.
-        skipBefore = target.at + 1;
+        if (!landed) skipBefore = target.at + 1;
         continue;
       }
       // Fill to the next phrase start, or the one after if the gap cannot be filled.
@@ -245,8 +264,9 @@ export class Director {
       }
       if (filled) continue;
       const rng = new Rng(`${this.seed}/booth/${start + b}`);
-      const options = this.candidates(at, cue.bpm);
-      if (!options.length) throw new Error(`no clip from ${at}`);
+      const all = this.candidates(at, cue.bpm);
+      if (!all.length) throw new Error(`no clip from ${at}`);
+      const options = all.some((c) => !isDrop(c)) ? all.filter((c) => !isDrop(c)) : all;
       place(rng.weighted(options, (c) => this.weight(c, cue, last) || 1e-6));
     }
     return out;
@@ -259,23 +279,32 @@ export class Director {
     return out;
   }
 
-  /** The next drop at or after cue `b` (and at or after `skipBefore`) that a drop clip can play at. */
-  private nextDrop(cues: readonly Cue[], b: number, skipBefore: number): { at: number; clip: Clip } | null {
+  /**
+   * The next drop at or after cue `b` (and at or after `skipBefore`) that a drop clip can play at,
+   * with the drop clips in a seeded order that favours the one out of a build.
+   */
+  private nextDrop(cues: readonly Cue[], b: number, skipBefore: number): { at: number; clips: Clip[] } | null {
     for (let i = Math.max(b, skipBefore); i < cues.length; i++) {
       const cue = cues[i]!;
       if (!cue.drop) continue;
-      const options = this.drops((p) => this.candidates(p, cue.bpm)).filter((c) => usable(c, cue.bpm));
-      if (!options.length) continue;
+      const left = this.set.clips.filter((c) => isDrop(c) && usable(c, cue.bpm));
+      if (!left.length) continue;
       const rng = new Rng(`${this.seed}/booth/drop/${i}`);
-      return { at: i, clip: rng.weighted(options, () => 1) };
+      const clips: Clip[] = [];
+      while (left.length) {
+        const c = rng.weighted(left, (c) => (c.from === "build" ? 3 : 1));
+        clips.push(c);
+        left.splice(left.indexOf(c), 1);
+      }
+      return { at: i, clips };
     }
     return null;
   }
 
   /**
    * A seeded path of clips that fills `cues` exactly and ends in `to` (any pose when null), or null.
-   * Counts the weighted paths from each bar and pose backwards, then walks
-   * forwards choosing each clip in proportion to the paths it leaves open.
+   * Counts the paths from each bar and pose backwards, then walks forwards
+   * choosing each clip by its weight among those that leave a path open.
    */
   private pathTo(start: number, from: Pose, cues: readonly Cue[], to: Pose | null, prev?: Clip): Clip[] | null {
     const d = cues.length;
@@ -289,7 +318,7 @@ export class Director {
         let sum = 0;
         for (const c of this.candidates(p, cues[k]!.bpm)) {
           // Save the drop gesture for the drop.
-          if (k + c.bars > d || c.scene === "drop") continue;
+          if (k + c.bars > d || isDrop(c)) continue;
           const rest = ways[k + c.bars]!.get(c.to) ?? 0;
           if (rest) sum += (this.weight(c, cues[k]!) || 1e-6) * rest;
         }
@@ -302,9 +331,10 @@ export class Director {
     let at = from;
     let last = prev;
     while (k < d) {
-      const options = this.candidates(at, cues[k]!.bpm).filter((c) => k + c.bars <= d && c.scene !== "drop" && (ways[k + c.bars]!.get(c.to) ?? 0) > 0);
+      const options = this.candidates(at, cues[k]!.bpm).filter((c) => k + c.bars <= d && !isDrop(c) && (ways[k + c.bars]!.get(c.to) ?? 0) > 0);
       const rng = new Rng(`${this.seed}/booth/${start + k}`);
-      const w = (c: Clip, l?: Clip) => (this.weight(c, cues[k]!, l) || 0) * ways[k + c.bars]!.get(c.to)!;
+      // The path counts only rule out dead ends: weighting by them would favour the pose with the most ways onward (Home).
+      const w = (c: Clip, l?: Clip) => this.weight(c, cues[k]!, l) || 0;
       const strict = options.some((c) => w(c, last) > 0);
       const clip = rng.weighted(options, (c) => (strict ? w(c, last) : w(c)) || 1e-9);
       path.push(clip);
@@ -316,7 +346,7 @@ export class Director {
   }
 }
 
-const sameCue = (a: Cue, b: Cue) => a.piece === b.piece && a.barInPiece === b.barInPiece && a.bpm === b.bpm && a.mix === b.mix && a.drop === b.drop && energyOf(a.intensity) === energyOf(b.intensity);
+const sameCue = (a: Cue, b: Cue) => a.piece === b.piece && a.barInPiece === b.barInPiece && a.bpm === b.bpm && a.mix === b.mix && a.drop === b.drop && a.moment === b.moment && energyOf(a.intensity) === energyOf(b.intensity);
 
 /**
  * The plan as the booth keeps it, bar by bar: told each bar what is coming,
