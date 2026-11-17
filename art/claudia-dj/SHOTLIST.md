@@ -66,7 +66,7 @@ F03 moves a prop; check that the bottle ends exactly where it started.
 | | New poses | Loops | Transitions | Flourishes | Clips |
 |---|---|---|---|---|---|
 | MVP | 0 | 4 | 4 | 0 | 8 |
-| Full | 3 (P1 redo, P3, P4) | 9 | 11 | 3 | 23 |
+| Full | 0 (all six poses done) | 9 | 11 | 3 | 23 |
 
 At 2–3 takes each, the MVP is about 20 generations and the full list about
 60.
@@ -75,6 +75,5 @@ At 2–3 takes each, the MVP is about 20 generations and the full list about
 
 1. MVP: L01, L02, L05, L08, then T01, T02, T07, T08.
 2. Check them in the booth cam prototype.
-3. Redo P1-look; make P3-cue and P4-build; check each against P0-home.
-4. The rest, in the order L06, T03, T04 (cueing), then L07, T05, T06, T09
+3. The rest (all poses exist since 2026-11-17), in the order L06, T03, T04 (cueing), then L07, T05, T06, T09
    (builds), then L03, L04, the look clips and the flourishes.

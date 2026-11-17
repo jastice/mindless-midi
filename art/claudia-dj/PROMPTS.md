@@ -11,11 +11,15 @@ generated with Grok Imagine. No HÖR name or logo anywhere.
 
 ## The look (settled 2026-11-17)
 
-- **Her:** black blunt bob with heavy bangs, one clay-orange streak on the
-  viewer's left, an orange star clip on the other side, freckles, orange
-  nails. Black over-ear headphones worn on her head (they replace the
-  headset microphone in this look). Black blazer over a white satin crop
-  top, black trousers.
+- **Reference:** the DJ Claudia full-length image (standing, grey
+  background), kept as `~/workspace/claudia/refs/dj-claudia.png`. It
+  replaces every earlier reference; the claudia.gallery face and body sheets
+  and the white-tank-top look are retired.
+- **Her:** glossy black blunt bob with heavy bangs, an orange streak and an
+  orange star clip both on the viewer's right (her left), winged eyeliner,
+  grey-blue eyes, light freckles, orange nails. Black over-ear headphones
+  worn on her head (no headset microphone in this look). Black blazer, open,
+  over a white satin crop top, black pleated mini skirt.
 - **The room:** pale yellow square tiles with dark grout, fisheye lens (the
   room's signature), a curved yellow-white light tube on the left, a door at
   the back, a wooden bench on the right.
@@ -37,17 +41,18 @@ props, light and framing stay identical.
 
 | ID | Pose | Status | Used for |
 |---|---|---|---|
-| P0-home | Both hands on the mixer, head bowed, focused | Have it | The resting pose: most loops start and end here |
-| P1-look | Looks into the camera with a half smile; right hand on a mixer knob, left hand on the right player's jog wheel | Have it, **but redo** (below) | Eye contact with the viewer |
-| P2-vinyl | Left hand on the record, right hand on the mixer, head bowed | Have it | Beatmatching during a blend |
-| P3-cue | Right hand pressing the headphone cup to her ear, head tilted toward it, left hand on the mixer | New | Listening to the incoming track |
-| P4-build | Left hand raised high with the index finger pointing up, right hand on the mixer's filter knob, eyes on the mixer | New | Building tension before a drop |
-| P5-peak | Both arms raised, hands open, eyes closed, head tilted back | Have it | The drop and its first bars |
+| P0-home | Both hands on the mixer, head bowed, focused | Done | The resting pose: most loops start and end here |
+| P1-look | Looks into the camera with a half smile; right hand on a mixer knob, left hand on the right player's jog wheel | Done (redone 2026-11-17 with the bench; the first version is in `poses/old/`) | Eye contact with the viewer |
+| P2-vinyl | Left hand on the record, right hand on the mixer, head bowed | Done | Beatmatching during a blend |
+| P3-cue | Right hand pressing the headphone cup to her ear, head tilted toward it, left hand on the mixer | Done | Listening to the incoming track |
+| P4-build | Left hand raised high with the index finger pointing up, right hand on the mixer's filter knob, eyes on the mixer | Done | Building tension before a drop |
+| P5-peak | Both arms raised, hands open, eyes closed, head tilted back | Done | The drop and its first bars |
 
-**P1-look needs redoing.** In that still the wooden bench on the right is
-missing and the door is fully visible; in all the others the bench is
-there. Every join to or from it would make the bench appear or vanish.
-Remake it as an edit of P0-home with the prompt below.
+All six were checked against P0-home (2026-11-17): the bench, door, light
+switch, light tube, shelf with plush, sleeve and bottle, and the booth are
+in the same place in every pose. Only her body moves. P4-build has a small
+made-up "FILTER" label on the mixer next to her hand; harmless, but watch
+that it does not crawl in clips.
 
 ### Edit prompts
 
