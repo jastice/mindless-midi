@@ -190,7 +190,7 @@ the generation tool replaces the selected corpus with an API-generated one.
 ## Deploying
 
 The workflow in `.github/workflows/pages.yml` runs `bazel test //...` and
-`bazel build --config=stamp //site` on every push to `main` or `prod` and every PR. From `prod` it
+`bazel build --config=stamp //site` on every push to `main` or `prod/mindless` and every PR. From `prod/mindless` it
 publishes only a small redirect (`.github/pages-redirect/`) to GitHub Pages,
 which forwards old links, with their path and session query, to Cloudflare.
 This needs **Settings → Pages → Source: GitHub Actions**.
@@ -212,8 +212,9 @@ same-repo PR). It does nothing until you set it up once:
 The same workflow deploys the synthesis bench (`//src/bench:site`) as a
 separate Pages project, `<project>-bench`, which it creates on first run.
 
-A push to `main` only builds and tests. To release, fast-forward `prod`:
-`git push origin main:prod`.
+A push to `main` only builds and tests. To release, fast-forward `prod/mindless` (or `prod/claudia` for DJ Claudia, which
+deploys to the `dj-claudia` Pages project at djclaudia.trurl.systems):
+`git push origin main:prod/mindless`.
 
 To publish by hand to a `gh-pages` branch instead:
 

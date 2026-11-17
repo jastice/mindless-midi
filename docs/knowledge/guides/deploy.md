@@ -10,7 +10,7 @@ generated: { by: claude-code/claude-opus-5-5, at: 2026-11-13T00:00:00Z }
 # Deploy
 
 Normally: push to `main` (CI builds and tests only), then release with
-`git push origin main:prod`. A push to `prod` publishes to Cloudflare Pages;
+`git push origin main:prod/mindless` (`main:prod/claudia` for DJ Claudia). A push to `prod/mindless` publishes to Cloudflare Pages;
 PRs from the same repo get preview URLs. See [deployment](../build/deployment.md).
 
 By hand, to a branch:
