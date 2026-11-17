@@ -35,7 +35,10 @@ that is missing from one pose pops in and out at every join.
 
 ## Poses
 
-All files in `~/workspace/claudia/poses/` (PNG and WebP, 1672×941). New
+All files live outside the repo, in `~/workspace/claudia/`: poses in
+`poses/` as `<id>.png` (Grok originals, 1672×941; the `.webp` copies are
+smaller previews), the character reference in `refs/dj-claudia.png`, and
+anything retired in an `old/` folder beside it. New
 poses are made by **editing P0-home**, never from scratch, so the room,
 props, light and framing stay identical.
 
