@@ -29,13 +29,14 @@ week, L several weeks.
 
 ## The model
 
-**Poses** are still frames: Home, Cue, Build, Peak. **Clips** start on one
+**Poses** are still frames: Home, Look, Vinyl, Cue, Build, Peak (see the
+prompt notes). **Clips** start on one
 pose and end on one (the same pose for loops and flourishes). Any clip may
 follow another clip that ends on its start pose. Every clip is a whole
 number of bars.
 
 ```ts
-type Pose = "home" | "cue" | "build" | "peak";
+type Pose = "home" | "look" | "vinyl" | "cue" | "build" | "peak";
 type ClipKind = "loop" | "transition" | "flourish";
 
 interface Clip {
