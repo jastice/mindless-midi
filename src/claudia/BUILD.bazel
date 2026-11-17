@@ -92,8 +92,10 @@ stamp_build_info(
 copy_to_directory(
     name = "site",
     srcs = glob(["clips/*"]) + [
+        "apple-touch-icon.png",
         "clips.json",
         "favicon.svg",
+        "social.png",
         "styles.css",
         ":bundle",
         ":index_html",
