@@ -424,10 +424,13 @@ async function main(): Promise<void> {
     });
     const axis = $("axis");
     axis.replaceChildren();
-    if (!lanes.mix || lanes.mix.from > 0) axis.append(el("span", undefined, "Now"));
-    if (lanes.mix) {
-      const m = el("span", "mix", MIX_LABEL[lanes.mix.type]);
-      m.style.gridColumn = `${lanes.mix.from + 1} / ${lanes.mix.to + 2}`;
+    // The label is wider than one phrase: it hangs toward the side with room, so "Now" shows only clear of it.
+    const mix = lanes.mix;
+    if (!mix || mix.from > 1) axis.append(el("span", undefined, "Now"));
+    if (mix) {
+      const m = el("span", "mix", MIX_LABEL[mix.type]);
+      m.style.gridColumn = `${mix.from + 1} / ${mix.to + 2}`;
+      m.style.justifyContent = mix.to === LANE_PHRASES - 1 && mix.from > 0 ? "flex-end" : mix.from === 0 && mix.to < LANE_PHRASES - 1 ? "flex-start" : "center";
       axis.append(m);
     }
   }

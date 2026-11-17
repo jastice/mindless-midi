@@ -118,7 +118,7 @@ a:hover { color: #fff; }
 .dk-note { text-align: right; }
 .narrow-only { display: none; }
 .axis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }
-.axis .mix { border-top: 1px solid #6e6e76; padding-top: 3px; text-align: center; color: var(--violet-light); }
+.axis .mix { display: flex; justify-content: center; border-top: 1px solid #6e6e76; padding-top: 3px; white-space: nowrap; color: var(--violet-light); }
 
 /* Transport along the bottom of the video. */
 .play { position: absolute; left: 28px; bottom: 24px; width: 60px; height: 60px; border: 0; padding: 0; background: var(--text); color: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 2; }
