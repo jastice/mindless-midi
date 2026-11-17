@@ -20,7 +20,7 @@ import { DEFAULT_PIECE_OPTIONS, type Expression, type PieceOptions } from "../en
 import { type Bar, barSeconds } from "../engine/types.js";
 import { Bus } from "../sound/bus.js";
 import { type DeckBar, type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../sound/protocol.js";
-import { creditLines, type PackCredit } from "../corpus/pack.js";
+import { type CreditEntry, creditEntries, creditLines, type PackCredit } from "../corpus/pack.js";
 import { type PlannedNote, SampleCache, SampleLibrary, servedAt } from "../sound/sampler.js";
 import { barScore } from "../sound/score.js";
 import { stemMoves } from "../sound/moves.js";
@@ -341,6 +341,11 @@ export class Player {
     return this.library && this.credits ? creditLines(this.credits, this.library.packs) : [];
   }
 
+  /** The same, each with its licence and where its terms were read, for a page that links them. */
+  get sampleCreditEntries(): CreditEntry[] {
+    return this.library && this.credits ? creditEntries(this.credits, this.library.packs) : [];
+  }
+
   /** Seconds between the audio clock and the speaker, as the browser reports it. */
   get latency(): number | null {
     const ctx = this.ctx;
@@ -415,8 +420,11 @@ export class Player {
     if (this.output && this.ctx) this.output.gain.setTargetAtTime(v * v, this.ctx.currentTime, 0.05);
   }
 
-  /** Change the style pool; if the current piece's style was removed, move on now. */
-  setStyles(styles: StyleBundle[]): void {
+  /**
+   * Change the style pool; if the current piece's style was removed, move on now, unless `fromNext`: then the
+   * pool applies from the next track on and the one playing plays out.
+   */
+  setStyles(styles: StyleBundle[], { fromNext = false } = {}): void {
     if (!styles.length) return;
     for (const s of styles) this.styleById.set(s.id, s);
     this.pool = styles;
@@ -427,7 +435,7 @@ export class Player {
       if (this.heading) this.heading = { ...this.heading, at: restarted };
     }
     const cur = this.current();
-    if (cur && !styles.some((s) => s.id === cur.bar.info.styleId)) this.skip();
+    if (!fromNext && cur && !styles.some((s) => s.id === cur.bar.info.styleId)) this.skip();
   }
 
   /**

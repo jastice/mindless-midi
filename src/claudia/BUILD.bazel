@@ -15,6 +15,7 @@ ts_lib(
     ],
     deps = [
         ":director",
+        ":hud",
         "//src/app:player",
         "//src/corpus",
         "//src/engine",
@@ -28,6 +29,27 @@ ts_lib(
     srcs = ["director.ts"],
     visibility = ["//tools/clips:__pkg__"],
     deps = ["//src/theory"],
+)
+
+# The HUD's pure parts: the deck lanes and set names.
+ts_lib(
+    name = "hud",
+    srcs = [
+        "lanes.ts",
+        "set_name.ts",
+    ],
+    deps = ["//src/engine"],
+)
+
+ts_test(
+    name = "lanes_test",
+    src = "lanes.test.ts",
+    data = ["//styles:claudia"],
+    deps = [
+        ":hud",
+        "//src/corpus",
+        "//src/engine",
+    ],
 )
 
 ts_test(

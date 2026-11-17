@@ -4,6 +4,7 @@ ts_lib(
     name = "corpus",
     srcs = [
         "constants.ts",
+        "names.ts",
         "patch.ts",
         "pack.ts",
         "schema.ts",
@@ -28,5 +29,16 @@ ts_test(
     name = "pack_test",
     src = "pack.test.ts",
     data = ["//samples:manifests"],
+    deps = [":corpus"],
+)
+
+ts_test(
+    name = "names_test",
+    src = "names.test.ts",
+    data = [
+        "//styles/berlin_techno:corpus",
+        "//styles/minimal_techno:corpus",
+        "//styles/psychedelic_house:corpus",
+    ],
     deps = [":corpus"],
 )

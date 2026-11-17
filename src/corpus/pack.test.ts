@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { test } from "node:test";
-import { InstrumentTable, fileUrl, servedPath, tablePacks, validatePack } from "./pack.js";
+import { InstrumentTable, type PackCredit, creditEntries, creditLines, fileUrl, servedPath, tablePacks, validatePack } from "./pack.js";
 
 const manifests = (readdirSync("samples", { recursive: true }) as string[]).filter((f) => f.endsWith("pack.json")).sort();
 const load = (f: string) => JSON.parse(readFileSync(`samples/${f}`, "utf8"));
@@ -75,4 +75,31 @@ test("the program table validates and names only checked-in multisample packs", 
   const table = InstrumentTable.parse(JSON.parse(readFileSync("samples/instruments.json", "utf8")));
   const ids = new Set(manifests.map((f) => load(f)).filter((p) => p.kind === "multisample").map((p) => p.id));
   for (const id of tablePacks(table)) assert.ok(ids.has(id), `${id} is in samples/`);
+});
+
+test("credit entries carry the name, licence and link, one per distinct credit", () => {
+  const credit = (pack: string, name: string, licence: string, source: string): PackCredit => ({
+    pack,
+    credit: `${name} (${licence})`,
+    licence,
+    spdx: "CC0-1.0",
+    attribution: null,
+    share_alike: false,
+    source,
+  });
+  const credits = [
+    credit("danigb-sampled/tr909-detroit", "TR-909 Detroit", "public domain claimed", "https://example.org/909"),
+    credit("gleitz-musyngkite/pad-2-warm", "MusyngKite GM soundfont", "CC BY-SA 3.0", "https://example.org/mk"),
+    credit("gleitz-musyngkite/synth-bass-1", "MusyngKite GM soundfont", "CC BY-SA 3.0", "https://example.org/mk"),
+    credit("danigb-samples/lm-2", "LinnDrum LM-2", "permissive claimed", "https://example.org/lm2"),
+  ];
+  const used = ["gleitz-musyngkite/synth-bass-1", "danigb-sampled/tr909-detroit", "gleitz-musyngkite/pad-2-warm"];
+  assert.deepEqual(creditEntries(credits, used), [
+    { name: "TR-909 Detroit", licence: "public domain claimed", source: "https://example.org/909" },
+    { name: "MusyngKite GM soundfont", licence: "CC BY-SA 3.0", source: "https://example.org/mk" },
+  ]);
+  assert.deepEqual(
+    creditEntries(credits, used).map((e) => `${e.name} (${e.licence})`),
+    creditLines(credits, used),
+  );
 });

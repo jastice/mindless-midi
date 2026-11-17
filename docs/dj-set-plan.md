@@ -1191,6 +1191,58 @@ The URL carries seed, position (`track.bar`) and style pool, as today.
 recording of the set as audio through `MediaRecorder` on the output. An
 offline render is not possible while the master is a Web Audio graph.
 
+### Built (2026-11-17): the Bunker HUD
+
+The page follows the "Bunker HUD" boards on the DJ Claudia Redesign canvas
+(`Hud.dc.html`, `HudPhone.dc.html`), which replaced the list above after
+several rounds of cutting. Key, tempo, part lights, the grid, the energy
+curve and verbose descriptions are gone; so is the volume fader.
+
+- **On the video** (`src/claudia/index.html`, `styles.css`). The booth cam
+  fills the window (`min(100svh, 62.5vw)`, at least 560 px, cover). Top
+  left the tracklist: a "DJ Claudia · Set <name>" tag, up to three earlier
+  tracks (fainter the older), the one playing large with a violet edge, and
+  the next with a dashed outline and "≈ mm:ss" once the set has planned it.
+  Top right the decks panel; along the bottom play/pause, Next track, a
+  discreet Cam on/off, and Synth/Samples.
+- **Deck lanes** (`src/claudia/lanes.ts`, pure, tested). Each deck shows
+  the next four phrases from the phrase playing now: on, going out, coming
+  in, idle; the transition's type labels the phrases it covers. They come
+  from the heard bar's `transition` and the set's `transitionPlan`. A cut's
+  run-up (its `transition` of `ramp` bars) has the outgoing track alone and
+  the incoming from the cut. The set plans a handover only 32 bars before
+  it, so the page calls the new `SetConductor.planTransition` once the
+  handover could fall within the lanes; it is the plan the set would make
+  anyway (seeded), and `setStyles` still forgets it.
+- **Times** are set time: the first bar heard sits at its nominal place in
+  the set (`trackPlan(i).start` plus its bars), and the audio clock counts
+  on from there, so a link to track 8 shows 32:05, not 0:00. A track coming
+  in over another begins on the overlap's first bar.
+- **Under the video**: set name (New set, Copy link), Styles toggles (from
+  the next track: `Player.setStyles(pool, { fromNext: true })` leaves the
+  playing track alone; at least one stays on; kept in the URL as
+  `styles=` and in localStorage), and the credits.
+- **Phone / tall** (portrait, narrower than 896 px or lower than 560 px):
+  only play/pause and the live light stay on the video; tracklist (previous,
+  now, next), decks, next track and sound follow, then styles, set name, an
+  Earlier list and the credits. At 390×844 the controls end at 531 px.
+- **Names.** Track titles come from each style's `names` theme in its
+  corpus (word lists and patterns, `src/corpus/names.ts`): track `i` takes
+  title `(a·i + b) mod size` with a and b from the set seed and the style,
+  so titles do not repeat until the theme is used up. Minimal Techno is
+  terse and numbered, Berlin Techno the only German one, Psychedelic House
+  English and warm. Validation wants at least 100 titles, none longer than
+  22 characters and none made two ways. Styles without a theme fall back to
+  their title and the track's number. Set names are a German word and a
+  cloakroom number (`KALT-7731`, `src/claudia/set_name.ts`); the name is
+  the seed, so older seeds still play.
+- **Credits** come from the data: each style's `authors` (from the
+  co-author lines of the commits that wrote it), and the sample packs heard
+  so far with links to where their licences were read (`creditEntries` in
+  `src/corpus/pack.ts`). Inter Tight is self-hosted beside IBM Plex Mono.
+
+Not done: the tracklist and audio export above.
+
 ## Tests
 
 Composition is pure, so most of the design can be asserted without audio.

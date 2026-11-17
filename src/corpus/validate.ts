@@ -6,6 +6,7 @@
 import type { Kit, Patch } from "./patch.js";
 import { DRUM_LANES, type Role, StyleCorpus } from "./schema.js";
 import { parseRoman } from "../theory/theory.js";
+import { nameAt, nameCount } from "./names.js";
 
 export type ValidationResult =
   | { ok: true; corpus: StyleCorpus; warnings: string[] }
@@ -44,6 +45,49 @@ export function kitWarnings(k: Kit): string[] {
     if (p.lane === "kick") out.push("perc: lane \"kick\" replaces the kick, and its sub tail and rumble with it");
   }
   return out;
+}
+
+/** Fewest titles a name theme may make: enough that a long set does not repeat one. */
+export const MIN_NAMES = 100;
+/** Longest title, in characters: the page sets the playing one large. */
+export const MAX_NAME_LENGTH = 22;
+/** Most titles checked one by one; past this only the lists are. */
+const NAME_CHECK_LIMIT = 50_000;
+
+/** The name theme: slots resolve, every list is used, enough distinct titles, none too long. */
+function checkNames(c: StyleCorpus, errors: string[], warnings: string[]): void {
+  const theme = c.names;
+  if (!theme) return;
+  const used = new Set<string>();
+  theme.patterns.forEach((p, i) => {
+    if (/[{}]/.test(p.replace(/\{[a-z]+\}/g, ""))) errors.push(`names.patterns[${i}]: stray brace in "${p}"`);
+    for (const m of p.matchAll(/\{([a-z]+)\}/g)) {
+      used.add(m[1]!);
+      if (!theme.lists[m[1]!]) errors.push(`names.patterns[${i}]: no list "${m[1]}"`);
+    }
+  });
+  for (const [name, list] of Object.entries(theme.lists)) {
+    if (!used.has(name)) warnings.push(`names.lists.${name}: no pattern uses it`);
+    const seen = new Set<string>();
+    for (const w of list) {
+      if (seen.has(w)) errors.push(`names.lists.${name}: "${w}" is listed twice`);
+      seen.add(w);
+    }
+  }
+  if (errors.some((e) => e.startsWith("names."))) return;
+  const n = nameCount(theme);
+  if (n < MIN_NAMES) errors.push(`names: makes ${n} titles, needs at least ${MIN_NAMES}`);
+  if (n > NAME_CHECK_LIMIT) return;
+  const titles = new Set<string>();
+  const long: string[] = [];
+  for (let k = 0; k < n; k++) {
+    const t = nameAt(theme, k);
+    if (t !== t.trim() || /\s\s/.test(t)) errors.push(`names: "${t}" has stray spaces`);
+    if (titles.has(t)) errors.push(`names: "${t}" can be made two ways`);
+    if (t.length > MAX_NAME_LENGTH) long.push(t);
+    titles.add(t);
+  }
+  if (long.length) errors.push(`names: ${long.length} titles longer than ${MAX_NAME_LENGTH} characters, e.g. "${long[0]}"`);
 }
 
 /** What a part of each role reads its material from. */
@@ -130,6 +174,7 @@ export function validateCorpus(input: unknown): ValidationResult {
     errors.push(`beatGroups: must sum to beatsPerBar (${bpb})`);
   }
 
+  checkNames(c, errors, warnings);
   if (c.tempo.min > c.tempo.max) errors.push(`tempo: min ${c.tempo.min} > max ${c.tempo.max}`);
   if (c.melody.low >= c.melody.high) errors.push(`melody: low ${c.melody.low} >= high ${c.melody.high}`);
   if (c.melody.high - c.melody.low < 12) warnings.push("melody: range narrower than an octave");

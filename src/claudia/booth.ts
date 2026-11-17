@@ -60,7 +60,6 @@ export class BoothCam {
     this.director = new Director(set, player.seed);
     this.plan = new RollingPlan(this.director);
     this.reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    el.style.aspectRatio = `${set.width} / ${set.height}`;
     this.still = document.createElement("img");
     this.still.className = "still";
     this.still.alt = "";
