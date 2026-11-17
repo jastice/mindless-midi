@@ -22,7 +22,7 @@
       "bars": 5,
       "bpm": 120,
       "beatPhase": 2,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "L01-home.mp4",
         "start": 0,
@@ -43,7 +43,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 2,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "L02-home.mp4",
         "start": 0,
@@ -64,7 +64,7 @@
       "bars": 5,
       "bpm": 120,
       "beatPhase": 1,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "L03-home-low.mp4",
         "start": 0,
@@ -85,7 +85,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 8,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "L04-home-high.mp4",
         "start": 0,
@@ -105,7 +105,7 @@
       "bars": 5,
       "bpm": 120,
       "beatPhase": 0,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "L05-vinyl.mp4",
         "start": 0,
@@ -125,7 +125,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 0,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "L06-cue.mp4",
         "start": 0,
@@ -145,7 +145,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 8,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "L07-build.mp4",
         "start": 0,
@@ -165,7 +165,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 10,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "L08-peak.mp4",
         "start": 0,
@@ -185,7 +185,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 8,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "L09-look.mp4",
         "start": 0,
@@ -205,7 +205,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 2,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "T01-home-vinyl.mp4",
         "start": 0,
@@ -225,7 +225,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 8,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "T02-vinyl-home.mp4",
         "start": 0,
@@ -245,7 +245,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 1,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "T03-vinyl-cue.mp4",
         "start": 0,
@@ -265,7 +265,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 2,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "T04-cue-home.mp4",
         "start": 0,
@@ -285,7 +285,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 10,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "T05-home-build.mp4",
         "start": 0,
@@ -305,7 +305,7 @@
       "bars": 2,
       "bpm": 120,
       "beatPhase": 11,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "maxRate": 1.25,
       "source": {
         "take": "T06-build-peak.mp4",
@@ -326,7 +326,7 @@
       "bars": 2,
       "bpm": 110.769,
       "beatPhase": 8,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "maxRate": 1.25,
       "source": {
         "take": "T07-home-peak.mp4",
@@ -347,7 +347,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 1,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "T08-peak-home.mp4",
         "start": 0,
@@ -367,7 +367,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 0,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "T09-build-home.mp4",
         "start": 0,
@@ -387,7 +387,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 11,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "T10-home-look.mp4",
         "start": 0,
@@ -407,7 +407,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 1,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "T11-look-home.mp4",
         "start": 0,
@@ -427,7 +427,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 2,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "F01-glance.mp4",
         "start": 0,
@@ -447,7 +447,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 2,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "F02-fist.mp4",
         "start": 0,
@@ -467,7 +467,7 @@
       "bars": 3,
       "bpm": 120,
       "beatPhase": 2,
-      "fadeFrames": 6,
+      "fadeFrames": 10,
       "source": {
         "take": "F03-sip.mp4",
         "start": 0,

@@ -139,14 +139,15 @@ export class BoothCam {
     return n;
   }
 
-  /** The frame placement `p` should show at bar position `x`, and the rate it plays at during a bar of `barSeconds`. */
+  /**
+   * The frame placement `p` should show at bar position `x`: frame 0 on its
+   * first bar line, so the next clip's first frame lands where this one's
+   * closing pose frame would be. (Shifting each clip to its measured beat
+   * phase froze or overlapped joins by up to 7 frames, for beat estimates
+   * barely above noise: Grok does not know the tempo.)
+   */
   private frameOf(p: Placement, x: number): number {
-    const fpb = p.clip.frames / p.clip.bars;
-    const half = fpb / 4 / 2; // half a beat
-    const beat = fpb / 4;
-    const phase = ((p.clip.beatPhase % beat) + beat) % beat;
-    const shift = phase > half ? phase - beat : phase;
-    return (x - p.bar) * fpb + shift;
+    return (x - p.bar) * (p.clip.frames / p.clip.bars);
   }
 
   private tick(): void {
@@ -164,7 +165,7 @@ export class BoothCam {
     if (!cur) return this.showStill(true);
     const next = this.plan.after(cur);
     const prev = this.plan.placements[this.plan.placements.indexOf(cur) - 1];
-    // The front clip is the latest one that has begun (a clip may begin a little before its bar).
+    // The front clip is the latest one that has begun.
     let front = cur;
     if (next && this.frameOf(next, x) >= 0) front = next;
     else if (this.frameOf(cur, x) < 0 && prev) front = prev;

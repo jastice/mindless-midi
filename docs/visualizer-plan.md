@@ -351,6 +351,17 @@ from the pose PNGs.
   In headless Chrome at 132 BPM (×1.10), 2 minutes: 17 joins, drift mean
   0.23, max 1.07 frames, no seeks.
 
+**Joins (2026-11-17, after use).** The joins stuttered. The player had
+shifted each clip by its measured beat phase (−5 to +2 frames), so at a
+join the old clip froze on its last frame or the new one started while the
+old still moved, up to 7 frames apart, for beat estimates barely above
+noise (strength 1.1–1.3; Grok does not know the tempo). Now every clip's
+frame 0 is on its bar line, so the new clip's first frame takes the place of
+the old one's closing pose frame, and the crossfade is 10 frames (was 6) to
+carry the takes' slightly different pose frames. Traced per animation frame
+in headless Chrome: old clip to its last frame, new clip from frame 0 on the
+next tick, no held picture; drift mean 0.26, max 0.90 frames, no seeks.
+
 **What the shot list cannot do yet.** A phrase of 3 + 5 holds one 6 s clip,
 and only Home and Vinyl have 10 s clips, so a visit to Look, Cue or Build is
 always transition in, transition out: **L06-cue, L07-build and L09-look

@@ -44,7 +44,7 @@ export interface Clip {
   bars: number;
   /** Tempo at which the clip plays at ×1: bars * 4 * 60 * fps / frames. */
   bpm: number;
-  /** Frames from the clip's start to its first nod on the beat; the clip starts this much before its first bar. */
+  /** Frames from the clip's start to its first nod on the beat, as measured (weak: Grok does not know the tempo); not used for playback. */
   beatPhase: number;
   /** Crossfade when it follows another clip, frames. */
   fadeFrames: number;

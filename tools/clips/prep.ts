@@ -29,6 +29,8 @@ const FFMPEG = process.env.FFMPEG ?? (existsSync("/opt/homebrew/bin/ffmpeg") ? "
 const FPS = 24;
 const GW = 160;
 const GH = 90;
+/** Crossfade into a clip: long enough to carry the small differences between takes' pose frames. */
+const FADE_FRAMES = 10;
 
 interface Select {
   id: string;
@@ -225,7 +227,7 @@ function main(): void {
       bars,
       bpm: Math.round(bpm * 1000) / 1000,
       beatPhase: phase,
-      fadeFrames: 6,
+      fadeFrames: FADE_FRAMES,
       ...(sel.maxRate && { maxRate: sel.maxRate }),
       source: { take: sel.take, start: turn === undefined ? start : (sel.range?.[0] ?? 0), ...(turn !== undefined && { boomerangTurn: turn }), closeDiff: round2(closes), fromDiff: round2(fromDiff), toDiff: round2(toDiff), beatStrength: round2(beat.strength) },
     });
