@@ -35,7 +35,7 @@ export interface Clip {
   kind: ClipKind;
   from: Pose;
   to: Pose;
-  /** For loops: the energy they suit. */
+  /** The energy it suits; never played two steps from it. */
   energy?: Energy;
   /** Relative to the clips base URL; named by the SHA-256 of its bytes. */
   file: string;
@@ -72,8 +72,10 @@ export const MIN_RATE = 0.9;
 export const MAX_RATE = 1.16;
 /** Bars in a phrase (as `PHRASE_BARS` in the set conductor). Every phrase starts on a clip boundary, on a pose frame. */
 export const PHRASE = 8;
-/** A section at least this much more intense than the one before is a drop. */
+/** Without a grid, a section at least this much more intense than the one before is a drop. */
 export const DROP_RISE = 0.2;
+/** A drop into a section at least this intense gets the arms up (and the build before it); a smaller one passes at the decks. */
+export const BIG_DROP = 0.5;
 /** Bars before a drop that call for the build pose, and bars after it for the peak. */
 export const MOMENT_BARS = 8;
 /** Bars of a track's start and end the director treats as a blend zone. */
@@ -87,9 +89,9 @@ export interface Cue {
   intensity: number;
   /** Where the bar sits in its track's mix. */
   mix: "in" | "body" | "out";
-  /** The bar starts a section that rises at least DROP_RISE. */
+  /** The bar starts a big drop (into a section of at least BIG_DROP). */
   drop: boolean;
-  /** Within MOMENT_BARS before a drop of this track, or from its first bar to MOMENT_BARS after. */
+  /** In the build before a big drop (the grid's, else MOMENT_BARS), or from its first bar to MOMENT_BARS after. */
   moment: "build" | "peak" | null;
   /** Which track and bar this is, to tell when the music turned out other than planned. */
   piece: number;
@@ -117,32 +119,96 @@ export interface BarFacts {
 }
 
 /**
- * Cues from this bar to the end of its track, from its sections, then
- * `nextBars` of the next track as far as it can be known: a blend zone at its
- * start and a middling energy, no drops.
+ * What the director knows of a track ahead of time. From a set's plans
+ * (`trackFacts`): its sections, the parts its grid plays in each bar, its
+ * turns and builds, and the overlaps with the tracks either side. Without
+ * them (`factsOf`), only its sections; blend zones are then guessed.
  */
-export function cuesFor(bar: BarFacts, bpm: number, sections: readonly Section[] | null, nextBars = 2 * BLEND_BARS): Cue[] {
+export interface TrackFacts {
+  piece: number;
+  bars: number;
+  sections: readonly Section[];
+  /** Parts playing in each bar. */
+  parts?: readonly number[];
+  /** "drop" or "break" on the first bar of a section that turns the track. */
+  turn?: readonly (string | undefined)[];
+  /** True in the build before a drop. */
+  build?: readonly boolean[];
+  /** From a set's plans: blend zones are exactly the overlaps below (none at all for a cut). */
+  planned?: boolean;
+  /** Bars of this track overlapping the track before, while this one is the louder: [from, to). */
+  blendIn?: readonly [number, number];
+  /** The handover: this track's bar where the next becomes the louder, the next's bar there, and this track's overlapped bars before it. */
+  out?: { at: number; nextBar: number; blend: readonly [number, number] };
+}
+
+/** What a set conductor tells about its tracks ahead (SetConductor has these). */
+export interface PlanSource {
+  layout(i: number): readonly Section[] | null;
+  trackPiece(i: number): { totalBars: number; grid?: { parts: string[][]; turn: (string | undefined)[]; build?: (unknown | undefined)[] } };
+  transitionPlan(i: number): { start: number; bars: number; swap: number; enter: number } | null;
+}
+
+/** Track `i`'s facts from a set's plans, once it has been chosen. */
+export function trackFacts(src: PlanSource, i: number): TrackFacts | null {
+  const sections = src.layout(i);
+  if (!sections) return null;
+  const piece = src.trackPiece(i);
+  const g = piece.grid;
+  const before = i > 0 ? src.transitionPlan(i - 1) : null;
+  const after = src.transitionPlan(i);
+  return {
+    piece: i,
+    bars: piece.totalBars,
+    sections,
+    planned: true,
+    ...(g && { parts: g.parts.map((p) => p.length), turn: g.turn, build: g.build?.map(Boolean) }),
+    ...(before && before.bars > 0 && { blendIn: [before.enter + before.swap, before.enter + before.bars] as const }),
+    ...(after && { out: { at: after.start + after.swap, nextBar: after.enter + after.swap, blend: [after.start, after.start + after.swap] as const } }),
+  };
+}
+
+/** A track known only by its bar and sections. */
+export function factsOf(bar: BarFacts, sections: readonly Section[] | null): TrackFacts {
+  return { piece: bar.pieceIndex, bars: bar.pieceBars, sections: sections?.length ? sections : [{ start: 0, bars: bar.pieceBars, intensity: bar.intensity }] };
+}
+
+/**
+ * Cues from bar `barInPiece` of `track` to its handover, then of `next` (as far as
+ * `nextBars`), or of a next track assumed from bar 0 with a blend zone at its start.
+ */
+export function cuesFor(barInPiece: number, bpm: number, track: TrackFacts, next: TrackFacts | null, nextBars = 2 * BLEND_BARS): Cue[] {
   const out: Cue[] = [];
-  const secs = sections?.length ? sections : [{ start: 0, bars: bar.pieceBars, intensity: bar.intensity }];
-  const blend = Math.min(BLEND_BARS, Math.floor(bar.pieceBars / 3));
-  const drops = secs.filter((s, k) => k > 0 && s.intensity - secs[k - 1]!.intensity >= DROP_RISE).map((s) => s.start);
-  for (let b = bar.barInPiece; b < bar.pieceBars; b++) {
+  trackCues(out, track, barInPiece, track.out ? track.out.at : track.bars, bpm);
+  const from = track.out?.nextBar ?? 0;
+  if (next) trackCues(out, next, from, Math.min(next.bars, from + nextBars), bpm);
+  else for (let b = 0; b < nextBars; b++) out.push({ bpm, intensity: 0.5, mix: b < BLEND_BARS ? "in" : "body", drop: false, moment: null, piece: track.piece + 1, barInPiece: b });
+  return out;
+}
+
+function trackCues(out: Cue[], t: TrackFacts, from: number, to: number, bpm: number): void {
+  const secs = t.sections;
+  const sectionAt = (b: number) => {
     let k = 0;
     while (k + 1 < secs.length && secs[k + 1]!.start <= b) k++;
-    const sec = secs[Math.max(0, k)]!;
-    const before = k > 0 ? secs[k - 1] : undefined;
-    out.push({
-      bpm,
-      intensity: sec.intensity,
-      mix: b < blend ? "in" : bar.pieceBars - b <= blend ? "out" : "body",
-      drop: !!before && sec.start === b && sec.intensity - before.intensity >= DROP_RISE,
-      moment: drops.some((d) => d > b && d - b <= MOMENT_BARS) ? "build" : drops.some((d) => b >= d && b - d < MOMENT_BARS) ? "peak" : null,
-      piece: bar.pieceIndex,
-      barInPiece: b,
-    });
+    return k;
+  };
+  // Drops: the grid's turns where there is a grid, else a rise in intensity; big ones only for the peak.
+  const drops = secs.filter((s, k) => k > 0 && (t.turn ? t.turn[s.start] === "drop" : s.intensity - secs[k - 1]!.intensity >= DROP_RISE)).map((s) => s.start);
+  const big = new Set(drops.filter((d) => secs[sectionAt(d)]!.intensity >= BIG_DROP));
+  const most = t.parts ? Math.max(1, ...t.parts) : 0;
+  const guess = Math.min(BLEND_BARS, Math.floor(t.bars / 3));
+  const inside = (r: readonly [number, number] | undefined, b: number) => !!r && b >= r[0] && b < r[1];
+  for (let b = from; b < to; b++) {
+    const sec = secs[sectionAt(b)]!;
+    // Energy is what plays: a section's intensity, but no more than its share of the track's fullest bar.
+    const intensity = t.parts ? Math.min(sec.intensity, (t.parts[b] ?? 0) / most) : sec.intensity;
+    const mix = t.planned ? (inside(t.blendIn, b) ? "in" : inside(t.out?.blend, b) ? "out" : "body") : b < guess ? "in" : t.bars - b <= guess ? "out" : "body";
+    const ahead = drops.find((d) => d > b);
+    const building = ahead !== undefined && big.has(ahead) && (t.build ? !!t.build[b] : ahead - b <= MOMENT_BARS);
+    const peak = [...big].some((d) => b >= d && b - d < MOMENT_BARS);
+    out.push({ bpm, intensity, mix, drop: big.has(b), moment: building ? "build" : peak ? "peak" : null, piece: t.piece, barInPiece: b });
   }
-  for (let b = 0; b < nextBars; b++) out.push({ bpm, intensity: 0.5, mix: b < BLEND_BARS ? "in" : "body", drop: false, moment: null, piece: bar.pieceIndex + 1, barInPiece: b });
-  return out;
 }
 
 export function energyOf(intensity: number): Energy {
@@ -159,6 +225,10 @@ export const isDrop = (clip: Clip) => clip.kind === "transition" && clip.to === 
 
 
 const ENERGY_STEP: Record<Energy, number> = { low: 0, mid: 1, high: 2 };
+/** Clips back within which a flourish is not played again. */
+const RECENT = 6;
+/** Affinity of a pose a bar does not call for. */
+const UNWANTED = 0.003;
 
 export class Director {
   readonly set: ClipSet;
@@ -184,7 +254,7 @@ export class Director {
     return [pool.reduce((a, b) => (off(b) < off(a) ? b : a))];
   }
 
-  /** How well each pose suits a bar, 0.1 to 1, with 1 for the best pose the set has. */
+  /** How well each pose suits a bar, 0.003 to 1, with 1 for the best pose the set has; a pose the bar does not call for is rare. */
   affinity(cue: Cue): (pose: Pose) => number {
     const want: Partial<Record<Pose, number>> =
       cue.moment === "peak"
@@ -194,22 +264,26 @@ export class Director {
           : cue.mix !== "body"
             ? { vinyl: 1, cue: 1, home: 0.3 }
             : { home: 1, look: energyOf(cue.intensity) === "low" ? 0.1 : 1 };
-    const top = Math.max(...[...this.poses].map((p) => want[p] ?? 0.1));
-    return (p) => Math.min(1, (want[p] ?? 0.1) / top);
+    const top = Math.max(...[...this.poses].map((p) => want[p] ?? UNWANTED));
+    return (p) => Math.min(1, (want[p] ?? UNWANTED) / top);
   }
 
-  /** How much a clip suits starting on `cue` after `prev` (0: never). */
-  weight(clip: Clip, cue: Cue, prev?: Clip): number {
+  /** How much a clip suits starting on `cue` after the clips in `history` (most recent last; 0: never). */
+  weight(clip: Clip, cue: Cue, history: readonly Clip[] = []): number {
+    const prev = history[history.length - 1];
     let w = 1;
-    if (clip.kind === "flourish") w *= cue.mix === "body" && !cue.moment ? 0.25 : 0.02;
+    if (clip.kind === "flourish") w *= cue.mix === "body" && !cue.moment ? 0.15 : 0.02;
     if (clip.energy) {
+      // A loop of the right energy is favoured; a flourish only allowed (it is a one-off either way).
       const d = Math.abs(ENERGY_STEP[clip.energy] - ENERGY_STEP[energyOf(cue.intensity)]);
-      w *= [3, 1, 0.3][d]!;
+      w *= (clip.kind === "flourish" ? [1, 0.5, 0] : [3, 1, 0])[d]!;
     }
     const aff = this.affinity(cue);
     const to = aff(clip.to);
     w *= to;
     if (clip.from !== clip.to && to > aff(clip.from)) w *= 4; // arriving where she should be
+    if (prev && prev.kind === "transition" && clip.kind === "transition" && prev.from === clip.to && prev.to === clip.from) w *= 0.05; // undoing the last move
+    if (clip.kind === "flourish" && history.slice(-RECENT).some((c) => c.id === clip.id)) w *= 0.05; // not the same one again so soon
     if (prev?.kind === "flourish" && clip.kind === "flourish") w = 0;
     return w;
   }
@@ -219,17 +293,17 @@ export class Director {
    * PLAN_BARS bars (all of `cues` when `whole`); the last clip may run past
    * the cues.
    */
-  plan(start: number, pose: Pose, cues: readonly Cue[], prev?: Clip, whole = false): Placement[] {
+  plan(start: number, pose: Pose, cues: readonly Cue[], history: readonly Clip[] = [], whole = false): Placement[] {
     const out: Placement[] = [];
     const until = whole ? cues.length : Math.min(cues.length, PLAN_BARS);
     let b = 0;
     let at: Pose = pose;
-    let last = prev;
+    const last = [...history];
     const place = (clip: Clip) => {
       out.push({ clip, bar: start + b });
       b += clip.bars;
       at = clip.to;
-      last = clip;
+      last.push(clip);
     };
     let skipBefore = 0; // drops before this cue index have been given up on
     while (b < until) {
@@ -291,8 +365,10 @@ export class Director {
       if (!left.length) continue;
       const rng = new Rng(`${this.seed}/booth/drop/${i}`);
       const clips: Clip[] = [];
+      // Out of the build pose only where the music builds.
+      const built = cues[i - 1]?.moment === "build";
       while (left.length) {
-        const c = rng.weighted(left, (c) => (c.from === "build" ? 3 : 1));
+        const c = rng.weighted(left, (c) => (c.from === "build" ? (built ? 3 : 0.05) : 1));
         clips.push(c);
         left.splice(left.indexOf(c), 1);
       }
@@ -306,7 +382,7 @@ export class Director {
    * Counts the paths from each bar and pose backwards, then walks forwards
    * choosing each clip by its weight among those that leave a path open.
    */
-  private pathTo(start: number, from: Pose, cues: readonly Cue[], to: Pose | null, prev?: Clip): Clip[] | null {
+  private pathTo(start: number, from: Pose, cues: readonly Cue[], to: Pose | null, history: readonly Clip[] = []): Clip[] | null {
     const d = cues.length;
     if (d === 0) return to === null || from === to ? [] : null;
     const poses = [...this.poses];
@@ -329,18 +405,18 @@ export class Director {
     const path: Clip[] = [];
     let k = 0;
     let at = from;
-    let last = prev;
+    const last = [...history];
     while (k < d) {
       const options = this.candidates(at, cues[k]!.bpm).filter((c) => k + c.bars <= d && !isDrop(c) && (ways[k + c.bars]!.get(c.to) ?? 0) > 0);
       const rng = new Rng(`${this.seed}/booth/${start + k}`);
       // The path counts only rule out dead ends: weighting by them would favour the pose with the most ways onward (Home).
-      const w = (c: Clip, l?: Clip) => this.weight(c, cues[k]!, l) || 0;
+      const w = (c: Clip, h?: readonly Clip[]) => this.weight(c, cues[k]!, h) || 0;
       const strict = options.some((c) => w(c, last) > 0);
       const clip = rng.weighted(options, (c) => (strict ? w(c, last) : w(c)) || 1e-9);
       path.push(clip);
       k += clip.bars;
       at = clip.to;
-      last = clip;
+      last.push(clip);
     }
     return path;
   }
@@ -407,15 +483,18 @@ export class RollingPlan {
         break;
       }
     }
-    if (end() < bar + PLAN_BARS) this.extend(end(), this.placements[this.placements.length - 1]!.clip.to, cues, end() - bar, this.placements[this.placements.length - 1]!.clip);
+    if (end() < bar + PLAN_BARS) {
+      const recent = this.placements.slice(-RECENT).map((p) => p.clip);
+      this.extend(end(), recent[recent.length - 1]!.to, cues, end() - bar, recent);
+    }
     for (const k of [...this.assumed.keys()]) if (k < bar - 64) this.assumed.delete(k);
     while (this.placements.length > 2 && this.placements[1]!.bar + this.placements[1]!.clip.bars < bar - 16) this.placements.shift();
   }
 
-  private extend(from: number, pose: Pose, cues: readonly Cue[], offset: number, prev?: Clip): void {
+  private extend(from: number, pose: Pose, cues: readonly Cue[], offset: number, history: readonly Clip[] = []): void {
     const rest = cues.slice(offset);
     if (!rest.length) return;
-    const added = this.director.plan(from, pose, rest, prev);
+    const added = this.director.plan(from, pose, rest, history);
     this.placements.push(...added);
     rest.forEach((c, i) => this.assumed.set(from + i, c));
   }

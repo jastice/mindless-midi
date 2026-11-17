@@ -9,7 +9,7 @@
  * the last one (a seek, a new set) starts the plan again at Home.
  */
 import type { Player, TimedBar } from "../app/player.js";
-import { type ClipSet, Director, type Placement, RollingPlan, cuesFor } from "./director.js";
+import { type ClipSet, Director, type PlanSource, type Placement, RollingPlan, type TrackFacts, cuesFor, factsOf, trackFacts } from "./director.js";
 
 /** Seek when the picture is this many frames off; closer than that, bend the rate. */
 const SEEK_FRAMES = 2;
@@ -135,8 +135,16 @@ export class BoothCam {
     if (!follows) this.plan.reset();
     this.bar = { tb, n };
     const info = tb.bar.info;
-    this.plan.advance(n, cuesFor(info, tb.bar.bpm, this.player.layout(info.pieceIndex)));
+    const track = this.facts(info.pieceIndex) ?? factsOf(info, this.player.layout(info.pieceIndex));
+    const next = track.out ? this.facts(info.pieceIndex + 1) : null;
+    this.plan.advance(n, cuesFor(info.barInPiece, tb.bar.bpm, track, next));
     return n;
+  }
+
+  /** A track's facts from the set's plans, where the bar source is a set conductor. */
+  private facts(i: number): TrackFacts | null {
+    const src = this.player.barSource as Partial<PlanSource>;
+    return src.trackPiece && src.transitionPlan ? trackFacts(src as PlanSource, i) : null;
   }
 
   /**

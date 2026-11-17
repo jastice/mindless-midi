@@ -506,6 +506,11 @@ export class Player {
     this.head(landing);
   }
 
+  /** Where the bars come from, for a page that reads more of its plans (the booth cam reads a set's). */
+  get barSource(): BarSource {
+    return this.conductor;
+  }
+
   /** The segments of a piece that has been started (null before): where each begins, in bars, how long it runs and how intense it is. */
   layout(piece: number): { label: string; start: number; bars: number; intensity: number }[] | null {
     return this.conductor.layout(piece);

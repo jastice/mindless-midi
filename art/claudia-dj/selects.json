@@ -31,7 +31,7 @@
     { "id": "T10-home-look", "take": "T10-home-look.mp4", "kind": "transition", "from": "home", "to": "look" },
     { "id": "T11-look-home", "take": "T11-look-home.mp4", "kind": "transition", "from": "look", "to": "home" },
     { "id": "F01-glance", "take": "F01-glance.mp4", "kind": "flourish", "from": "home", "to": "home" },
-    { "id": "F02-fist", "take": "F02-fist.mp4", "kind": "flourish", "from": "home", "to": "home" },
-    { "id": "F03-sip", "take": "F03-sip.mp4", "kind": "flourish", "from": "home", "to": "home" }
+    { "id": "F02-fist", "take": "F02-fist.mp4", "kind": "flourish", "from": "home", "to": "home", "energy": "high" },
+    { "id": "F03-sip", "take": "F03-sip.mp4", "kind": "flourish", "from": "home", "to": "home", "energy": "low" }
   ]
 }

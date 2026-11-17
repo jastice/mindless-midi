@@ -4,7 +4,7 @@ import { test } from "node:test";
 import type { StyleBundle } from "../corpus/schema.js";
 import { SetConductor } from "../engine/set.js";
 import type { Bar } from "../engine/types.js";
-import { type ClipSet, type Cue, Director, MAX_RATE, MIN_RATE, PHRASE, type Placement, RollingPlan, cuesFor, isDrop, rateOf } from "./director.js";
+import { type ClipSet, type Cue, Director, MAX_RATE, MIN_RATE, PHRASE, type Placement, RollingPlan, cuesFor, energyOf, factsOf, isDrop, rateOf, trackFacts } from "./director.js";
 
 const clips = JSON.parse(readFileSync("src/claudia/clips.json", "utf8")) as ClipSet;
 const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles;
@@ -31,7 +31,10 @@ function run(set: ClipSet, seed: string, n: number, opts = SHORT): Run {
   for (let b = 0; b < n; b++) {
     const bar = conductor.nextBar();
     bars.push(bar);
-    const ahead = cuesFor(bar.info, bar.bpm, conductor.layout(bar.info.pieceIndex));
+    const track = trackFacts(conductor, bar.info.pieceIndex)!;
+    const next = track.out ? trackFacts(conductor, bar.info.pieceIndex + 1) : null;
+    const ahead = cuesFor(bar.info.barInPiece, bar.bpm, track, next);
+    assert.equal(ahead[0]!.barInPiece, bar.info.barInPiece);
     cues.push(ahead[0]!);
     plan.advance(b, ahead);
     const p = plan.at(b)!;
@@ -75,8 +78,8 @@ test("clips are 3 or 5 bars (a drop clip 2), and every phrase starts on a clip b
 test("a plan starting mid-phrase is on the phrase grid by the end of the next phrase", () => {
   const director = new Director(clips, "mid");
   for (let from = 1; from < PHRASE; from++) {
-    const cues = cuesFor({ pieceIndex: 0, barInPiece: from, pieceBars: 160, intensity: 0.6 }, 128, null);
-    const plan = director.plan(0, "home", cues, undefined, true);
+    const cues = cuesFor(from, 128, factsOf({ pieceIndex: 0, barInPiece: from, pieceBars: 160, intensity: 0.6 }, null), null);
+    const plan = director.plan(0, "home", cues, [], true);
     const starts = new Set(plan.map((p) => p.bar + from));
     for (let phrase = 2 * PHRASE; phrase < 150; phrase += PHRASE) assert.ok(starts.has(phrase), `from bar ${from}: phrase at ${phrase}`);
   }
@@ -152,6 +155,39 @@ test("flourishes play, but never two in a row", () => {
   assert.equal(ids.size, 3, `flourishes played: ${[...ids].join(", ")}`);
 });
 
+test("no clip plays two energy steps from what the music plays", () => {
+  const step = { low: 0, mid: 1, high: 2 } as const;
+  for (const seed of ["a", "b"]) {
+    const { cues, plan } = run(clips, `energy-${seed}`, 3000);
+    for (const p of plan) {
+      const cue = cues[p.bar]!;
+      if (p.clip.energy) assert.ok(Math.abs(step[p.clip.energy] - step[energyOf(cue.intensity)]) < 2, `${p.clip.id} at bar ${p.bar}, intensity ${cue.intensity.toFixed(2)}`);
+    }
+  }
+});
+
+test("blend zones are the set's overlaps, and small drops pass at the decks", () => {
+  let small = 0;
+  for (const seed of ["a", "b"]) {
+    const { bars, cues, plan } = run(clips, `overlap-${seed}`, 3000);
+    let off = 0;
+    bars.forEach((bar, b) => {
+      // A cut's bars before it ramp the tempo on one deck: no overlap.
+      const overlap = !!bar.transition && bar.transition.type !== "cut" && bar.transition.bars > 0;
+      if (overlap !== (cues[b]!.mix !== "body")) off++;
+    });
+    assert.equal(off, 0, `${off} of ${bars.length} bars disagree with the set on blending`);
+    const startsAt = new Map(plan.map((p) => [p.bar, p]));
+    bars.forEach((bar, b) => {
+      if (bar.info.turn !== "drop" || bar.info.intensity >= 0.5) return;
+      small++;
+      const p = startsAt.get(b);
+      assert.ok(!p || !isDrop(p.clip), `${p?.clip.id} on a small drop at bar ${b}`);
+    });
+  }
+  assert.ok(small >= 5, `${small} small drops`);
+});
+
 test("the same seed from the same bar gives the same booth cam", () => {
   const ids = (r: Run) => r.plan.map((p) => `${p.bar}:${p.clip.id}`).join(" ");
   assert.equal(ids(run(clips, "same", 1500)), ids(run(clips, "same", 1500)));
@@ -173,10 +209,10 @@ test("a skip mid-plan keeps the clip playing and replans after it", () => {
   const director = new Director(clips, "skip");
   const plan = new RollingPlan(director);
   const facts = (piece: number, barInPiece: number) => ({ pieceIndex: piece, barInPiece, pieceBars: 96, intensity: 0.6 });
-  for (let b = 0; b < 40; b++) plan.advance(b, cuesFor(facts(0, b), 128, null));
+  for (let b = 0; b < 40; b++) plan.advance(b, cuesFor(b, 128, factsOf(facts(0, b), null), null));
   const playing = plan.at(40 - 1)!;
   // Track 1 starts at bar 40 instead of bar 96.
-  plan.advance(40, cuesFor(facts(1, 0), 128, null));
+  plan.advance(40, cuesFor(0, 128, factsOf(facts(1, 0), null), null));
   if (playing.bar + playing.clip.bars > 40) assert.equal(plan.at(40), playing, "the clip on screen plays on");
   const next = plan.at(playing.bar + playing.clip.bars)!;
   assert.equal(next.bar, playing.bar + playing.clip.bars);
@@ -190,7 +226,7 @@ test("cues mark blend zones, drops and the next track", () => {
     { start: 32, bars: 32, intensity: 0.8 },
     { start: 64, bars: 32, intensity: 0.5 },
   ];
-  const cues = cuesFor({ pieceIndex: 3, barInPiece: 0, pieceBars: 96, intensity: 0.4 }, 128, sections);
+  const cues = cuesFor(0, 128, factsOf({ pieceIndex: 3, barInPiece: 0, pieceBars: 96, intensity: 0.4 }, sections), null);
   assert.equal(cues.length, 96 + 32);
   assert.equal(cues[0]!.mix, "in");
   assert.equal(cues[16]!.mix, "body");

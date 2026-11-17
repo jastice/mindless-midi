@@ -362,6 +362,32 @@ carry the takes' slightly different pose frames. Traced per animation frame
 in headless Chrome: old clip to its last frame, new clip from frame 0 on the
 next tick, no held picture; drift mean 0.26, max 0.90 frames, no seeks.
 
+**Reading the music (2026-11-17).** She danced hard over sparse bars and
+threw her arms up for small drops: the director read energy from section
+intensity alone, guessed drops from intensity rises, and placed blend zones
+at a track's first and last 16 bars, where a set's tracks never are (the set
+hands over mid-overlap). Now, where the bar source is a set conductor
+(`Player.barSource`), `trackFacts` reads each track's plans ahead:
+
+- energy is what plays: a section's intensity, but no more than the bar's
+  share of the track's fullest bar of parts (a break with one part is low);
+- a clip two energy steps off never plays (L04 "dances hard" over a break,
+  L03 "barely moves" at full energy, F02's fist pump in a quiet stretch); a
+  loop of the right energy is favoured ×3, a flourish only allowed;
+- drops are the grid's turns, and only a drop into a section of at least
+  0.5 (`BIG_DROP`) gets the arms up; the build pose plays only in the
+  grid's own build before such a drop;
+- blend zones are exactly the set's overlaps (none for a cut);
+- poses a bar does not call for (Vinyl in the body, Build without a build)
+  are rare (affinity 0.003), a transition that undoes the last is rare, and
+  a flourish is not repeated within 6 clips.
+
+Over 4 × 3000 bars: every big drop lands (147 of 147, 56% out of a build),
+78% of the drop phrase at the peak, 58% of overlap bars at the record, Look
+3.3% and flourishes 3.0% of body bars, no clip two energy steps off, and
+blend zones agree with the set on every bar. Without a set conductor the old
+guesses remain (`factsOf`).
+
 **What the shot list cannot do yet.** A phrase of 3 + 5 holds one 6 s clip,
 and only Home and Vinyl have 10 s clips, so a visit to Look, Cue or Build is
 always transition in, transition out: **L06-cue, L07-build and L09-look
