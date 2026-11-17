@@ -162,6 +162,13 @@ Object.assign(PRESETS, {
     duck: { depth: { bass: 0.15, pad: 0.4, comp: 0.2, arp: 0.15 }, release: 0.22 },
     highpass: { arp: 140, comp: 180, pad: 220 },
   },
+  // Open Channel: a tight booth, a dotted-eighth slap on the voice and the stab, the 808 left dry.
+  electro: {
+    reverb: { seconds: 0.7, predelay: 0.01, bright: 0.45, send: { arp: 0.12, comp: 0.1, pad: 0.16, drums: 0.03 } },
+    delay: { beats: 0.75, feedback: 0.32, send: { arp: 0.22, comp: 0.16 } },
+    duck: { depth: { bass: 0.28, arp: 0.16, comp: 0.22, pad: 0.35 }, release: 0.14 },
+    highpass: { arp: 180, comp: 240, pad: 700 },
+  },
   // Razor Breaks: a tight room and short echoes leave the chopped drums exposed.
   big_beat: {
     reverb: { seconds: 0.65, predelay: 0.012, bright: 0.35, send: { arp: 0.08, comp: 0.12, pad: 0.18, drums: 0.035 } },

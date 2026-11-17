@@ -1163,6 +1163,14 @@ errors.
   without thirds are warm enough, and the acid line against another track's
   line when psychedelic house has the low end.
 
+**Open Channel (electro), built (2026-11-17)**, by Grok, in `styles/electro`
+and in the `//styles:claudia` pack. Nobody has listened. 128 to 134 bpm,
+straight sixteenths with a little swing. The same ten aeolian and dorian keys
+as Razor Breaks. Syncopated 808 kick, snare anchored on 2 and 4, an
+arpeggiated bass with tied slides, a cowbell, and a square lead on the tonic,
+fourth, fifth and octave. Three forms of 128 bars. Nine parts, `most`
+8. Synth is the intended first listen (`src/sound/electro.test.ts`).
+
 Big beat is the one that strains the scope. Its drums are traditionally
 sampled breaks, which this plan excludes. Programmed break patterns from
 one-shots, with drive and room, get the rhythm but not the grit of a real

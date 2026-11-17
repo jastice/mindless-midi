@@ -1,0 +1,576 @@
+{
+  "title": "Open Channel",
+  "description": "A machine that talks back. Syncopated 808 kick, snare on two and four, a bass that slides its sentences, and a cowbell that will not sit down.",
+  "tempo": {
+    "min": 128,
+    "max": 134
+  },
+  "beatsPerBar": 4,
+  "swing": 0.06,
+  "swingUnit": "16th",
+  "humanize": 0.05,
+  "keys": [
+    { "tonic": "A", "mode": "aeolian" },
+    { "tonic": "A", "mode": "dorian" },
+    { "tonic": "E", "mode": "aeolian" },
+    { "tonic": "E", "mode": "dorian" },
+    { "tonic": "B", "mode": "aeolian" },
+    { "tonic": "B", "mode": "dorian" },
+    { "tonic": "D", "mode": "aeolian" },
+    { "tonic": "D", "mode": "dorian" },
+    { "tonic": "G", "mode": "aeolian" },
+    { "tonic": "G", "mode": "dorian" }
+  ],
+  "instruments": [
+    {
+      "role": "bass",
+      "name": "Talking bass",
+      "program": 38,
+      "octave": 2,
+      "volume": 0.7,
+      "pan": 0,
+      "patch": "mouth"
+    },
+    {
+      "role": "arp",
+      "name": "Square mouth",
+      "program": 80,
+      "octave": 4,
+      "volume": 0.34,
+      "pan": -0.12,
+      "patch": "talk"
+    },
+    {
+      "role": "comp",
+      "name": "Offbeat stab",
+      "program": 90,
+      "octave": 4,
+      "volume": 0.28,
+      "pan": 0.16,
+      "patch": "stab"
+    },
+    {
+      "role": "pad",
+      "name": "Air",
+      "program": 89,
+      "octave": 4,
+      "volume": 0.1,
+      "pan": 0,
+      "patch": "air"
+    },
+    {
+      "role": "drums",
+      "name": "808",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.8,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "lock",
+      "mood": "eight bars on the tonic, the channel stays open",
+      "chords": [{ "symbol": "i5", "beats": 32 }]
+    },
+    {
+      "id": "jaw",
+      "mood": "a flat seventh leans in, then the tonic answers",
+      "chords": [
+        { "symbol": "i5", "beats": 24 },
+        { "symbol": "bVII5", "beats": 8 }
+      ]
+    },
+    {
+      "id": "fifth",
+      "mood": "the fifth asks a question",
+      "chords": [
+        { "symbol": "i5", "beats": 16 },
+        { "symbol": "v5", "beats": 8 },
+        { "symbol": "i5", "beats": 8 }
+      ]
+    },
+    {
+      "id": "grin",
+      "mood": "a bare fourth, the electro smile, then home",
+      "chords": [
+        { "symbol": "i5", "beats": 16 },
+        { "symbol": "IV5", "beats": 8 },
+        { "symbol": "i5", "beats": 8 }
+      ]
+    }
+  ],
+  "motifs": [
+    {
+      "id": "mouth_hook",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.45, "deg": 0, "v": 1, "g": "accent" },
+        { "t": 0.75, "d": 0.22, "deg": 7, "v": 0.78, "g": "slide" },
+        { "t": 1.5, "d": 0.4, "deg": 4, "v": 0.88 },
+        { "t": 2.5, "d": 0.35, "deg": 0, "v": 0.82 },
+        { "t": 3, "d": 0.4, "deg": -1, "v": 0.9, "g": "slide" },
+        { "t": 3.5, "d": 0.4, "deg": 0, "v": 0.84 },
+        { "t": 4, "d": 0.4, "deg": 0, "v": 1, "g": "accent" },
+        { "t": 4.75, "d": 0.2, "deg": 7, "v": 0.72, "g": "slide" },
+        { "t": 5.25, "d": 0.2, "deg": 4, "v": 0.66 },
+        { "t": 5.75, "d": 0.35, "deg": 0, "v": 0.8 },
+        { "t": 6.5, "d": 0.22, "deg": 4, "v": 0.7 },
+        { "t": 7, "d": 0.22, "deg": 7, "v": 0.86, "g": "slide" },
+        { "t": 7.5, "d": 0.4, "deg": 0, "v": 0.92 }
+      ]
+    },
+    {
+      "id": "mouth_chatter",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.2, "deg": 0, "v": 1, "g": "accent" },
+        { "t": 0.5, "d": 0.15, "deg": 0, "v": 0.55 },
+        { "t": 0.75, "d": 0.2, "deg": 7, "v": 0.82, "g": "slide" },
+        { "t": 1.25, "d": 0.18, "deg": 4, "v": 0.64 },
+        { "t": 1.75, "d": 0.2, "deg": 0, "v": 0.78 },
+        { "t": 2.25, "d": 0.18, "deg": 4, "v": 0.7 },
+        { "t": 2.75, "d": 0.2, "deg": 7, "v": 0.86, "g": "slide" },
+        { "t": 3.25, "d": 0.15, "deg": 4, "v": 0.58 },
+        { "t": 3.5, "d": 0.18, "deg": 0, "v": 0.9 },
+        { "t": 3.75, "d": 0.2, "deg": -1, "v": 0.8, "g": "slide" }
+      ]
+    },
+    {
+      "id": "mouth_spare",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.8, "deg": 0, "v": 0.95, "g": "accent" },
+        { "t": 1.75, "d": 0.3, "deg": 7, "v": 0.7, "g": "slide" },
+        { "t": 2.75, "d": 0.4, "deg": 4, "v": 0.78 },
+        { "t": 3.4, "d": 0.5, "deg": 0, "v": 0.88 }
+      ]
+    },
+    {
+      "id": "mouth_fifth",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.5, "deg": 0, "v": 1, "g": "accent" },
+        { "t": 1, "d": 0.25, "deg": 4, "v": 0.72 },
+        { "t": 1.5, "d": 0.3, "deg": 7, "v": 0.8, "g": "slide" },
+        { "t": 2.25, "d": 0.3, "deg": 4, "v": 0.7 },
+        { "t": 3, "d": 0.45, "deg": 0, "v": 0.9 },
+        { "t": 4, "d": 0.4, "deg": 0, "v": 0.95, "g": "accent" },
+        { "t": 4.75, "d": 0.25, "deg": 4, "v": 0.68 },
+        { "t": 5.5, "d": 0.35, "deg": -1, "v": 0.85, "g": "slide" },
+        { "t": 6.25, "d": 0.25, "deg": 0, "v": 0.75 },
+        { "t": 7, "d": 0.3, "deg": 4, "v": 0.8 },
+        { "t": 7.5, "d": 0.4, "deg": 7, "v": 0.88, "g": "slide" }
+      ]
+    },
+    {
+      "id": "mouth_drag",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 1.2, "deg": 0, "v": 0.95 },
+        { "t": 1.5, "d": 0.7, "deg": -1, "v": 0.85, "g": "slide" },
+        { "t": 2.5, "d": 0.4, "deg": 0, "v": 0.8 },
+        { "t": 3.25, "d": 0.6, "deg": 4, "v": 0.75 },
+        { "t": 4, "d": 1.1, "deg": 0, "v": 1, "g": "accent" },
+        { "t": 5.5, "d": 0.6, "deg": 7, "v": 0.82, "g": "slide" },
+        { "t": 6.5, "d": 0.4, "deg": 4, "v": 0.7 },
+        { "t": 7.25, "d": 0.65, "deg": 0, "v": 0.9 }
+      ]
+    },
+    {
+      "id": "talk_call",
+      "role": "arp",
+      "anchor": "key",
+      "material": "talk",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.22, "deg": 0, "v": 0.92, "g": "accent" },
+        { "t": 0.5, "d": 0.18, "deg": 3, "v": 0.62 },
+        { "t": 1.5, "d": 0.28, "deg": 4, "v": 0.85 },
+        { "t": 2.75, "d": 0.2, "deg": 7, "v": 0.7 },
+        { "t": 3.5, "d": 0.3, "deg": 4, "v": 0.8 }
+      ]
+    },
+    {
+      "id": "talk_back",
+      "role": "arp",
+      "anchor": "key",
+      "material": "talk",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.25, "deg": 7, "v": 0.88, "g": "accent" },
+        { "t": 0.5, "d": 0.18, "deg": 4, "v": 0.6 },
+        { "t": 1, "d": 0.22, "deg": 3, "v": 0.72 },
+        { "t": 1.75, "d": 0.3, "deg": 0, "v": 0.9 },
+        { "t": 4.5, "d": 0.22, "deg": 4, "v": 0.75 },
+        { "t": 5.25, "d": 0.2, "deg": 7, "v": 0.7, "g": "slide" },
+        { "t": 6.75, "d": 0.2, "deg": 4, "v": 0.78 },
+        { "t": 7.5, "d": 0.35, "deg": 0, "v": 0.85 }
+      ]
+    },
+    {
+      "id": "talk_bite",
+      "role": "arp",
+      "anchor": "key",
+      "material": "talk",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0.5, "d": 0.18, "deg": 4, "v": 0.7 },
+        { "t": 1, "d": 0.22, "deg": 0, "v": 0.9, "g": "accent" },
+        { "t": 2, "d": 0.2, "deg": 3, "v": 0.65 },
+        { "t": 2.5, "d": 0.18, "deg": 4, "v": 0.72 },
+        { "t": 3.25, "d": 0.3, "deg": 7, "v": 0.8, "g": "slide" }
+      ]
+    },
+    {
+      "id": "talk_octave",
+      "role": "arp",
+      "anchor": "key",
+      "material": "talk",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.3, "deg": 0, "v": 0.95, "g": "accent" },
+        { "t": 0.75, "d": 0.25, "deg": 7, "v": 0.8, "g": "slide" },
+        { "t": 2, "d": 0.22, "deg": 4, "v": 0.7 },
+        { "t": 3, "d": 0.35, "deg": 0, "v": 0.88 }
+      ]
+    }
+  ],
+  "comping": [
+    {
+      "id": "stab_and",
+      "role": "comp",
+      "voicing": "power",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        { "t": 1.5, "d": 0.18, "v": 0.85 },
+        { "t": 3.5, "d": 0.15, "v": 0.6 },
+        { "t": 5.5, "d": 0.18, "v": 0.9 },
+        { "t": 7, "d": 0.15, "v": 0.55 }
+      ]
+    },
+    {
+      "id": "stab_down",
+      "role": "comp",
+      "voicing": "power",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        { "t": 0, "d": 0.16, "v": 0.95 },
+        { "t": 2.5, "d": 0.16, "v": 0.7 }
+      ]
+    },
+    {
+      "id": "air_hold",
+      "role": "pad",
+      "voicing": "power",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [{ "t": 0, "d": 6.5, "v": 0.35 }]
+    },
+    {
+      "id": "air_lift",
+      "role": "pad",
+      "voicing": "power",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        { "t": 0, "d": 3, "v": 0.28 },
+        { "t": 4, "d": 3.5, "v": 0.4 }
+      ]
+    }
+  ],
+  "drums": [
+    {
+      "id": "bone",
+      "kind": "groove",
+      "intensity": 0.22,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.....x.X.......",
+        "snare": "....X.......X...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.x.x.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "bounce",
+      "kind": "groove",
+      "intensity": 0.48,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X..x..X.X....x..",
+        "snare": "....X.......X...",
+        "rim": "X..x..X...X..x..",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.x.x.",
+        "openHat": "......X.......X.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "talk",
+      "kind": "groove",
+      "intensity": 0.72,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.x...X.X..x..X.",
+        "snare": "....X.......X...",
+        "rim": ".x..x..x.x..x..x",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.x.x.",
+        "openHat": "......X.......X.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "rip",
+      "kind": "groove",
+      "intensity": 0.96,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X..x.x..X.x...X.",
+        "snare": "....X.......X...",
+        "rim": "X..X..X.X..X..X.",
+        "clap": "",
+        "closedHat": "X.x.X.x.X.x.X.x.",
+        "openHat": "......X.......X.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "push",
+      "kind": "fill",
+      "intensity": 0.8,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.....x.X.......",
+        "snare": "....X....x.xxx..",
+        "rim": "X..x..X...X.....",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.xxxx",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "cut",
+      "kind": "fill",
+      "intensity": 0.55,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X..x..X.........",
+        "snare": "....X...........",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.......",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    }
+  ],
+  "forms": [
+    {
+      "id": "open_channel",
+      "sections": [
+        { "label": "a", "bars": 32, "intensity": 0.5, "roles": ["drums", "bass", "arp"], "progression": "lock" },
+        { "label": "a", "bars": 16, "intensity": 0.78, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "lock" },
+        { "label": "break", "bars": 8, "intensity": 0.4, "roles": ["arp", "comp", "pad"], "progression": "lock" },
+        { "label": "a", "bars": 24, "intensity": 1, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "lock" },
+        { "label": "b", "bars": 16, "intensity": 0.7, "roles": ["drums", "bass", "arp", "comp"], "progression": "jaw" },
+        { "label": "a", "bars": 16, "intensity": 0.95, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "lock" },
+        { "label": "a", "bars": 16, "intensity": 0.4, "roles": ["drums", "bass"], "progression": "lock" }
+      ]
+    },
+    {
+      "id": "answer",
+      "sections": [
+        { "label": "a", "bars": 32, "intensity": 0.48, "roles": ["drums", "bass", "arp"], "progression": "lock" },
+        { "label": "c", "bars": 16, "intensity": 0.75, "roles": ["drums", "bass", "arp", "comp"], "progression": "fifth" },
+        { "label": "break", "bars": 8, "intensity": 0.42, "roles": ["arp", "pad"], "progression": "lock" },
+        { "label": "a", "bars": 24, "intensity": 0.98, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "lock" },
+        { "label": "b", "bars": 16, "intensity": 0.68, "roles": ["drums", "bass", "arp"], "progression": "jaw" },
+        { "label": "a", "bars": 16, "intensity": 0.95, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "lock" },
+        { "label": "a", "bars": 16, "intensity": 0.4, "roles": ["drums", "bass"], "progression": "lock" }
+      ]
+    },
+    {
+      "id": "two_sends",
+      "sections": [
+        { "label": "a", "bars": 32, "intensity": 0.48, "roles": ["drums", "bass", "arp"], "progression": "lock" },
+        { "label": "c", "bars": 16, "intensity": 0.78, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "fifth" },
+        { "label": "break", "bars": 8, "intensity": 0.4, "roles": ["arp", "comp", "pad"], "progression": "lock" },
+        { "label": "a", "bars": 16, "intensity": 1, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "lock" },
+        { "label": "d", "bars": 16, "intensity": 0.7, "roles": ["drums", "bass", "arp", "comp"], "progression": "grin" },
+        { "label": "break", "bars": 8, "intensity": 0.42, "roles": ["arp", "pad"], "progression": "lock" },
+        { "label": "a", "bars": 16, "intensity": 0.96, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "lock" },
+        { "label": "a", "bars": 16, "intensity": 0.4, "roles": ["drums", "bass"], "progression": "lock" }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.35,
+    "low": 60,
+    "high": 84,
+    "phraseBars": 4,
+    "stepwise": 0.55,
+    "restProbability": 0.45,
+    "ornament": 0
+  },
+  "patches": [
+    {
+      "id": "mouth",
+      "osc": { "wave": "sine", "voices": 1, "detune": 0 },
+      "filter": { "type": "low", "cutoff": 240, "q": 1.8, "keytrack": 0.4, "env": 1600, "a": 0.002, "d": 0.12, "s": 0.35, "r": 0.05 },
+      "amp": { "a": 0.004, "d": 0.08, "s": 0.9, "r": 0.06 },
+      "level": 0.48,
+      "drive": 1.6,
+      "glide": 0.06,
+      "accent": { "cutoff": 2400, "q": 2.2 },
+      "mod": [{ "target": "cutoff", "shape": "sine", "beats": 16, "depth": 0.45 }]
+    },
+    {
+      "id": "talk",
+      "osc": { "wave": "pulse", "voices": 1, "detune": 0, "pw": 0.32 },
+      "filter": { "type": "low", "cutoff": 980, "q": 3.2, "keytrack": 1.2, "env": 2600, "a": 0.002, "d": 0.09, "s": 0.08, "r": 0.04 },
+      "amp": { "a": 0.003, "d": 0.11, "s": 0.2, "r": 0.045 },
+      "level": 0.28,
+      "drive": 1.4,
+      "hp": 220,
+      "glide": 0.035,
+      "accent": { "cutoff": 1800, "q": 1.6 },
+      "mod": [
+        { "target": "cutoff", "shape": "sine", "beats": 24, "depth": 0.7 },
+        { "target": "pw", "shape": "sine", "beats": 3, "depth": 0.1 }
+      ]
+    },
+    {
+      "id": "stab",
+      "osc": { "wave": "saw", "voices": 2, "detune": 9, "spread": 0.45 },
+      "filter": { "type": "band", "cutoff": 1600, "q": 2.4, "keytrack": 0.6, "env": 2000, "a": 0.002, "d": 0.08, "s": 0, "r": 0.05 },
+      "amp": { "a": 0.002, "d": 0.09, "s": 0, "r": 0.05 },
+      "level": 0.24,
+      "drive": 1.2,
+      "hp": 280,
+      "mod": [{ "target": "cutoff", "shape": "sine", "beats": 8, "depth": 0.4 }]
+    },
+    {
+      "id": "air",
+      "osc": { "wave": "noise", "voices": 1, "detune": 0, "spread": 0.7 },
+      "filter": { "type": "band", "cutoff": 2400, "q": 1.2, "keytrack": 0, "env": 0, "a": 0.2, "d": 0.4, "s": 0.5, "r": 0.4 },
+      "amp": { "a": 0.25, "d": 0.4, "s": 0.55, "r": 0.45 },
+      "level": 0.12,
+      "hp": 800,
+      "mod": [
+        { "target": "amp", "shape": "square", "beats": 1, "depth": 0.25 },
+        { "target": "cutoff", "shape": "sine", "beats": 16, "depth": 0.5 }
+      ]
+    }
+  ],
+  "parts": [
+    { "id": "beat", "role": "drums", "lanes": ["kick", "snare"], "enters": 0 },
+    { "id": "hats", "role": "drums", "lanes": ["closedHat"], "enters": 0.06, "group": "top" },
+    { "id": "open", "role": "drums", "lanes": ["openHat"], "enters": 0.55, "group": "top" },
+    { "id": "bell", "role": "drums", "lanes": ["rim"], "enters": 0.48, "group": "perc" },
+    { "id": "roll", "role": "drums", "lanes": ["clap"], "roll": true },
+    { "id": "mouth", "role": "bass", "patch": "mouth", "enters": 0 },
+    { "id": "talk", "role": "arp", "patch": "talk", "material": "talk", "enters": 0.22, "group": "line" },
+    { "id": "stab", "role": "comp", "patch": "stab", "enters": 0.45, "group": "line" },
+    { "id": "air", "role": "pad", "patch": "air", "enters": 0.18 }
+  ],
+  "arrangement": {
+    "change": 0.6,
+    "swap": 0.42,
+    "drop": 0.7,
+    "most": 8,
+    "groups": { "top": 2, "perc": 1, "line": 2 },
+    "thin": 0.35,
+    "evolve": 0.2
+  },
+  "moves": {
+    "sweep": 0.35,
+    "drift": 0.5,
+    "build": 1,
+    "long": 0.3,
+    "stutter": 0.22,
+    "throw": 0.32
+  },
+  "names": {
+    "patterns": ["{adj} {noun}", "{call} {back}", "Don't Panic", "On Air", "No Comment"],
+    "lists": {
+      "adj": ["Sharp", "Open", "Wild", "Bright", "Hard", "Thin", "Cold", "Next", "Loud", "Fast", "Raw", "Live", "Late", "Direct"],
+      "noun": ["Channel", "Current", "Answer", "Frequency", "Motor", "Pulse", "Cowbell", "Phrase", "Sentence", "Radio", "Voltage", "Static"],
+      "call": ["Talk", "Scan", "Ping", "Hold", "Push", "Lock", "Send", "Read"],
+      "back": ["Back", "Through", "Twice", "Louder", "Again", "Over", "Faster", "Now"]
+    }
+  },
+  "authors": ["Grok 4.7"],
+  "synthKit": {
+    "kick": {
+      "f0": 140,
+      "f1": 46,
+      "sweep": 0.045,
+      "decay": 0.28,
+      "drive": 1.7,
+      "click": 0.12,
+      "sub": { "level": 0.5, "decay": 0.32 }
+    },
+    "snare": { "tone": 200, "toneDecay": 0.05, "noiseDecay": 0.16, "noiseHp": 1600, "mix": 0.78 },
+    "hatScale": 1.05,
+    "hatDecay": 0.028,
+    "hat": { "tone": 9000, "q": 1.2, "hp": 7000, "decay": 0.02, "open": 0.18, "metal": 0.9 },
+    "clap": { "tone": 1200, "q": 0.8, "bursts": 3, "decay": 0.09 },
+    "toms": { "low": 95, "high": 160 },
+    "perc": [
+      {
+        "lane": "rim",
+        "freq": 587,
+        "bend": 0,
+        "sweep": 0.008,
+        "decay": 0.14,
+        "fm": { "ratio": 1.51, "amount": 2.2 },
+        "noise": 0.04,
+        "pan": 0.2,
+        "level": 0.62
+      }
+    ]
+  }
+}

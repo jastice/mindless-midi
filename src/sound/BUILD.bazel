@@ -231,6 +231,22 @@ ts_test(
 )
 
 ts_test(
+    name = "electro_test",
+    size = "medium",
+    src = "electro.test.ts",
+    data = [
+        "//styles:claudia",
+        "//styles/electro:corpus",
+    ],
+    deps = [
+        ":sound",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)
+
+ts_test(
     name = "big_beat_test",
     size = "medium",
     src = "big_beat.test.ts",

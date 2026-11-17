@@ -38,6 +38,7 @@ ts_test(
     data = [
         "//styles/berlin_techno:corpus",
         "//styles/big_beat:corpus",
+        "//styles/electro:corpus",
         "//styles/minimal_techno:corpus",
         "//styles/psychedelic_house:corpus",
     ],

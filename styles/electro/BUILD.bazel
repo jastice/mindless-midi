@@ -1,0 +1,45 @@
+load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+# A long TR-808: booming kick, tight snare, cowbell on the rim key, clap for
+# the build roll. The cymbal and low tom are what an ending asks for.
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": {
+            "default": "@samples//danigb-samples/tr-808:bd0075",
+            "soft": "@samples//danigb-samples/tr-808:bd0025",
+        },
+        "38": "@samples//danigb-samples/tr-808:sd2525",
+        "37": "@samples//danigb-samples/tr-808:cb",
+        "39": "@samples//danigb-samples/tr-808:cp",
+        "42": "@samples//danigb-samples/tr-808:ch",
+        "46": "@samples//danigb-samples/tr-808:oh25",
+        "49": "@samples//danigb-samples/tr-808:cy2525",
+        "45": "@samples//danigb-samples/tr-808:lt50",
+    },
+)
+
+music_style(
+    name = "style",
+    bank = 68,
+    brief = "brief.md",
+    color = "#7dff4a",
+    corpus = "corpus.json",
+    kit = ":kit",
+    packs = [
+        "@samples//gleitz-musyngkite/lead-1-square",
+        "@samples//gleitz-musyngkite/pad-2-warm",
+        "@samples//gleitz-musyngkite/pad-3-polysynth",
+        "@samples//gleitz-musyngkite/synth-bass-1",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# For JS tests that read the raw corpus from runfiles.
+copy_to_bin(
+    name = "corpus",
+    srcs = ["corpus.json"],
+    visibility = ["//visibility:public"],
+)
