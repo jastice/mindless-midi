@@ -59,6 +59,8 @@ filegroup(
 # apps (and the styles above do not appear in hers).
 CLAUDIA_STYLES = [
     "minimal_techno",
+    "berlin_techno",
+    "psychedelic_house",
 ]
 
 style_pack(

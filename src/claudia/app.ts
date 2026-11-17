@@ -1,7 +1,7 @@
 /**
  * DJ Claudia: an endless, seeded DJ set. One track after another, each in a
- * compatible key and within a few percent of the last tempo, the next one
- * starting on a phrase. The set conductor makes the bars; the shared Player
+ * compatible key and within a few percent of the last tempo, mixed into the
+ * next on two decks. The set conductor makes the bars; the shared Player
  * plays them for weight, with the Synth or Samples engine.
  */
 import { mediaAnchor } from "../app/media_anchor.js";
@@ -9,7 +9,7 @@ import { EXPRESSION, type Engine, Player, type Position, type TimedBar } from ".
 import { ROLES } from "../corpus/constants.js";
 import type { StyleBundle } from "../corpus/schema.js";
 import { DEFAULT_SET_OPTIONS, MIX_BARS, PHRASE_BARS, SetConductor } from "../engine/set.js";
-import { barSeconds } from "../engine/types.js";
+import { type Bar, type TransitionType, barSeconds } from "../engine/types.js";
 import { randomSeed } from "../theory/seed.js";
 import { BoothCam } from "./booth.js";
 import type { ClipSet } from "./director.js";
@@ -68,6 +68,9 @@ function mixStage(barInPiece: number, pieceBars: number): "in" | "body" | "out" 
   return "body";
 }
 const STAGE_LABEL = { in: "Mix-in", body: "Body", out: "Mix-out" };
+const TRANSITION_LABEL: Record<TransitionType, string> = { blend: "Blend", filter: "Filter", cut: "Cut", breakdown: "Breakdown" };
+/** A tempo as it reads: whole, or to a tenth while it ramps from one track's to the next. */
+const tempo = (bpm: number) => (Number.isInteger(bpm) ? String(bpm) : bpm.toFixed(1));
 
 function toast(text: string): void {
   const el = document.createElement("div");
@@ -91,8 +94,10 @@ async function main(): Promise<void> {
   const wantedEngine = params.get("sound") ?? store.get("sound") ?? "synth";
   const engine: Engine = ENGINES.some((e) => e.id === wantedEngine) ? (wantedEngine as Engine) : "synth";
 
+  // The set conductor the player plays from, for each track's own tempo.
+  let conductor: SetConductor | null = null;
   const player = new Player(styles, {
-    source: (pool, s, pieces) => new SetConductor(pool, s, { ...pieces, ...DEFAULT_SET_OPTIONS }),
+    source: (pool, s, pieces) => (conductor = new SetConductor(pool, s, { ...pieces, ...DEFAULT_SET_OPTIONS })),
     seed,
     ...(at && { at }),
     engine,
@@ -100,6 +105,7 @@ async function main(): Promise<void> {
     workerUrl: new URL("render-worker.js", import.meta.url).href,
     expression: EXPRESSION,
     weighted: true,
+    decks: true,
   });
   player.setVolume(volume);
 
@@ -291,15 +297,63 @@ async function main(): Promise<void> {
         : `Starts at track ${player.position().piece + 1}, bar ${player.position().bar + 1}.`;
   }
 
-  // --- The deck -----------------------------------------------------------
-  const lights = new Map<string, HTMLElement>();
-  for (const role of LIGHTS) {
-    const el = document.createElement("span");
-    el.className = "light";
-    el.innerHTML = `<i aria-hidden="true"></i>`;
-    el.append(ROLE_LABELS[role]);
-    lights.set(role, el);
-    $("roles").append(el);
+  // --- The decks ----------------------------------------------------------
+  // Each deck shows its track and one light per part where its style has parts (lit while the arrangement grid has
+  // the part in), else one per role. The deck with the low end is the one the big readout follows.
+  const decks = ([0, 1] as const).map((d) => {
+    const el = $(`deck-${d}`);
+    return { el, roles: el.querySelector<HTMLElement>(".roles")!, lights: new Map<string, HTMLElement>(), lightsFor: "" };
+  });
+  function setLights(deck: (typeof decks)[number], names: readonly string[], label: (name: string) => string): void {
+    if (names.join() === deck.lightsFor) return;
+    deck.lightsFor = names.join();
+    deck.lights.clear();
+    deck.roles.replaceChildren();
+    for (const name of names) {
+      const el = document.createElement("span");
+      el.className = "light";
+      el.innerHTML = `<i aria-hidden="true"></i>`;
+      el.append(label(name));
+      deck.lights.set(name, el);
+      deck.roles.append(el);
+    }
+  }
+  /** What the two decks hold in the bar heard now: the bar's own, and in a transition the other beside it. */
+  function renderDecks(bar: Bar): void {
+    const t = bar.transition;
+    for (const [d, deck] of decks.entries()) {
+      const own = (bar.deck ?? 0) === d ? bar : bar.with?.deck === d ? bar.with : undefined;
+      deck.el.classList.toggle("live", own !== undefined);
+      deck.el.classList.toggle("dominant", own === bar);
+      const set = (cls: string, text: string) => (deck.el.querySelector(cls)!.textContent = text);
+      if (!own) {
+        set(".dc-track", "");
+        set(".dc-tag", "Idle");
+        set(".dc-meta", "–");
+        deck.el.dataset.role = "";
+        for (const el of deck.lights.values()) el.classList.remove("on");
+        continue;
+      }
+      const i = own.info;
+      const coming = t !== undefined && i.pieceIndex === t.to;
+      deck.el.dataset.role = own === bar ? "" : coming ? "in" : "out";
+      set(".dc-track", `Track ${i.pieceIndex + 1}`);
+      set(".dc-tag", own === bar ? (bar.with ? "Low end" : "On air") : coming ? "Coming in" : "Going out");
+      set(".dc-meta", `${tempo(own.bpm)} bpm · ${i.keyName} · ${i.styleTitle}`);
+      const parts = styles.find((s) => s.id === i.styleId)?.corpus.parts;
+      if (parts) setLights(deck, parts.map((p) => p.id), (id) => id);
+      else setLights(deck, LIGHTS, (role) => ROLE_LABELS[role as (typeof ROLES)[number]]);
+      const sounding = new Set<string>(parts ? (i.parts ?? []).filter((id) => !i.thin?.includes(id)) : own.notes.map((n) => n.role));
+      for (const [name, el] of deck.lights) el.classList.toggle("on", sounding.has(name));
+    }
+    // The transition in progress, counted down from the bar's own data.
+    const line = $("transition");
+    line.hidden = !t;
+    if (t) {
+      const left = t.bars - t.bar;
+      const swap = t.type === "cut" ? ` · cut in ${left} bar${left === 1 ? "" : "s"}` : t.bar < t.swap ? ` · bass swap in ${t.swap - t.bar}` : "";
+      line.textContent = `${TRANSITION_LABEL[t.type]} into track ${t.to + 1} · bar ${t.bar + 1} of ${t.bars}, ${left} left${swap}`;
+    }
   }
   const pips = [...Array(PHRASE_BARS)].map(() => {
     const el = document.createElement("i");
@@ -351,7 +405,7 @@ async function main(): Promise<void> {
     row.querySelector(".n")!.textContent = String(i.pieceIndex + 1).padStart(2, "0");
     row.querySelector(".s")!.textContent = i.styleTitle;
     row.querySelector(".k")!.textContent = i.keyName;
-    row.querySelector(".b")!.textContent = `${tb.bar.bpm}`;
+    row.querySelector(".b")!.textContent = tempo(conductor?.trackPlan(i.pieceIndex)?.bpm ?? Math.round(tb.bar.bpm));
     for (const t of tracklist) t.row.classList.remove("now");
     row.classList.add("now");
     tracklist.push({ piece: i.pieceIndex, row });
@@ -376,12 +430,14 @@ async function main(): Promise<void> {
     $("title").textContent = i.styleTitle;
     $("track-no").textContent = `Track ${i.pieceIndex + 1}`;
     $("key").textContent = i.keyName;
-    $("bpm").textContent = String(tb.bar.bpm);
+    $("bpm").textContent = tempo(tb.bar.bpm);
     $("bar").textContent = `${i.barInPiece + 1}`;
     $("bars").textContent = `/ ${i.pieceBars}`;
     $("phrase").textContent = `${Math.floor(i.barInPiece / PHRASE_BARS) + 1}`;
     $("phrases").textContent = `/ ${Math.ceil(i.pieceBars / PHRASE_BARS)}`;
-    $("section").textContent = `Section ${i.section}`;
+    // A build in progress, counted down to its drop, from the bar's own data.
+    const build = i.build ? ` · Build, ${i.build.bars} bars (${i.build.bars - i.build.bar} to go)` : i.turn === "drop" ? " · Drop" : "";
+    $("section").textContent = `Section ${i.section}${build}`;
     const mix = $("mix");
     mix.textContent = STAGE_LABEL[stage];
     mix.dataset.stage = stage;
@@ -392,8 +448,7 @@ async function main(): Promise<void> {
       el.classList.toggle("done", k < inPhrase);
       el.classList.toggle("here", k === inPhrase);
     });
-    const sounding = new Set(tb.bar.notes.map((n) => n.role));
-    for (const [role, el] of lights) el.classList.toggle("on", sounding.has(role as (typeof ROLES)[number]));
+    renderDecks(tb.bar);
     document.title = `${player.playing ? "▶" : "❚❚"} ${i.styleTitle} · DJ Claudia`;
     if ("mediaSession" in navigator && (i.barInPiece === 0 || !navigator.mediaSession.metadata)) {
       navigator.mediaSession.metadata = new MediaMetadata({ title: `${i.styleTitle} · ${i.keyName} · ${tb.bar.bpm} bpm`, artist: "DJ Claudia", album: `Set ${player.seed}, track ${i.pieceIndex + 1}` });

@@ -1,9 +1,19 @@
 # DJ Claudia: design and implementation plan
 
 Built so far: all of step 1, and the first of step 6's conductor rules (legs
-with a target tempo, energy waves through `lift`). Step 2's patch engine is in
-progress in its own worktree. This was first written against `main` at
-`b4dabe6`; where it says "new", check first whether later work already has it.
+with a target tempo, energy waves through `lift`). Step 2's engine half is
+built too (patches, the synth kit, six sounds for minimal techno), and so is
+step 3 (parts, the arrangement grid, pattern evolution, fifteen parts and
+four more sounds for minimal techno, a light per part on the page), and so is
+step 4 (moves: sweeps, drift, builds with a roll, riser and impact, stutters
+and send throws). Steps 2 to 4 were first heard on 2026-11-15 (see "Heard"
+under step 3). Step 5 is built (2026-11-16): tracks overlap on two decks in
+four kinds of transition, with one low end and the two grids interleaved. It
+was heard on 2026-11-16 and the overlaps were reworked so that two tracks are
+in flight together; the rework has been measured and not yet heard (see
+"Built" and "Heard" under step 5). The set now travels between three styles:
+psychedelic house was added on 2026-11-17 (under step 6), and a slid note on
+a patch with `glide` is tied (under step 2); neither has been heard. This was first written against `main` at `b4dabe6`; where it says "new", check first whether later work already has it.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
 
@@ -280,6 +290,58 @@ by ear is the main unknown of this step. Start with six patches written by
 hand for minimal techno (kick, rumble, hat, stab, bass, pad) before asking a
 model for any.
 
+### Built (2026-11-15)
+
+Written by Fable. `bazel test //...` passes (17 targets). Nobody has listened
+to it yet: the six sounds were tuned by measurement.
+
+| What | Where |
+| --- | --- |
+| `Patch` and `Kit` schemas, with the descriptions a model writes from | `src/corpus/patch.ts` |
+| `patches`, `synthKit` and `instrument.patch` in the corpus; their validation | `src/corpus/schema.ts`, `validate.ts` |
+| The GM families and built-in kits as data | `src/sound/patches/gm.ts`, `kits.ts` |
+| The voice: modulators, band and high-pass, FM, drive, stereo spread, glide, accent | `sub()` in `src/sound/synth.ts` |
+| Drum models: kick sub tail, rumble, noise hats, clap, ride, tuned percussion | `drum()` in `src/sound/synth.ts` |
+| The six sounds, also copied into `styles/minimal_techno/corpus.json` | `src/sound/patches/minimal_techno.ts` |
+| Tests | `src/sound/baseline.test.ts`, `patch.test.ts`, `patch_library.test.ts`, `src/corpus/validate.test.ts` |
+
+How a patch reaches a voice: the piece's program change carries the
+instrument's patch name; `barScore` puts `patch`, `beat` (seconds per beat)
+and `pos` (beats from the start of the track) on each note of that channel;
+the `Player` sends the style's `SoundSet` with every bar; the synth looks the
+name up. A modulator's phase is `pos` plus the time into the note, so it runs
+on across notes and follows a drifting tempo.
+
+**The other apps are unchanged.** `baseline.test.ts` hashes the samples of all
+128 programs and every built-in kit; the hashes were taken before the change.
+
+Decisions and gaps:
+
+- The corpus field is `synthKit`; `kit` on the bundle is the sampled kit.
+  Under the Samples engine, notes with a patch are played by the synth and
+  the drums stay sampled.
+- Modulator targets are `cutoff`, `pitch`, `pw`, `amp`, `pan` and `width`
+  (stereo spread), each with one meaning; `patches` is a list with ids, not a
+  map, to suit structured output.
+- With `glide`, a slide starts from the previous note's pitch; the envelopes
+  still retrigger (no tied 303 slide). An accent adds filter depth and
+  resonance; it does not shorten the decay.
+  **Since 2026-11-16 slides are tied**, for a declared patch with `glide`
+  only: a slid note that starts within 30 ms of the end of the note before
+  carries on as that note. The voice remembers where each note ended (`Tie`
+  in `synth.ts`), takes back the release it wrote and runs on from there, so
+  the oscillator, the filter and both envelopes are one note's and only the
+  pitch moves. The filter envelope never restarts on a tie (a note has one
+  gesture, so a slid note is never also accented), and the velocity, accent
+  depth and resonance of the first note of the chain carry through it. A
+  slide after a gap, a swell, a patch without `glide` and every GM program
+  are as before. Minimal techno's acid and bass change on purpose: a slid
+  pair on the acid patch peaked at 0.50 with a 4 dB bump at the join and now
+  peaks at 0.30 with none; the pair is 0.9 dB quieter and as long as it was.
+  Not heard. An accent still does not shorten the decay.
+- A swell on a patched note is cut 2.5 s after the note ends (`renderShaped`).
+- The patch schema has not been through the generator's structured output.
+
 ## Step 3: parts and the arrangement grid (L)
 
 Model: Fable for the arranger and worker changes; Sonnet for the tests once the grid's rules are fixed.
@@ -335,6 +397,154 @@ section, a part's pattern may gain or lose a step, shift an accent, or rotate
 by a sixteenth, at phrase boundaries. This reuses the motif development
 already in `parts.ts`, applied to ostinatos and drum lanes at a slow rate.
 
+### Built (2026-11-15)
+
+Written by Fable. `bazel test //...` passes (19 targets). Nobody has listened
+to it: the grid was judged by reading it, the sounds and the mix by
+measurement.
+
+| What | Where |
+| --- | --- |
+| `parts`, `arrangement` and the `material` tag in the corpus; their validation | `src/corpus/schema.ts`, `validate.ts` |
+| The arrangement grid, `mixBars` | `src/engine/grid.ts` |
+| Parts in the arranger: material per part, `renderPart`, evolution, `info.parts` / `thin` / `turn` | `src/engine/piece.ts`, `parts.ts` (`evolveMotif`, `evolveLanes`), `types.ts` |
+| Part and patch on the note | `src/sound/score.ts`, `types.ts` |
+| Windows, previous notes and levellers by part, summed by role | `src/sound/worker.ts`, `protocol.ts` (`partLevels`) |
+| Fifteen parts, rates, tagged material, and the acid, bleep, chord and air patches | `styles/minimal_techno/corpus.json`, `src/sound/patches/minimal_techno.ts` |
+| A light per part | `src/claudia/app.ts` |
+| Tests | `src/engine/grid.test.ts`, `src/sound/worker.test.ts`, additions to `validate.test.ts`, `patch_library.test.ts`, `set.test.ts` |
+
+**How part and patch reach the worker.** The piece's setup has, after the
+program change per channel, one more program change per part that names the
+part (and its patch, its own or its role instrument's). `barScore` keeps the
+patch per part beside the patch per channel; a note carries `part` and plays
+its part's patch. The worker keys its window and the previous note by part.
+In the weighted mix every part has its own `BodyLeveler`, except that a kit's
+parts share the kit's, the way the kick and the rest of the kit already did:
+a kit's balance is the kit's. Parts are then summed by role, so the mix, the
+worklet and the bus see one stem per role, as before. A part's level is its
+`volume` (sent as `partLevels`), else its role's.
+
+**How the grid sits with what was there.** Sections still say which roles
+play and how intense; the grid decides which parts, every 4 bars. It is
+planned once per piece from its own stream (`grid`), so a seek cannot move it.
+
+- A part may enter where the section has its role and is at least as intense
+  as its `enters`. `lift` is already in the section's intensity, so nothing
+  more is needed for a cooler track to be sparser (measured over 24 seeds:
+  3.8 parts in on average at lift -0.3, 6.0 at 0, 6.8 at +0.3).
+- The low end is the part with the kick lane and the first bass part. They
+  ignore `enters`: they play wherever the section has both drums and bass. A
+  section without one of those roles is a breakdown, and there the kick is
+  out. Builds (kick out before a hotter section) are left to step 4.
+- A slot changes one part, or swaps one for another; a phrase changes at most
+  two. The exception is a turn, the first bar of a section where the low end
+  leaves or returns or which is 0.25 hotter or cooler than the last: at a
+  "drop" what may play comes in, at a "break" what may not goes. A part the
+  next section will not allow leaves ahead of the boundary, one a slot.
+- Mix-in and mix-out: for a style with parts the grid does them, and
+  `mixLeaveOut` leaves nothing out. A track starts on the kick alone and adds
+  one part every 4 bars, the bass at bar 8; from 16 bars before the end one
+  part more may play per remaining slot, the bass leaves 8 bars out, and the
+  track ends on the kick and at most one more. Styles without parts mix by
+  role as before.
+- The last bar of a phrase rests one drum part other than the kick, at the
+  style's `thin` rate.
+- Rates are the style's `arrangement`: `change`, `swap`, `drop`, `thin`,
+  `evolve`.
+
+**Evolution.** At each phrase boundary inside a section a part's pattern
+takes one step at the `evolve` rate: a note more, a note less, an accent
+moved, or a turn by a sixteenth (the kick and the bass only move an accent).
+A new section starts from the pattern as written. Each boundary has its own
+stream and the steps so far are replayed, so a bar is the same however it is
+reached. It sits beside `develop` in `parts.ts` and shares its cell; it does
+not reuse its operations, which are melodic.
+
+**The other apps are unchanged.** `golden.test.ts` and `baseline.test.ts`
+pass as they were. `worker.test.ts` is new: it drives `worker.ts` itself as
+the player does and hashes the stems it posts, for every shipped style
+(synth, plain and weighted) and three through the samples path. It was
+committed first, from the code at `500d40c` (`44900ff`), and passes unchanged
+after. Minimal techno was pinned in none of the three. Without a `parts`
+block the new code is skipped, not run with neutral values: the grid's and
+the parts' streams are forks that are never made.
+
+Measured (in the tests' output):
+
+- Render time through the worker at 24 kHz, a whole track: 90 ms per bar with
+  parts against 98 ms for the same style without them (a bar is 1.9 s); at
+  lift 0.3, with 7 parts in on average and 12 at most, 106 ms against 107 ms.
+  Parts cost no more than the style did before: the new parts are small and
+  the pad's five saws dominate either way. Not measured at 48 kHz or on a
+  phone, and not with `?perf` in a browser.
+- The mix of a whole track: within 1 dB of the style without parts (-26.7 dB
+  against -27.5 dB RMS), low end mono, each role's loudest bar within 2.5 dB
+  of what it was.
+- Acid: 95% of its energy from 100 Hz to 4 kHz, 3.5% under 60 Hz, filter from
+  1490 Hz to 919 Hz within a sixteenth, an accent 1.8 times brighter, the
+  12-bar sweep 2.5 times. Bleep: 0.1 s, all of it from 400 Hz to 6 kHz, lands
+  up to 11 dB left or right from beat to beat. Chord: rings 0.66 s against the
+  stab's 0.2 s, nothing under 150 Hz, correlation 0.48. Air: nothing under
+  400 Hz, 28 dB down in its first 200 ms, sweeps from 5.8 kHz to 1.8 kHz,
+  wanders 9 dB either way.
+
+Decisions and gaps:
+
+- `material` tags a motif, comping pattern or drum pattern for the one part
+  that names it; untagged material is for untagged parts. A drum part reads
+  its lanes from the groove nearest the section's intensity that has
+  something on them, so two drum parts may read different grooves. A lane no
+  part claims is not played.
+- A part may also set `octave` and `volume`. It has no program or pan of its
+  own: the bus has one chain per role.
+- A part whose patch has `glide` or `accent` takes gestures like a line, so
+  the acid part (an arp) gets the slides and accents its motifs write.
+- A drop brings in `arrangement.drop` of what may play (0.7 for minimal
+  techno); the plan said everything.
+- The page shows a light per part, lit from `info.parts`. Checked once in a
+  browser from the worktree: it plays, no console errors.
+- The worker keeps a window per part, about 7 MB each at 48 kHz: fifteen
+  parts are about 110 MB where five roles were 40 MB. Untested on a phone.
+- The FM path and a `.mid` play all parts of a role on its channel with the
+  role's program; gesture bends of two parts on one channel would collide
+  there. Claudia uses neither.
+- Under the plain (not weighted) mix a kit's parts are summed and levelled as
+  one and the other parts each have a `RoleLeveler`. It runs but only the
+  weighted mix has a test with parts.
+- A style whose track opens without drums and bass starts on its coolest
+  part, and a section with drums and no bass counts as a breakdown. Fine for
+  minimal techno's forms; other genres may want this said in the corpus.
+- The parts schema has not been through the generator's structured output.
+
+### Heard (2026-11-15), and the limits that followed
+
+Steps 2 to 4 were listened to in the browser, Synth engine. Verdict: groovy,
+more variety of sound, and the build into a drop is fat (for one,
+`?seed=jaunty-coda-capriccio&at=43.57`). The complaint: too many conflicting
+noises where many parts were in (`at=42.115` had nine parts, twelve just after
+the drop, several of them noise or unpitched).
+
+What changed (`56b41ca`, `712d995`), in `src/engine/grid.ts` and the schema:
+
+- A part may name a `group`; `arrangement.groups` says how many parts of a
+  group play at once, and `arrangement.most` how many parts in all. They gate
+  entries: at a drop, in the mix-in and for a change by choice. A style with
+  neither runs none of it.
+- At a drop with limits, what was playing has first claim on the room, then
+  the coolest parts, so the hat is not what gets left out.
+- Minimal techno: `most` 10; `line` 3 (acid, bleep, stab, chord); `perc` 2
+  (blip, rim, clap); `noise` 2 (open hat, ride, shaker, air). A first try at
+  8 / 2 / 2 / 1 was judged too thin. Parts in on average at neutral lift:
+  5.3, against 6.0 with no limits.
+- The same seed gives a different arrangement than before the limits.
+
+Judged good by ear after that. Then the blip and the low tom were tuned: a
+kit's `perc` sound with `tuned` is written for a track on A and moves by the
+nearest way to the track's tonic (drum notes of a style with parts carry
+`tonic`). Not heard yet. Still untouched, and the next suspects if a mix is
+harsh: the blip's inharmonic FM (ratio 1.48) and the acid line's resonance.
+
 ## Step 4: moves inside a track (M)
 
 Model: Opus.
@@ -372,6 +582,130 @@ filter half closed.
 
 Up to here everything runs through the existing `Player`: one stream of bars,
 with moves riding on the bar.
+
+### Built (2026-11-15)
+
+Written by Opus. `bazel test //...` passes (21 targets). Nobody has listened
+to it: the riser, the impact, the cuts and the build were tuned by
+measurement only.
+
+| What | Where |
+| --- | --- |
+| `Move`, `bar.moves`, `info.build`, `OPEN_LOW` / `OPEN_HIGH` | `src/engine/types.ts` |
+| `moves` rates and `roll` on a part in the corpus; their validation | `src/corpus/schema.ts`, `validate.ts` |
+| Builds in the grid (`GridBuilds`, `grid.build`) | `src/engine/grid.ts` |
+| `MovePlan` (sweeps, drift, builds, stutters, throws), `moveValue` | `src/engine/moves.ts`, wired in `piece.ts` |
+| The roll (`writeRoll`) | `src/engine/parts.ts` |
+| `MoveRunner` (cuts, lows, gain, stutter, riser), `impact`, `stemMoves` | `src/sound/moves.ts` |
+| Moves through the worker; the `moves` field of a bar message | `src/sound/worker.ts`, `protocol.ts` |
+| Send throws (`Bus.throws`, `clearThrows`) | `src/sound/bus.ts`, called from `src/app/player.ts` |
+| A roll part and rates for minimal techno | `styles/minimal_techno/corpus.json` |
+| "Build, 4 bars (2 to go)" and "Drop" beside the section | `src/claudia/app.ts` |
+| Tests | `src/engine/moves.test.ts`, `src/sound/moves.test.ts`, additions to `grid.test.ts`, `worker.test.ts`, `validate.test.ts` |
+
+**How moves travel.** The piece plans them once (`MovePlan`, from the grid and
+the style's `moves` rates, on a stream `moves` of its own) and puts each bar's
+slice on `bar.moves`. `Player` hands the send throws to the bus (`AudioParam`
+ramps at the bar's time) and sends the rest to the worker as `moves` on the
+bar message (`stemMoves`: the bar's length in beats and the list). A bar with
+no moves sends nothing, and the worker skips every line of the new code: the
+runner, the fx windows and the patched sound are made only when a bar has
+moves.
+
+**Seek safety.** A move over several bars is cut into one per bar, each with
+its own `from`, `to` and `span` (bar k of n), all computed from the plan and
+the bar's index, so a bar reached by a seek has the moves playing to it gives
+(tested through `SetConductor`). The worker keeps a filter's state only while
+consecutive bars move the same target on the same stem, so a sweep is smooth
+across barlines; a target not moved this bar loses its state, a seek clears
+everything, and a filter with no state fades in from the dry sound over 4 ms.
+Rendered alone, a sweep's bar matches the bar rendered after its predecessors
+to 1e-5 after its first 50 ms. A cut at its open end is the dry signal
+exactly (it fades to dry over the top or bottom octave), so a sweep that ends
+open hands over to no filter without a step. The bus restores a thrown send
+the bar after, or on a seek (`Player.cut` calls `clearThrows`).
+
+**Where the fx go.** Risers and impacts are synthesised in the worker into
+windows of their own and added to a role's stem after levelling and the
+weighted mix, so no leveller flattens a riser and the kick never ducks it.
+The riser joins the pad's chain (wide, chorus, the most reverb); the impact
+the drums' (no high-pass, little reverb). No new graph nodes and no new
+worklet outputs: the alternative, a seventh "fx" output and chain, would have
+touched the bus and worklet the other apps use.
+
+**How the build changes the grid.** For a style with `moves`, every section
+the grid would mark as a drop draws a build (at the `build` rate, 4 or 8 bars
+at the `long` share) inside the section before it, outside the mix-in and
+mix-out. On its first bar the kick leaves and the roll part enters (free, like
+a turn); nothing else moves by choice until the drop, which brings the kick
+back and sends the roll out with the rest of the turn. The roll part is never
+otherwise eligible, never rests and is never the "never silent" fallback.
+The grid test now reads "absent only in a breakdown or a build".
+
+Decisions made where the plan was silent:
+
+- `Move` gains `at` (start beat, default 0; before it the target holds `from`,
+  after it `to`) and `span`. Units: gain a factor, cuts Hz, `lows` dB of a low
+  shelf at 150 Hz, sends 0..1 absolute, `patch` the parameter's own unit
+  (cutoff, q, env, drive), stutter `from` the slice in beats and `to` the last
+  repeat's pitch in semitones (`param: "gate"` halves each repeat), riser and
+  impact Hz. Targets in Hz move in octaves. `deck` is in the type and read by
+  nothing.
+- Cuts are 24 dB an octave (two Butterworth SVF stages): a 12 dB build
+  high-pass took only 6 dB out below 150 Hz by the build's last bar.
+- A part's moves run after its levelling (in the weighted mix; in the plain
+  mix before it), a role's and everything's on the role stems, then the fx.
+  Order on a stem: stutter, lows, cuts, gain.
+- Sweeps start on a part as it enters (from silence, so the filter has
+  nothing to cut yet) and only where it then plays through 8 or 16 bars; drums
+  and lines open a high-cut from 300 Hz, pads and comps half the time a
+  low-cut from 1.5 kHz. Drift is an arc away and back in a section (0.6 to 1.3
+  octaves, mostly up), on the acid line first, never on a part swept in that
+  section. Neither touches the kick, the bass or the roll.
+- A build is a master low-cut from open to 600 Hz (8 bars: 1 kHz) and a riser
+  from 200 Hz to 6 kHz across it, the roll doubling every quarter of it
+  (quarters, eighths, sixteenths, thirty-seconds, rising in level); an impact
+  on the drop's downbeat falling from 90 to 38 Hz. The bass stays in a build.
+- Stutters are on everything, the last beat or half beat, a half or quarter of
+  it repeated; a quarter of them pitched down an octave, a third gated. Throws
+  are a delay throw on the comp or arp for the last beat before a break.
+- The snare lane moved from the clap part to the roll (only the `lift_roll`
+  fill used it), so minimal techno's clap no longer plays that fill's snare.
+  Minimal techno was pinned nowhere, so no hash changed.
+- Minimal techno's rates: sweep 0.4, drift 0.35, build 1, long 0.5, stutter
+  0.05, throw 0.25. Over 24 tracks: 33 sweeps, 29 drifts, 18 stutters at 426
+  phrase ends, 9 throws; 90 builds over 72 tracks at three lifts.
+
+Measured (in the tests' output, 24 kHz):
+
+- Riser over 4 bars: from -61 to -31 dB a beat (a stem at full level is
+  -26 dB), the share above 1.5 kHz from 1% to 96%, silent at its last sample.
+- Impact: 82% of its first 300 ms below 120 Hz, peak -12.8 dBFS, then a tail
+  at -50 dB from 0.8 to 1.8 s with 58% above 300 Hz; silent after 2.6 s.
+- A 4-bar build through the worker: below 150 Hz, against the same bars
+  without the high-pass, -0.4, -0.5, -1.1, -12.8 dB per bar; the riser in the
+  pad's stem -56, -44, -38, -30 dB; on the drop the drums' first 300 ms at
+  -17 dB (82% below 120 Hz) against -32 dB on the build's last downbeat.
+- A high-cut opening from 300 Hz over 4 bars on noise: the share above 2 kHz
+  per beat goes from 0 to 0.75, never falling.
+- The whole-track mix and per-role levels of the step 3 test still hold
+  (the pad's loudest bar is now measured outside builds, where the riser is).
+
+Known gaps:
+
+- Nobody has listened. The riser's level, the impact's and the high-pass's
+  shape are guesses checked by numbers.
+- Send throws run on the `AudioParam`s and are not tested (`Player` and `Bus`
+  have no tests in Node); the restore is by setTarget, so a throw's own echoes
+  ring on, as they should.
+- The FM bus path ignores moves; Claudia does not use it.
+- The worker's levellers remember earlier bars, so the worker test cannot
+  compare two runs by hash; determinism is asserted on the bars and the
+  runner instead.
+- The corpus cannot write moves as lanes yet (the plan's "optionally by the
+  corpus"); everything comes from rules.
+- The `moves` schema has not been through the generator's structured output.
+- Not checked in a browser.
 
 ## Step 5: two decks (L)
 
@@ -439,6 +773,270 @@ the scheduler new:
 No engine switching mid-set: the engine is chosen before play. That removes
 the most intricate part of `Player`.
 
+### Built (2026-11-16)
+
+Written by Opus, from a first draft of the set conductor that Fable left
+unfinished. `bazel test //...` passes (23 targets). The transitions were
+tuned by measurement and checked in a browser by their levels per deck, not
+by ear. It was then listened to, and the overlaps reworked: the tables and
+"Interleaving" below describe it after the rework (see "Heard" for what it
+was before and why it changed).
+
+| What | Where |
+| --- | --- |
+| `Slice`, `Transition`, `nextSlice`, `interleave`, `held`, `arriving`, `overlapMoves`, `trackPiece` | `src/engine/set.ts` |
+| `TransitionInfo`, `bar.deck`, `bar.with`, `bar.transition`; a deck-only `Move` scope covers the deck | `src/engine/types.ts`, `moves.ts` |
+| `play` on `renderBar`: the set says which parts play in an overlap | `src/engine/piece.ts` |
+| `StemDeck` (all the worker's old module state), `SetMix` (two decks, tails) | `src/sound/worker.ts` |
+| `DeckBar`, `deck` and `with` on a bar message | `src/sound/protocol.ts` |
+| `DeckStrip` per deck and one master in `Bus` | `src/sound/bus.ts` |
+| The `decks` option: twice the worklet outputs, two strips, `bar.with` sent beside the bar | `src/app/player.ts` |
+| Both decks and the transition on the page | `src/claudia/app.ts`, `index.html`, `styles.css` |
+| Tests | `src/engine/set.test.ts`, `src/sound/decks.test.ts` (new), changes to `grid.test.ts`, `moves.test.ts`, `berlin_techno.test.ts` |
+
+**Transitions.** Tracks alternate decks (track `i` on deck `i % 2`). How a
+track hands over is drawn once per pair, on a stream of its own
+(`seed/mix/i`), from the step in `lift`: under 0.08 mostly a blend; going up
+mostly a filter, going down mostly a breakdown; 0.22 or more mostly a cut.
+Successive lifts differ by 0.12 at the median (the energy wave moves a lot in
+a track), so those thresholds sit near the 30th and 93rd percentiles. Over 6
+sets of 5000 bars: 108 blends, 66 breakdowns, 60 filters, 31 cuts.
+
+| Type | Overlap | Swap | What happens |
+| --- | --- | --- | --- |
+| Blend | 32 bars: the outgoing's last body phrases and its mix-out, over the incoming's mix-in and first body phrases | bar 16 | The incoming's hat and a line of its own come in over the outgoing's body, lows cut below 180 Hz and faded in from 0.4 over 4 bars, then more of it, one part a slot; the low end changes hands over the last half beat before the swap; from there the incoming plays its body and the outgoing's parts leave one a slot (5, 4, 3, then 2 above its kick), its cut rising to 450 Hz, fading to 0.3 over its last 4 bars |
+| Breakdown | 16 bars | bar 8 | The outgoing holds its body through the first phrase with the incoming's hat and line over it; the second phrase has no kick and no bass on either deck: lines and hats of both and the incoming's pad; the incoming's body lands after it on an impact |
+| Filter | 8 bars, the incoming from bar 8 of its mix-in | bar 0 | The outgoing, still whole (it holds its body through its mix-out), is high-passed from 180 Hz to 4 kHz and fades over its last 2 bars; the incoming plays under it with the low end, a hat and a line, and a riser; its body lands on an impact |
+| Cut | none | | The outgoing stops a phrase short of its mix-out with a delay throw on its last beat; the incoming starts past its mix-in, on an impact |
+
+A blend is 16 bars with the swap at 8 where a track is shorter than 96 bars
+or the outgoing has no kick in the body phrases a long one would start in
+(neither happens with the two styles' forms).
+
+Styles without parts (or tracks too short to mix) cut at the track's end, as
+before, and their bars name no deck.
+
+**Interleaving.** Both tracks are whole in an overlap, and the set does the
+thinning, as a DJ's faders and EQ do; a track's own grid does not thin it.
+
+- *What each deck has.* In its body a track has what its grid says (and its
+  coolest line if the grid has none). Through its mix-out a track that hands
+  over in an overlap holds what its body's last bar had, with its low end
+  (`held`). Through its mix-in a track coming in has what its body's first
+  bar has, so what comes in stays in, with a hat, a line and a pad if that
+  has none (`arriving`). The grid's own mix-in is heard only where a track
+  starts alone (the set's first, or after a skip); its mix-out only past a
+  cut, which a seek alone reaches.
+- *The faders.* Above its low end a deck plays its parts in a fixed order:
+  its coolest percussion (the hat), its coolest running line (a stab if it
+  has none), its coolest pad, then the rest from the coolest up. The incoming
+  gets 2 of them at its first bar and one more every 4 bars of its mix-in.
+  After the swap the outgoing keeps as many as it has slots left plus one
+  (plus three in a filter, which thins by its sweep), so they leave in
+  reverse order and its hat and line go last.
+- *One low end.* The dominant deck plays its kick and bass. The other never
+  plays its bass; its kick plays with its lows cut by the transition's
+  moves. A build on the dominant deck stops the other deck's kick too.
+- *Crowding.* The styles' limits hold across both decks, the lower of the two
+  styles' where both name one. Each group's limit is as it is, so there are
+  never more noise layers or lines at once than one track may have. `most`
+  gets 2 more (`OVERLAP_ROOM`), and the second kick is not counted: a second
+  hat doubles a pattern more than it adds a layer. The deck without the low
+  end may fill half of a group (at least one part). The dominant deck's hat
+  and line claim first, then the other deck's share, then the rest of the
+  dominant's: where there is no room it is the dominant deck that is thinned.
+  At most 11 parts beside the second kick were seen in 12 sets.
+- *Pitched parts.* One deck's pads at a time: the dominant deck's in a blend
+  and a breakdown (they change hands with the low end), the outgoing's in a
+  filter (they are swept away). One running line (an ostinato) a deck: the
+  deck without the low end plays one at most, and the dominant no second one
+  beside it. Stabs are free of that rule and counted by the `line` group.
+  So mid-blend there is one deck's pad under a line of each track.
+- *Levels.* The deck without the low end has its lows cut and no bass, so it
+  adds little level; its fader is at full once it is in. Measured through the
+  worker, the sum stays within 1 dB of the bodies either side across a blend
+  (see "Heard").
+
+A set's track now arrives whole: where its mix-in ends its grid brings in
+everything that may play, instead of going on one part a slot from the low
+end (`grid.ts`). Without that a cool track fell back to kick and bass for 20
+bars where an overlap landed.
+
+**Tempo.** One per slice. Across an overlap it moves from the outgoing
+track's to the incoming's in equal steps a bar (rounded to 0.01 bpm), and both
+decks play at it; before a cut it ramps over the 8 bars before the cut. Tracks
+are within 3% of each other, so a step is at most about 0.2% a bar (a filter's
+8 bars: 0.33%). Outside transitions a track plays at its own tempo.
+
+**Position.** `track.bar` of the dominant deck, so a link in the second half
+of a blend names the incoming track. Seeking to a bar inside an overlap lands
+in the transition with both decks playing; `skip` in a transition goes on with
+the incoming alone. The page's next-track control seeks to the next track's
+first bar. Where that is inside its overlap with this one (a blend, a
+breakdown) it jumps to the start of the overlap and mixes from there, on the
+phrase. Into a track that is cut or filtered into, bar 0 is not in any
+overlap: the track starts alone from its own mix-in, the kick first.
+
+**The worker.** Everything the worker kept at module level is one `StemDeck`.
+A bar message without `deck` (Mindless Midi, Mighty Midi, any non-set bar) is
+rendered by one solo deck exactly as before. A message with `deck` goes to a
+`SetMix` of two decks: each renders its bar into its own stems, posted as
+outputs `deck * 7 + role`; `with` carries the other deck's bar. A deck that
+stops rings out over one more bar, with its transition's filters held and its
+level falling to nothing over the first beat, and is then dropped.
+
+**The bus and the player.** `Bus` is a `DeckStrip` (role chains, sends,
+reverb, delay, set from one style) per deck and one master (tape chain,
+compressor, limiter, trim, meter). Without the `decks` option it builds one
+strip and every method is deck 0's. With it (only Claudia passes it) the
+worklet has 14 outputs and each strip is set from its own track's style at
+its first bar, so minimal techno's preset and Berlin techno's (the default
+one) sound side by side in a transition between them. Throws go to their
+deck's strip, and a strip with no bar is restored, so a cut's echo throw
+does not stick. The other deck's notes are scored from its own programs and
+patches, and under Samples planned from its own style's kit.
+
+**The other apps are unchanged.** The worker test's runs (all shipped styles,
+plain and weighted, synth and samples, and the minimal techno runs) print a
+bit-exact hash with `PRINT_EXACT`; all 56 were the same before and after the
+`StemDeck` change. The bus split builds the same nodes in the same graph for
+one deck; that was checked in a browser only (no Web Audio in the tests).
+
+Decisions and deviations from the plan above:
+
+- **No `SetPlayer`, no extraction from `Player`.** A slice is one bar of time
+  at one tempo, which is already `Player`'s unit, so the conductor's
+  `nextBar` returns the dominant deck's bar with the other's on `with`, and
+  `Player` sends both. Everything new in `Player` runs only for a bar that
+  names a deck. Rewriting the scheduler would have put the other two apps at
+  risk for no audible gain. Engine switching mid-set still works, as before.
+- **No separate low-end stage.** The low end is the conductor's moves on each
+  deck (a 24 dB/octave low cut at 180 Hz on the deck without it, opened over
+  half a beat at the swap), so it is pure data, seek-safe and tested in the
+  engine. The kick's ducking is not shared: each deck's parts are ducked by
+  its own kick, which plays in time with the other.
+- Blends are 32 bars (16 for a short track), since the rework.
+- The incoming track's samples are not awaited before its mix-in; a bar that
+  is not ready leaves a gap, as before.
+
+Measured, before the rework (see "Heard" for the numbers after it):
+
+- Through the worker (`decks.test.ts`, 24 kHz), the first transition of each
+  type in sets over both styles: the deck without the low end adds between
+  -0.1 and +0.06 dB below 150 Hz to the dominant deck's in any bar of a blend
+  or a filter; across the blend's swap the low end moves at most 1.5 dB from
+  beat to beat (0.6 dB in the bars before), the filter's 0.8; the stems' peak
+  in a transition is at most 0.3 (the impact where it lands; 0.26 before it).
+  A breakdown's second phrase is 20 to 40 dB down below 150 Hz, on purpose.
+- In the browser (Chromium, 48 kHz), output level per transition: a blend
+  about -25 dB throughout; a filter -25; a cut -22 to -26; a breakdown -25,
+  then -35 to -47 dB over its second phrase (a stab and a hat), then back.
+- Render time per bar through the worker in Node, over 700 bars of one set:
+  at 48 kHz, 78 ms with one deck (95th percentile 272, worst 520) and 80 ms
+  with two (95th 96, worst 99); at 24 kHz 39 and 41. A bar is about 1.85 s.
+  The second deck cost little because it played drums only and both ends
+  were thin; the worst bars were all single-deck bars. (After the rework, at
+  24 kHz: 39 to 92 ms with one deck and 62 to 139 ms with two, over four runs
+  of the decks test on a busy machine: the second deck now costs about half
+  as much again.)
+- Memory: the Node process peaked at 374 MB at 48 kHz (264 at 24 kHz), with
+  both decks' windows (about 7 MB a part at 48 kHz). The page's main thread
+  heap stayed at 11 to 12 MB through a blend; the worker's own memory cannot
+  be read from the page. Not measured on a phone.
+
+Known gaps:
+
+- The cut frequencies, the fades, the breakdown's level and the swap's half
+  beat are guesses checked by numbers.
+- What the set adds to a deck for an overlap (a line where the grid has none,
+  a breakdown's pad) leaves again where the overlap ends if the track's grid
+  does not have it there.
+- Berlin techno still has the default bus preset and weight.
+- The delay time of a strip is set at its track's first bar and does not
+  follow a tempo ramp (at most 3% off by the end of an overlap).
+- `Player` and `Bus` still have no tests in Node; the bus split and the
+  player's two-deck path were checked in a browser only.
+- Step 7's page (timeline, the grid scrolling) is not started; the page shows
+  the two decks and the transition only.
+
+Example links, a few bars before each type (both styles, the default pool;
+the set test prints them):
+
+- Blend, minimal into Berlin: `?seed=decks-0&at=1.140`
+- Blend, Berlin into minimal: `?seed=decks-0&at=4.124`
+- Breakdown, minimal into Berlin: `?seed=decks-1&at=2.124`
+- Breakdown, Berlin into minimal: `?seed=decks-0&at=2.156`
+- Filter, minimal into Berlin: `?seed=decks-0&at=3.100`
+- Filter, Berlin into minimal: `?seed=decks-0&at=12.132`
+- Cut, minimal into Berlin: `?seed=decks-0&at=5.100`
+- Cut, Berlin into minimal: `?seed=decks-3&at=8.132`
+
+### Heard (2026-11-16), and the overlaps reworked
+
+The two-deck set was listened to. Verdict: "bass swap is fine, it's not much
+of a mix because low-end / mix-in basically always goes back to pure beat
+rather than actually mixing 2 things in flight." Berlin techno sounds
+distinct, and the builds into drops are still fat.
+
+Why it sounded that way: each track's grid thinned it to the kick over its
+last 16 bars and started it from the kick over its first 16, and the deck
+without the low end played drums only. Every transition passed through
+little more than two kicks.
+
+What changed, in `src/engine/set.ts` (and one rule in `grid.ts`):
+
+- A track no longer thins toward its end, and the set, not the grid, brings
+  the incoming in. Both decks play pitched parts in an overlap. The rules
+  are under "Interleaving" above.
+- Blends are 32 bars and start in the outgoing track's body. A filter's
+  overlap ends where the incoming's body starts, so it lands on a body and
+  not on the second phrase of a mix-in.
+- A breakdown's second phrase has lines and hats of both tracks and the
+  incoming's pad, not a stab and a hat.
+- A set's track arrives whole (see above).
+- A deck's levellers reset at its first bar of a track, whichever bar that
+  is (`player.ts`): a track cut or filtered into never sends its bar 0.
+
+The same seed gives the same tracks in the same order with the same kinds of
+transition, and a different arrangement in and after each overlap.
+
+Measured after the rework (nobody has listened to it):
+
+- Parts per deck across a long blend, every 4 bars, mean of 203 blends in 12
+  sets: outgoing 6.8 6.3 5.9 5.6, then after the swap 4.0 4.0 3.6 2.7;
+  incoming 3.0 3.7 4.1 4.1, then 5.3 5.3 5.3 5.4. The outgoing has 3 to 9
+  parts at the start of an overlap (mean 5.9). A pitched part of each deck
+  sounds in 80 to 90% of a blend's bars (a stab may hit once in four).
+- Through the worker (`decks.test.ts`, 24 kHz, the first transition of each
+  type): the sum of both decks stays within -0.3 and +0.9 dB of the body
+  before across the blend, with no step over 0.5 dB from bar to bar, into or
+  out of it; a filter sits 2 to 3 dB above the outgoing's held mix-out, and
+  the incoming's body it lands on is 1.5 dB above that. Stems peak at 0.19 in the
+  blend and 0.30 at most (an impact).
+- Above 200 Hz, where a track's own parts are, against the outgoing's body:
+  before the swap the incoming is 6 to 10 dB down once its line is in; after
+  it the outgoing is 8 to 18 dB down, bar by bar with its stab, until it
+  fades. In a filter the outgoing is 3 to 5 dB down for the first half.
+- The low end is one deck's as before: the other deck adds under 0.1 dB
+  below 150 Hz in any bar; across the swap it moves 1.3 dB beat to beat.
+- A breakdown's second phrase is 10 to 15 dB below the body before it (it
+  was 35 to 47 dB down in the browser before), and 20 to 30 dB down below
+  150 Hz, on purpose.
+
+Not known until it is heard: whether a deck 6 dB under the other above
+200 Hz reads as a second track or as a background; whether two running lines
+in neighbouring keys clash (the rule allows one a deck); whether 32 bars is
+too long a blend for a track of 112.
+
+Heard again after the rework: "crossmixing seems to work fine most of the
+time, but the blend just before 4.130 sounds broken" (`?seed=decks-0`). There
+the blend began exactly where the outgoing track's own form cooled from its
+peak (0.72 to 0.42): its hats fell from 13 hits a bar to 4 and half its parts
+went silent just as the incoming track came in quietly. Fixed in
+`src/engine/piece.ts`: for a set's track with parts, the section before the
+last cools by at most 0.1 (`TAIL_COOLING`) from the one before it, so the mix
+does the cooling. Not heard yet.
+
 ## Step 6: travel (M, plus S per style)
 
 Model: Opus for the conductor rules; Fable for the first corpus and the patches of each new
@@ -489,6 +1087,81 @@ bridges (one style so far), and a smooth step in energy where legs meet.
 | Psychedelic house | 118 to 126 | Acid line, off-beat bass, delays, long builds | Slide and accent on a patch, delay throws |
 | Electro | 124 to 134 | Syncopated 808 kick, snare on 2 and 4, arpeggiated bass | Sampled or modelled 808 kit |
 | Big beat | 105 to 140 | Breakbeat drums, distorted bass, stutters | Programmed breaks from one-shots, drive, stutter |
+
+**Berlin techno, built (2026-11-16)**, by hand, in `styles/berlin_techno`
+and in the `//styles:claudia` pack. Nobody has listened: the sounds were
+tuned by measurement (`src/sound/berlin_techno.test.ts`).
+
+- 14 keys, aeolian and phrygian; each of minimal techno's keys has a
+  compatible one. One chord held for 7 or 8 bars, so a held note is not cut
+  at each barline. Six forms of 128 to 176 bars: a breakdown without the
+  kick, a build, a peak without the pad role.
+- 14 parts: kick, hat, open hat, ride (from 0.8), clap, tick, tuned toms,
+  roll, sub, stab, tone, bell (loops of 3 and 5 bars), drone, wash. `most` 8;
+  `line` 2, `perc` 2, `noise` 2 (open hat, ride, wash).
+- The rumble is short and loud (0.6 s, level 0.75, in after 0.2 s): 6 dB
+  fuller before the next kick than minimal techno's, as far under the punch.
+  The sub is a plain triangle in the octave above it.
+- The mix preset and weight are keyed by style id in `src/sound/bus.ts` and
+  `weight.ts`, which step 5 is rebuilding, so this style has none yet and
+  plays with the defaults: no delay, reverb on the pad only. The stab's tail
+  is its own release. A preset is the first thing to add once step 5 lands.
+- With two styles the set alternates them at every track (`choose` leaves
+  out the style just played), so Berlin techno plays at 130 to 135 after
+  minimal techno and reaches 136 and up only as a first track.
+
+**Psychedelic house, built (2026-11-17)**, by hand, in
+`styles/psychedelic_house` and in the `//styles:claudia` pack. Nobody has
+listened: the sounds were tuned by measurement
+(`src/sound/psychedelic_house.test.ts`). It was played in a browser from the
+worktree (Synth): a track, a blend into it and one out of it, no console
+errors.
+
+- 118 to 126 bpm, swing 0.2 on sixteenths (under 11 ms). 15 keys: a dorian,
+  an aeolian and a mixolydian on each of five scales a fifth apart (C, G, F,
+  D, B flat), so every key has neighbours here and in both technos. The
+  chords have no third of their own (`i7sus4`, `i9sus4`, `i5`, `Isus2`,
+  `bVII`, `v7`), so one set of progressions serves the three modes and the
+  mode's colour is in the lines. Six forms of 128 to 160 bars: a breakdown
+  without the low end, a build (8 bars for 0.85 of them, the longest the
+  grid has), a peak. The mix-in section is at 0.3, not 0.2: at 0.2 a filter
+  landed on the body 3.8 dB up (`decks.test.ts` allows 3.5).
+- 14 parts: kick, hat, open hat, clap, shaker, congas (tuned), bongo
+  (tuned), roll, bass, pluck, acid, organ, keys, pad. `most` 9; `line` 3,
+  `perc` 2, `noise` 2 (open hat and shaker are the only noise parts).
+- The kick is soft and has no rumble: 93% under 80 Hz, a strike a third as
+  bright as Berlin techno's, gone in 0.42 s. The bass is a sine with FM at
+  twice its pitch, and every bass note is off the beat: on the beat the kick
+  has the low end alone, off it the bass is 8 dB over what is left of the
+  kick. A whole track is at the technos' level (-24 dB) with less of it
+  under 100 Hz (59% against 66% and 69%).
+- The acid line is a square through a low-pass at q 9 with `glide` and
+  `accent`; every slide in its figures touches the note before, so it is
+  tied. Its cutoff moves three ways: inside a note, over 24 bars (the
+  patch's modulator), and across a section (`drift` 0.6). It plays in 56% of
+  the style's bars.
+- **The acid line in an overlap.** The set plays one running line on the
+  deck without the low end: a deck's coolest. That is the pluck (`enters`
+  0.2, the acid line 0.4), which keeps to the tonic, fourth, fifth and
+  octave, the degrees every compatible key shares, a few notes in loops of
+  two, three and five bars. Over 4 sets of 5000 bars the deck without the
+  low end played the pluck in 776 of 960 bars and the acid line in 32 (where
+  the track's body had the acid line and no pluck). The acid line is in the
+  `line` group, an octave above the bass, at most nine notes a bar.
+- It has a mix preset (`PRESETS` in `src/sound/bus.ts`): dotted-eighth
+  echoes on the arp and comp roles, a chorused pad, light ducking. It has no
+  entry in `weight.ts` and takes the middle weight.
+- With three styles a set no longer alternates two. Over those sets: 59
+  minimal, 56 Berlin, 52 psychedelic house tracks; every ordered pair
+  overlaps (17 to 32 times); a style waits 12 tracks at most, while a leg
+  heads for the other end of the tempo span. The 3% step wins over a style's
+  range, so psychedelic house plays at 120 to 131 bpm (in its own range 37
+  times of 52) and Berlin techno down to 126. Keeping a style inside its
+  range is the "style neighbours" rule, not built.
+- Unheard: everything. The first suspects are the acid line's resonance, the
+  level of the kit's hats and clap against the soft kick, whether chords
+  without thirds are warm enough, and the acid line against another track's
+  line when psychedelic house has the low end.
 
 Big beat is the one that strains the scope. Its drums are traditionally
 sampled breaks, which this plan excludes. Programmed break patterns from
@@ -568,8 +1241,9 @@ Sound, in Node through the synth:
   goal asks for constant change. The arrangement grid's rates decide which
   side a style falls on; they belong in the style, not in the code.
 - **Blends that clash.** Compatible keys do not guarantee two tracks sound
-  good together. Interleaving parts keeps leads out of the overlap; if pads
-  still muddy, only one deck's pad plays at a time, like the bass.
+  good together. Since the rework both decks play pitched parts in an
+  overlap: one deck's pads at a time and one running line a deck (see
+  "Interleaving" under step 5). Whether that clashes is not known by ear.
 - **`Player` extraction** at step 5 touches the two shipped apps. It needs
   the same bit-identical discipline as the last round, plus a browser check
   of both.

@@ -5,8 +5,10 @@ ts_lib(
     srcs = [
         "conductor.ts",
         "gestures.ts",
+        "grid.ts",
         "harmony.ts",
         "midi_file.ts",
+        "moves.ts",
         "parts.ts",
         "piece.ts",
         "set.ts",
@@ -52,5 +54,29 @@ ts_test(
         "//src/audio:events",
         "//src/corpus",
         "//src/theory",
+    ],
+)
+
+ts_test(
+    name = "grid_test",
+    src = "grid.test.ts",
+    data = ["//styles:claudia"],
+    deps = [
+        ":engine",
+        "//src/corpus",
+        "//src/theory",
+    ],
+)
+
+ts_test(
+    name = "moves_test",
+    src = "moves.test.ts",
+    data = [
+        "//styles",
+        "//styles:claudia",
+    ],
+    deps = [
+        ":engine",
+        "//src/corpus",
     ],
 )

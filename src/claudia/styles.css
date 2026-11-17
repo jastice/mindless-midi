@@ -157,6 +157,23 @@ main { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 16px; }
 .light.on { color: var(--text); }
 .light.on i { background: var(--uv); box-shadow: 0 0 8px var(--uv); }
 
+/* Two decks: the one with the low end lit, the other coming in or going out. */
+.transition { margin: 16px 0 0; padding: 6px 10px; border: 1px solid var(--uv); color: var(--uv); }
+.decks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.deck-card { border: 1px solid var(--line); background: var(--well); padding: 10px 12px; min-width: 0; opacity: 0.45; }
+.deck-card.live { opacity: 1; }
+.deck-card.dominant { border-color: var(--uv); }
+.dc-head { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.dc-tag { margin-left: auto; color: var(--dim); }
+.deck-card[data-role="in"] .dc-tag { color: var(--in); }
+.deck-card[data-role="out"] .dc-tag { color: var(--out); }
+.deck-card.dominant .dc-tag { color: var(--uv); }
+.dc-meta { margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.deck-card .roles { gap: 4px 12px; margin: 10px 0 0; font-size: 12px; }
+@media (max-width: 640px) {
+  .decks { grid-template-columns: minmax(0, 1fr); }
+}
+
 .transport { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 20px; }
 .play {
   width: 64px;

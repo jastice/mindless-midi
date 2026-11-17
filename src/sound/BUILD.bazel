@@ -11,10 +11,15 @@ ts_lib(
         "dsp.ts",
         "leveler.ts",
         "measure.ts",
+        "moves.ts",
+        "patches/gm.ts",
+        "patches/kits.ts",
+        "patches/minimal_techno.ts",
         "protocol.ts",
         "sampler.ts",
         "score.ts",
         "shape.ts",
+        "sound_set.ts",
         "synth.ts",
         "types.ts",
         "weight.ts",
@@ -43,6 +48,13 @@ ts_test(
 )
 
 ts_test(
+    name = "baseline_test",
+    size = "medium",
+    src = "baseline.test.ts",
+    deps = [":sound"],
+)
+
+ts_test(
     name = "weight_test",
     size = "medium",
     src = "weight.test.ts",
@@ -52,6 +64,43 @@ ts_test(
     ],
     deps = [
         ":sound",
+        "//src/corpus",
+        "//src/engine",
+    ],
+)
+
+# The worker itself, driven as the player drives it.
+ts_test(
+    name = "worker_test",
+    size = "medium",
+    src = "worker.test.ts",
+    data = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+        "//styles",
+        "//styles:claudia",
+    ],
+    deps = [
+        ":sound",
+        ":worker",
+        "//src/corpus",
+        "//src/engine",
+    ],
+)
+
+# Two decks through the worker, as the player sends a set's slices.
+ts_test(
+    name = "decks_test",
+    size = "medium",
+    src = "decks.test.ts",
+    data = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+        "//styles:claudia",
+    ],
+    deps = [
+        ":sound",
+        ":worker",
         "//src/corpus",
         "//src/engine",
     ],
@@ -101,4 +150,82 @@ esbuild(
     target = "es2022",
     visibility = ["//visibility:public"],
     deps = [":worker"],
+)
+
+ts_test(
+    name = "patch_test",
+    size = "medium",
+    src = "patch.test.ts",
+    deps = [
+        ":sound",
+        "//src/corpus",
+    ],
+)
+
+ts_test(
+    name = "patch_library_test",
+    size = "medium",
+    src = "patch_library.test.ts",
+    data = [
+        "//styles",
+        "//styles:claudia",
+        "//styles/minimal_techno:corpus",
+    ],
+    deps = [
+        ":sound",
+        "//src/corpus",
+        "//src/engine",
+    ],
+)
+
+ts_test(
+    name = "moves_test",
+    size = "medium",
+    src = "moves.test.ts",
+    deps = [
+        ":sound",
+        "//src/engine",
+    ],
+)
+
+# Berlin techno (DJ Claudia): its corpus, its sounds measured, a set over both
+# of her styles, and a track through the worker.
+ts_test(
+    name = "berlin_techno_test",
+    size = "medium",
+    src = "berlin_techno.test.ts",
+    data = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+        "//styles:claudia",
+        "//styles/berlin_techno:corpus",
+    ],
+    deps = [
+        ":sound",
+        ":worker",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)
+
+# Her third style, the same way: the corpus, its sounds, a set over all three
+# styles, and a track through the worker.
+ts_test(
+    name = "psychedelic_house_test",
+    size = "medium",
+    src = "psychedelic_house.test.ts",
+    data = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+        "//styles:claudia",
+        "//styles/psychedelic_house:corpus",
+    ],
+    deps = [
+        ":sound",
+        ":worker",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
 )

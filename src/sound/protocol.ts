@@ -5,6 +5,8 @@
 import type { Role } from "../corpus/constants.js";
 import type { Bar } from "../engine/types.js";
 import type { PlannedNote, SampleData } from "./sampler.js";
+import type { SoundSet } from "./sound_set.js";
+import type { StemMoves } from "./moves.js";
 import type { ScoreNote } from "./types.js";
 
 /** "fm" is the default OPL3 worklet path; the others render stems in the worker. */
@@ -13,39 +15,60 @@ export type StemEngine = Exclude<Engine, "fm">;
 
 export const STEM_PROCESSOR = "mindless-stems";
 
+/** One deck's bar: what the worker renders into one set of role stems. */
+export interface DeckBar {
+  styleId: string;
+  newPiece: boolean;
+  /** Mix intent per role (corpus volume). */
+  levels: Partial<Record<Role, number>>;
+  /** The same per part, for a style with parts, where a part has its own (else its role's stands). */
+  partLevels?: Record<string, number>;
+  /** Notes in absolute seconds (frame / sampleRate). */
+  notes: ScoreNote[];
+  /** samples: one plan per note. */
+  plans?: PlannedNote[];
+  /**
+   * The weighted mix (see weight.ts) instead of plain per-role levelling:
+   * the kick gets its own stem, levels keep the written dynamics, and the
+   * section's intensity (0..1) sets how hard the mix leans in. `lean` is the
+   * share of written velocity the section's notes are played at (0..1].
+   */
+  mix?: { intensity: number; lean: number };
+  /** synth: velocity shapes the tone, not only the level. */
+  touch?: boolean;
+  /**
+   * The style's own patches and synth kit (see `styleSound`). Sent with every bar, so the worker keeps
+   * nothing per style. Notes that name a patch are played by the synth whichever stem engine is on;
+   * the kit is the synth engine's (the samples engine has the style's sampled kit).
+   */
+  sound?: SoundSet;
+  /** The bar's moves that run on the stems (see moves.ts). Only for a bar that has any. */
+  moves?: StemMoves;
+  /**
+   * In a set: the deck it plays on. Its stems go to that deck's outputs (deck 1's follow deck 0's).
+   * Absent everywhere else: then the worker renders as it always did, on outputs 0 to 5.
+   */
+  deck?: 0 | 1;
+}
+
 export type ToWorker =
   | { type: "init"; sampleRate: number; port: MessagePort }
   | { type: "wasm"; wasm: ArrayBuffer }
   | { type: "samples"; items: [string, SampleData][] }
-  | {
+  | ({
       type: "bar";
       engine: StemEngine;
       /** Absolute frame where the bar starts, and its length. */
       start: number;
       frames: number;
-      styleId: string;
-      newPiece: boolean;
-      /** Mix intent per role (corpus volume). */
-      levels: Partial<Record<Role, number>>;
-      /** Notes in absolute seconds (frame / sampleRate). */
-      notes: ScoreNote[];
-      /** samples: one plan per note. */
-      plans?: PlannedNote[];
       /** fm_bus: the bar itself, for libADLMIDI. */
       bar?: Bar;
-      /**
-       * The weighted mix (see weight.ts) instead of plain per-role levelling:
-       * the kick gets its own stem, levels keep the written dynamics, and the
-       * section's intensity (0..1) sets how hard the mix leans in. `lean` is the
-       * share of written velocity the section's notes are played at (0..1].
-       */
-      mix?: { intensity: number; lean: number };
-      /** synth: velocity shapes the tone, not only the level. */
-      touch?: boolean;
-    }
+      /** In a set's transition: the other deck's bar, at the same time and tempo. */
+      with?: DeckBar;
+    } & DeckBar)
   | { type: "clear"; from: number };
 
-/** Worker -> stem worklet. `data` holds l, r per entry of `roles` (role indices). */
+/** Worker -> stem worklet. `data` holds l, r per entry of `roles` (role indices; deck 1's are offset by the number of roles). */
 export type ToStems =
   | { type: "pcm"; start: number; frames: number; roles: number[]; data: Float32Array[] }
   | { type: "clear"; from: number };

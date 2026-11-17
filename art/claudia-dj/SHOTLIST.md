@@ -1,104 +1,316 @@
 # Claudia DJ: shot list
 
-Everything the visualizer plays, built as a small state machine. Four poses
-are still frames. Each pose has loops that start and end on its frame, and
-transitions run from one pose's frame to another's, so any clip can follow
-any other without a seam. Made in Grok Imagine using its loop and first/last
-frame options. Background and lessons: [PROMPTS.md](PROMPTS.md).
+The clips the booth cam plays, made in Grok Imagine from the poses in
+[PROMPTS.md](PROMPTS.md). Every clip starts on one pose and ends on one
+(the same one for loops), so any clip can follow any clip that ends on its
+start pose. Each entry below is ready to paste: the frames to upload, the
+settings, and the prompt.
 
-**MVP** marks the 7 clips and 2 new poses that make a first usable version.
+## Lengths
 
-## Rules for every clip
+Only two lengths, 6 s and 10 s. At 128 BPM a 6.04 s clip plays as **3 bars**
+and a 10.04 s clip as **5 bars**, and 3 + 5 = 8, one phrase. Every 8-bar
+phrase is 3+5 or 5+3 and ends on a pose, ready for whatever the music does
+next. Transitions and flourishes are always 6 s. Loops come in both
+lengths. Never slow a 6 s clip to fill 4 bars: ×0.8 reads as slow motion.
 
-- **Same shot.** Every pose is an edit of the Home still, so framing, the
-  fisheye, the room and the light stay identical. Never generate a pose from
-  scratch.
-- **Camera locked**, no zoom, no cut, nobody else in the room, no text.
-- **6 s, 16:9, 720p.** At 128 BPM a 6.04 s clip becomes 3 bars when sped up
-  7.4%. Transitions may be trimmed to 1 or 2 bars.
-- **Loops** use Grok's loop option (first frame = last frame = the pose).
-- **Transitions** set the first frame to the start pose and the last frame
-  to the end pose.
-- **Prompts stay short.** The short prompt with uploads beat the long ones.
-  Describe motion only; the frames carry the look.
-- **2–3 takes each.** Pick by: canon intact (streak on the viewer's left,
-  star clip on the other side, adult face), the camera stayed still, the
-  nods are steady, the start and end land on the pose.
-- **Files** go to `~/workspace/claudia/takes/` as `<id>-<take>.mp4` (for
-  example `L2-home-mid-1.mp4`), poses as `<id>.png`. Chosen takes are copied
-  to `~/workspace/claudia/selects/<id>.mp4`.
+## Settings for every clip
 
-**Decide before making poses:** the Home still has no headset microphone,
-which is part of her canon look. Either accept that for this room, or
-regenerate Home with "thin headset microphone at her cheek" first, since
-every other pose is made from it.
+- Frames from `~/workspace/claudia/poses/` (the PNGs).
+- 16:9, 720p, the length given. Audio is thrown away.
+- **Loops:** first frame = the pose, loop option on.
+- **Transitions and flourishes:** first frame and last frame as given.
+- Paste the prompt as written; each one already ends with the camera and
+  room rules. Don't add the look: the frames carry it.
+- 2–3 takes each, saved as `~/workspace/claudia/takes/<id>-<take>.mp4`; the
+  chosen one copied to `~/workspace/claudia/selects/<id>.mp4`.
 
-## Poses (stills)
+**MVP** marks the 8 clips for a first full version: L01, L02, L05, L08, T01,
+T02, T07, T08.
 
-Upload `P0-home` and edit it. Prompt prefix for all edits:
+## Loops
 
-> Same image, same room, same camera, lens and light, same woman and
-> clothes. Only her pose changes:
+### L01-home · loop · 10 s · MVP
 
-| ID | Pose | Edit prompt (after the prefix) | MVP |
-|---|---|---|---|
-| P0-home | Hands on the decks, neutral face, headphones around her neck | Have it: `takes/s1-simple-1.jpg` | ✓ |
-| P1-cue | Cueing on headphones | she presses the right cup of her headphones to her right ear with her right hand, head tilted toward it, eyes down at the left player, left hand on its jog wheel | ✓ |
-| P2-build | Leaning in for the build | she leans in over the mixer, right hand on a large knob in the middle of the mixer, left hand hovering flat above the decks, eyes on the mixer, lips pressed together | |
-| P3-peak | Peak after the drop | both her hands are raised high above her head, fingers spread, mouth open in a big grin, eyes on the camera | ✓ |
+First frame: `P0-home.png`. Loop on.
+Plays as: the default groove, mid energy.
 
-## Loops (first = last = the pose)
+> She grooves to a steady 128 bpm techno track, head nodding down on every
+> beat, shoulders loose and bouncing slightly with each nod. Both hands stay
+> on the mixer: her right hand slowly turns one knob a little and back, her
+> left hand eases a fader up a few centimetres and back down. Her eyes stay
+> on the mixer, face calm and focused. The headphones stay on her head. She
+> finishes exactly as she started. Locked camera, no zoom, no cut. Nobody
+> else appears. Nothing in the room moves except her.
 
-| ID | Pose | Prompt | Use | MVP |
-|---|---|---|---|---|
-| L1-home-low | P0 | she plays a slow minimal techno track, small nods on every beat, hands making small adjustments on the mixer, calm and focused | Intros, breakdowns, low energy | |
-| L2-home-mid | P0 | she grooves to a steady 128 bpm techno beat, head nodding down on every beat, shoulders bouncing loosely, right hand turning a mixer knob, eyes on the decks | Default | ✓ |
-| L3-home-high | P0 | she dances hard to a fast techno beat, bouncing on every beat, bob swinging, shoulders and head moving, both hands working the mixer, smiling | High energy, after drops | |
-| L4-cue | P1 | she listens on the headphone cup, nodding to a different beat, left hand nudging the jog wheel, lips moving slightly as she counts | During a blend between tracks | ✓ |
-| L5-build | P2 | she slowly turns the large knob, her bouncing growing, left hand rising and sinking above the decks, tension building | The bars before a drop | |
-| L6-peak | P3 | she jumps on every beat with her hands up, waving them, grinning, hair flying | The first bars after a drop | ✓ |
+### L02-home · loop · 6 s · MVP
 
-## Transitions (first frame → last frame)
+First frame: `P0-home.png`. Loop on.
+Plays as: the 3-bar half of a phrase at mid energy.
 
-| ID | From → to | Prompt | Use | MVP |
-|---|---|---|---|---|
-| T1-home-cue | P0 → P1 | she lifts the headphones from her neck and presses the right cup to her ear, tilting her head toward it, left hand moving to the jog wheel | A blend starts | ✓ |
-| T2-cue-home | P1 → P0 | she lowers the headphones back around her neck and puts both hands back on the decks, nodding | A blend ends | ✓ |
-| T3-home-build | P0 → P2 | she leans in over the mixer and takes hold of the large knob in the middle, her left hand lifting flat above the decks | A build starts | |
-| T4-build-peak | P2 → P3 | on the drop she throws both hands up above her head and grins at the camera | The drop after a build | |
-| T5-home-peak | P0 → P3 | on the drop she throws both hands up above her head and grins at the camera | A drop without a build | ✓ |
-| T6-peak-home | P3 → P0 | she brings her hands down to the decks, still smiling, and settles back into nodding | Coming down after a peak | ✓ |
-| T7-build-home | P2 → P0 | she lets go of the knob, straightens up and settles back into nodding with both hands on the decks | A build that fizzles into a breakdown | |
+> She grooves to a steady 128 bpm techno track, head nodding down on every
+> beat, shoulders loose. Her left hand turns an EQ knob a quarter turn and
+> back while her right hand rests on a fader. Eyes on the mixer, face calm.
+> She finishes exactly as she started. Locked camera, no zoom, no cut.
+> Nobody else appears. Nothing in the room moves except her.
 
-## Flourishes (P0 → P0)
+### L03-home-low · loop · 10 s
 
-Short one-offs that break up long grooves. Same first and last frame.
+First frame: `P0-home.png`. Loop on.
+Plays as: intros, breakdowns, low energy.
 
-| ID | Prompt |
-|---|---|
-| F1-point | she looks up at the camera, smiles and points at the lens on one beat, then looks back down at the decks |
-| F2-fist | she pumps her right fist on four beats, grinning, then puts her hand back on the mixer |
-| F3-look | she glances up and around the room, smiles to herself, and looks back down at the decks |
+> She plays a slow, sparse minimal techno track and barely moves: a small,
+> gentle nod on every beat, her head otherwise still. Her right hand slides
+> one fader up very slowly, then back. Her left hand rests on the mixer.
+> Eyes down, face relaxed, lips slightly parted. She finishes exactly as she
+> started. Locked camera, no zoom, no cut. Nobody else appears. Nothing in
+> the room moves except her.
+
+### L04-home-high · loop · 6 s
+
+First frame: `P0-home.png`. Loop on.
+Plays as: high energy, after a drop.
+
+> She dances hard to a driving 128 bpm techno track: her whole upper body
+> bounces on every beat, her bob swings, her shoulders roll. Both hands keep
+> working the mixer with quick knob turns. She smiles briefly to herself,
+> eyes still down. She finishes exactly as she started. Locked camera, no
+> zoom, no cut. Nobody else appears. Nothing in the room moves except her.
+
+### L05-vinyl · loop · 10 s · MVP
+
+First frame: `P2-vinyl.png`. Loop on.
+Plays as: a blend between tracks.
+
+> She beatmatches the record: her left hand rests on the spinning vinyl and
+> gently nudges it forward and holds it back to keep it in time, while she
+> nods on every beat of a 128 bpm techno track. Her right hand slowly eases
+> a channel fader up. Her head stays bowed, eyes on the record and the
+> mixer, concentrating. The record keeps spinning. She finishes exactly as
+> she started. Locked camera, no zoom, no cut. Nobody else appears. Nothing
+> in the room moves except her and the record.
+
+### L06-cue · loop · 6 s
+
+First frame: `P3-cue.png`. Loop on.
+Plays as: checking the incoming track.
+
+> She keeps the headphone cup pressed to her ear with her right hand,
+> listening closely, head tilted toward it. She nods to a slightly
+> different beat from the one in the room, and her lips move silently as she
+> counts. Her left hand turns a knob on the mixer a little and back. She
+> finishes exactly as she started. Locked camera, no zoom, no cut. Nobody
+> else appears. Nothing in the room moves except her.
+
+### L07-build · loop · 6 s
+
+First frame: `P4-build.png`. Loop on.
+Plays as: the bars before a drop.
+
+> Tension builds: her raised left hand keeps the index finger pointing up
+> and pumps it gently on every beat, while her right hand slowly turns the
+> filter knob. Her bouncing gets bigger and her head nods harder, eyes fixed
+> on the mixer, lips pressed together. She finishes exactly as she started.
+> Locked camera, no zoom, no cut. Nobody else appears. Nothing in the room
+> moves except her.
+
+### L08-peak · loop · 6 s · MVP
+
+First frame: `P5-peak.png`. Loop on.
+Plays as: the first bars after a drop.
+
+> Lost in the music, she keeps both arms raised high, hands open, and sways
+> slowly from side to side with the beat, her wrists turning, head tilted
+> back, eyes closed, a faint blissful smile. Her bob swings gently. She
+> finishes exactly as she started. Locked camera, no zoom, no cut. Nobody
+> else appears. Nothing in the room moves except her.
+
+### L09-look · loop · 6 s
+
+First frame: `P1-look.png`. Loop on.
+Plays as: a phrase of eye contact with the viewer.
+
+> She holds eye contact with the camera, nodding on every beat with a
+> confident half smile, one eyebrow lifting slightly once. Her right hand
+> turns a knob a little and back; her left hand stays on the jog wheel. She
+> finishes exactly as she started. Locked camera, no zoom, no cut. Nobody
+> else appears. Nothing in the room moves except her.
+
+## Transitions
+
+Every transition starts holding the first pose for a moment, makes one
+clear movement, and settles into the last pose for the final second.
+
+### T01-home-vinyl · 6 s · MVP
+
+First frame: `P0-home.png`. Last frame: `P2-vinyl.png`.
+Plays when: a blend starts.
+
+> Still nodding to the beat, she lifts her left hand off the mixer, reaches
+> over and lays it flat on the spinning record, then bows her head toward
+> the record and keeps nodding, right hand on the mixer. Locked camera, no
+> zoom, no cut. Nobody else appears. Nothing in the room moves except her and
+> the record.
+
+### T02-vinyl-home · 6 s · MVP
+
+First frame: `P2-vinyl.png`. Last frame: `P0-home.png`.
+Plays when: a blend ends.
+
+> Still nodding to the beat, she lifts her left hand off the record and
+> brings it back to the mixer, both hands on the mixer, head bowed over it,
+> focused. Locked camera, no zoom, no cut. Nobody else appears. Nothing in
+> the room moves except her and the record.
+
+### T03-vinyl-cue · 6 s
+
+First frame: `P2-vinyl.png`. Last frame: `P3-cue.png`.
+Plays when: mid-blend, she checks the incoming track.
+
+> She takes her left hand off the record and puts it on the mixer, then
+> raises her right hand to the right cup of her headphones and presses it to
+> her ear, tilting her head toward it, eyes down, listening. Locked camera,
+> no zoom, no cut. Nobody else appears. Nothing in the room moves except her
+> and the record.
+
+### T04-cue-home · 6 s
+
+First frame: `P3-cue.png`. Last frame: `P0-home.png`.
+Plays when: the blend is done.
+
+> She lets go of the headphone cup, straightens her head and brings her
+> right hand down to the mixer, both hands on it, nodding to the beat, eyes
+> on the mixer. Locked camera, no zoom, no cut. Nobody else appears. Nothing
+> in the room moves except her.
+
+### T05-home-build · 6 s
+
+First frame: `P0-home.png`. Last frame: `P4-build.png`.
+Plays when: a build starts.
+
+> Her right hand takes hold of the filter knob in the middle of the mixer
+> and starts turning it slowly; her left hand rises from the mixer, high
+> above her head, the index finger pointing up. Her nodding gets stronger,
+> eyes on the mixer, lips pressed together. Locked camera, no zoom, no cut.
+> Nobody else appears. Nothing in the room moves except her.
+
+### T06-build-peak · 6 s
+
+First frame: `P4-build.png`. Last frame: `P5-peak.png`.
+Plays when: the drop after a build.
+
+> She holds the tension for a moment, finger up, then on the drop, about two
+> seconds in, she lets go of the knob and throws both arms up high, hands
+> opening, her head falls back and her eyes close, and she sways with her
+> arms raised. Locked camera, no zoom, no cut. Nobody else appears. Nothing
+> in the room moves except her.
+
+### T07-home-peak · 6 s · MVP
+
+First frame: `P0-home.png`. Last frame: `P5-peak.png`.
+Plays when: a drop without a build.
+
+> She nods over the mixer, then on the drop, about two seconds in, she
+> throws both arms up high, hands opening, her head falls back and her eyes
+> close, and she sways with her arms raised, lost in the music. Locked
+> camera, no zoom, no cut. Nobody else appears. Nothing in the room moves
+> except her.
+
+### T08-peak-home · 6 s · MVP
+
+First frame: `P5-peak.png`. Last frame: `P0-home.png`.
+Plays when: coming down after a peak.
+
+> She slowly brings her arms down, opens her eyes and lowers her head,
+> placing both hands back on the mixer, and settles into nodding on the
+> beat, focused again. Locked camera, no zoom, no cut. Nobody else appears.
+> Nothing in the room moves except her.
+
+### T09-build-home · 6 s
+
+First frame: `P4-build.png`. Last frame: `P0-home.png`.
+Plays when: a build fizzles into a breakdown.
+
+> She lowers her raised hand to the mixer and lets go of the filter knob,
+> her bouncing calms down, and she settles into gentle nodding with both
+> hands on the mixer, eyes down. Locked camera, no zoom, no cut. Nobody else
+> appears. Nothing in the room moves except her.
+
+### T10-home-look · 6 s
+
+First frame: `P0-home.png`. Last frame: `P1-look.png`.
+Plays when: starting a stretch of eye contact.
+
+> Still nodding, she raises her head and looks straight into the camera
+> with a confident half smile, while her left hand moves from the mixer to
+> the jog wheel of the right player. Locked camera, no zoom, no cut. Nobody
+> else appears. Nothing in the room moves except her.
+
+### T11-look-home · 6 s
+
+First frame: `P1-look.png`. Last frame: `P0-home.png`.
+Plays when: ending it.
+
+> She holds the look for a beat, then lowers her eyes to the mixer, her left
+> hand coming back from the jog wheel to the mixer, both hands on it,
+> nodding, focused. Locked camera, no zoom, no cut. Nobody else appears.
+> Nothing in the room moves except her.
+
+## Flourishes
+
+Six-second one-offs inside a long groove, never two in a row. First and
+last frame both `P0-home.png`.
+
+### F01-glance · 6 s
+
+> Nodding over the mixer, on one beat she glances up straight into the
+> camera with a quick half smile, holds it for two beats, then looks back
+> down to the mixer and keeps nodding. Locked camera, no zoom, no cut.
+> Nobody else appears. Nothing in the room moves except her.
+
+### F02-fist · 6 s
+
+> Nodding over the mixer, she lifts her right hand and pumps her fist in the
+> air on four beats, grinning, then brings it back down to the mixer and
+> keeps nodding. Locked camera, no zoom, no cut. Nobody else appears.
+> Nothing in the room moves except her.
+
+### F03-sip · 6 s
+
+> Still nodding, she reaches back with her left hand to the water bottle on
+> the shelf, takes a quick sip, puts the bottle back exactly where it stood
+> and returns her hand to the mixer. Locked camera, no zoom, no cut. Nobody
+> else appears. Nothing else in the room moves.
+
+Check that the bottle ends exactly where it started.
 
 ## Totals
 
-| | Poses | Loops | Transitions | Flourishes | Clips |
-|---|---|---|---|---|---|
-| MVP | 2 new | 3 | 4 | 0 | 7 |
-| Full | 3 new | 6 | 7 | 3 | 16 |
+| | Loops | Transitions | Flourishes | Clips |
+|---|---|---|---|---|
+| MVP | 4 | 4 | 0 | 8 |
+| Full | 9 | 11 | 3 | 23 |
 
-At 2–3 takes per clip, the full set is about 40–50 generations. The MVP
-should fit in one sitting.
+At 2–3 takes each, the MVP is about 20 generations and the full list about
+60.
 
 ## Order of work
 
-1. Decide on the microphone, then make P1-cue and P3-peak.
-2. MVP clips: L2, L4, L6, then T1, T2, T5, T6.
-3. Check the MVP in the visualizer.
-4. The rest: P2-build, L1, L3, L5, T3, T4, T7, then F1–F3.
+1. MVP: L01, L02, L05, L08, then T01, T02, T07, T08.
+2. Check them in the booth cam prototype.
+3. The rest, in the order L06, T03, T04 (cueing), then L07, T05, T06, T09
+   (builds), then L03, L04, the look clips and the flourishes.
 
-## Covered so far by the first takes
+## If a take goes wrong
 
-The first three takes (not true loops) cover parts of this until the real
-clips exist: `grok-18e66b16` frames 20–64 stand in for L2, and the drop and
-cue takes stand in for T5+T6 and T1+T2 as boomerangs.
+- **She ends off the pose:** check that the last frame was set; for loops,
+  that the loop option was on. Otherwise add "She finishes exactly as she
+  started" (loops) or "She ends holding exactly the final pose"
+  (transitions).
+- **The camera drifts or zooms:** keep "Locked camera, no zoom, no cut" and
+  retry; don't mention the lens.
+- **Props or the record move:** name the prop and say it stays still.
+- **Text on the gear crawls** (P4-build's "FILTER" label): retry; if it
+  persists, regenerate P4-build without it.
+- **A gesture repeats too visibly in a loop:** drop the gesture from the
+  prompt and keep only the nod.

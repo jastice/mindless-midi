@@ -85,6 +85,7 @@
       "name": "Dark pad",
       "program": 89,
       "octave": 4,
+      "patch": "pad",
       "volume": 0.28,
       "pan": 0.1
     },
@@ -93,6 +94,7 @@
       "name": "Chord stab",
       "program": 90,
       "octave": 4,
+      "patch": "stab",
       "volume": 0.4,
       "pan": -0.15
     },
@@ -101,6 +103,7 @@
       "name": "Sub bass",
       "program": 38,
       "octave": 2,
+      "patch": "bass",
       "volume": 0.75,
       "pan": 0
     },
@@ -1447,6 +1450,206 @@
         }
       ],
       "palette": "wire"
+    },
+    {
+      "id": "acid_root",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.75,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.9,
+          "g": "accent"
+        },
+        {
+          "t": 1.75,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.7,
+          "g": "slide"
+        },
+        {
+          "t": 2.5,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 3.25,
+          "d": 0.2,
+          "deg": 2,
+          "v": 0.65
+        },
+        {
+          "t": 3.5,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.7,
+          "g": "slide"
+        }
+      ],
+      "material": "acid"
+    },
+    {
+      "id": "acid_climb",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.5,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.5
+        },
+        {
+          "t": 1,
+          "d": 0.25,
+          "deg": 2,
+          "v": 0.7
+        },
+        {
+          "t": 1.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.75,
+          "g": "slide"
+        },
+        {
+          "t": 2,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 2.75,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.9,
+          "g": "accent"
+        },
+        {
+          "t": 3.5,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.6,
+          "g": "slide"
+        }
+      ],
+      "material": "acid"
+    },
+    {
+      "id": "acid_two",
+      "role": "arp",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 0.75,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.55
+        },
+        {
+          "t": 1.5,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.9,
+          "g": "accent"
+        },
+        {
+          "t": 2.5,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.7,
+          "g": "slide"
+        },
+        {
+          "t": 3.5,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.55
+        },
+        {
+          "t": 4,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.7
+        },
+        {
+          "t": 4.75,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.55
+        },
+        {
+          "t": 5.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.75
+        },
+        {
+          "t": 5.75,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.9,
+          "g": "accent"
+        },
+        {
+          "t": 6,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.7,
+          "g": "slide"
+        },
+        {
+          "t": 7,
+          "d": 0.2,
+          "deg": 0,
+          "v": 0.6
+        },
+        {
+          "t": 7.5,
+          "d": 0.25,
+          "deg": -1,
+          "v": 0.7,
+          "g": "slide"
+        }
+      ],
+      "material": "acid"
     }
   ],
   "comping": [
@@ -1661,6 +1864,91 @@
           "v": 0.5
         }
       ]
+    },
+    {
+      "id": "chord_far",
+      "role": "comp",
+      "voicing": "open",
+      "lengthBeats": 16,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0.5,
+          "d": 1.5,
+          "v": 0.7
+        }
+      ],
+      "material": "chord"
+    },
+    {
+      "id": "chord_answer",
+      "role": "comp",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 4.5,
+          "d": 1,
+          "v": 0.65
+        },
+        {
+          "t": 6,
+          "d": 0.5,
+          "v": 0.45
+        }
+      ],
+      "material": "chord"
+    },
+    {
+      "id": "chord_two",
+      "role": "comp",
+      "voicing": "open",
+      "lengthBeats": 16,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 2.5,
+          "d": 1.5,
+          "v": 0.7
+        },
+        {
+          "t": 10.5,
+          "d": 1,
+          "v": 0.55
+        }
+      ],
+      "material": "chord"
+    },
+    {
+      "id": "air_hold",
+      "role": "pad",
+      "voicing": "power",
+      "lengthBeats": 16,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 0,
+          "d": 16,
+          "v": 0.5
+        }
+      ],
+      "material": "air"
+    },
+    {
+      "id": "air_late",
+      "role": "pad",
+      "voicing": "power",
+      "lengthBeats": 16,
+      "strum": 0,
+      "hits": [
+        {
+          "t": 4,
+          "d": 12,
+          "v": 0.5
+        }
+      ],
+      "material": "air"
     }
   ],
   "drums": [
@@ -2157,6 +2445,86 @@
         "tomHigh": "",
         "shaker": ""
       }
+    },
+    {
+      "id": "blip_one",
+      "kind": "groove",
+      "intensity": 0.45,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "......x......o..",
+        "shaker": ""
+      },
+      "material": "blip"
+    },
+    {
+      "id": "blip_low",
+      "kind": "groove",
+      "intensity": 0.5,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "......x.......o.",
+        "tomHigh": "",
+        "shaker": ""
+      },
+      "material": "blip"
+    },
+    {
+      "id": "blip_two",
+      "kind": "groove",
+      "intensity": 0.65,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "..........o.....",
+        "tomHigh": "...x.....o..x...",
+        "shaker": ""
+      },
+      "material": "blip"
+    },
+    {
+      "id": "blip_run",
+      "kind": "groove",
+      "intensity": 0.85,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": ".......x........",
+        "tomHigh": "..x..o..x..o..x.",
+        "shaker": ""
+      },
+      "material": "blip"
     }
   ],
   "forms": [
@@ -2760,5 +3128,538 @@
   },
   "ending": {
     "ritardando": 0
+  },
+  "parts": [
+    {
+      "id": "kick",
+      "role": "drums",
+      "lanes": [
+        "kick"
+      ],
+      "enters": 0
+    },
+    {
+      "id": "hat",
+      "role": "drums",
+      "lanes": [
+        "closedHat"
+      ],
+      "enters": 0.05
+    },
+    {
+      "id": "open",
+      "role": "drums",
+      "lanes": [
+        "openHat"
+      ],
+      "enters": 0.4,
+      "group": "noise"
+    },
+    {
+      "id": "clap",
+      "role": "drums",
+      "lanes": [
+        "clap"
+      ],
+      "enters": 0.5,
+      "group": "perc"
+    },
+    {
+      "id": "rim",
+      "role": "drums",
+      "lanes": [
+        "rim"
+      ],
+      "enters": 0.3,
+      "group": "perc"
+    },
+    {
+      "id": "shaker",
+      "role": "drums",
+      "lanes": [
+        "shaker"
+      ],
+      "enters": 0.55,
+      "group": "noise"
+    },
+    {
+      "id": "ride",
+      "role": "drums",
+      "lanes": [
+        "ride",
+        "crash"
+      ],
+      "enters": 0.75,
+      "group": "noise"
+    },
+    {
+      "id": "blip",
+      "role": "drums",
+      "lanes": [
+        "tomHigh",
+        "tomLow"
+      ],
+      "material": "blip",
+      "enters": 0.45,
+      "group": "perc"
+    },
+    {
+      "id": "roll",
+      "role": "drums",
+      "lanes": [
+        "snare"
+      ],
+      "roll": true
+    },
+    {
+      "id": "sub",
+      "role": "bass",
+      "patch": "bass",
+      "enters": 0
+    },
+    {
+      "id": "acid",
+      "role": "arp",
+      "patch": "acid",
+      "material": "acid",
+      "octave": 3,
+      "volume": 0.3,
+      "enters": 0.6,
+      "group": "line"
+    },
+    {
+      "id": "bleep",
+      "role": "arp",
+      "patch": "bleep",
+      "enters": 0.35,
+      "group": "line"
+    },
+    {
+      "id": "stab",
+      "role": "comp",
+      "patch": "stab",
+      "enters": 0.3,
+      "group": "line"
+    },
+    {
+      "id": "chord",
+      "role": "comp",
+      "patch": "chord",
+      "material": "chord",
+      "volume": 0.3,
+      "enters": 0.55,
+      "group": "line"
+    },
+    {
+      "id": "pad",
+      "role": "pad",
+      "patch": "pad",
+      "enters": 0.4
+    },
+    {
+      "id": "air",
+      "role": "pad",
+      "patch": "air",
+      "material": "air",
+      "volume": 0.16,
+      "enters": 0.25,
+      "group": "noise"
+    }
+  ],
+  "arrangement": {
+    "change": 0.45,
+    "swap": 0.2,
+    "drop": 0.7,
+    "most": 10,
+    "groups": {
+      "line": 3,
+      "perc": 2,
+      "noise": 2
+    },
+    "thin": 0.3,
+    "evolve": 0.2
+  },
+  "moves": {
+    "sweep": 0.4,
+    "drift": 0.35,
+    "build": 1,
+    "long": 0.5,
+    "stutter": 0.05,
+    "throw": 0.25
+  },
+  "patches": [
+    {
+      "id": "stab",
+      "osc": {
+        "wave": "saw",
+        "voices": 3,
+        "detune": 12,
+        "spread": 0.6
+      },
+      "filter": {
+        "type": "band",
+        "cutoff": 500,
+        "q": 2.5,
+        "keytrack": 1,
+        "env": 3800,
+        "a": 0.002,
+        "d": 0.09,
+        "s": 0,
+        "r": 0.08
+      },
+      "amp": {
+        "a": 0.002,
+        "d": 0.22,
+        "s": 0,
+        "r": 0.12
+      },
+      "drive": 0.6,
+      "mod": [
+        {
+          "target": "cutoff",
+          "shape": "sine",
+          "beats": 32,
+          "depth": 0.6
+        }
+      ],
+      "hp": 180,
+      "level": 0.5
+    },
+    {
+      "id": "bass",
+      "osc": {
+        "wave": "saw",
+        "voices": 1,
+        "detune": 0
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 90,
+        "q": 3,
+        "keytrack": 1.5,
+        "env": 900,
+        "a": 0.002,
+        "d": 0.14,
+        "s": 0.15,
+        "r": 0.06
+      },
+      "amp": {
+        "a": 0.003,
+        "d": 0.2,
+        "s": 0.75,
+        "r": 0.06
+      },
+      "drive": 0.8,
+      "mod": [
+        {
+          "target": "cutoff",
+          "shape": "sine",
+          "beats": 16,
+          "depth": 0.4
+        }
+      ],
+      "glide": 0.05,
+      "accent": {
+        "cutoff": 2200,
+        "q": 3
+      },
+      "level": 0.55
+    },
+    {
+      "id": "pad",
+      "osc": {
+        "wave": "saw",
+        "voices": 5,
+        "detune": 16,
+        "spread": 0.65
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 500,
+        "q": 1,
+        "keytrack": 1,
+        "env": 600,
+        "a": 1.5,
+        "d": 2,
+        "s": 0.7,
+        "r": 2
+      },
+      "amp": {
+        "a": 1.2,
+        "d": 1,
+        "s": 1,
+        "r": 2.2
+      },
+      "mod": [
+        {
+          "target": "cutoff",
+          "shape": "sine",
+          "beats": 64,
+          "depth": 0.8
+        },
+        {
+          "target": "width",
+          "shape": "sine",
+          "beats": 24,
+          "depth": 0.4
+        },
+        {
+          "target": "pan",
+          "shape": "sine",
+          "beats": 12,
+          "depth": 0.15
+        }
+      ],
+      "hp": 150,
+      "level": 0.3
+    },
+    {
+      "id": "acid",
+      "osc": {
+        "wave": "saw",
+        "voices": 1,
+        "detune": 0
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 380,
+        "q": 7,
+        "keytrack": 0.5,
+        "env": 1800,
+        "a": 0.002,
+        "d": 0.12,
+        "s": 0.12,
+        "r": 0.05
+      },
+      "amp": {
+        "a": 0.002,
+        "d": 0.3,
+        "s": 0.4,
+        "r": 0.04
+      },
+      "drive": 1.2,
+      "mod": [
+        {
+          "target": "cutoff",
+          "shape": "sine",
+          "beats": 48,
+          "depth": 1.5
+        }
+      ],
+      "glide": 0.06,
+      "accent": {
+        "cutoff": 3200,
+        "q": 4
+      },
+      "hp": 160,
+      "level": 0.4
+    },
+    {
+      "id": "bleep",
+      "osc": {
+        "wave": "sine",
+        "voices": 1,
+        "detune": 0,
+        "fm": {
+          "ratio": 2,
+          "amount": 1.5,
+          "decay": 0.05
+        }
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 3000,
+        "q": 0.7,
+        "keytrack": 2,
+        "env": 0,
+        "a": 0.002,
+        "d": 0.1,
+        "s": 0,
+        "r": 0.08
+      },
+      "amp": {
+        "a": 0.002,
+        "d": 0.12,
+        "s": 0,
+        "r": 0.08
+      },
+      "mod": [
+        {
+          "target": "pan",
+          "shape": "random",
+          "beats": 1,
+          "depth": 0.5
+        }
+      ],
+      "hp": 300,
+      "level": 0.35
+    },
+    {
+      "id": "chord",
+      "osc": {
+        "wave": "saw",
+        "voices": 3,
+        "detune": 14,
+        "spread": 0.7
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 300,
+        "q": 1.8,
+        "keytrack": 1,
+        "env": 2200,
+        "a": 0.004,
+        "d": 0.4,
+        "s": 0.1,
+        "r": 0.3
+      },
+      "amp": {
+        "a": 0.004,
+        "d": 0.7,
+        "s": 0.15,
+        "r": 0.35
+      },
+      "mod": [
+        {
+          "target": "cutoff",
+          "shape": "sine",
+          "beats": 48,
+          "depth": 0.8
+        }
+      ],
+      "hp": 200,
+      "level": 0.22
+    },
+    {
+      "id": "air",
+      "osc": {
+        "wave": "noise",
+        "voices": 1,
+        "detune": 0
+      },
+      "filter": {
+        "type": "band",
+        "cutoff": 1500,
+        "q": 3,
+        "keytrack": 2,
+        "env": 0,
+        "a": 1,
+        "d": 1,
+        "s": 1,
+        "r": 2
+      },
+      "amp": {
+        "a": 2,
+        "d": 1,
+        "s": 1,
+        "r": 2.5
+      },
+      "mod": [
+        {
+          "target": "cutoff",
+          "shape": "sine",
+          "beats": 24,
+          "depth": 1.5
+        },
+        {
+          "target": "pan",
+          "shape": "sine",
+          "beats": 10,
+          "depth": 0.5
+        },
+        {
+          "target": "amp",
+          "shape": "sine",
+          "beats": 6,
+          "depth": 0.3
+        }
+      ],
+      "hp": 600,
+      "level": 0.2
+    }
+  ],
+  "synthKit": {
+    "kick": {
+      "f0": 190,
+      "f1": 47,
+      "sweep": 0.028,
+      "decay": 0.1,
+      "drive": 2.2,
+      "click": 0.35,
+      "sub": {
+        "level": 0.9,
+        "decay": 0.2
+      }
+    },
+    "rumble": {
+      "level": 0.36,
+      "cutoff": 95,
+      "decay": 1.6,
+      "duck": 0.09
+    },
+    "snare": {
+      "tone": 200,
+      "toneDecay": 0.07,
+      "noiseDecay": 0.16,
+      "noiseHp": 1800,
+      "mix": 0.7
+    },
+    "hatScale": 1.2,
+    "hatDecay": 0.04,
+    "hat": {
+      "tone": 9500,
+      "q": 1.2,
+      "hp": 7000,
+      "decay": 0.022,
+      "open": 0.13,
+      "metal": 0.5
+    },
+    "clap": {
+      "tone": 1150,
+      "q": 2,
+      "bursts": 4,
+      "decay": 0.11
+    },
+    "ride": {
+      "hp": 6000,
+      "decay": 0.22,
+      "level": 0.28
+    },
+    "perc": [
+      {
+        "lane": "tomLow",
+        "freq": 110,
+        "bend": 5,
+        "sweep": 0.03,
+        "decay": 0.18,
+        "tuned": true,
+        "pan": -0.3,
+        "level": 0.6
+      },
+      {
+        "lane": "tomHigh",
+        "freq": 440,
+        "bend": 2,
+        "sweep": 0.01,
+        "decay": 0.09,
+        "tuned": true,
+        "fm": {
+          "ratio": 1.48,
+          "amount": 2
+        },
+        "pan": 0.3,
+        "level": 0.45
+      },
+      {
+        "lane": "rim",
+        "freq": 1800,
+        "bend": 12,
+        "sweep": 0.004,
+        "decay": 0.02,
+        "noise": 0.3,
+        "pan": 0.15,
+        "level": 0.5
+      }
+    ]
   }
 }

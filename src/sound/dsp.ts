@@ -32,6 +32,10 @@ export class Noise {
     this.s = s >>> 0;
     return this.s / 2147483648 - 1;
   }
+  /** A copy that goes on from here. */
+  clone(): Noise {
+    return new Noise(this.s);
+  }
 }
 
 /** Topology-preserving state variable filter (Cytomic/Simper). Stable under fast modulation. */
@@ -65,6 +69,12 @@ export class Svf {
     this.bp = v1;
     this.hp = x - this.k * v1 - v2;
     return v2;
+  }
+  /** A copy that goes on from here. */
+  clone(): Svf {
+    const c = new Svf(this.sr);
+    Object.assign(c, this);
+    return c;
   }
 }
 

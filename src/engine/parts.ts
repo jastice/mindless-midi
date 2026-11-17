@@ -4,7 +4,7 @@
  * afterwards by the piece.
  */
 import type { CompPattern, DrumPattern, Instrument, MelodyRules, Motif, PatternNote, Role } from "../corpus/schema.js";
-import { DRUM_LANES, GM_DRUMS } from "../corpus/constants.js";
+import { DRUM_LANES, type DrumLane, GM_DRUMS } from "../corpus/constants.js";
 import type { PitchRange } from "../corpus/sound.js";
 import { Rng } from "../theory/rng.js";
 import {
@@ -44,8 +44,9 @@ export interface BarContext {
 
 /** Mutable state that persists across bars within a piece. */
 export interface PartMemory {
-  voicing: Map<Role, number[]>;
-  lastNote: Map<Role, number>;
+  /** Keyed by role, or by part id for a style with parts. */
+  voicing: Map<string, number[]>;
+  lastNote: Map<string, number>;
   phrases: Map<string, PhraseNote[]>;
 }
 
@@ -81,10 +82,11 @@ export function hasCymbals(pattern: DrumPattern): boolean {
   return (["closedHat", "openHat", "ride", "crash"] as const).some((l) => pattern.lanes[l].length > 0);
 }
 
-export function writeDrums(ctx: BarContext, pattern: DrumPattern, opts: { crash: boolean }): NoteEvent[] {
+/** `lanes`: the lanes to write, for a part that plays some of the kit; all of them otherwise. */
+export function writeDrums(ctx: BarContext, pattern: DrumPattern, opts: { crash: boolean }, lanes: readonly DrumLane[] = DRUM_LANES): NoteEvent[] {
   const out: NoteEvent[] = [];
   const step = 1 / pattern.stepsPerBeat;
-  for (const lane of DRUM_LANES) {
+  for (const lane of lanes) {
     const s = pattern.lanes[lane];
     for (let i = 0; i < s.length; i++) {
       const v = DRUM_VEL[s[i]!];
@@ -101,6 +103,23 @@ export function writeDrums(ctx: BarContext, pattern: DrumPattern, opts: { crash:
   }
   if (opts.crash && !out.some((n) => n.beat === 0 && n.key === GM_DRUMS.crash)) {
     out.push({ beat: 0, dur: 0.25, ch: CHANNELS.drums, key: GM_DRUMS.crash, vel: vel(0.85, ctx), role: "drums" });
+  }
+  return out;
+}
+
+/**
+ * A build's roll on one lane: a hit a beat in its first quarter, doubling in
+ * rate each quarter (quarters, eighths, sixteenths, thirty-seconds), rising
+ * in level. `bar` is this bar of the build's `bars`.
+ */
+export function writeRoll(ctx: Pick<BarContext, "intensity" | "velocityFloor" | "beatsPerBar">, lane: DrumLane, bar: number, bars: number): NoteEvent[] {
+  const out: NoteEvent[] = [];
+  const bpb = ctx.beatsPerBar;
+  for (let beat = 0; beat < bpb - 1e-9; ) {
+    const x = (bar + beat / bpb) / bars;
+    const step = 1 / Math.pow(2, Math.min(3, Math.floor(x * 4)));
+    out.push({ beat, dur: Math.min(step, 0.25), ch: CHANNELS.drums, key: GM_DRUMS[lane], vel: vel(0.45 + 0.5 * x, ctx), role: "drums", straight: true });
+    beat += step;
   }
   return out;
 }
@@ -183,7 +202,8 @@ export function writeOstinato(ctx: BarContext, motif: Motif, range: PitchRange):
 // Chords (pad, comp)
 // ---------------------------------------------------------------------------
 
-export function writeChords(ctx: BarContext, pattern: CompPattern, memory: PartMemory): NoteEvent[] {
+/** `voice`: whose voicing memory to lead from, for a part; the pattern's role otherwise. */
+export function writeChords(ctx: BarContext, pattern: CompPattern, memory: PartMemory, voice: string = pattern.role): NoteEvent[] {
   const out: NoteEvent[] = [];
   const role = pattern.role;
   const center = registerCenter(ctx.instrument) + 4;
@@ -204,9 +224,9 @@ export function writeChords(ctx: BarContext, pattern: CompPattern, memory: PartM
         const segEnd = Math.min(end, span.end);
         if (segStart < ctx.barStart - 1e-9 || segStart >= barEnd - 1e-9) continue;
         if (segEnd - segStart < 0.1) continue;
-        const prev = memory.voicing.get(role) ?? null;
+        const prev = memory.voicing.get(voice) ?? null;
         const notes = voiceChord(ctx.tonic, span.chord, pattern.voicing, center, prev);
-        memory.voicing.set(role, notes);
+        memory.voicing.set(voice, notes);
         notes.forEach((key, i) => {
           const offset = i * pattern.strum;
           if (segStart + offset >= segEnd) return;
@@ -328,6 +348,71 @@ function develop(cell: Cell, rng: Rng, rules: MelodyRules): Cell {
   return { ...cell, notes };
 }
 
+/**
+ * One small change to a looped figure, for a part that repeats on purpose but
+ * not exactly: a step more, a step less, an accent moved, or the whole figure
+ * turned by one grid step. `steady` allows only the accent (the low end keeps
+ * its place). Development's rhythmic counterpart: it never touches a pitch.
+ */
+function evolve(cell: Cell, rng: Rng, grid: number, steady: boolean): Cell {
+  const notes = cell.notes.map((n) => ({ ...n })).sort((a, b) => a.t - b.t);
+  const taken = (t: number) => notes.some((n) => Math.abs(n.t - t) < 1e-6);
+  const op = steady ? "accent" : rng.weighted(["gain", "lose", "accent", "turn"] as const, (o) => ({ gain: 3, lose: notes.length > 2 ? 2 : 0, accent: 3, turn: 1 })[o]);
+  switch (op) {
+    case "gain": {
+      const from = rng.pick(notes);
+      const t = mod(from.t + (rng.chance(0.5) ? grid : -grid), cell.length);
+      if (!taken(t)) notes.push({ ...from, t, d: Math.min(from.d, grid * 0.9), v: from.v * 0.7 });
+      break;
+    }
+    case "lose": {
+      // Not the loudest: the figure keeps its accent.
+      const loudest = Math.max(...notes.map((n) => n.v));
+      const soft = notes.filter((n) => n.v < loudest);
+      if (soft.length) notes.splice(notes.indexOf(rng.pick(soft)), 1);
+      break;
+    }
+    case "accent": {
+      const a = rng.pick(notes);
+      const others = notes.filter((n) => n.v !== a.v);
+      if (others.length) {
+        const b = rng.pick(others);
+        [a.v, b.v] = [b.v, a.v];
+      }
+      break;
+    }
+    case "turn":
+      for (const n of notes) n.t = mod(n.t + grid, cell.length);
+      break;
+  }
+  return { ...cell, notes: notes.sort((a, b) => a.t - b.t) };
+}
+
+/** A motif after one small change (see `evolve`), on a sixteenth grid. */
+export function evolveMotif(m: Motif, rng: Rng, steady = false): Motif {
+  return { ...m, notes: evolve(cellOf(m), rng, 0.25, steady).notes };
+}
+
+/** A drum pattern after one small change to one of `lanes` (see `evolve`). */
+export function evolveLanes(p: DrumPattern, lanes: readonly DrumLane[], rng: Rng, steady = false): DrumPattern {
+  const playing = lanes.filter((l) => /[Xxo]/.test(p.lanes[l]));
+  if (!playing.length) return p;
+  const lane = rng.pick(playing);
+  const step = 1 / p.stepsPerBeat;
+  const steps = p.lanes[lane].length;
+  const notes: PatternNote[] = [];
+  for (let i = 0; i < steps; i++) {
+    const v = DRUM_VEL[p.lanes[lane][i]!];
+    if (v !== undefined) notes.push({ t: i * step, d: step, deg: 0, v });
+  }
+  const out = Array.from({ length: steps }, () => ".");
+  for (const n of evolve({ notes, length: steps * step, anchor: "chord" }, rng, step, steady).notes) {
+    const i = Math.round(n.t / step);
+    if (i >= 0 && i < steps) out[i] = n.v >= 0.9 ? "X" : n.v >= 0.6 ? "x" : "o";
+  }
+  return { ...p, lanes: { ...p.lanes, [lane]: out.join("") } };
+}
+
 /** Make the last note of a phrase land on a stable tone and breathe. */
 function cadence(cell: Cell, rng: Rng): Cell {
   const notes = cell.notes.map((n) => ({ ...n })).sort((a, b) => a.t - b.t);
@@ -405,6 +490,8 @@ export function writeMelody(
   memory: PartMemory,
   /** Chance that a long note opens with a trill (see MelodyRules.trill). */
   trill = 0,
+  /** Whose last note to lead from, for a part; the role otherwise. */
+  voice: string = role,
 ): NoteEvent[] {
   const out: NoteEvent[] = [];
   const barEnd = ctx.barStart + ctx.beatsPerBar;
@@ -422,7 +509,7 @@ export function writeMelody(
     // Grouping resets at each barline, including in odd meters. Without an
     // explicit grouping, keep existing corpora's phrasing and seeded output.
     const strong = (strongBeats ? strongBeats.includes(mod(n.t, ctx.beatsPerBar)) : n.t % 2 === 0) || n.cadence;
-    const prev = memory.lastNote.get(role);
+    const prev = memory.lastNote.get(voice);
     let allowed: number[] | null = null;
     if (!n.grace && ((strong && n.d >= 0.5) || n.d >= 1)) allowed = stableMelodyPitchClasses(ctx.tonic, span.chord);
     else if (!n.grace && n.d >= 0.5) allowed = clashFreeScalePitchClasses(ctx.tonic, ctx.mode, span.chord);
@@ -440,7 +527,7 @@ export function writeMelody(
       const alt = key + (key > prev ? -12 : 12);
       if (alt >= range[0] && alt <= range[1]) key = alt;
     }
-    memory.lastNote.set(role, key);
+    memory.lastNote.set(voice, key);
     // Phrase arch: a little louder towards the middle of the bar group.
     const arch = 0.9 + 0.1 * Math.sin(Math.PI * ((n.t % (ctx.beatsPerBar * 2)) / (ctx.beatsPerBar * 2)));
     const note: NoteEvent = {

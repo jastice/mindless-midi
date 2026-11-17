@@ -19,6 +19,7 @@ deterministic: the same seed and style selection always yield the same music
 | `conductor.ts` | `Conductor` strings pieces together forever, choosing a style for each from the selection. Supports `seek` to a piece/segment (capped so a hand-edited link can't hang the tab). |
 | `piece.ts` | `Piece`: one style, key, tempo and form, a few minutes long. Plans up front (key, tempo, form, repeats, orchestration changes, section intensity), renders lazily bar by bar, applies swing and humanization. |
 | `parts.ts` | Part writers: drums, ostinatos, chords (voice-led), and developed melodies (sequence, inversion, mutation, cadences). Times are bar-relative beats. |
+| `grid.ts` | The arrangement grid for a style with `parts`: which parts play in each bar, a part in or out every 4 bars, turns at drops and breakdowns, mix-in and mix-out for a set's track. |
 | `harmony.ts` | A progression looped over the length of a section. |
 | `gestures.ts` | Slides, swells, accents, chokes, as curves on notes that become pitch bend and CC11 events. See [gestures](../concepts/gestures.md). |
 | `midi_file.ts` | Standard MIDI File (format 0) writer behind the **Save MIDI** button. |

@@ -9,6 +9,7 @@ import { z } from "zod";
 import { CHORD_SUFFIXES, MODE_NAMES, TONIC_NAMES, VOICINGS } from "../theory/theory.js";
 
 import { DRUM_LANES, type DrumLane, GESTURES, type Gesture, ROLES, type Role } from "./constants.js";
+import { Kit, NamedPatch } from "./patch.js";
 import type { SampleKit } from "./pack.js";
 
 export { DRUM_LANES, GESTURES, ROLES, type DrumLane, type Gesture, type Role };
@@ -20,6 +21,11 @@ const palette = z
   .optional()
   .describe("Optional area tag. Forms with the same palette prefer this material; untagged forms use untagged material.");
 
+const material = z
+  .string()
+  .optional()
+  .describe("Optional part tag, for styles with `parts`: this item belongs to the part that names the same `material`, and to no other. Untagged items are for parts without one.");
+
 export const Instrument = z
   .object({
     role: z.enum(ROLES),
@@ -30,6 +36,13 @@ export const Instrument = z
     octave: z
       .number().int().min(1).max(7)
       .describe("Register the part sits in; middle C (MIDI 60) is octave 4. Bass is typically 2, pads 3-4, leads 4-5."),
+    patch: z
+      .string()
+      .optional()
+      .describe(
+        "Id of one of the style's `patches`: the designed sound this instrument plays in the synth, instead of the stock sound of `program`. Not for drums (they play the style's `synthKit`). " +
+          "Still give a `program` of the same family: players without patches use it, and it decides which gestures the arranger writes (38 or 39, synth bass, for a patch that should get slides and accents).",
+      ),
     volume: unit.describe("Mix level 0..1."),
     pan: z.number().min(-1).max(1).describe("Stereo position, -1 left .. 1 right."),
   })
@@ -88,6 +101,7 @@ export const Motif = z.object({
   lengthBeats: z.number().positive().describe("Pattern length in beats; one or two bars."),
   notes: z.array(PatternNote).min(1),
   palette,
+  material,
 });
 export type Motif = z.infer<typeof Motif>;
 
@@ -105,6 +119,7 @@ export const CompPattern = z.object({
   strum: z.number().min(0).max(0.5).describe("Beats between successive chord notes within a hit; 0 = block chord, 0.02-0.06 = gentle roll, 0.25 = arpeggiated."),
   hits: z.array(CompHit).min(1).describe("Rhythm of chord attacks. Hits crossing a chord change are re-voiced automatically."),
   palette,
+  material,
 });
 export type CompPattern = z.infer<typeof CompPattern>;
 
@@ -121,6 +136,7 @@ export const DrumPattern = z.object({
     .object(Object.fromEntries(DRUM_LANES.map((l) => [l, lane])) as Record<DrumLane, typeof lane>)
     .describe("Every non-empty lane must be exactly beatsPerBar * stepsPerBeat characters (one bar)."),
   palette,
+  material,
 });
 export type DrumPattern = z.infer<typeof DrumPattern>;
 
@@ -179,6 +195,69 @@ export const Ending = z.object({
 });
 export type Ending = z.infer<typeof Ending>;
 
+export const Part = z
+  .object({
+    id: z.string().describe("Short name, unique among the parts, e.g. 'kick', 'hats', 'acid'. Shown to listeners."),
+    role: z
+      .enum(ROLES)
+      .describe("The kind of line the arranger writes for it: drums (a pattern), bass or arp (an ostinato), pad or comp (chords), lead or counter (a melody). The style needs an instrument for the role; the part takes its program, register, level and bus from it."),
+    patch: z.string().optional().describe("Id of one of the style's `patches`, if this part has its own sound. Omit to play the role's instrument (its patch, if it has one). Not for drums."),
+    material,
+    lanes: z
+      .array(z.enum(DRUM_LANES))
+      .min(1)
+      .optional()
+      .describe(
+        "Drum parts only, and required for them: the lanes of the kit this part plays. A lane belongs to one part. " +
+          "The part reads these lanes from the drum patterns of its `material` (the untagged ones if it has none), choosing the pattern nearest the section's intensity that has something on them.",
+      ),
+    enters: unit
+      .optional()
+      .describe(
+        "The section intensity from which the part may play (default 0). A set that plays a track cooler leaves its hotter parts out. " +
+          "Ignored for the part with the kick lane and the first bass part: they play wherever the section has drums and bass, and leave only for a breakdown.",
+      ),
+    octave: z.number().int().min(1).max(7).optional().describe("Register, if not the role instrument's."),
+    volume: unit.optional().describe("Mix level 0..1, if not the role instrument's. Not for drum parts: a kit is levelled as one; balance it in the kit and in the pattern velocities."),
+    group: z.string().optional().describe("Names the parts this one crowds (say \"line\" for pitched lines, \"perc\" for busy percussion, \"top\" for noise and cymbals). `arrangement.groups` says how many of a group play at once."),
+    roll: z
+      .boolean()
+      .optional()
+      .describe("Drums only, for a style with `moves`: this part plays the roll in a build before a drop (its first lane, a snare or clap, doubling in rate) and plays nowhere else. It reads no patterns."),
+  })
+  .describe("One line of a track with its own sound. Keep each part tiny: the interest is in which parts are in, not in what one part plays.");
+export type Part = z.infer<typeof Part>;
+
+export const Arrangement = z
+  .object({
+    change: unit.describe("Chance, every 4 bars, that a part enters or leaves when nothing has to. 0.3 is patient, 0.7 restless."),
+    swap: unit.describe("Share of those changes that are a swap: one part out and another in on the same bar."),
+    drop: unit
+      .optional()
+      .describe("Share of the parts that may play that come in at once at a drop (the first bar of a section that brings the kick back, or is a quarter hotter than the last). The rest enter one at a time after it. Omit for 1: everything in."),
+    most: z.number().int().min(2).max(32).optional().describe("The most parts playing at once, kick and bass included. Six to eight keeps techno clear; omit for no limit."),
+    groups: z
+      .record(z.string(), z.number().int().min(1).max(8))
+      .optional()
+      .describe("For each `group` a part may name, the most of its parts playing at once. Use it for sounds that crowd each other: pitched lines in one register, noise textures, busy percussion."),
+    thin: unit.describe("Chance that the last bar of an 8-bar phrase drops a hat or percussion part for that bar: the simplest fill."),
+    evolve: unit.describe("Chance, per part at each phrase boundary inside a section, that its pattern changes by one small step (a step more or less, an accent moved, a turn by a sixteenth). 0.1 to 0.3; a new section starts from the pattern as written."),
+  })
+  .describe("How often the arrangement grid changes. These decide whether a style is hypnotic or busy.");
+export type Arrangement = z.infer<typeof Arrangement>;
+
+export const Moves = z
+  .object({
+    sweep: unit.describe("Chance per section that one part entering it opens up over 8 or 16 bars: a filter sweep. Techno 0.3 to 0.5."),
+    drift: unit.describe("Chance per section that one part with a patch has its filter cutoff drift away and back across the section (the acid line). 0.2 to 0.5."),
+    build: unit.describe("Chance that a drop has a build before it: kick out, the roll part, a rising high-pass and a riser, landing on an impact. Techno 1."),
+    long: unit.describe("Share of builds that last 8 bars rather than 4."),
+    stutter: unit.describe("Chance per phrase end that the last beat stutters (a slice repeated to the barline). Techno 0.03 to 0.08; big beat more."),
+    throw: unit.describe("Chance of an echo throw on the last beat before a break. 0 to 0.5."),
+  })
+  .describe("Changes to the sound that are not notes, for a style with `parts`. Restraint: few, long moves.");
+export type Moves = z.infer<typeof Moves>;
+
 export const StyleCorpus = z.object({
   title: z.string(),
   description: z.string().describe("One or two evocative sentences shown in the UI."),
@@ -201,6 +280,23 @@ export const StyleCorpus = z.object({
   forms: z.array(Form).min(1),
   melody: MelodyRules,
   ending: Ending.optional().describe("How pieces come to a close. Omit for a plain in-tempo final chord."),
+  patches: z
+    .array(NamedPatch)
+    .optional()
+    .describe("The style's own synth sounds, which instruments name in `patch`. Omit to play General MIDI programs only."),
+  parts: z
+    .array(Part)
+    .min(1)
+    .optional()
+    .describe(
+      "The lines of a track, each with its own sound and material, brought in and out one at a time by the arranger. Several parts may share a role. " +
+        "Omit for one part per role (the instruments), all playing wherever a section names their role.",
+    ),
+  arrangement: Arrangement.optional().describe("Rates for a style with `parts`. Omit for the defaults."),
+  moves: Moves.optional().describe("Sweeps, builds, risers and stutters, for a style with `parts`. Omit for none."),
+  synthKit: Kit.optional().describe(
+    "The style's own modelled drum machine, played by the drums role in the synth. Omit for the stock kit. (The sampled kit is not written here: it is a `sample_kit` in the style's BUILD file.)",
+  ),
 });
 export type StyleCorpus = z.infer<typeof StyleCorpus>;
 

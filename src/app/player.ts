@@ -19,10 +19,12 @@ import { velocityScale } from "../engine/parts.js";
 import { DEFAULT_PIECE_OPTIONS, type Expression, type PieceOptions } from "../engine/piece.js";
 import { type Bar, barSeconds } from "../engine/types.js";
 import { Bus } from "../sound/bus.js";
-import { type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../sound/protocol.js";
+import { type DeckBar, type Engine, type FromStems, STEM_PROCESSOR, type ToWorker } from "../sound/protocol.js";
 import { creditLines, type PackCredit } from "../corpus/pack.js";
 import { type PlannedNote, SampleCache, SampleLibrary, servedAt } from "../sound/sampler.js";
 import { barScore } from "../sound/score.js";
+import { stemMoves } from "../sound/moves.js";
+import { partLevels, styleSound } from "../sound/sound_set.js";
 import type { ScoreNote } from "../sound/types.js";
 
 export type { Engine };
@@ -63,6 +65,8 @@ interface Scheduled extends TimedBar {
   frames: number;
   /** Notes with onsets relative to the bar start, seconds. */
   notes: ScoreNote[];
+  /** In a set's transition, the other deck's bar's notes (`bar.with`). */
+  withNotes?: ScoreNote[];
   /** Skip epoch it was generated in (a skip discards bars not yet sent). */
   skips: number;
   /** Samples engine: resolved zones (downloads done), computed once per bar. */
@@ -97,6 +101,12 @@ export interface PlayerOptions {
   weighted?: boolean;
   /** Track name in exported MIDI files. */
   title?: string;
+  /**
+   * A set on two decks (DJ Claudia): the bus gets a strip per deck and the stem worklet twice the outputs, and a
+   * bar that names a deck plays on it, with the other deck's bar (`bar.with`) beside it. Bars that name no deck
+   * play as they always did.
+   */
+  decks?: boolean;
 }
 
 type Listener = () => void;
@@ -203,9 +213,16 @@ export class Player {
   private slowTimer: ReturnType<typeof setTimeout> | null = null;
   /** Programs per channel as of the last generated bar. */
   private readonly programs = new Map<number, number>();
+  /** The patch per channel, for styles that declare their own sounds (see corpus/patch.ts); empty for the rest. */
+  private readonly patches = new Map<number | string, string>();
+  /** The same for deck 1 of a set (deck 0 has the two above): each deck's track sets up its own. */
+  private readonly deck1 = { programs: new Map<number, number>(), patches: new Map<number | string, string>() };
   /** The next bar sent to an engine must carry its piece's setup (bank, programs, levels). */
   private needsSetup = false;
-  private busStyle: string | null = null;
+  /** The style each bus strip is set for (one strip, or one per deck in a set). */
+  private readonly busStyle: (string | null)[] = [null, null];
+  /** In a set: the track each deck played last. A track cut or filtered into starts past its first bar. */
+  private readonly deckPiece: (number | null)[] = [null, null];
   /** Bus loudness AGC (the stem engines' counterpart of the FM path's Leveler). */
   private agcEnv = TARGET_RMS * TARGET_RMS;
   private agcGain = 1;
@@ -458,7 +475,8 @@ export class Player {
     const ctx = this.ctx!;
     this.token++;
     this.needsSetup = true;
-    this.busStyle = null;
+    this.busStyle.fill(null);
+    this.deckPiece.fill(null);
     if (boundary) {
       this.stopEngine(previous, boundary.frame);
       for (const t of this.timeline) if (t.frame >= boundary.frame) this.dispatch(t, t.plans);
@@ -591,6 +609,7 @@ export class Player {
     const now = ctx.currentTime;
     if (this.engineName === "fm") this.post({ type: "clear" });
     else this.toWorker({ type: "clear", from: Math.round(now * sr) });
+    this.bus?.clearThrows(now);
     this.timeline = this.timeline.filter((t) => t.start <= now);
     const last = this.timeline[this.timeline.length - 1];
     if (last) last.end = Math.min(last.end, now);
@@ -746,14 +765,16 @@ export class Player {
       // The worklet ticks the scheduler as soon as it exists, so FM + studio's wasm must reach the
       // worker before any bar can: on a cold cache it downloads slower than the first tick.
       const [, wasm] = await Promise.all([ctx.audioWorklet.addModule(this.opts.stemWorkletUrl), engine === "fm_bus" ? this.loadWasm() : null]);
+      // A set has a strip and a set of outputs per deck; deck 1's outputs follow deck 0's.
+      const decks = this.opts.decks ? ([0, 1] as const) : ([0] as const);
       const node = new AudioWorkletNode(ctx, STEM_PROCESSOR, {
         numberOfInputs: 0,
-        numberOfOutputs: ROLES.length,
-        outputChannelCount: ROLES.map(() => 2),
+        numberOfOutputs: ROLES.length * decks.length,
+        outputChannelCount: decks.flatMap(() => ROLES.map(() => 2)),
       });
-      const bus = new Bus(ctx, this.opts.weighted ? { openLimiter: true } : {});
+      const bus = new Bus(ctx, { ...(this.opts.weighted && { openLimiter: true }), ...(this.opts.decks && { decks: 2 }) });
       if (this.opts.weighted) bus.meter.fftSize = this.meterBuf.length;
-      ROLES.forEach((role, i) => node.connect(bus.input(role), i));
+      for (const d of decks) ROLES.forEach((role, i) => node.connect(bus.input(role, d), d * ROLES.length + i));
       bus.output.connect(this.output!);
       const worker = new Worker(this.opts.workerUrl, { type: "module" });
       worker.onerror = (e) => console.error("render worker", e.message);
@@ -853,7 +874,8 @@ export class Player {
           this.engineName = this.pending.engine;
           this.pending = null;
           this.needsSetup = true;
-          this.busStyle = null;
+          this.busStyle.fill(null);
+          this.deckPiece.fill(null);
           this.emit();
         }
         const plans = this.engineName === "samples" ? await this.plan(entry) : undefined;
@@ -900,7 +922,9 @@ export class Player {
         bar = this.conductor.nextBar();
       }
     }
-    return { bar, notes: this.notesOf(bar), skips: this.skips, frame: 0, frames: barFrames(bar, this.ctx!.sampleRate), start: 0, end: 0 };
+    const entry: Scheduled = { bar, notes: this.notesOf(bar), skips: this.skips, frame: 0, frames: barFrames(bar, this.ctx!.sampleRate), start: 0, end: 0 };
+    if (bar.with) entry.withNotes = this.notesOf(bar.with);
+    return entry;
   }
 
   /** Unplayed bars with their (expected) start times: sent ones from `from` on, then the unsent queue. */
@@ -1046,7 +1070,8 @@ export class Player {
 
   /** The bar's notes in seconds from its start, with the program sounding on each channel. */
   private notesOf(bar: Bar): ScoreNote[] {
-    return barScore(bar, this.programs, this.opts.weighted ? { legato: true, gestures: true } : {});
+    const { programs, patches } = bar.deck === 1 ? this.deck1 : { programs: this.programs, patches: this.patches };
+    return barScore(bar, programs, this.opts.weighted ? { legato: true, gestures: true, patches } : { patches });
   }
 
   /** Samples engine: resolve and download what the bar needs, hand new samples to the worker. */
@@ -1061,6 +1086,13 @@ export class Player {
     try {
       const t0 = performance.now();
       const { plans, fresh } = await lib.prepare(entry.notes, entry.bar.info.styleId, this.styleById.get(entry.bar.info.styleId)?.kit);
+      // In a set's transition the other deck's notes too, from its own style's kit; their plans follow this bar's.
+      const other = entry.bar.with;
+      if (other && entry.withNotes) {
+        const more = await lib.prepare(entry.withNotes, other.info.styleId, this.styleById.get(other.info.styleId)?.kit);
+        plans.push(...more.plans);
+        for (const [u, d] of more.fresh) fresh.set(u, d);
+      }
       // Connection speed from real downloads; demand from what the music needed.
       const bytes = [...fresh.keys()].reduce((a, u) => a + (lib.sizes.get(u) ?? 0), 0);
       const seconds = (performance.now() - t0) / 1000;
@@ -1103,6 +1135,55 @@ export class Player {
     return setup.length ? { ...entry.bar, controls: [...setup, ...entry.bar.controls] } : entry.bar;
   }
 
+  /** Set a bus strip to the style of the bar it plays, at its track's first bar or when the strip has another style. */
+  private stripStyle(bar: Bar, deck: 0 | 1, at: number): void {
+    const style = this.styleById.get(bar.info.styleId);
+    if (!this.bus || !style || (bar.info.barInPiece !== 0 && this.busStyle[deck] === bar.info.styleId)) return;
+    const pans = Object.fromEntries(style.corpus.instruments.map((i) => [i.role, i.pan])) as Partial<Record<Role, number>>;
+    this.bus.setStyle(style.id, bar.bpm, pans, Math.max(at, this.ctx!.currentTime), deck);
+    this.busStyle[deck] = bar.info.styleId;
+  }
+
+  /**
+   * In a set: the bar's deck, and in a transition the other deck's bar beside it, set up like the bar's own.
+   * The other strip's throws are restored when it has no bar, so a throw on a track's last bar does not stick.
+   */
+  /** Whether `bar` is the first its deck plays of its track (bars that name no deck: the track's first bar). */
+  private newTrack(bar: Bar): boolean {
+    if (bar.deck === undefined) return bar.info.barInPiece === 0;
+    const fresh = bar.info.barInPiece === 0 || this.deckPiece[bar.deck] !== bar.info.pieceIndex;
+    this.deckPiece[bar.deck] = bar.info.pieceIndex;
+    return fresh;
+  }
+
+  private setDecks(entry: Scheduled, plans: PlannedNote[] | undefined, at: number): { deck: 0 | 1; with?: DeckBar } {
+    const own = entry.bar.deck!;
+    const bar = entry.bar.with;
+    const deck = (1 - own) as 0 | 1;
+    this.bus?.throws(bar?.moves, at, 60 / entry.bar.bpm, deck);
+    if (!bar || !entry.withNotes) return { deck: own };
+    const info = bar.info;
+    const style = this.styleById.get(info.styleId);
+    this.stripStyle(bar, deck, at);
+    if (this.opts.weighted && !info.gap) this.bus?.setSendScale(1.3 - 0.6 * info.intensity, Math.max(at, this.ctx!.currentTime), deck);
+    const sound = style && styleSound(style.corpus);
+    const parts = style && partLevels(style.corpus);
+    const moves = stemMoves(bar);
+    const other: DeckBar = {
+      styleId: info.styleId,
+      newPiece: this.newTrack(bar),
+      levels: Object.fromEntries((style?.corpus.instruments ?? []).map((i) => [i.role, i.volume])) as Partial<Record<Role, number>>,
+      ...(parts && { partLevels: parts }),
+      notes: entry.withNotes.map((n) => ({ ...n, t: n.t + at })),
+      ...(plans && { plans: plans.map((p) => (p.cut === undefined ? p : { ...p, cut: p.cut + at })) }),
+      ...(this.opts.weighted && { mix: { intensity: info.intensity, lean: velocityScale(info.intensity, this.opts.expression?.velocityFloor) }, touch: true }),
+      ...(sound && { sound }),
+      ...(moves && { moves }),
+      deck,
+    };
+    return { deck: own, with: other };
+  }
+
   private dispatch(entry: Scheduled, plans: PlannedNote[] | undefined): void {
     const ctx = this.ctx!;
     const sr = ctx.sampleRate;
@@ -1115,29 +1196,38 @@ export class Player {
     const info = bar.info;
     const style = this.styleById.get(info.styleId);
     const at = entry.start;
-    if (this.bus && style && (info.barInPiece === 0 || this.busStyle !== info.styleId)) {
-      const pans = Object.fromEntries(style.corpus.instruments.map((i) => [i.role, i.pan])) as Partial<Record<Role, number>>;
-      this.bus.setStyle(style.id, bar.bpm, pans, Math.max(at, ctx.currentTime));
-      this.busStyle = info.styleId;
-    }
+    const deck = bar.deck ?? 0;
+    this.stripStyle(bar, deck, at);
     const notes = entry.notes.map((n) => ({ ...n, t: n.t + at }));
     const weighted = this.opts.weighted === true;
     // Weighted: the worker ducks from the kick's own envelope, and a fuller section is drier.
-    if (!weighted) this.bus?.duck(info.styleId, notes.filter((n) => n.role === "drums" && (n.key === 35 || n.key === 36)).map((n) => n.t));
-    else if (!info.gap) this.bus?.setSendScale(1.3 - 0.6 * info.intensity, Math.max(at, ctx.currentTime));
+    if (!weighted) this.bus?.duck(info.styleId, notes.filter((n) => n.role === "drums" && (n.key === 35 || n.key === 36)).map((n) => n.t), deck);
+    else if (!info.gap) this.bus?.setSendScale(1.3 - 0.6 * info.intensity, Math.max(at, ctx.currentTime), deck);
     const levels = Object.fromEntries((style?.corpus.instruments ?? []).map((i) => [i.role, i.volume])) as Partial<Record<Role, number>>;
+    // The style's own patches and synth kit, if it declares any.
+    const sound = style && styleSound(style.corpus);
+    const parts = style && partLevels(style.corpus);
+    // Moves: the bus throws the sends at the bar's time, the worker runs the rest.
+    this.bus?.throws(bar.moves, at, 60 / bar.bpm, deck);
+    const moves = stemMoves(bar);
+    // (In a transition the plans of the other deck's notes follow the bar's own.)
+    const own = plans && entry.withNotes ? plans.slice(0, entry.notes.length) : plans;
     this.toWorker({
       type: "bar",
       engine,
       start: entry.frame,
       frames: entry.frames,
       styleId: info.styleId,
-      newPiece: info.barInPiece === 0,
+      newPiece: this.newTrack(bar),
       levels,
+      ...(parts && { partLevels: parts }),
       notes,
-      plans: plans?.map((p) => (p.cut === undefined ? p : { ...p, cut: p.cut + at })),
+      plans: own?.map((p) => (p.cut === undefined ? p : { ...p, cut: p.cut + at })),
       bar: engine === "fm_bus" ? bar : undefined,
       ...(weighted && { mix: { intensity: info.intensity, lean: velocityScale(info.intensity, this.opts.expression?.velocityFloor) }, touch: true }),
+      ...(sound && { sound }),
+      ...(moves && { moves }),
+      ...(bar.deck !== undefined && this.setDecks(entry, plans?.slice(entry.notes.length), at)),
     });
   }
 }

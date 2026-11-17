@@ -1,14 +1,16 @@
 /**
  * The mix bus: per-style production for every stem-based engine. Each role
  * gets high-pass cleanup, optional chorus, kick-driven ducking, panning and
- * sends to a tempo-synced ping-pong delay and a generated reverb; the master
- * has an optional tape/vinyl chain, glue compression and a limiter.
+ * sends to a tempo-synced ping-pong delay and a generated reverb (a
+ * `DeckStrip`, one per deck in a set); the master has an optional tape/vinyl
+ * chain, glue compression and a limiter.
  *
  * Every per-style setting is an AudioParam change scheduled at a time, so a
  * live stream can switch styles exactly at a piece boundary. The same class
  * renders offline clips in the bench.
  */
 import { ROLES, type Role } from "../corpus/constants.js";
+import type { Move } from "../engine/types.js";
 import { Noise, type Stereo, activeRms } from "./dsp.js";
 
 type PerRole = Partial<Record<Role, number>>;
@@ -152,6 +154,14 @@ Object.assign(PRESETS, {
     duck: { depth: { bass: 0.35, pad: 0.5, comp: 0.3, arp: 0.2 }, release: 0.18 },
     highpass: { arp: 200, comp: 180, pad: 200 },
   },
+  // A warmer room: long dotted-eighth echoes on the acid line, the pluck and the stabs, a chorused pad, a gentler pump.
+  psychedelic_house: {
+    reverb: { seconds: 2.2, predelay: 0.02, bright: 0.5, send: { arp: 0.2, comp: 0.25, pad: 0.4, drums: 0.08 } },
+    delay: { beats: 0.75, feedback: 0.5, send: { arp: 0.32, comp: 0.3 } },
+    chorus: ["pad"],
+    duck: { depth: { bass: 0.15, pad: 0.4, comp: 0.2, arp: 0.15 }, release: 0.22 },
+    highpass: { arp: 140, comp: 180, pad: 220 },
+  },
 } satisfies Record<string, MixPreset>);
 
 const DEFAULT_PRESET: MixPreset = { reverb: { seconds: 1.8, predelay: 0.02, bright: 0.5, send: { lead: 0.2, pad: 0.3 } }, highpass: {} };
@@ -182,43 +192,40 @@ export interface BusOptions {
    * click survives it, and a soft clipper after it is the actual ceiling.
    */
   openLimiter?: boolean;
+  /** Strips: one, or two for a set (each deck's track has its own style's chains, sends and rooms). */
+  decks?: 1 | 2;
 }
 
-export class Bus {
-  readonly output: GainNode;
-  /** Master trim before the compressor, for a live loudness AGC. */
-  readonly trim: GainNode;
-  /** Taps the bus output (pre-volume) for that AGC. */
-  readonly meter: AnalyserNode;
+const gain = (ctx: BaseAudioContext, v = 1) => {
+  const n = ctx.createGain();
+  n.gain.value = v;
+  return n;
+};
+
+/**
+ * One deck's half of the bus: a chain per role (high-pass, chorus, duck,
+ * pan), its sends, and the reverb and delay they feed, set from one style.
+ * Everything ends in the master's input.
+ */
+export class DeckStrip {
   private readonly roles = new Map<Role, RoleChain>();
   private readonly reverbs: { input: GainNode; conv: ConvolverNode; style: string | null }[] = [];
   private active = 0;
   private readonly delayL: DelayNode;
   private readonly delayR: DelayNode;
   private readonly feedback: GainNode;
-  private readonly dry: GainNode;
-  private readonly wet: GainNode;
-  private readonly drivePre: GainNode;
-  private readonly drivePost: GainNode;
-  private readonly tone: BiquadFilterNode;
-  private readonly wow: GainNode[] = [];
-  private readonly crackle: GainNode;
-  private readonly irCache = new Map<string, AudioBuffer>();
   /** The style whose sends are set, and how far `setSendScale` has them from the preset. */
   private preset: MixPreset | null = null;
+  private sendScale = 1;
+  /** Send throws scheduled, by role and target, with the time the last one ends. */
+  private readonly thrown = new Map<string, number>();
 
   constructor(
     private readonly ctx: BaseAudioContext,
-    opts: BusOptions = {},
+    master: AudioNode,
+    private readonly irCache: Map<string, AudioBuffer>,
   ) {
-    const g = (v = 1) => {
-      const n = ctx.createGain();
-      n.gain.value = v;
-      return n;
-    };
-    const master = g();
-    this.output = g();
-
+    const g = (v = 1) => gain(ctx, v);
     // Reverb: two convolvers; a style change loads the idle one and moves the
     // sends over, so the old tail rings out.
     const reverbIn = g();
@@ -280,6 +287,146 @@ export class Bus {
       pan.connect(delay).connect(delayIn);
       this.roles.set(role, { input, hp, chorus, duck, pan, reverb, delay });
     }
+  }
+
+  input(role: Role): AudioNode {
+    return this.roles.get(role)!.input;
+  }
+
+  /** Switch to a style's chains, sends and rooms at time `at`. */
+  setStyle(styleId: string, bpm: number, pans: Partial<Record<Role, number>>, at: number): void {
+    const p = presetFor(styleId);
+    this.preset = p;
+    const set = (param: AudioParam, v: number) => param.setValueAtTime(v, at);
+    // Reverb: reuse the active convolver for the same style, else load the idle one.
+    let idx = this.reverbs.findIndex((r) => r.style === styleId);
+    if (idx < 0) {
+      idx = 1 - this.active;
+      const r = this.reverbs[idx]!;
+      let ir = this.irCache.get(styleId);
+      if (!ir) this.irCache.set(styleId, (ir = reverbIr(this.ctx, p.reverb.seconds, p.reverb.predelay, p.reverb.bright)));
+      r.conv.buffer = ir;
+      r.style = styleId;
+    }
+    this.reverbs.forEach((r, i) => set(r.input.gain, i === idx ? 1 : 0));
+    this.active = idx;
+
+    const t = p.delay ? (60 / bpm) * p.delay.beats : 0.3;
+    set(this.delayL.delayTime, Math.min(3.9, t));
+    set(this.delayR.delayTime, Math.min(3.9, t));
+    set(this.feedback.gain, p.delay?.feedback ?? 0);
+    for (const [role, c] of this.roles) {
+      set(c.hp.frequency, p.highpass[role] ?? NO_HIGHPASS);
+      set(c.chorus.gain, p.chorus?.includes(role) ? 1 : 0);
+      set(c.pan.pan, Math.max(-1, Math.min(1, pans[role] ?? 0)));
+      set(c.reverb.gain, p.reverb.send[role] ?? 0);
+      set(c.delay.gain, p.delay?.send[role] ?? 0);
+    }
+  }
+
+  /** Move every role's reverb send to `scale` times the style's (1 = as set), over a moment from `at`. */
+  setSendScale(scale: number, at: number): void {
+    const p = this.preset;
+    if (!p) return;
+    this.sendScale = scale;
+    for (const [role, c] of this.roles) c.reverb.gain.setTargetAtTime((p.reverb.send[role] ?? 0) * scale, at, 0.15);
+  }
+
+  /**
+   * A bar's send throws (its reverbSend and delaySend moves), as ramps from
+   * the bar's start `at`, `spb` seconds a beat. A send thrown in an earlier
+   * bar and not in this one goes back to the style's level from `at`, so a
+   * throw never sticks. Does nothing for a bar without throws when none are out.
+   */
+  throws(moves: readonly Move[] | undefined, at: number, spb: number): void {
+    const list = moves?.filter((m) => m.target === "reverbSend" || m.target === "delaySend") ?? [];
+    if (!list.length && !this.thrown.size) return;
+    const now = new Set<string>();
+    for (const m of list) {
+      const roles = m.scope === "master" ? ROLES : m.scope.role !== undefined ? [m.scope.role] : [];
+      for (const role of roles) {
+        const key = `${role}:${m.target}`;
+        const param = this.send(key);
+        const t0 = at + (m.at ?? 0) * spb;
+        const t1 = t0 + m.beats * spb;
+        param.cancelScheduledValues(at);
+        param.setValueAtTime(m.from, t0);
+        param.linearRampToValueAtTime(m.to, t1);
+        this.thrown.set(key, t1);
+        now.add(key);
+      }
+    }
+    for (const key of [...this.thrown.keys()]) {
+      if (now.has(key)) continue;
+      this.restore(key, at);
+      this.thrown.delete(key);
+    }
+  }
+
+  /** A seek: every throw not yet over is called off, and its send goes back to the style's level from `at`. */
+  clearThrows(at: number): void {
+    for (const [key, end] of this.thrown) if (end > at) {
+      this.send(key).cancelScheduledValues(at);
+      this.restore(key, at);
+    }
+    this.thrown.clear();
+  }
+
+  private send(key: string): AudioParam {
+    const [role, target] = key.split(":") as [Role, string];
+    const c = this.roles.get(role)!;
+    return target === "reverbSend" ? c.reverb.gain : c.delay.gain;
+  }
+
+  private restore(key: string, at: number): void {
+    const [role, target] = key.split(":") as [Role, string];
+    const p = this.preset;
+    const level = target === "reverbSend" ? (p?.reverb.send[role] ?? 0) * this.sendScale : (p?.delay?.send[role] ?? 0);
+    this.send(key).setTargetAtTime(level, at, 0.05);
+  }
+
+  /** Duck the style's ducked roles under each kick (context times). */
+  duck(styleId: string, kicks: number[]): void {
+    const d = presetFor(styleId).duck;
+    if (!d) return;
+    for (const [role, c] of this.roles) {
+      const depth = d.depth[role];
+      if (!depth) continue;
+      for (const k of kicks) {
+        c.duck.gain.setTargetAtTime(1 - depth, k, 0.004);
+        c.duck.gain.setTargetAtTime(1, k + 0.03, d.release / 3);
+      }
+    }
+  }
+}
+
+/**
+ * The bus: a `DeckStrip` (one, or one per deck in a set) into one master
+ * (an optional tape/vinyl chain, glue compression, a limiter, a trim for the
+ * loudness AGC and a meter). A method that names no deck is deck 0's, which
+ * is all there is outside a set.
+ */
+export class Bus {
+  readonly output: GainNode;
+  /** Master trim before the compressor, for a live loudness AGC. */
+  readonly trim: GainNode;
+  /** Taps the bus output (pre-volume) for that AGC. */
+  readonly meter: AnalyserNode;
+  private readonly strips: DeckStrip[] = [];
+  private readonly dry: GainNode;
+  private readonly wet: GainNode;
+  private readonly drivePre: GainNode;
+  private readonly drivePost: GainNode;
+  private readonly tone: BiquadFilterNode;
+  private readonly wow: GainNode[] = [];
+  private readonly crackle: GainNode;
+  private readonly irCache = new Map<string, AudioBuffer>();
+
+  constructor(ctx: BaseAudioContext, opts: BusOptions = {}) {
+    const g = (v = 1) => gain(ctx, v);
+    const master = g();
+    this.output = g();
+    for (let d = 0; d < (opts.decks ?? 1); d++) this.strips.push(new DeckStrip(ctx, master, this.irCache));
 
     // Master: dry, or through saturation, a tone filter and tape wow.
     this.dry = g();
@@ -348,40 +495,20 @@ export class Bus {
     vinylSrc.start();
   }
 
-  input(role: Role): AudioNode {
-    return this.roles.get(role)!.input;
+  /** A deck's strip (deck 0 is the only one outside a set). */
+  strip(deck: 0 | 1 = 0): DeckStrip {
+    return this.strips[deck] ?? this.strips[0]!;
   }
 
-  /** Switch to a style's production at time `at` (seconds on the context clock). */
-  setStyle(styleId: string, bpm: number, pans: Partial<Record<Role, number>>, at: number): void {
-    const p = presetFor(styleId);
-    this.preset = p;
-    const set = (param: AudioParam, v: number) => param.setValueAtTime(v, at);
-    // Reverb: reuse the active convolver for the same style, else load the idle one.
-    let idx = this.reverbs.findIndex((r) => r.style === styleId);
-    if (idx < 0) {
-      idx = 1 - this.active;
-      const r = this.reverbs[idx]!;
-      let ir = this.irCache.get(styleId);
-      if (!ir) this.irCache.set(styleId, (ir = reverbIr(this.ctx, p.reverb.seconds, p.reverb.predelay, p.reverb.bright)));
-      r.conv.buffer = ir;
-      r.style = styleId;
-    }
-    this.reverbs.forEach((r, i) => set(r.input.gain, i === idx ? 1 : 0));
-    this.active = idx;
+  input(role: Role, deck: 0 | 1 = 0): AudioNode {
+    return this.strip(deck).input(role);
+  }
 
-    const t = p.delay ? (60 / bpm) * p.delay.beats : 0.3;
-    set(this.delayL.delayTime, Math.min(3.9, t));
-    set(this.delayR.delayTime, Math.min(3.9, t));
-    set(this.feedback.gain, p.delay?.feedback ?? 0);
-    for (const [role, c] of this.roles) {
-      set(c.hp.frequency, p.highpass[role] ?? NO_HIGHPASS);
-      set(c.chorus.gain, p.chorus?.includes(role) ? 1 : 0);
-      set(c.pan.pan, Math.max(-1, Math.min(1, pans[role] ?? 0)));
-      set(c.reverb.gain, p.reverb.send[role] ?? 0);
-      set(c.delay.gain, p.delay?.send[role] ?? 0);
-    }
-    const lf = p.lofi;
+  /** Switch a deck to a style's production at time `at` (seconds on the context clock); the master follows the style too. */
+  setStyle(styleId: string, bpm: number, pans: Partial<Record<Role, number>>, at: number, deck: 0 | 1 = 0): void {
+    this.strip(deck).setStyle(styleId, bpm, pans, at);
+    const set = (param: AudioParam, v: number) => param.setValueAtTime(v, at);
+    const lf = presetFor(styleId).lofi;
     set(this.dry.gain, lf ? 0 : 1);
     set(this.wet.gain, lf ? 1 : 0);
     const drive = (lf?.drive ?? DRIVE_CURVE) / DRIVE_CURVE;
@@ -393,25 +520,24 @@ export class Bus {
     set(this.crackle.gain, lf?.crackle ?? 0);
   }
 
-  /** Move every role's reverb send to `scale` times the style's (1 = as set), over a moment from `at`. */
-  setSendScale(scale: number, at: number): void {
-    const p = this.preset;
-    if (!p) return;
-    for (const [role, c] of this.roles) c.reverb.gain.setTargetAtTime((p.reverb.send[role] ?? 0) * scale, at, 0.15);
+  /** Move a deck's reverb sends to `scale` times its style's (1 = as set), over a moment from `at`. */
+  setSendScale(scale: number, at: number, deck: 0 | 1 = 0): void {
+    this.strip(deck).setSendScale(scale, at);
   }
 
-  /** Duck the style's ducked roles under each kick (context times). */
-  duck(styleId: string, kicks: number[]): void {
-    const d = presetFor(styleId).duck;
-    if (!d) return;
-    for (const [role, c] of this.roles) {
-      const depth = d.depth[role];
-      if (!depth) continue;
-      for (const k of kicks) {
-        c.duck.gain.setTargetAtTime(1 - depth, k, 0.004);
-        c.duck.gain.setTargetAtTime(1, k + 0.03, d.release / 3);
-      }
-    }
+  /** A deck's send throws for a bar (see `DeckStrip.throws`). */
+  throws(moves: readonly Move[] | undefined, at: number, spb: number, deck: 0 | 1 = 0): void {
+    this.strip(deck).throws(moves, at, spb);
+  }
+
+  /** A seek: every throw on every deck not yet over is called off. */
+  clearThrows(at: number): void {
+    for (const s of this.strips) s.clearThrows(at);
+  }
+
+  /** Duck a deck's style's ducked roles under each kick (context times). */
+  duck(styleId: string, kicks: number[], deck: 0 | 1 = 0): void {
+    this.strip(deck).duck(styleId, kicks);
   }
 }
 
