@@ -17,11 +17,11 @@ import { trackName } from "../corpus/names.js";
 import type { StyleBundle } from "../corpus/schema.js";
 import { DEFAULT_SET_OPTIONS, MIX_BARS, PHRASE_BARS, SetConductor, type TrackInfo } from "../engine/set.js";
 import type { Bar, TransitionType } from "../engine/types.js";
-import { randomSeed } from "../theory/seed.js";
 import { keyLabel } from "../theory/theory.js";
 import { type Pin, type Spot, type TrackShape, formatPins, moveTrack, nextTransition, parsePins, slotIndices, stepPhrase, transitionBar } from "./arranger_model.js";
 import { BoothCam } from "./booth.js";
 import type { ClipSet } from "./director.js";
+import { setName } from "./set_name.js";
 
 const ENGINES: { id: Engine; label: string; desc: string }[] = [
   { id: "synth", label: "Synth", desc: "Modelled; no download." },
@@ -95,7 +95,7 @@ async function main(): Promise<void> {
   const params = new URLSearchParams(location.search);
   const linked = params.get("seed");
   const savedSeed = linked ? null : store.get("seed");
-  const seed = linked || savedSeed || randomSeed();
+  const seed = linked || savedSeed || setName();
   const at = parseAt(linked ? params.get("at") : savedSeed ? store.get("at") : null);
   /** Hand-picked styles by track index: the page's copy, given to each conductor as it is made. */
   const pins = parsePins(linked ? params.get("pins") : savedSeed ? store.get("pins") : null);
@@ -184,7 +184,7 @@ async function main(): Promise<void> {
     refresh(true);
   }
   $("reseed").addEventListener("click", () => {
-    newSet(randomSeed());
+    newSet(setName());
     toast(`New set: ${player.seed}`);
   });
   seedInput.addEventListener("change", () => {

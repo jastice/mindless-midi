@@ -56,6 +56,7 @@ ts_lib(
         ":arranger_model",
         ":booth",
         ":director",
+        ":hud",
         "//src/app:player",
         "//src/corpus",
         "//src/engine",
