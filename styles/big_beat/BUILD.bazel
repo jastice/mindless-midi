@@ -1,0 +1,67 @@
+load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+# Sample Pi's acoustic breakbeat kicks, snares, cymbals and toms (with velocity
+# layers for ghost strokes), paired with the LM-2's clap, cowbell and
+# tambourine for the roll and top percussion.
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": {
+            "default": "@samples//danigb-samples/sample-pi-drums:drum_heavy_kick",
+            "hard": "@samples//danigb-samples/sample-pi-drums:drum_bass_hard",
+            "soft": "@samples//danigb-samples/sample-pi-drums:drum_bass_soft",
+        },
+        "38": {
+            "default": "@samples//danigb-samples/sample-pi-drums:sn_dolf",
+            "hard": "@samples//danigb-samples/sample-pi-drums:drum_snare_hard",
+            "soft": "@samples//danigb-samples/sample-pi-drums:drum_snare_soft",
+        },
+        "37": "@samples//danigb-samples/lm-2:cowbell",
+        "39": "@samples//danigb-samples/lm-2:clap",
+        "42": {
+            "default": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_closed",
+            "soft": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_pedal",
+        },
+        "46": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_open",
+        "49": {
+            "default": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_hard",
+            "hard": "@samples//danigb-samples/sample-pi-drums:drum_splash_hard",
+            "soft": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_soft",
+        },
+        "45": {
+            "default": "@samples//danigb-samples/sample-pi-drums:drum_tom_lo_hard",
+            "soft": "@samples//danigb-samples/sample-pi-drums:drum_tom_lo_soft",
+        },
+        "50": {
+            "default": "@samples//danigb-samples/sample-pi-drums:drum_tom_hi_hard",
+            "soft": "@samples//danigb-samples/sample-pi-drums:drum_tom_hi_soft",
+        },
+        "70": "@samples//danigb-samples/lm-2:tambourine",
+    },
+)
+
+music_style(
+    name = "style",
+    bank = 68,
+    brief = "brief.md",
+    color = "#c8dc38",
+    corpus = "corpus.json",
+    kit = ":kit",
+    packs = [
+        "@samples//gleitz-musyngkite/lead-1-square",
+        "@samples//gleitz-musyngkite/lead-2-sawtooth",
+        "@samples//gleitz-musyngkite/pad-2-warm",
+        "@samples//gleitz-musyngkite/synth-bass-1",
+        "@samples//gleitz-musyngkite/synth-brass-1",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# For JS tests that read the raw corpus from runfiles.
+copy_to_bin(
+    name = "corpus",
+    srcs = ["corpus.json"],
+    visibility = ["//visibility:public"],
+)

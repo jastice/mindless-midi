@@ -130,6 +130,7 @@ test("tempo and keys: a step under minimal techno, and keys near each other and 
 // --- A set over all three styles -------------------------------------------------
 
 test("a set over all three styles: each plays, none is stuck, every change keeps tempo and key, every pair overlaps, the limits hold", () => {
+  const three = [MINIMAL, BERLIN, PSY];
   const { most, groups } = corpus.arrangement!;
   const groupOf = new Map(corpus.parts!.map((p) => [p.id, p.group]));
   type Track = { style: string; bpm: number; key: { tonic: number; mode: ModeName } };
@@ -153,7 +154,7 @@ test("a set over all three styles: each plays, none is stuck, every change keeps
   const SEEDS = ["psy-a", "psy-b", "psy-c", "psy-d"];
   const BARS = 5000;
   for (const seed of SEEDS) {
-    const c = new SetConductor(claudia, seed, EXPRESSION);
+    const c = new SetConductor(three, seed, EXPRESSION);
     let last = -1;
     let before: Track | undefined;
     const since: Record<string, number> = {};
@@ -172,7 +173,7 @@ test("a set over all three styles: each plays, none is stuck, every change keeps
         }
         count[track.style] = (count[track.style] ?? 0) + 1;
         (tempos[track.style] ??= []).push(track.bpm);
-        for (const st of claudia) {
+        for (const st of three) {
           since[st.id] = st.id === track.style ? 0 : (since[st.id] ?? 0) + 1;
           longestWait = Math.max(longestWait, since[st.id]!);
         }
@@ -230,7 +231,7 @@ test("a set over all three styles: each plays, none is stuck, every change keeps
   const mine = tempos[ID]!;
   console.log(
     `a set over all three styles, ${SEEDS.length} seeds of ${BARS} bars, ${total} tracks:\n` +
-      claudia.map((s) => `  ${s.id}: ${count[s.id]} tracks (${span(tempos[s.id]!)})`).join("\n") +
+      three.map((s) => `  ${s.id}: ${count[s.id]} tracks (${span(tempos[s.id]!)})`).join("\n") +
       `\n  psychedelic house in its own range (118 to 126) ${mine.filter((x) => x <= 126).length} times of ${mine.length}; median ${mine.slice().sort((x, y) => x - y)[mine.length >> 1]} bpm` +
       `\n  overlaps: ${Object.entries(overlaps).map(([k, n]) => `${k} ${n}`).join(", ")}` +
       `\n  kinds: ${JSON.stringify(kinds)}; the longest any style waits: ${longestWait} tracks` +
@@ -238,10 +239,10 @@ test("a set over all three styles: each plays, none is stuck, every change keeps
       `\n  as the deck without the low end, ${under} bars: the pluck plays in ${pluckUnder}, the acid line in ${acidUnder}` +
       `\n  links:\n${Object.entries(links).map(([k, l]) => `    ${k}: ${l}`).join("\n")}`,
   );
-  for (const s of claudia) assert.ok(count[s.id]! >= total / 5, `${s.id} plays: ${count[s.id]} of ${total}`);
+  for (const s of three) assert.ok(count[s.id]! >= total / 5, `${s.id} plays: ${count[s.id]} of ${total}`);
   // A leg heads for one end of the tempo span, and the style at the other end waits; it comes back.
   assert.ok(longestWait <= 16, `no style is away for more than 16 tracks: ${longestWait}`);
-  for (const x of claudia) for (const y of claudia) if (x !== y) assert.ok((overlaps[`${x.id} > ${y.id}`] ?? 0) >= 3, `${x.id} into ${y.id} overlap: ${overlaps[`${x.id} > ${y.id}`]}`);
+  for (const x of three) for (const y of three) if (x !== y) assert.ok((overlaps[`${x.id} > ${y.id}`] ?? 0) >= 3, `${x.id} into ${y.id} overlap: ${overlaps[`${x.id} > ${y.id}`]}`);
   assert.ok(Math.min(...mine) <= 123 && mine.filter((x) => x <= 126).length >= mine.length / 3, "it plays in its own range too");
   assert.equal(fullest, most, "the cap is reached somewhere");
   assert.ok(builds >= count[ID]! / 2 && long > builds / 2, "most tracks have a build, most of them long");

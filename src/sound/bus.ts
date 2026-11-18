@@ -162,6 +162,14 @@ Object.assign(PRESETS, {
     duck: { depth: { bass: 0.15, pad: 0.4, comp: 0.2, arp: 0.15 }, release: 0.22 },
     highpass: { arp: 140, comp: 180, pad: 220 },
   },
+  // A live warehouse room: slap eighth-note echoes on the hooks and siren, room on the breakbeat, tight punchy ducking.
+  big_beat: {
+    reverb: { seconds: 1.5, predelay: 0.015, bright: 0.55, send: { lead: 0.22, arp: 0.16, comp: 0.2, pad: 0.34, drums: 0.1 } },
+    delay: { beats: 0.5, feedback: 0.38, send: { lead: 0.24, arp: 0.2, comp: 0.22 } },
+    chorus: ["pad"],
+    duck: { depth: { bass: 0.22, pad: 0.4, comp: 0.22, arp: 0.15, lead: 0.12 }, release: 0.16 },
+    highpass: { lead: 220, arp: 160, comp: 180, pad: 220 },
+  },
 } satisfies Record<string, MixPreset>);
 
 const DEFAULT_PRESET: MixPreset = { reverb: { seconds: 1.8, predelay: 0.02, bright: 0.5, send: { lead: 0.2, pad: 0.3 } }, highpass: {} };

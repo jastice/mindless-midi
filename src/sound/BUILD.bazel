@@ -229,3 +229,24 @@ ts_test(
         "//src/theory",
     ],
 )
+
+# Her fourth style (Carbon): the corpus, its breakbeat kit and patches measured,
+# a set over all four styles, and a track through the worker.
+ts_test(
+    name = "big_beat_test",
+    size = "medium",
+    src = "big_beat.test.ts",
+    data = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+        "//styles:claudia",
+        "//styles/big_beat:corpus",
+    ],
+    deps = [
+        ":sound",
+        ":worker",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)

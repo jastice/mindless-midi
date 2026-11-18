@@ -11,9 +11,10 @@ under step 3). Step 5 is built (2026-11-16): tracks overlap on two decks in
 four kinds of transition, with one low end and the two grids interleaved. It
 was heard on 2026-11-16 and the overlaps were reworked so that two tracks are
 in flight together; the rework has been measured and not yet heard (see
-"Built" and "Heard" under step 5). The set now travels between three styles:
-psychedelic house was added on 2026-11-17 (under step 6), and a slid note on
-a patch with `glide` is tied (under step 2); neither has been heard. This was first written against `main` at `b4dabe6`; where it says "new", check first whether later work already has it.
+"Built" and "Heard" under step 5). The set now travels between four styles:
+psychedelic house was added on 2026-11-17 and big beat on 2026-11-18 (under
+step 6), and a slid note on a patch with `glide` is tied (under step 2); none
+of those have been heard. This was first written against `main` at `b4dabe6`; where it says "new", check first whether later work already has it.
 
 Sizes are rough: S is a day or two, M about a week, L several weeks.
 
@@ -1163,10 +1164,64 @@ errors.
   without thirds are warm enough, and the acid line against another track's
   line when psychedelic house has the low end.
 
-Big beat is the one that strains the scope. Its drums are traditionally
+#### Big beat, built (2026-11-18)
+
+Added to `styles/claudia.json` (`styles/big_beat/{brief.md,corpus.json,BUILD.bazel}`),
+written by hand by Carbon (`src/sound/big_beat.test.ts`).
+
+- 112 to 128 bpm (inside the booth cam's 108 to 139 bpm clip-rate window), a
+  light sixteenth-note swing (`0.14`), twelve keys across six consecutive
+  scales in dorian and mixolydian, so every key has neighbours of its own and
+  neighbours in minimal techno, Berlin techno and psychedelic house. Chords
+  have no clashing third (`i5`, `Isus2`, `i7sus4`, `bVII`, `bVII5`, `IV`,
+  `IVadd9`, `v7`) and sit inside both modes.
+- Fifteen parts, seven synth patches and a breakbeat kit: kick, hat, snare,
+  open hat (with crash on the drop), tambourine, Apache-style bongos (tuned to
+  the fifth and root of the key), FM cowbell, clap roll, fuzz bass, wah clav
+  hook, screaming sawtooth acid, pitch-scooped brass hit, rotary organ, rave
+  siren, formant string pad. `most` 9; `line` 3, `perc` 2, `noise` 2 (open hat
+  and tambourine). Sample kit from Sample Pi's hard/soft acoustic kicks,
+  snares, cymbals and toms plus the LM-2's clap, cowbell and tambourine.
+- Programmed breakbeats, never four-on-the-floor: syncopated kicks, backbeat
+  snares on 2 and 4 with ghost strokes, and a snare with over three times the
+  midrange body under 2 kHz of psychedelic house's and six times Berlin
+  techno's (`0.36` vs `0.11` and `0.06`). The kick has no rumble, a strike
+  over four times as bright as psychedelic house's (`745` vs `172` Hz), and is
+  gone in `0.34` s for syncopated doubles.
+- The fuzz bass (`saw` plus a sub-octave square, `drive` 2.6, mono) carries
+  both sub foundation and overdriven upper harmonics (`19.5%` above 180 Hz vs
+  `6.1%` in psychedelic house and `0.2%` in Berlin techno), and riffs across
+  all four beats of every bar so the low end stays continuous under beat 2 and
+  4's snare (within `4.9` dB across beats) and swaps cleanly with a
+  four-on-the-floor kick. A whole track through the worker mixes at `-24.3` dB
+  RMS (within `0.5` to `1.4` dB of the other three styles), `54%` sub, `11%`
+  low-mid, `1.00` low-end correlation, peak `0.42`.
+- Phrase-end stutters (`stutter` 0.22) fire several times as often as in the
+  other styles (`156` stutters in 68 tracks vs `13` to `24` in the others). In
+  an overlap without the low end, the coolest running line is the wah clav
+  `hook` (`enters` 0.2, on `{0, 3, 4, 7}`), playing in `744` of `1048` bars
+  against `72` for the acid or siren. Mix preset in `bus.ts` (1.5 s warehouse
+  room, eighth-note slap delay) and a slammed drum/bass weight in `weight.ts`
+  (`kickDrive` 2, `bassDrive` 1.8, `crush` 0.38).
+- Over 6 sets of 5000 bars across all four styles (243 tracks): 61 minimal, 50
+  Berlin, 64 psychedelic house, 68 big beat (median 123 bpm, in its own range
+  63 times of 68); all twelve ordered style pairs overlap (11 to 30 times); no
+  style waits more than 16 tracks. Example links (`?seed=...&at=track.bar`):
+  `?seed=big-a&at=4.17` (body), `?seed=big-a&at=4.57` (build into drop),
+  `?seed=big-a&at=16.85` (phrase-end stutter), `?seed=big-a&at=25.73` (peak
+  with acid and siren), `?seed=big-a&at=15.109` and `?seed=big-b&at=15.93`
+  (blends with Berlin techno), `?seed=big-b&at=40.109` and
+  `?seed=big-a&at=19.109` (blends with minimal techno), `?seed=big-a&at=28.125`
+  and `?seed=big-a&at=27.125` (blends with psychedelic house).
+- Unheard: everything. First things to check by ear are whether the programmed
+  one-shot breaks + parallel crush carry enough breakbeat grit without real
+  sampled breaks, the snare level against the fuzz bass, and the sawtooth acid
+  and siren resonance at peak intensity.
+
+Big beat was the one expected to strain the scope: its drums are traditionally
 sampled breaks, which this plan excludes. Programmed break patterns from
-one-shots, with drive and room, get the rhythm but not the grit of a real
-break. Judge it when the others work.
+one-shots, with drive and room, get the rhythm; judge how close the grit comes
+once heard.
 
 **The existing styles.** Disco, electro swing, liquid drum & bass and
 synthwave are 4/4 with a kick and could join later with a `set` block. They
