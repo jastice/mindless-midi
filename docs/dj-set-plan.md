@@ -1298,9 +1298,11 @@ curve and verbose descriptions are gone; so is the volume fader.
   terse and numbered, Berlin Techno the only German one, Psychedelic House
   English and warm. Validation wants at least 100 titles, none longer than
   22 characters and none made two ways. Styles without a theme fall back to
-  their title and the track's number. Set names are a German word and a
-  cloakroom number (`KALT-7731`, `src/claudia/set_name.ts`); the name is
-  the seed, so older seeds still play.
+  their title and the track's number. Set names are a German compound of
+  two club words (adjectives only first, a Fugen-n after HALLE, ASCHE and
+  FUNKE: 775 compounds) and a two-digit cloakroom number (`NACHTHALLE-60`,
+  `FUNKENKELLER-38`, `src/claudia/set_name.ts`); the name is the seed, so
+  older seeds (`KALT-7731`) still play.
 - **Credits** come from the data: each style's `authors` (from the
   co-author lines of the commits that wrote it), and the sample packs heard
   so far with links to where their licences were read (`creditEntries` in

@@ -67,7 +67,7 @@ a:hover { color: #fff; }
 .bar-top h1 em { font: normal 900 clamp(30px, 4.4vw, 44px) / 1 var(--sans); letter-spacing: -0.03em; text-transform: uppercase; }
 .bar-top h1 .tag { color: var(--dim); }
 .session { display: flex; align-items: center; gap: 12px; color: var(--dim); }
-.session input { width: 16em; height: 34px; padding: 0 10px; background: var(--well); border: 1px solid var(--line); font: 400 13px/1 var(--mono); letter-spacing: 0.08em; text-transform: none; color: var(--text); }
+.session input { width: 17.5em; height: 34px; padding: 0 10px; background: var(--well); border: 1px solid var(--line); font: 400 13px/1 var(--mono); letter-spacing: 0.08em; text-transform: none; color: var(--text); }
 
 .arr main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
 .left { display: grid; gap: 16px; min-width: 0; }

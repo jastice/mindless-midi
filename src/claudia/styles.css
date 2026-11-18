@@ -144,9 +144,9 @@ a:hover { color: #fff; }
 .label { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; color: var(--grey-2); }
 .aside { font-weight: 400; letter-spacing: 0.08em; text-transform: none; color: var(--grey-3); }
 .set-row { display: flex; flex-wrap: wrap; gap: 24px 48px; align-items: flex-end; }
-.set-name { flex: 0 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.set-name { flex: 0 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .set-ctl { display: flex; gap: 6px; }
-.set-ctl input { flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 12px; background: var(--field); border: 1px solid var(--line); font: 400 15px/1 var(--mono); letter-spacing: 0.12em; }
+.set-ctl input { flex: 1 1 auto; min-width: 15em; height: 44px; padding: 0 12px; background: var(--field); border: 1px solid var(--line); font: 400 15px/1 var(--mono); letter-spacing: 0.12em; }
 .ghost { height: 44px; padding: 0 14px; border: 1px solid var(--line); background: transparent; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; white-space: nowrap; }
 .ghost:hover { border-color: var(--text); }
 .styles { flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
@@ -212,7 +212,7 @@ a:hover { color: #fff; }
   .set-row { flex-direction: column-reverse; align-items: stretch; gap: 14px; border-top: 1px solid var(--rule); padding-top: 14px; }
   .set-name, .styles { flex: none; gap: 8px; }
   .set-ctl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .set-ctl input { grid-column: 1 / -1; }
+  .set-ctl input { grid-column: 1 / -1; min-width: 0; }
   .style-btn { gap: 8px; padding: 0 12px; font-size: 13px; letter-spacing: 0; }
   .style-btn .box { width: 10px; height: 10px; border-width: 2px; }
   .earlier:not([hidden]) { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }

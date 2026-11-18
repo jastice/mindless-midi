@@ -5,7 +5,7 @@ import type { StyleBundle } from "../corpus/schema.js";
 import { BLEND_BARS, PHRASE_BARS, SetConductor } from "../engine/set.js";
 import type { Bar } from "../engine/types.js";
 import { type LaneInput, type Lanes, deckLanes } from "./lanes.js";
-import { SET_WORDS, isSetName, setName } from "./set_name.js";
+import { SET_COMPOUNDS, isSetName, setName } from "./set_name.js";
 
 const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles;
 const P = PHRASE_BARS;
@@ -103,12 +103,19 @@ test("lanes from a real set: what a phrase's lane says comes next is what plays 
   }
 });
 
-test("set names: a German word and a cloakroom number, from the random source", () => {
-  const seq = [0, 0.77315, 0.999, 0.04205];
+test("set names: a German compound and a two-digit cloakroom number, from the random source", () => {
+  assert.equal(SET_COMPOUNDS.length, 32 * 25 - 25, "any word first, a noun other than itself second");
+  assert.equal(new Set(SET_COMPOUNDS).size, SET_COMPOUNDS.length, "none made two ways");
+  assert.ok(SET_COMPOUNDS.includes("FUNKENKELLER") && SET_COMPOUNDS.includes("HALLENECHO") && SET_COMPOUNDS.includes("ASCHENDUNST"), "the Fugen-n");
+  assert.ok(SET_COMPOUNDS.includes("GRAUKELLER") && !SET_COMPOUNDS.includes("KELLERGRAU"), "adjectives only first");
+  assert.ok(!SET_COMPOUNDS.some((c) => /^(HALLE|ASCHE|FUNKE)[A-Z]/.test(c) && !/^(HALLEN|ASCHEN|FUNKEN)/.test(c)));
+  assert.ok(Math.max(...SET_COMPOUNDS.map((c) => c.length)) <= 14, "the longest fits the set box");
+  const seq = [0, 0, 0.999, 0.999];
   let k = 0;
   const r = () => seq[k++ % seq.length]!;
-  assert.equal(setName(r), `${SET_WORDS[0]}-7731`);
-  assert.equal(setName(r), `${SET_WORDS[SET_WORDS.length - 1]}-0420`);
+  assert.equal(setName(r), `${SET_COMPOUNDS[0]}-10`);
+  assert.equal(setName(r), `${SET_COMPOUNDS[SET_COMPOUNDS.length - 1]}-99`);
   for (let j = 0; j < 200; j++) assert.ok(isSetName(setName()), "shape");
   assert.ok(!isSetName("mellow-tritone-waltz"));
+  assert.ok(!isSetName("KALT-7731"), "the older shape still plays, but is not made any more");
 });
