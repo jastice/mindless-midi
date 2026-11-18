@@ -1202,7 +1202,7 @@ written by hand by Carbon (`src/sound/big_beat.test.ts`).
   `hook` (`enters` 0.2, on `{0, 3, 4, 7}`), playing in `744` of `1048` bars
   against `72` for the acid or siren. Mix preset in `bus.ts` (1.5 s warehouse
   room, eighth-note slap delay) and a slammed drum/bass weight in `weight.ts`
-  (`kickDrive` 2, `bassDrive` 1.8, `crush` 0.38).
+  (`kickDrive` 3, `bassDrive` 1.8, `crush` 0.38, `thump` 1; the saturated kick and the bass at full volume keep the low end within 3 dB from beat to beat when it takes over from a four-on-the-floor track, with the beat after the downbeat bass note lengthened).
 - Over 6 sets of 5000 bars across all four styles (243 tracks): 61 minimal, 50
   Berlin, 64 psychedelic house, 68 big beat (median 123 bpm, in its own range
   63 times of 68); all twelve ordered style pairs overlap (11 to 30 times); no
