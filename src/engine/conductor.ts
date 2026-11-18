@@ -28,7 +28,8 @@ export interface Landing {
 export interface BarSource {
   readonly seed: string;
   nextBar(): Bar;
-  seek(pieceIndex: number, barInPiece: number): Landing;
+  /** `solo`, for a set: play the track alone from that bar, rather than inside its overlap with the track before. */
+  seek(pieceIndex: number, barInPiece: number, solo?: boolean): Landing;
   seekSegment(pieceIndex: number, segment: number): Landing;
   /** The segments of a piece that has been started, else null. */
   layout(pieceIndex: number): Segment[] | null;

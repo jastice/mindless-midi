@@ -1,0 +1,142 @@
+/*
+ * The arranger, on top of the booth's styles.css (tokens, fonts, readouts, the
+ * cam, the engine chips). A working desk: the running order on the left, the
+ * booth cam, the styles to drag and the sound on the right.
+ */
+.arr { max-width: 1180px; margin: 0 auto; padding: 20px 24px 48px; }
+
+.bar-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; padding-bottom: 18px; }
+.bar-top h1 { margin: 0; display: flex; align-items: baseline; gap: 12px; line-height: 1; }
+.bar-top h1 .dj { font: 600 12px/1 var(--mono); letter-spacing: 0.2em; padding: 5px 7px 4px; border: 1px solid var(--uv); color: var(--uv); transform: translateY(-0.4em); }
+.bar-top h1 em { font: italic 300 clamp(34px, 5vw, 52px) / 1 var(--serif); letter-spacing: -0.03em; }
+.bar-top h1 .tag { color: var(--dim); }
+
+.arr main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+.left { display: grid; gap: 16px; min-width: 0; }
+.right { display: grid; gap: 16px; position: sticky; top: 16px; min-width: 0; }
+.transport-panel, .order, .palette-panel, .desk { border: 1px solid var(--line); background: var(--panel); padding: 16px 18px; }
+.order h2, .palette-panel h2, .desk h2 { margin: 0 0 10px; color: var(--dim); }
+
+/* ---- transport --------------------------------------------------------- */
+.now { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; color: var(--text); margin-bottom: 12px; }
+.now .dim { color: var(--dim); }
+.onair { display: inline-flex; align-items: center; gap: 8px; color: var(--dim); }
+.onair i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.playing .onair { color: var(--text); }
+.playing .onair i { background: var(--out); box-shadow: 0 0 10px var(--out); }
+.mix { margin-left: auto; padding: 3px 8px; border: 1px solid var(--line); color: var(--dim); }
+.mix[data-stage="in"] { color: var(--in); border-color: var(--in); }
+.mix[data-stage="body"] { color: var(--uv); border-color: var(--uv); }
+.mix[data-stage="out"] { color: var(--out); border-color: var(--out); }
+.transport-panel .readout { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 1.5fr); }
+.transport-panel .readout b { font-size: 20px; }
+.transport-panel .readout #next-x { font-size: 14px; line-height: 1.4; white-space: normal; overflow: visible; padding-top: 3px; }
+.pips { display: flex; gap: 4px; margin-top: 12px; }
+.pips i { flex: 1; height: 8px; background: var(--line); }
+.pips i.done { background: rgba(169, 125, 255, 0.4); }
+.pips i.here { background: var(--uv); box-shadow: 0 0 10px var(--uv-glow); }
+.transport-panel .transition { margin: 12px 0 0; padding: 6px 10px; border: 1px solid var(--in); color: var(--in); }
+
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-top: 16px; }
+.play { width: 56px; height: 56px; border-radius: 50%; border: 1px solid var(--uv); background: var(--well); color: var(--uv); font-size: 20px; display: grid; place-items: center; }
+.play:hover { background: rgba(169, 125, 255, 0.12); }
+.playing .play { background: var(--uv); color: var(--bg); box-shadow: 0 0 24px var(--uv-glow); }
+.ctl { padding: 12px 16px; border: 1px solid var(--line); background: var(--well); }
+.ctl:hover { border-color: var(--text); }
+.ctl:active { background: rgba(169, 125, 255, 0.12); }
+.ctl.accent { border-color: var(--out); color: var(--out); }
+.ctl.accent:hover { background: rgba(255, 61, 129, 0.12); }
+
+/* ---- the running order ------------------------------------------------- */
+.hint { margin: 0 0 12px; }
+.slots { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.slot { position: relative; border: 1px solid var(--line); background: var(--well); padding: 10px 12px; min-width: 0; transition: border-color 0.12s, background 0.12s; }
+.slot + .slot { margin-top: 22px; }
+.slot-main { display: grid; grid-template-columns: 2.2em 12px minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; min-width: 0; }
+.slot-main .no, .slot-main .swatch { grid-row: 1 / span 2; align-self: center; }
+.slot-main .acts { grid-column: 4; grid-row: 1 / span 2; }
+.slot-main .meta { grid-column: 3; grid-row: 2; }
+.slot .no { font: 500 13px/1 var(--mono); color: var(--dim); }
+.slot .swatch { width: 12px; height: 12px; border-radius: 2px; background: var(--c, var(--line)); }
+.slot .name { font: italic 400 21px/1.2 var(--serif); letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: baseline; gap: 10px; }
+.slot .name .pinned { font: 500 11px/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--uv); border: 1px solid var(--uv); padding: 2px 5px; }
+.slot .name .lock { font: 500 11px/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+.slot .meta { font: 400 13px/1.3 var(--mono); color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slot .acts { display: flex; gap: 6px; }
+.slot .acts button { width: 34px; height: 34px; border: 1px solid var(--line); background: var(--panel); display: grid; place-items: center; font-size: 13px; padding: 0; }
+.slot .acts button:hover { border-color: var(--text); }
+.slot .acts .go { color: var(--uv); border-color: var(--uv); }
+.slot .acts .go:hover { background: rgba(169, 125, 255, 0.14); }
+.slot .acts .clear { color: var(--dim); }
+
+.slot.past { opacity: 0.62; }
+.slot.cur { border-color: var(--uv); background: var(--panel); box-shadow: 0 0 0 1px var(--uv), 0 0 22px rgba(169, 125, 255, 0.18); }
+.slot.cur .no { color: var(--uv); }
+.slot.coming { border-color: var(--in); }
+.slot.coming .no { color: var(--in); }
+.slot.empty { opacity: 0.25; border-style: dashed; }
+.slot.empty .name { color: var(--dim); font-size: 16px; }
+
+/* A slot the style can be dropped on. */
+.slot.drop { border-style: dashed; border-color: var(--dim); }
+.slot.drop.over, .slots.armed .slot.drop:hover { border-style: solid; border-color: var(--uv); background: rgba(169, 125, 255, 0.1); }
+.slots.armed .slot.drop { cursor: copy; }
+.slots.armed .slot.locked, .slots.armed .slot.past, .slots.armed .slot.cur { cursor: not-allowed; }
+
+/* The hand-over to the next slot, hung between the two. */
+.handover { position: absolute; left: 14px; right: 14px; bottom: -22px; height: 22px; display: flex; align-items: center; gap: 10px; font: 500 11px/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); pointer-events: none; }
+.handover::before { content: ""; width: 1px; height: 22px; background: var(--line); margin-left: 4px; }
+.handover.live { color: var(--in); }
+.handover.live::before { background: var(--in); }
+.slot.last .handover { display: none; }
+.slot.last + .slot { margin-top: 0; }
+
+/* The playing track's phrases: click one to jump to it. */
+.phrases { display: flex; gap: 2px; height: 26px; margin-top: 10px; }
+.phrases i { flex: 1; min-width: 0; background: var(--panel); border-top: 3px solid var(--line); opacity: 0.6; cursor: pointer; position: relative; }
+.phrases i:hover { opacity: 1; background: rgba(169, 125, 255, 0.18); }
+.phrases i.in { border-top-color: var(--in); }
+.phrases i.body { border-top-color: var(--uv); }
+.phrases i.out { border-top-color: var(--out); }
+.phrases i.done { opacity: 0.9; }
+.phrases i.here { opacity: 1; background: rgba(169, 125, 255, 0.34); }
+.phrases i.x::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--out); }
+
+/* ---- the palette ------------------------------------------------------- */
+.palette { display: grid; gap: 8px; }
+.chip { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border: 1px solid var(--line); background: var(--well); cursor: grab; user-select: none; -webkit-user-select: none; }
+.chip:hover { border-color: var(--text); }
+.chip:active { cursor: grabbing; }
+.chip .sw { width: 14px; height: 14px; border-radius: 3px; background: var(--c, var(--dim)); }
+.chip .nm { font: italic 400 19px/1.2 var(--serif); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip .tp { font: 400 12px/1 var(--mono); color: var(--dim); white-space: nowrap; }
+.chip[aria-pressed="true"] { border-color: var(--uv); box-shadow: 0 0 0 1px var(--uv); background: rgba(169, 125, 255, 0.1); }
+.chip.auto .sw { background: transparent; border: 1px dashed var(--dim); }
+.chip.dragging { opacity: 0.45; }
+
+/* ---- the cam, small ---------------------------------------------------- */
+.cam.mini { margin: 0; }
+.cam.mini .cam-bar { padding: 8px 12px; align-items: center; }
+.cam.mini .screen { aspect-ratio: 16 / 9; }
+
+.desk { display: flex; flex-direction: column; gap: 10px; }
+.desk h2 { margin: 0; }
+.keys { margin: 0; }
+
+@media (max-width: 900px) {
+  .arr { padding: 16px 14px 40px; }
+  .arr main { grid-template-columns: minmax(0, 1fr); }
+  /* One column: transport, the styles to pick from, the running order, then the sound. */
+  .left, .right { display: contents; }
+  .transport-panel { order: 1; }
+  .palette-panel { order: 2; }
+  .order { order: 3; }
+  .desk { order: 4; }
+  .right > p { order: 5; }
+  .chip .tp { display: none; }
+  /* The cam stays in view in a corner while the list scrolls. */
+  .cam.mini { position: fixed; right: 10px; bottom: 10px; width: min(46vw, 240px); z-index: 20; background: var(--panel); }
+  .cam.mini .cam-bar { padding: 4px 8px; }
+  .transport-panel .readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .slot-main { grid-template-columns: 2em 10px minmax(0, 1fr) auto; }
+}

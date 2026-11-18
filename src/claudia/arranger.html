@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DJ Claudia: Arranger</title>
+    <meta name="description" content="Arrange DJ Claudia's set by hand: drag styles into the running order, jump by phrase, skip to the transition, and watch her work." />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#07060a" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="fonts/ibm-plex-mono-normal-500.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="arranger.css" />
+    <script type="module" src="arranger.js"></script>
+  </head>
+  <body>
+    <div class="arr">
+      <header class="bar-top">
+        <h1><span class="dj">DJ</span> <em>Claudia</em> <span class="tag mono">Arranger</span></h1>
+        <div class="session mono">
+          <label for="seed">Set</label>
+          <input id="seed" type="text" spellcheck="false" autocomplete="off" aria-label="Set seed" />
+          <button id="reseed" class="text" type="button" title="Start a new set with a random seed; hand-picked styles are cleared">New set</button>
+          <button id="share" class="text" type="button" title="Copy a link to this set, its hand-picked styles and this bar">Copy link</button>
+        </div>
+      </header>
+
+      <main>
+        <div class="left">
+          <section class="transport-panel" aria-label="Transport">
+            <div class="now mono">
+              <span class="onair"><i aria-hidden="true"></i><span id="state">Standby</span></span>
+              <span id="now-track">Track –</span>
+              <span id="now-style" class="dim"></span>
+              <span id="mix" class="mix" data-stage="">–</span>
+            </div>
+
+            <div class="readout">
+              <div><small class="mono">Bar</small><b><span id="bar">–</span> <span class="of" id="bars"></span></b></div>
+              <div><small class="mono">Phrase</small><b><span id="phrase">–</span> <span class="of" id="phrases"></span></b></div>
+              <div><small class="mono">BPM</small><b id="bpm">–</b></div>
+              <div><small class="mono">Next transition</small><b id="next-x">–</b></div>
+            </div>
+            <div class="pips" id="pips" aria-hidden="true" title="Bars of this phrase"></div>
+            <p class="transition mono" id="transition" aria-live="polite" hidden></p>
+
+            <div class="controls">
+              <button id="play" class="play" type="button" aria-label="Play" title="Play / pause (Space)"><span id="play-glyph" aria-hidden="true">▶</span></button>
+              <button id="back" class="ctl mono" type="button" title="Back a phrase (←)">◂ Phrase</button>
+              <button id="fwd" class="ctl mono" type="button" title="Forward a phrase (→)">Phrase ▸</button>
+              <button id="xfade" class="ctl mono accent" type="button" title="Skip to the deck transition (T)">⤓ Transition</button>
+            </div>
+          </section>
+
+          <section class="order" aria-labelledby="order-h">
+            <h2 class="mono" id="order-h">Running order</h2>
+            <p class="dim small hint" id="order-hint">Drag a style into a slot below, or click a style and then a slot. The set chooses the rest around it.</p>
+            <ol class="slots" id="slots"></ol>
+          </section>
+        </div>
+
+        <aside class="right">
+          <figure class="cam mini" aria-label="Booth cam">
+            <div class="screen" id="cam"></div>
+            <figcaption class="cam-bar">
+              <span class="mono dim">Booth cam</span>
+              <button id="cam-toggle" class="text mono" type="button" aria-pressed="true">Hide</button>
+            </figcaption>
+          </figure>
+
+          <section class="palette-panel" aria-labelledby="styles-h">
+            <h2 class="mono" id="styles-h">Styles</h2>
+            <div class="palette" id="palette"></div>
+            <p class="dim small">Drag onto a scheduled slot. <b>Auto</b> hands the slot back to the set.</p>
+          </section>
+
+          <section class="desk" aria-labelledby="sound-h">
+            <h2 class="mono" id="sound-h">Sound</h2>
+            <div class="engines" id="engines" role="radiogroup" aria-labelledby="sound-h"></div>
+            <p class="dim small" id="engine-desc"></p>
+            <label class="fader mono">Master <input id="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume" /></label>
+          </section>
+
+          <p class="keys mono dim">Space play · ← → phrase · T transition</p>
+          <p class="dim small" id="credits" hidden></p>
+          <p class="dim small">Claudia is an open character by <a href="https://claudia.gallery/">anabology (claudia.gallery)</a>. Video generated with Grok Imagine (AI-generated).</p>
+        </aside>
+      </main>
+    </div>
+  </body>
+</html>

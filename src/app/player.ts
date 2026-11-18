@@ -506,6 +506,13 @@ export class Player {
     this.head(landing);
   }
 
+  /** Jump to a bar of a piece; it plays right away. `solo`: a set's track plays alone from there, not inside its overlap with the one before. */
+  goToBar(piece: number, bar: number, solo = false): void {
+    const landing = this.conductor.seek(piece, bar, solo);
+    this.cut();
+    this.head(landing);
+  }
+
   /** Where the bars come from, for a page that reads more of its plans (the booth cam reads a set's). */
   get barSource(): BarSource {
     return this.conductor;

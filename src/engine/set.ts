@@ -95,7 +95,21 @@ interface Track {
   /** Nominal seconds into the set the track starts, and how long it runs (0 until built). */
   start: number;
   seconds: number;
+  /** Its length in bars (0 until built). */
+  bars: number;
   /** How it hands over to the next track, once that is chosen. */
+  out?: Transition;
+}
+
+/** Everything a page showing the set's running order needs about a track. */
+export interface TrackInfo extends TrackPlan {
+  index: number;
+  key: Key;
+  /** Length in bars. */
+  bars: number;
+  /** Whether the style was set by `pin` rather than by the set. */
+  pinned: boolean;
+  /** How it hands over to the next track (left out where `trackInfo` is asked not to look ahead). */
   out?: Transition;
 }
 
@@ -236,6 +250,10 @@ export class SetConductor implements BarSource {
   /** The set's legs so far, drawn as far as needed. */
   private readonly legs: Leg[] = [];
   private readonly wave: { period: number; phase: number };
+  /** Styles set by hand for a track: track index to style id. The set chooses the rest, around them. */
+  private readonly pins = new Map<number, string>();
+  /** The last track that bars generated since the latest seek depend on (the playing one, and the next once a transition is looked up). */
+  private reach = -1;
 
   /** Only styles in 4/4 are played; a set is 4/4. `opts` sets track lengths and expression; the frame, tempo and key are the set's. */
   constructor(styles: StyleBundle[], seed: string, opts: PieceOptions = DEFAULT_SET_OPTIONS) {
@@ -261,6 +279,42 @@ export class SetConductor implements BarSource {
   /** How track `i` hands over to the next, once both have been chosen (null before). */
   transitionPlan(i: number): Transition | null {
     return this.chosen[i]?.out ?? null;
+  }
+
+  /**
+   * Everything about track `i` for a running order: its style, key, tempo, length and, unless `handover` is false, how
+   * it hands over to the next track. Chooses and builds it, and the tracks before it (and the next, for the hand-over),
+   * if need be; once done it is only a lookup.
+   */
+  trackInfo(i: number, handover = true): TrackInfo {
+    const out = handover ? this.out(i) : undefined;
+    const t = this.track(i);
+    if (!t.bars) this.pieceOf(i);
+    return { index: i, styleId: t.style.id, bpm: t.bpm, lift: t.lift, target: t.target, start: t.start, seconds: t.seconds, bars: t.bars, key: t.key, pinned: this.pins.has(i), ...(out && { out }) };
+  }
+
+  /** The style set for track `i` by `pin`, if any. */
+  pinnedStyle(i: number): string | null {
+    return this.pins.get(i) ?? null;
+  }
+
+  /** The last track whose bars have been generated, or looked ahead to for its hand-over: its choice is settled. -1 before any. */
+  get settled(): number {
+    return this.reach;
+  }
+
+  /**
+   * Set track `i` to play style `styleId` (null: let the set choose again). The tracks after it are chosen anew, around
+   * it. Refused (false) for a track the bars already generated depend on (see `settled`), for an unknown style, and for
+   * a style the set is not playing.
+   */
+  pin(i: number, styleId: string | null): boolean {
+    if (!Number.isInteger(i) || i < 0 || i <= this.reach) return false;
+    if (styleId !== null && !this.styles.some((s) => s.id === styleId)) return false;
+    if (styleId === null) this.pins.delete(i);
+    else this.pins.set(i, styleId);
+    this.forget(i);
+    return true;
   }
 
   /** The `lift` the set's energy gives a track starting `seconds` in. */
@@ -292,6 +346,7 @@ export class SetConductor implements BarSource {
     if (this.start && !this.barIndex) {
       this.forget(0);
       this.trackIndex = 0;
+      this.reach = -1;
       this.a = this.inc = this.piece = null;
       return this.start();
     }
@@ -324,10 +379,11 @@ export class SetConductor implements BarSource {
 
   /**
    * Make the next bar be `barInPiece` of track `pieceIndex`, as `Conductor.seek` does. A bar in the track's
-   * overlap with the one before lands in that transition, with both playing.
+   * overlap with the one before lands in that transition, with both playing, unless `solo`: then the track plays
+   * alone from that bar, as the first track of a set does.
    */
-  seek(pieceIndex: number, barInPiece: number): Landing {
-    this.start = () => this.land(pieceIndex, () => barInPiece);
+  seek(pieceIndex: number, barInPiece: number, solo = false): Landing {
+    this.start = () => this.land(pieceIndex, () => barInPiece, solo);
     return this.start();
   }
 
@@ -371,6 +427,7 @@ export class SetConductor implements BarSource {
     }
     if (!this.inc && t && t.bars && a.bar >= t.start) this.inc = this.open(a.index + 1, t.enter + a.bar - t.start);
     const inc = this.inc;
+    this.reach = Math.max(this.reach, a.index + (t ? 1 : 0), inc?.index ?? -1);
     const index = this.barIndex++;
     const bpm = this.bpmAt(a, t);
     const out = deckOf(a.index);
@@ -514,6 +571,7 @@ export class SetConductor implements BarSource {
     piece = this.build(track, i);
     track.formId = piece.formId;
     track.seconds = piece.seconds;
+    track.bars = piece.totalBars;
     this.pieces.set(i, piece);
     // The playing track, the next, and one either side for a seek's look back.
     if (this.pieces.size > 4) this.pieces.delete(this.pieces.keys().next().value!);
@@ -531,14 +589,16 @@ export class SetConductor implements BarSource {
     return { index: i, piece, bar, carry };
   }
 
-  private land(pieceIndex: number, pick: (piece: Piece) => number): Landing {
+  private land(pieceIndex: number, pick: (piece: Piece) => number, solo = false): Landing {
     const target = clamp(pieceIndex, 0, MAX_SEEK_PIECE);
     const piece = this.pieceOf(target);
     const bar = clamp(pick(piece), 0, piece.totalBars - 1);
     this.inc = null;
+    // Only the tracks up to this one (and the hand-over into it) have been looked at since the bars before were thrown away.
+    this.reach = target;
     // In the overlap with the track before, both play: the next slice brings this one in over it.
     const before = target > 0 ? this.out(target - 1) : undefined;
-    if (before && bar >= before.enter && bar < before.enter + before.bars) this.a = this.open(target - 1, before.start + bar - before.enter);
+    if (!solo && before && bar >= before.enter && bar < before.enter + before.bars) this.a = this.open(target - 1, before.start + bar - before.enter);
     else this.a = this.open(target, bar);
     this.trackIndex = target + 1;
     const segments = piece.segments;
@@ -560,15 +620,16 @@ export class SetConductor implements BarSource {
     const step = (bpm: number) =>
       before ? Math.min(Math.max(bpm, Math.ceil(before.bpm * (1 - MAX_TEMPO_STEP))), Math.floor(before.bpm * (1 + MAX_TEMPO_STEP))) : bpm;
     const within = (s: StyleBundle, bpm: number) => Math.min(Math.max(bpm, s.corpus.tempo.min), s.corpus.tempo.max);
+    const pinned = this.styles.find((s) => s.id === this.pins.get(i));
     let style: StyleBundle;
     let bpm: number;
     if (!before) {
       // The first track is anywhere in its style; the set heads for the target from there.
-      style = rng.fork("style").pick(pool);
+      style = pinned ?? rng.fork("style").pick(pool);
       bpm = Math.round(rng.fork("tempo").float(style.corpus.tempo.min, style.corpus.tempo.max));
     } else {
       // The style that gets nearest the target in one step is the likeliest.
-      style = rng.fork("style").weighted(pool, (s) => 1 / (1 + Math.abs(step(within(s, target)) - target)));
+      style = pinned ?? rng.fork("style").weighted(pool, (s) => 1 / (1 + Math.abs(step(within(s, target)) - target)));
       bpm = step(Math.round(within(style, target + rng.fork("tempo").float(-1.5, 1.5))));
     }
     const key = chooseKey(style, before?.key, rng.fork("key"));
@@ -577,7 +638,7 @@ export class SetConductor implements BarSource {
       if (this.chosen[k]!.style.id === style.id) previousForm = this.chosen[k]!.formId;
     }
     const lift = Math.round(this.liftAt(start) * 1000) / 1000;
-    return { style, bpm, key, previousForm, formId: "", lift, target, start, seconds: 0 };
+    return { style, bpm, key, previousForm, formId: "", lift, target, start, seconds: 0, bars: 0 };
   }
 }
 

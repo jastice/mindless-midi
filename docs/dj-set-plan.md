@@ -1191,6 +1191,33 @@ The URL carries seed, position (`track.bar`) and style pool, as today.
 recording of the set as audio through `MediaRecorder` on the output. An
 offline render is not possible while the master is a Web Audio graph.
 
+### The manual arranger (2026-11-17)
+
+A second page on the same set, for working on it by hand rather than listening
+to it: `src/claudia/arranger.html`, served by `bazel run //src/claudia:serve_arranger`
+(http://localhost:8083). It is not part of `//src/claudia:site`, so it is
+not deployed.
+
+- **Running order.** Eight slots: the two tracks just played, the one playing and the next five, each with
+  style, key, tempo, length and how it hands over to the next (type, bars, tempo step).
+- **Styles into slots.** Drag a style from the palette into a scheduled slot (or click a style, then a slot).
+  `SetConductor.pin(i, styleId)` makes that track that style; the set chooses the tracks after it around it,
+  and `Auto` hands a slot back. A slot is refused once bars depend on it (`SetConductor.settled`: the playing
+  track, and the next from 32 bars before the playing track's end, where its hand-over is looked up).
+  Picks travel in the link as `pins=3:berlin_techno,5:minimal_techno` (tracks counted from 1).
+- **Play a track.** Each slot's button plays that track alone from its first bar (`seek(..., solo)`), with its own mix-in.
+- **Phrases.** <kbd>←</kbd> and <kbd>→</kbd> go back and forward a phrase of 8 bars: back restarts the phrase
+  once two bars of it have played; past a track's end or start it crosses to the next or previous track.
+  Clicking a phrase of the playing track's strip jumps to it.
+- **Transition.** <kbd>T</kbd> (or the button) jumps to where the playing track's hand-over begins (a phrase before it for
+  a cut, where the tempo starts to move), or to the next track's once that has begun.
+- **Booth cam.** The booth cam in a small window, following wherever the jumps land.
+
+The rules apart from the page (phrase steps, the transition target, the running order's indices, the pin link format)
+are in `arranger_model.ts`, tested in `arranger_model_test`, together with `pin` and `settled` on the conductor.
+Not done: moving a track from one slot to another, choosing a transition type or a tempo by hand, saving a
+running order apart from the link.
+
 ## Tests
 
 Composition is pure, so most of the design can be asserted without audio.

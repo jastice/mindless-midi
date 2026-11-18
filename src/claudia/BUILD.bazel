@@ -9,11 +9,51 @@ load("//bazel:ts.bzl", "ts_lib", "ts_test")
 # shared Player, with her own style pack and page. Synth and Samples only.
 ts_lib(
     name = "claudia",
-    srcs = [
-        "app.ts",
-        "booth.ts",
-    ],
+    srcs = ["app.ts"],
     deps = [
+        ":booth",
+        ":director",
+        "//src/app:player",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)
+
+# The booth cam: the director's clips on two video layers, kept in time by the Player's clock.
+ts_lib(
+    name = "booth",
+    srcs = ["booth.ts"],
+    deps = [
+        ":director",
+        "//src/app:player",
+    ],
+)
+
+# The manual arranger (arranger.html), a second page on the same set: its rules, apart from the DOM, are pure.
+ts_lib(
+    name = "arranger_model",
+    srcs = ["arranger_model.ts"],
+    deps = ["//src/engine"],
+)
+
+ts_test(
+    name = "arranger_model_test",
+    src = "arranger_model.test.ts",
+    data = ["//styles:claudia"],
+    deps = [
+        ":arranger_model",
+        "//src/corpus",
+        "//src/engine",
+    ],
+)
+
+ts_lib(
+    name = "arranger",
+    srcs = ["arranger.ts"],
+    deps = [
+        ":arranger_model",
+        ":booth",
         ":director",
         "//src/app:player",
         "//src/corpus",
@@ -59,32 +99,53 @@ esbuild(
     deps = [":claudia"],
 )
 
+esbuild(
+    name = "arranger_bundle",
+    config = {
+        "entryNames": "[name]",
+        "legalComments": "linked",
+    },
+    entry_points = [":arranger.js"],
+    format = "esm",
+    minify = True,
+    output_dir = True,
+    sourcemap = "linked",
+    target = "es2022",
+    deps = [":arranger"],
+)
+
 stamp_build_info(
     name = "index_html",
     src = "index.html",
     out = "stamped/index.html",
 )
 
-# The complete static site. Her pack is served as styles.json and its samples
-# as samples/, where the page and the Player look for them.
+# What every page of hers needs. Her pack is served as styles.json and its
+# samples as samples/, where the pages and the Player look for them.
+SITE_FILES = glob(["clips/*"]) + [
+    "clips.json",
+    "favicon.svg",
+    "styles.css",
+    "//src/app:fonts",
+    "//src/sound:render_worker",
+    "//src/sound:stem_worklet",
+    "//styles:claudia",
+    "//styles:claudia_samples",
+]
+
+SITE_PREFIXES = {
+    "claudia.json": "styles.json",
+    "claudia_samples": "samples",
+}
+
+# The complete static site.
 copy_to_directory(
     name = "site",
-    srcs = glob(["clips/*"]) + [
-        "clips.json",
-        "favicon.svg",
-        "styles.css",
+    srcs = SITE_FILES + [
         ":bundle",
         ":index_html",
-        "//src/app:fonts",
-        "//src/sound:render_worker",
-        "//src/sound:stem_worklet",
-        "//styles:claudia",
-        "//styles:claudia_samples",
     ],
-    replace_prefixes = {
-        "claudia.json": "styles.json",
-        "claudia_samples": "samples",
-    },
+    replace_prefixes = SITE_PREFIXES,
     root_paths = [
         "src/claudia/bundle",
         "src/claudia/stamped",
@@ -94,6 +155,28 @@ copy_to_directory(
         "styles",
     ],
     visibility = ["//visibility:public"],
+)
+
+# The arranger's own site, for working on a set: the same files with arranger.html as its index. Not deployed.
+copy_to_directory(
+    name = "arranger_site",
+    srcs = SITE_FILES + [
+        "arranger.css",
+        "arranger.html",
+        ":arranger_bundle",
+    ],
+    replace_prefixes = {
+        "claudia.json": "styles.json",
+        "claudia_samples": "samples",
+        "arranger.html": "index.html",
+    },
+    root_paths = [
+        "src/claudia/arranger_bundle",
+        "src/claudia",
+        "src/app",
+        "src/sound",
+        "styles",
+    ],
 )
 
 # bazel run //src/claudia:serve  ->  http://localhost:8082
@@ -110,6 +193,22 @@ js_binary(
     ],
     entry_point = "//tools/serve:serve.js",
     env = {"PORT": "8082"},
+)
+
+# bazel run //src/claudia:serve_arranger  ->  http://localhost:8083
+js_binary(
+    name = "serve_arranger",
+    args = [
+        "src/claudia/arranger_site",
+        "samples=styles/claudia_samples_superset",
+    ],
+    data = [
+        ":arranger_site",
+        "//styles:claudia_samples_superset",
+        "//tools/serve:serve_lib",
+    ],
+    entry_point = "//tools/serve:serve.js",
+    env = {"PORT": "8083"},
 )
 
 # bazel run //src/claudia:deploy [-- --dry-run]

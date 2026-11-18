@@ -36,6 +36,15 @@
         "//src/claudia:serve"
       ],
       "port": 8082
+    },
+    {
+      "name": "arranger",
+      "runtimeExecutable": "bazel",
+      "runtimeArgs": [
+        "run",
+        "//src/claudia:serve_arranger"
+      ],
+      "port": 8083
     }
   ]
 }
