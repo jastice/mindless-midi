@@ -258,6 +258,22 @@ export const Moves = z
   .describe("Changes to the sound that are not notes, for a style with `parts`. Restraint: few, long moves.");
 export type Moves = z.infer<typeof Moves>;
 
+export const NameTheme = z
+  .object({
+    patterns: z
+      .array(z.string().min(1))
+      .min(1)
+      .describe("How a title is built: text with `{list}` slots, each filled from the list of that name, e.g. \"{word} {num}\" or \"{head}{tail}\". A pattern without slots is a title as it stands."),
+    lists: z
+      .record(z.string().regex(/^[a-z]+$/, "lower-case letters"), z.array(z.string().min(1)).min(1))
+      .describe("The word lists the patterns name, by slot name. Every list is used by some pattern."),
+  })
+  .describe(
+    "How this style titles its tracks, as records of the genre are titled: the set picks one title per track from every combination of the patterns, " +
+      "without repeats until all have been used. Keep it typical of the genre, and large (at least 100 titles).",
+  );
+export type NameTheme = z.infer<typeof NameTheme>;
+
 export const StyleCorpus = z.object({
   title: z.string(),
   description: z.string().describe("One or two evocative sentences shown in the UI."),
@@ -294,6 +310,12 @@ export const StyleCorpus = z.object({
     ),
   arrangement: Arrangement.optional().describe("Rates for a style with `parts`. Omit for the defaults."),
   moves: Moves.optional().describe("Sweeps, builds, risers and stutters, for a style with `parts`. Omit for none."),
+  names: NameTheme.optional().describe("Track titles for a set of this style. Omit to title tracks by the style's title and a number."),
+  authors: z
+    .array(z.string().min(1))
+    .min(1)
+    .optional()
+    .describe("Who wrote the style, as the page credits it (e.g. the models in the commits that wrote it). Written by hand; omit in a generated corpus."),
   synthKit: Kit.optional().describe(
     "The style's own modelled drum machine, played by the drums role in the synth. Omit for the stock kit. (The sampled kit is not written here: it is a `sample_kit` in the style's BUILD file.)",
   ),

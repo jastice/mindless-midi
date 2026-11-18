@@ -62,6 +62,8 @@ CLAUDIA_STYLES = [
     "berlin_techno",
     "psychedelic_house",
     "big_beat",
+    "big_beat_razor_breaks",
+    "electro",
 ]
 
 style_pack(

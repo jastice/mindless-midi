@@ -1,6 +1,80 @@
 {
   "title": "Psychedelic House",
   "description": "A round kick and a bass that answers it, congas on the key, and an acid line that slides and squelches while its filter drifts for minutes.",
+  "authors": [
+    "Claude Fable 5.2"
+  ],
+  "names": {
+    "patterns": [
+      "{adj} {noun}",
+      "{thing} {prep} {place}"
+    ],
+    "lists": {
+      "adj": [
+        "Slow",
+        "Golden",
+        "Lilac",
+        "Amber",
+        "Velvet",
+        "Honey",
+        "Saffron",
+        "Indigo",
+        "Warm",
+        "Endless",
+        "Distant",
+        "Sacred",
+        "Liquid",
+        "Morning",
+        "Midnight",
+        "Violet"
+      ],
+      "noun": [
+        "Bloom",
+        "Hours",
+        "Tide",
+        "Garden",
+        "Fire",
+        "River",
+        "Sun",
+        "Moon",
+        "Prayer",
+        "Circle",
+        "Dance",
+        "Rain",
+        "Light",
+        "Spiral",
+        "Orchard",
+        "Shore"
+      ],
+      "thing": [
+        "Sun",
+        "Moon",
+        "Light",
+        "Stars",
+        "Rain",
+        "Colour",
+        "Fire",
+        "Gold"
+      ],
+      "prep": [
+        "Through",
+        "Over",
+        "Under",
+        "Behind",
+        "Beyond"
+      ],
+      "place": [
+        "Smoke",
+        "Water",
+        "Leaves",
+        "Glass",
+        "Sand",
+        "Clouds",
+        "Petals",
+        "Hills"
+      ]
+    }
+  },
   "tempo": {
     "min": 118,
     "max": 126

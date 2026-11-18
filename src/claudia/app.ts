@@ -3,27 +3,37 @@
  * compatible key and within a few percent of the last tempo, mixed into the
  * next on two decks. The set conductor makes the bars; the shared Player
  * plays them for weight, with the Synth or Samples engine.
+ *
+ * The page is the booth cam with a HUD on it: the tracklist (titles from each
+ * style's name theme), the two decks with a lane of the next phrases, and the
+ * transport. The set's name, its styles and the credits sit under the video.
  */
 import { mediaAnchor } from "../app/media_anchor.js";
 import { EXPRESSION, type Engine, Player, type Position, type TimedBar } from "../app/player.js";
-import { ROLES } from "../corpus/constants.js";
+import { trackName } from "../corpus/names.js";
 import type { StyleBundle } from "../corpus/schema.js";
-import { DEFAULT_SET_OPTIONS, MIX_BARS, PHRASE_BARS, SetConductor } from "../engine/set.js";
-import { type Bar, type TransitionType, barSeconds } from "../engine/types.js";
-import { randomSeed } from "../theory/seed.js";
+import { BLEND_BARS, DEFAULT_SET_OPTIONS, PHRASE_BARS, SetConductor } from "../engine/set.js";
+import { type Bar, type BarInfo, type TransitionType, barSeconds } from "../engine/types.js";
 import { BoothCam } from "./booth.js";
 import type { ClipSet } from "./director.js";
+import { type DeckLane, LANE_PHRASES, type Lanes, type Seg, deckLanes } from "./lanes.js";
+import { setName } from "./set_name.js";
 
-const ENGINES: { id: Engine; label: string; desc: string }[] = [
-  { id: "synth", label: "Synth", desc: "Modelled sounds, nothing to download." },
-  { id: "samples", label: "Samples", desc: "Recorded one-shots and instruments, downloaded as the set needs them." },
+const ENGINES: { id: Engine; label: string }[] = [
+  { id: "synth", label: "Synth" },
+  { id: "samples", label: "Samples" },
 ];
-
-const ROLE_LABELS: Record<(typeof ROLES)[number], string> = { drums: "Drums", bass: "Bass", comp: "Stab", pad: "Pad", arp: "Arp", counter: "Counter", lead: "Lead" };
-/** Drums first and lead last: the order a mix-in brings parts in. */
-const LIGHTS = ["drums", "bass", "comp", "pad", "arp", "counter", "lead"] as const;
+const MIX_LABEL: Record<TransitionType, string> = { blend: "Blend", filter: "Filter", cut: "Cut", breakdown: "Breakdown" };
+const DECK_LETTER = ["A", "B"] as const;
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+
+function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
 
 const store = {
   get(key: string): string | null {
@@ -60,44 +70,73 @@ const clock = (s: number) => {
   const ss = String(t % 60).padStart(2, "0");
   return h ? `${h}:${String(m).padStart(2, "0")}:${ss}` : `${m}:${ss}`;
 };
+const no = (piece: number) => String(piece + 1).padStart(2, "0");
 
-/** Where a bar sits in its track's mix: coming in, the body, or going out. */
-function mixStage(barInPiece: number, pieceBars: number): "in" | "body" | "out" {
-  if (barInPiece < MIX_BARS) return "in";
-  if (pieceBars - barInPiece <= MIX_BARS) return "out";
-  return "body";
-}
-const STAGE_LABEL = { in: "Mix-in", body: "Body", out: "Mix-out" };
-const TRANSITION_LABEL: Record<TransitionType, string> = { blend: "Blend", filter: "Filter", cut: "Cut", breakdown: "Breakdown" };
-/** A tempo as it reads: whole, or to a tenth while it ramps from one track's to the next. */
-const tempo = (bpm: number) => (Number.isInteger(bpm) ? String(bpm) : bpm.toFixed(1));
+/** "A", "A and B", "A, B and C". */
+const andList = (xs: readonly string[]) => (xs.length < 2 ? (xs[0] ?? "") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`);
 
 function toast(text: string): void {
-  const el = document.createElement("div");
-  el.className = "toast";
-  el.textContent = text;
-  document.body.append(el);
-  setTimeout(() => el.remove(), 2200);
+  const t = el("div", "toast", text);
+  t.setAttribute("role", "status");
+  document.body.append(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+/** A lane segment's look: violet for the deck playing now (or going out), white for the one coming in. */
+function paintSeg(i: HTMLElement, seg: Seg, later: boolean): void {
+  const rgb = later ? "237,237,239" : "176,140,255";
+  i.className = seg.state === "idle" ? "idle" : seg.state;
+  const alpha = seg.state === "on" ? (later ? 0.85 : 1) : seg.state === "out" ? 0.1 + 0.6 * (1 - seg.level) : seg.state === "in" ? 0.2 + 0.6 * seg.level : 0;
+  i.style.background = seg.state === "idle" ? "" : `rgba(${rgb},${alpha.toFixed(2)})`;
+}
+
+/** A lane in words, for screen readers: "Deck A: plays 2 phrases, then goes out over 2". */
+function laneWords(d: DeckLane): string {
+  const WORD: Record<Seg["state"], string> = { on: "plays", out: "goes out over", in: "comes in over", idle: "idle for" };
+  const runs: [Seg["state"], number][] = [];
+  for (const s of d.segs) {
+    const last = runs[runs.length - 1];
+    if (last && last[0] === s.state) last[1]++;
+    else runs.push([s.state, 1]);
+  }
+  return `Deck ${DECK_LETTER[d.deck]}, next ${d.segs.length} phrases: ${runs.map(([s, n], k) => `${WORD[s]} ${n}${k ? "" : ` phrase${n === 1 ? "" : "s"}`}`).join(", then ")}`;
+}
+
+/** A track heard in this session, and where in the set it began (seconds of set time). */
+interface Heard {
+  piece: number;
+  styleId: string;
+  styleTitle: string;
+  at: number;
 }
 
 async function main(): Promise<void> {
   const res = await fetch(new URL("styles.json", document.baseURI));
   const { styles } = (await res.json()) as { styles: StyleBundle[] };
+  const styleById = new Map(styles.map((s) => [s.id, s]));
+  const allIds = styles.map((s) => s.id);
 
-  // The URL is the session (seed, place, sound); a bare visit resumes the last one.
+  // The URL is the session (seed, place, sound, styles); a bare visit resumes the last one.
   const params = new URLSearchParams(location.search);
   const linked = params.get("seed");
   const savedSeed = linked ? null : store.get("seed");
-  const seed = linked || savedSeed || randomSeed();
+  const seed = linked || savedSeed || setName();
   const at = parseAt(linked ? params.get("at") : savedSeed ? store.get("at") : null);
   const volume = Number(store.get("volume") ?? "0.8");
   const wantedEngine = params.get("sound") ?? store.get("sound") ?? "synth";
   const engine: Engine = ENGINES.some((e) => e.id === wantedEngine) ? (wantedEngine as Engine) : "synth";
+  const parseStyles = (s: string | null) => {
+    const want = (s ?? "").split(",").filter((id) => allIds.includes(id));
+    return want.length ? allIds.filter((id) => want.includes(id)) : null;
+  };
+  // A link without `styles` is a set from all of them.
+  let chosen: string[] = parseStyles(linked ? params.get("styles") : store.get("styles")) ?? allIds;
+  const pool = () => styles.filter((s) => chosen.includes(s.id));
 
-  // The set conductor the player plays from, for each track's own tempo.
+  // The set conductor the player plays from, for the set's plans.
   let conductor: SetConductor | null = null;
-  const player = new Player(styles, {
-    source: (pool, s, pieces) => (conductor = new SetConductor(pool, s, { ...pieces, ...DEFAULT_SET_OPTIONS })),
+  const player = new Player(pool(), {
+    source: (p, s, pieces) => (conductor = new SetConductor(p, s, { ...pieces, ...DEFAULT_SET_OPTIONS })),
     seed,
     ...(at && { at }),
     engine,
@@ -108,6 +147,10 @@ async function main(): Promise<void> {
     decks: true,
   });
   player.setVolume(volume);
+  const titleOf = (piece: number, styleId: string) => {
+    const style = styleById.get(styleId);
+    return style ? trackName(style, player.seed, piece) : `Track ${piece + 1}`;
+  };
 
   // --- Booth cam ----------------------------------------------------------
   // Clips ship with the site at clips/ (bazel run //tools/clips:prep); ?clips= points elsewhere.
@@ -123,11 +166,11 @@ async function main(): Promise<void> {
     console.warn("booth cam unavailable", err);
   }
   const camToggle = $<HTMLButtonElement>("cam-toggle");
-  $("cam").parentElement!.hidden = !booth;
+  camToggle.hidden = !booth;
   function renderCam(on: boolean): void {
     booth?.setEnabled(on);
     camToggle.setAttribute("aria-pressed", String(on));
-    camToggle.textContent = on ? "Hide booth cam" : "Show booth cam";
+    camToggle.querySelector(".cam-label")!.textContent = on ? "Cam on" : "Cam off";
   }
   let camOn = store.get("booth") !== "off";
   renderCam(camOn);
@@ -136,25 +179,24 @@ async function main(): Promise<void> {
     store.set("booth", camOn ? "on" : "off");
     renderCam(camOn);
   });
-  Object.assign(window, { djClaudia: { player, styles, booth } });
+  Object.assign(window, { djClaudia: { player, styles, booth, conductor: () => conductor } });
 
   // --- Sound --------------------------------------------------------------
   const chipFor = new Map<Engine, HTMLButtonElement>();
   for (const e of ENGINES) {
-    const chip = document.createElement("button");
+    const chip = el("button", "engine");
     chip.type = "button";
-    chip.className = "engine";
     chip.setAttribute("role", "radio");
-    chip.innerHTML = `<span class="led" aria-hidden="true"></span><span class="nm"></span><span class="fill" aria-hidden="true"></span>`;
-    chip.querySelector(".nm")!.textContent = e.label;
+    chip.append(el("span", "nm", e.label), el("span", "fill"));
+    chip.querySelector(".fill")!.setAttribute("aria-hidden", "true");
     chip.addEventListener("click", () => {
       void player.setEngine(e.id);
-      remember();
+      persist();
     });
     chipFor.set(e.id, chip);
     $("engines").append(chip);
   }
-  const mb = (b: number) => `${(b / 1e6).toFixed(1)} MB`;
+  let creditCount = -1;
   function renderEngine(): void {
     const pending = player.pendingEngine;
     const shown = player.audibleEngine;
@@ -163,20 +205,25 @@ async function main(): Promise<void> {
     for (const [id, chip] of chipFor) {
       chip.setAttribute("aria-checked", String(id === shown));
       chip.classList.toggle("pending", id === pending);
-      chip.style.setProperty("--progress", id === loading && progress !== null ? String(progress) : "0");
+      const filling = id === loading && progress !== null;
+      chip.style.setProperty("--progress", filling ? String(progress) : "0");
+      if (filling) chip.setAttribute("aria-label", `${ENGINES.find((x) => x.id === id)!.label}, loading ${Math.round(progress * 100)}%`);
+      else chip.removeAttribute("aria-label");
       chip.tabIndex = id === shown ? 0 : -1;
     }
-    let desc = player.loading ? "Loading samples…" : (ENGINES.find((x) => x.id === shown)?.desc ?? "");
-    if (pending) {
-      const label = ENGINES.find((x) => x.id === pending)!.label;
-      const { bytes, rate } = player.downloads;
-      const when = player.switchIn;
-      desc = when === null ? `Getting ${label} ready: ${mb(bytes)} down${rate ? ` at ${mb(rate)}/s` : ""}. It takes over on a phrase.` : `${label} takes over in ${Math.ceil(when)} s.`;
-    }
-    $("engine-desc").textContent = desc;
-    const credits = player.sampleCredits;
-    $("credits").hidden = !credits.length;
-    if (credits.length) $("credits").textContent = `Sampled instruments: ${credits.join(", ")}.`;
+    // Samples heard so far, each linked to where its licence was read.
+    const credits = player.sampleCreditEntries;
+    if (credits.length === creditCount) return;
+    creditCount = credits.length;
+    const p = $("credit-samples");
+    p.hidden = !credits.length;
+    p.replaceChildren("Samples heard so far: ");
+    credits.forEach((c, k) => {
+      const a = el("a", undefined, c.name);
+      a.href = c.source;
+      p.append(...(k ? [", "] : []), a, ` (${c.licence})`);
+    });
+    p.append(".");
   }
   $("engines").addEventListener("keydown", (ev) => {
     if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") return;
@@ -185,8 +232,59 @@ async function main(): Promise<void> {
     const next = ENGINES[(i + 1) % ENGINES.length]!;
     void player.setEngine(next.id);
     chipFor.get(next.id)?.focus();
-    remember();
+    persist();
   });
+
+  // --- Credits: who wrote the styles, from their own data ---------------------
+  {
+    const byAuthors = new Map<string, { authors: string[]; titles: string[] }>();
+    for (const s of styles) {
+      const authors = s.corpus.authors;
+      if (!authors?.length) continue;
+      const key = authors.join("\n");
+      const g = byAuthors.get(key) ?? { authors, titles: [] };
+      g.titles.push(s.corpus.title);
+      byAuthors.set(key, g);
+    }
+    const groups = [...byAuthors.values()];
+    if (groups.length) {
+      const claude = groups.every((g) => g.authors.every((a) => a.startsWith("Claude ")));
+      $("credit-styles").textContent =
+        `Every track is composed in this tab as it plays. The styles it draws on were written by ${claude ? "Claude" : "their authors"}: ` +
+        `${groups.map((g) => `${andList(g.titles)} by ${andList(g.authors)}`).join(", ")}.`;
+    }
+  }
+
+  // --- Styles -------------------------------------------------------------
+  const styleBtns = new Map<string, HTMLButtonElement>();
+  for (const s of styles) {
+    const b = el("button", "style-btn");
+    b.type = "button";
+    b.append(el("span", "box"), s.corpus.title);
+    b.querySelector(".box")!.setAttribute("aria-hidden", "true");
+    b.addEventListener("click", () => {
+      const on = chosen.includes(s.id);
+      if (on && chosen.length === 1) return toast("At least one style stays on");
+      chosen = on ? chosen.filter((id) => id !== s.id) : allIds.filter((id) => id === s.id || chosen.includes(id));
+      store.set("styles", chosen.join(","));
+      player.setStyles(pool(), { fromNext: true });
+      renderStyles();
+      persist();
+      lastKey = "";
+    });
+    styleBtns.set(s.id, b);
+    $("styles").append(b);
+  }
+  function renderStyles(): void {
+    for (const [id, b] of styleBtns) {
+      const on = chosen.includes(id);
+      b.setAttribute("aria-pressed", String(on));
+      const last = on && chosen.length === 1;
+      b.classList.toggle("last", last);
+      b.title = last ? "At least one style stays on" : "";
+    }
+  }
+  renderStyles();
 
   // --- Session ------------------------------------------------------------
   const seedInput = $<HTMLInputElement>("seed");
@@ -197,14 +295,12 @@ async function main(): Promise<void> {
     const here = player.position();
     if (here.piece || here.bar) u.searchParams.set("at", formatAt(here));
     if (player.engine !== "synth") u.searchParams.set("sound", player.engine);
+    if (chosen.length < allIds.length) u.searchParams.set("styles", chosen.join(","));
     return u.href;
-  }
-  function remember(): void {
-    store.set("sound", player.engine);
-    persist();
   }
   function persist(): void {
     store.set("sound", player.engine);
+    store.set("styles", chosen.join(","));
     if (player.started) {
       store.set("seed", player.seed);
       store.set("at", formatAt(player.position()));
@@ -214,6 +310,7 @@ async function main(): Promise<void> {
   persist();
   addEventListener("pagehide", persist);
   seedInput.value = seed;
+  $("set-tag").textContent = seed;
   $("share").addEventListener("click", () => {
     navigator.clipboard?.writeText(shareUrl()).then(
       () => toast("Link copied: same set, same bar"),
@@ -223,14 +320,13 @@ async function main(): Promise<void> {
   function newSet(s: string): void {
     player.reseed(s);
     seedInput.value = player.seed;
-    tracklist.length = 0;
-    setStart = null;
-    $("tracks").replaceChildren();
-    lastKey = "";
+    $("set-tag").textContent = player.seed;
+    heard.length = 0;
+    setClock = null;
     after();
   }
   $("reseed").addEventListener("click", () => {
-    newSet(randomSeed());
+    newSet(setName());
     toast(`New set: ${player.seed}`);
   });
   seedInput.addEventListener("change", () => {
@@ -255,7 +351,7 @@ async function main(): Promise<void> {
   playBtn.addEventListener("click", toggle);
   function after(): void {
     lastKey = "";
-    describe(player.current());
+    describe();
     renderSkip();
     persist();
   }
@@ -264,228 +360,215 @@ async function main(): Promise<void> {
     after();
   }
   $("skip").addEventListener("click", skip);
-  const vol = $<HTMLInputElement>("volume");
-  vol.value = String(volume);
-  vol.addEventListener("input", () => {
-    player.setVolume(Number(vol.value));
-    store.set("volume", vol.value);
-  });
   document.addEventListener("keydown", (e) => {
     if (e.defaultPrevented || e.repeat || e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.code === "Space") {
+      if (e.target instanceof HTMLButtonElement) return; // the button's own click
       e.preventDefault();
       void toggle();
-    } else if (e.key === "n" || e.key === "N" || e.key === "ArrowRight") skip();
+    } else if (e.key === "n" || e.key === "N") skip();
   });
   if ("mediaSession" in navigator) {
     navigator.mediaSession.setActionHandler("play", () => void player.play());
     navigator.mediaSession.setActionHandler("pause", () => void player.pause());
     navigator.mediaSession.setActionHandler("nexttrack", skip);
   }
-
   function renderSkip(): void {
     const s = player.skipping;
     const btn = $("skip");
     btn.classList.toggle("armed", s !== null);
     btn.title = s ? "Go to the next track now (N)" : "Next track, on the next phrase (N)";
-    $("skip-note").textContent = s
-      ? s.in === null
-        ? `Track ${s.piece + 1} comes in on the next phrase. Press again to cut now.`
-        : `Track ${s.piece + 1} in ${Math.ceil(s.in)} s, on the phrase.`
-      : player.started
-        ? ""
-        : `Starts at track ${player.position().piece + 1}, bar ${player.position().bar + 1}.`;
   }
 
   // --- The decks ----------------------------------------------------------
-  // Each deck shows its track and one light per part where its style has parts (lit while the arrangement grid has
-  // the part in), else one per role. The deck with the low end is the one the big readout follows.
-  const decks = ([0, 1] as const).map((d) => {
-    const el = $(`deck-${d}`);
-    return { el, roles: el.querySelector<HTMLElement>(".roles")!, lights: new Map<string, HTMLElement>(), lightsFor: "" };
+  const deckRows = ([0, 1] as const).map((d) => {
+    const row = $(`deck-${d}`);
+    const badge = el("span", "badge", DECK_LETTER[d]);
+    badge.setAttribute("aria-label", `Deck ${DECK_LETTER[d]}`);
+    const info = el("div", "dk-info");
+    const style = el("span", "dk-style");
+    const status = el("span", "dk-status");
+    info.append(style, status);
+    const lane = el("div", "lane");
+    lane.setAttribute("role", "img");
+    const segs = Array.from({ length: LANE_PHRASES }, () => lane.appendChild(el("i")));
+    row.append(badge, info, lane);
+    return { row, badge, style, status, lane, segs };
   });
-  function setLights(deck: (typeof decks)[number], names: readonly string[], label: (name: string) => string): void {
-    if (names.join() === deck.lightsFor) return;
-    deck.lightsFor = names.join();
-    deck.lights.clear();
-    deck.roles.replaceChildren();
-    for (const name of names) {
-      const el = document.createElement("span");
-      el.className = "light";
-      el.innerHTML = `<i aria-hidden="true"></i>`;
-      el.append(label(name));
-      deck.lights.set(name, el);
-      deck.roles.append(el);
-    }
-  }
-  /** What the two decks hold in the bar heard now: the bar's own, and in a transition the other beside it. */
-  function renderDecks(bar: Bar): void {
-    const t = bar.transition;
-    for (const [d, deck] of decks.entries()) {
-      const own = (bar.deck ?? 0) === d ? bar : bar.with?.deck === d ? bar.with : undefined;
-      deck.el.classList.toggle("live", own !== undefined);
-      deck.el.classList.toggle("dominant", own === bar);
-      const set = (cls: string, text: string) => (deck.el.querySelector(cls)!.textContent = text);
-      if (!own) {
-        set(".dc-track", "");
-        set(".dc-tag", "Idle");
-        set(".dc-meta", "–");
-        deck.el.dataset.role = "";
-        for (const el of deck.lights.values()) el.classList.remove("on");
-        continue;
-      }
-      const i = own.info;
-      const coming = t !== undefined && i.pieceIndex === t.to;
-      deck.el.dataset.role = own === bar ? "" : coming ? "in" : "out";
-      set(".dc-track", `Track ${i.pieceIndex + 1}`);
-      set(".dc-tag", own === bar ? (bar.with ? "Low end" : "On air") : coming ? "Coming in" : "Going out");
-      set(".dc-meta", `${tempo(own.bpm)} bpm · ${i.keyName} · ${i.styleTitle}`);
-      const parts = styles.find((s) => s.id === i.styleId)?.corpus.parts;
-      if (parts) setLights(deck, parts.map((p) => p.id), (id) => id);
-      else setLights(deck, LIGHTS, (role) => ROLE_LABELS[role as (typeof ROLES)[number]]);
-      const sounding = new Set<string>(parts ? (i.parts ?? []).filter((id) => !i.thin?.includes(id)) : own.notes.map((n) => n.role));
-      for (const [name, el] of deck.lights) el.classList.toggle("on", sounding.has(name));
-    }
-    // The transition in progress, counted down from the bar's own data.
-    const line = $("transition");
-    line.hidden = !t;
-    if (t) {
-      const left = t.bars - t.bar;
-      const swap = t.type === "cut" ? ` · cut in ${left} bar${left === 1 ? "" : "s"}` : t.bar < t.swap ? ` · bass swap in ${t.swap - t.bar}` : "";
-      line.textContent = `${TRANSITION_LABEL[t.type]} into track ${t.to + 1} · bar ${t.bar + 1} of ${t.bars}, ${left} left${swap}`;
-    }
-  }
-  const pips = [...Array(PHRASE_BARS)].map(() => {
-    const el = document.createElement("i");
-    $("pips").append(el);
-    return el;
-  });
-  const beats = [...Array(4)].map(() => {
-    const el = document.createElement("i");
-    $("beats").append(el);
-    return el;
-  });
+  const barPips = Array.from({ length: PHRASE_BARS }, () => $("bars").appendChild(el("i")));
 
-  let stripKey = "";
-  function renderStrip(info: TimedBar["bar"]["info"]): void {
-    const phrases = Math.ceil(info.pieceBars / PHRASE_BARS);
-    const key = `${info.pieceSeed}`;
-    const strip = $("strip");
-    if (key !== stripKey) {
-      stripKey = key;
-      strip.replaceChildren(
-        ...[...Array(phrases)].map((_, p) => {
-          const el = document.createElement("i");
-          el.className = mixStage(p * PHRASE_BARS, info.pieceBars);
-          return el;
-        }),
-      );
+  function renderDecks(lanes: Lanes, styleOf: (piece: number) => string | undefined): void {
+    for (const d of lanes.decks) {
+      const r = deckRows[d.deck]!;
+      r.row.classList.toggle("dominant", d.dominant);
+      r.badge.classList.toggle("on", d.dominant && d.role !== "idle");
+      r.style.textContent = d.piece === null ? "–" : (styleOf(d.piece) ?? "–");
+      let status = "Idle";
+      let cls = "";
+      if (d.role === "air") [status, cls] = player.playing ? ["On air", "air"] : ["Paused", ""];
+      else if (d.role === "out") [status, cls] = ["Going out", "moving"];
+      else if (d.role === "in") [status, cls] = ["Coming in", "moving"];
+      else if (d.role === "cued" && d.piece !== null) status = `Cued · track ${no(d.piece)}`;
+      r.status.textContent = status;
+      r.status.className = `dk-status ${cls}`;
+      const later = d.role === "in" || d.role === "cued";
+      d.segs.forEach((s, k) => paintSeg(r.segs[k]!, s, later));
+      r.lane.setAttribute("aria-label", laneWords(d));
     }
-    const here = Math.floor(info.barInPiece / PHRASE_BARS);
-    [...strip.children].forEach((el, p) => {
-      el.classList.toggle("done", p < here);
-      el.classList.toggle("here", p === here);
+    const where = `Phrase ${lanes.phrase + 1} · Bar ${lanes.barInPhrase + 1}`;
+    $("where").textContent = where;
+    $("where-narrow").textContent = where;
+    barPips.forEach((p, k) => {
+      p.classList.toggle("done", k < lanes.barInPhrase);
+      p.classList.toggle("here", k === lanes.barInPhrase);
     });
+    const axis = $("axis");
+    axis.replaceChildren();
+    // The label is wider than one phrase: it hangs toward the side with room, so "Now" shows only clear of it.
+    const mix = lanes.mix;
+    if (!mix || mix.from > 1) axis.append(el("span", undefined, "Now"));
+    if (mix) {
+      const m = el("span", "mix", MIX_LABEL[mix.type]);
+      m.style.gridColumn = `${mix.from + 1} / ${mix.to + 2}`;
+      m.style.justifyContent = mix.to === LANE_PHRASES - 1 && mix.from > 0 ? "flex-end" : mix.from === 0 && mix.to < LANE_PHRASES - 1 ? "flex-start" : "center";
+      axis.append(m);
+    }
   }
 
   // --- Tracklist ----------------------------------------------------------
-  /** Tracks heard this session, in order. */
-  const tracklist: { piece: number; row: HTMLLIElement }[] = [];
-  /** Audio time the first track heard began at; times are counted from it, so pauses do not count. */
-  let setStart: number | null = null;
-  function noteTrack(tb: TimedBar): void {
-    const i = tb.bar.info;
-    const last = tracklist[tracklist.length - 1];
-    if (last?.piece === i.pieceIndex) return;
-    const began = tb.start - i.barInPiece * barSeconds(tb.bar);
-    setStart ??= began;
-    const row = document.createElement("li");
-    row.innerHTML = `<span class="t"></span><span class="n"></span><span class="s"></span><span class="k"></span><span class="b"></span>`;
-    row.querySelector(".t")!.textContent = clock(began - setStart);
-    row.querySelector(".n")!.textContent = String(i.pieceIndex + 1).padStart(2, "0");
-    row.querySelector(".s")!.textContent = i.styleTitle;
-    row.querySelector(".k")!.textContent = i.keyName;
-    row.querySelector(".b")!.textContent = tempo(conductor?.trackPlan(i.pieceIndex)?.bpm ?? Math.round(tb.bar.bpm));
-    for (const t of tracklist) t.row.classList.remove("now");
-    row.classList.add("now");
-    tracklist.push({ piece: i.pieceIndex, row });
-    $("tracks").append(row);
-    $("tracks-empty").hidden = true;
+  const heard: Heard[] = [];
+  /** Set time at an audio-clock time: from where the first bar heard sits in the set (its nominal time), counting only time heard. */
+  let setClock: { at: number; t: number } | null = null;
+  const setTime = (t: number) => (setClock ? setClock.at + (t - setClock.t) : 0);
+  function hear(info: BarInfo, at: number): void {
+    if (heard.some((h) => h.piece === info.pieceIndex)) return;
+    heard.push({ piece: info.pieceIndex, styleId: info.styleId, styleTitle: info.styleTitle, at });
+    heard.sort((a, b) => a.piece - b.piece);
+  }
+  /** Note the tracks sounding in an audible bar, with when they began. */
+  function noteTracks(tb: TimedBar): void {
+    const bar = tb.bar;
+    const i = bar.info;
+    const sec = barSeconds(bar);
+    setClock ??= { at: (conductor?.trackPlan(i.pieceIndex)?.start ?? 0) + i.barInPiece * sec, t: tb.start };
+    const t = bar.transition?.type === "cut" ? undefined : bar.transition;
+    // Bars ago each began: the incoming in an overlap at its start; on landing, every track at its own first bar.
+    const first = !heard.length;
+    const ago = (info: BarInfo) => (t && info.pieceIndex === t.to ? t.bar : first ? info.barInPiece : 0);
+    hear(i, setTime(tb.start - ago(i) * sec));
+    if (bar.with) hear(bar.with.info, setTime(tb.start - ago(bar.with.info) * sec));
+  }
+
+  function trackLi(cls: string, piece: number, name: string, time: string): HTMLLIElement {
+    const li = el("li", `other ${cls}`);
+    li.append(el("span", "no", no(piece)), el("span", "name", name), el("span", "time", time));
+    return li;
+  }
+
+  /** What the HUD shows: the audible bar, or before anything plays, where the set will start. */
+  function view(): { bar: Bar | null; tb: TimedBar | null; piece: number; barInPiece: number; pieceBars: number; styleId: string; styleTitle: string; sec: number } | null {
+    // Bars from before a jump or a new set are still audible for a moment: they are not this set's.
+    const tb = player.seeking ? undefined : player.current();
+    if (tb && !tb.bar.info.gap) {
+      const i = tb.bar.info;
+      return { bar: tb.bar, tb, piece: i.pieceIndex, barInPiece: i.barInPiece, pieceBars: i.pieceBars, styleId: i.styleId, styleTitle: i.styleTitle, sec: barSeconds(tb.bar) };
+    }
+    const c = conductor;
+    const pos = player.position();
+    const plan = c?.trackPlan(pos.piece);
+    if (!c || !plan) return null;
+    return { bar: null, tb: null, piece: pos.piece, barInPiece: pos.bar, pieceBars: c.trackPiece(pos.piece).totalBars, styleId: plan.styleId, styleTitle: styleById.get(plan.styleId)?.corpus.title ?? "", sec: (4 * 60) / plan.bpm };
   }
 
   // --- Now playing --------------------------------------------------------
   let lastKey = "";
-  function describe(tb: TimedBar | undefined): void {
-    if (!tb) {
-      if (player.started) $("state").textContent = player.playing ? "Cueing" : "Paused";
-      return;
-    }
-    const i = tb.bar.info;
-    const key = `${i.pieceSeed}:${i.barInPiece}:${player.playing}`;
+  let lastTrack = -1;
+  function describe(): void {
+    const v = view();
+    if (!v) return;
+    const c = conductor;
+    const t = v.bar?.transition;
+    // Plan the handover as soon as it could show on the lanes (the set would plan it a little later itself).
+    if (c && v.bar && !t && v.barInPiece >= v.pieceBars - BLEND_BARS - LANE_PHRASES * PHRASE_BARS) c.planTransition(v.piece);
+    if (v.tb) noteTracks(v.tb);
+    const out = t || !c ? null : c.transitionPlan(v.piece);
+    const nextPlan = c?.trackPlan(v.piece + 1) ?? null;
+    const key = `${player.seed}:${v.piece}:${v.barInPiece}:${player.playing}:${heard.length}:${out?.type}:${nextPlan?.styleId}:${chosen.join()}`;
     if (key === lastKey) return;
     lastKey = key;
     persist();
-    noteTrack(tb);
-    const stage = mixStage(i.barInPiece, i.pieceBars);
-    $("title").textContent = i.styleTitle;
-    $("track-no").textContent = `Track ${i.pieceIndex + 1}`;
-    $("key").textContent = i.keyName;
-    $("bpm").textContent = tempo(tb.bar.bpm);
-    $("bar").textContent = `${i.barInPiece + 1}`;
-    $("bars").textContent = `/ ${i.pieceBars}`;
-    $("phrase").textContent = `${Math.floor(i.barInPiece / PHRASE_BARS) + 1}`;
-    $("phrases").textContent = `/ ${Math.ceil(i.pieceBars / PHRASE_BARS)}`;
-    // A build in progress, counted down to its drop, from the bar's own data.
-    const build = i.build ? ` · Build, ${i.build.bars} bars (${i.build.bars - i.build.bar} to go)` : i.turn === "drop" ? " · Drop" : "";
-    $("section").textContent = `Section ${i.section}${build}`;
-    const mix = $("mix");
-    mix.textContent = STAGE_LABEL[stage];
-    mix.dataset.stage = stage;
-    $("state").textContent = player.playing ? "On air" : "Paused";
-    renderStrip(i);
-    const inPhrase = i.barInPiece % PHRASE_BARS;
-    pips.forEach((el, k) => {
-      el.classList.toggle("done", k < inPhrase);
-      el.classList.toggle("here", k === inPhrase);
-    });
-    renderDecks(tb.bar);
-    document.title = `${player.playing ? "▶" : "❚❚"} ${i.styleTitle} · DJ Claudia`;
-    if ("mediaSession" in navigator && (i.barInPiece === 0 || !navigator.mediaSession.metadata)) {
-      navigator.mediaSession.metadata = new MediaMetadata({ title: `${i.styleTitle} · ${i.keyName} · ${tb.bar.bpm} bpm`, artist: "DJ Claudia", album: `Set ${player.seed}, track ${i.pieceIndex + 1}` });
-    }
-  }
 
-  // Beats of the bar, from the audio clock.
-  function beat(): void {
-    requestAnimationFrame(beat);
-    const tb = player.playing ? player.current() : undefined;
-    const b = tb ? Math.floor(((player.now - tb.start) / (tb.end - tb.start)) * tb.bar.beats) : -1;
-    beats.forEach((el, k) => el.classList.toggle("on", k === b));
+    // Lanes.
+    const lanes = deckLanes({ piece: v.piece, barInPiece: v.barInPiece, pieceBars: v.pieceBars, transition: t, out, phraseBars: PHRASE_BARS });
+    const styleOf = (piece: number) => {
+      if (piece === v.piece) return v.styleTitle;
+      const w = v.bar?.with?.info;
+      if (w?.pieceIndex === piece) return w.styleTitle;
+      const plan = c?.trackPlan(piece);
+      return plan ? styleById.get(plan.styleId)?.corpus.title : undefined;
+    };
+    renderDecks(lanes, styleOf);
+
+    // Tracklist: three before, the one playing, and the next once it is planned.
+    const name = titleOf(v.piece, v.styleId);
+    const nowAt = heard.find((h) => h.piece === v.piece)?.at ?? (c?.trackPlan(v.piece)?.start ?? 0);
+    const before = heard.filter((h) => h.piece < v.piece);
+    const list: HTMLLIElement[] = before.slice(-3).map((h, k, a) => trackLi(`age-${a.length - k}`, h.piece, titleOf(h.piece, h.styleId), clock(h.at)));
+    const now = el("li", "now");
+    now.setAttribute("aria-current", "true");
+    now.append(el("span", "meta", `${no(v.piece)} · ${clock(nowAt)} · ${v.styleTitle}`), el("span", "name", name));
+    list.push(now);
+    const nextHeard = heard.find((h) => h.piece === v.piece + 1);
+    if (nextHeard) list.push(trackLi("next", nextHeard.piece, titleOf(nextHeard.piece, nextHeard.styleId), clock(nextHeard.at)));
+    else if (nextPlan && v.tb) {
+      const cut = v.bar?.transition?.type === "cut" ? v.bar.transition : undefined;
+      const bars = cut ? cut.bars - cut.bar : out ? out.start - v.barInPiece : null;
+      if (bars !== null) list.push(trackLi("next", v.piece + 1, titleOf(v.piece + 1, nextPlan.styleId), `≈ ${clock(setTime(v.tb.start) + bars * v.sec)}`));
+    }
+    $("tracks").replaceChildren(...list);
+    // Earlier (narrow layout): the rest, newest first.
+    const earlier = before.slice(0, -1).reverse();
+    $("earlier-sec").hidden = !earlier.length;
+    $("earlier").replaceChildren(
+      ...earlier.map((h) => {
+        const li = el("li");
+        li.append(el("span", "no", no(h.piece)), el("span", "name", titleOf(h.piece, h.styleId)), el("span", "time", clock(h.at)));
+        return li;
+      }),
+    );
+
+    document.title = `${player.playing ? "▶ " : ""}${name} · DJ Claudia`;
+    if ("mediaSession" in navigator && (v.piece !== lastTrack || !navigator.mediaSession.metadata)) {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: name, artist: "DJ Claudia", album: `Set ${player.seed} · track ${no(v.piece)} · ${v.styleTitle}` });
+    }
+    lastTrack = v.piece;
   }
-  requestAnimationFrame(beat);
 
   function render(): void {
-    $("play-glyph").textContent = player.playing ? "❚❚" : "▶";
     playBtn.setAttribute("aria-label", player.playing ? "Pause" : "Play");
     document.documentElement.classList.toggle("playing", player.playing);
+    $("live-text").textContent = player.playing ? "Live" : "Paused";
     holdMedia(player.playing);
     if ("mediaSession" in navigator) navigator.mediaSession.playbackState = player.playing ? "playing" : "paused";
     lastKey = "";
-    describe(player.current());
+    describe();
     renderSkip();
   }
   player.onChange(render);
   player.onChange(renderEngine);
   renderEngine();
   setInterval(() => {
-    describe(player.current());
+    describe();
     renderSkip();
-    if (player.pendingEngine !== null || player.loadProgress !== null) renderEngine();
+    renderEngine();
   }, 200);
   render();
 }
 
 main().catch((err: unknown) => {
   console.error(err);
-  document.body.insertAdjacentHTML("afterbegin", `<p style="padding:16px;color:#ff4d6d">Failed to start: ${String(err)}</p>`);
+  const p = document.createElement("p");
+  p.style.cssText = "padding:16px;color:#ff3b5c;font-family:monospace";
+  p.textContent = `Failed to start: ${String(err)}`;
+  document.body.prepend(p);
 });

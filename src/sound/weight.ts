@@ -45,6 +45,10 @@ const TIERS: Record<string, Weight> = {
   minimal_techno: HARD,
   // Slammed breakbeats and a fuzzed-out bass: harder parallel drum crush and extra drive.
   big_beat: { ...HARD, kickDrive: 2, bassDrive: 1.8, crush: 0.38 },
+  // Razor Breaks: the chopped drums hit hard, the bass tucked under.
+  big_beat_razor_breaks: { ...HARD, kickDrive: 1.6, bassDrive: 1.2, crush: 0.42, thump: 1.5 },
+  // The 808 is the track: a long sub, the bass tucked under it, the kit left mostly dry.
+  electro: { ...HARD, kickDrive: 1.7, bassDrive: 1.3, crush: 0.24, thump: 1.4 },
   jazz_trio: SOFT, minimalist: SOFT, baroque: SOFT, celtic: SOFT, musette: SOFT, midnight_platform: SOFT, bossa_nova: SOFT,
 };
 

@@ -2,104 +2,100 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>DJ Claudia</title>
     <meta name="description" content="An endless DJ set, composed and mixed live in your browser: one track into the next on the phrase, in compatible keys, at a steady tempo." />
-    <meta name="theme-color" content="#07060a" />
+    <meta name="theme-color" content="#0B0B0C" />
+    <link rel="canonical" href="https://djclaudia.trurl.systems/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DJ Claudia" />
+    <meta property="og:title" content="DJ Claudia" />
+    <meta property="og:description" content="An endless DJ set, composed and mixed live in your browser: minimal, Berlin, psychedelic house and Razor Breaks, one track into the next on the phrase." />
+    <meta property="og:url" content="https://djclaudia.trurl.systems/" />
+    <meta property="og:image" content="https://djclaudia.trurl.systems/social.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DJ Claudia in a yellow-tiled booth, arms raised behind the decks, a record with an orange star on the turntable." />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="fonts/ibm-plex-mono-normal-500.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="preload" href="fonts/inter-tight-normal-100-900.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="fonts/ibm-plex-mono-normal-600.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="styles.css" />
     <script type="module" src="app.js"></script>
   </head>
   <body>
-    <div class="booth">
-      <header class="top">
-        <h1><span class="dj">DJ</span> <em>Claudia</em></h1>
-        <p class="tagline">An endless set, written bar by bar in this tab. Nothing is streamed.</p>
-        <div class="session mono">
-          <label for="seed">Set</label>
-          <input id="seed" type="text" spellcheck="false" autocomplete="off" aria-label="Set seed" />
-          <button id="reseed" class="text" type="button" title="Start a new set with a random seed">New set</button>
-          <button id="share" class="text" type="button" title="Copy a link to this set and bar">Copy link</button>
+    <main class="stage" id="stage">
+      <div class="screen-wrap">
+        <div class="screen" id="cam" role="img" aria-label="Booth cam: DJ Claudia at the decks"></div>
+        <div class="shade" aria-hidden="true"></div>
+        <button id="play" class="play" type="button" aria-label="Play">
+          <svg class="g-play" width="20" height="20" viewBox="0 0 22 22" aria-hidden="true"><path d="M5 3 L19 11 L5 19 Z" fill="currentColor" /></svg>
+          <svg class="g-pause" width="20" height="20" viewBox="0 0 22 22" aria-hidden="true"><rect x="4" y="3" width="5" height="16" fill="currentColor" /><rect x="13" y="3" width="5" height="16" fill="currentColor" /></svg>
+        </button>
+        <span class="live" id="live"><i aria-hidden="true"></i><span id="live-text">Live</span></span>
+      </div>
+
+      <div class="hud-top">
+        <section class="tl" aria-labelledby="tl-h">
+          <h1 id="tl-h" class="tag"><span>DJ Claudia</span><span class="tag-set">Set <span id="set-tag"></span></span></h1>
+          <ol class="tracks" id="tracks" aria-label="Tracklist"></ol>
+        </section>
+
+        <section class="decks" aria-label="Decks">
+          <div class="dk-head">
+            <span class="dk-where" id="where"></span>
+            <div class="bars" id="bars" aria-hidden="true"></div>
+          </div>
+          <div class="dk" id="deck-0"></div>
+          <div class="dk" id="deck-1"></div>
+          <div class="dk-axis" aria-hidden="true">
+            <span class="dk-blank"></span>
+            <span class="dk-note"><span class="wide-only">Next 4 phrases</span><span class="narrow-only" id="where-narrow"></span></span>
+            <span class="axis" id="axis"></span>
+          </div>
+        </section>
+      </div>
+
+      <div class="transport">
+        <button id="skip" class="skip" type="button" title="Next track, on the next phrase (N)">
+          Next track
+          <svg width="16" height="12" viewBox="0 0 18 14" aria-hidden="true"><path d="M1 1 L7 7 L1 13 M9 1 L15 7 L9 13" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        </button>
+        <button id="cam-toggle" class="cam-btn" type="button" aria-pressed="true" aria-label="Booth cam" title="Booth cam on or off">
+          <svg width="18" height="14" viewBox="0 0 18 14" aria-hidden="true"><rect x="1" y="2" width="11" height="10" fill="none" stroke="currentColor" stroke-width="1.6" /><path d="M12 6 L17 3 L17 11 L12 8 Z" fill="currentColor" /></svg>
+          <span class="cam-label">Cam</span>
+        </button>
+        <div class="engines" id="engines" role="radiogroup" aria-label="Sound"></div>
+      </div>
+    </main>
+
+    <div class="below">
+      <section class="set-row">
+        <div class="set-name">
+          <label for="seed" class="label">Set name</label>
+          <div class="set-ctl">
+            <input id="seed" type="text" spellcheck="false" autocomplete="off" />
+            <button id="reseed" class="ghost" type="button" title="Start a new set">New set</button>
+            <button id="share" class="ghost" type="button" title="Copy a link to this set and bar">Copy link</button>
+          </div>
         </div>
-      </header>
+        <div class="styles">
+          <span class="label" id="styles-h">Styles <span class="aside">· from the next track</span></span>
+          <div class="style-list" id="styles" role="group" aria-labelledby="styles-h"></div>
+        </div>
+      </section>
 
-      <main>
-        <figure class="cam" aria-label="Booth cam">
-          <div class="screen" id="cam"></div>
-          <figcaption class="cam-bar">
-            <span class="dim small">Claudia is an open character by <a href="https://claudia.gallery/">anabology (claudia.gallery)</a>. Video generated with Grok Imagine (AI-generated).</span>
-            <button id="cam-toggle" class="text mono" type="button" aria-pressed="true">Booth cam on</button>
-          </figcaption>
-        </figure>
+      <section class="earlier" aria-labelledby="earlier-h" id="earlier-sec" hidden>
+        <span class="label" id="earlier-h">Earlier</span>
+        <ol id="earlier"></ol>
+      </section>
 
-        <section class="deck" aria-label="Deck">
-          <div class="deck-head mono">
-            <span class="onair"><i aria-hidden="true"></i><span id="state">Standby</span></span>
-            <span id="track-no">Track –</span>
-            <span id="mix" class="mix" data-stage="">–</span>
-          </div>
-
-          <h2 id="title" aria-live="polite">Press play</h2>
-          <p class="section mono dim" id="section"></p>
-
-          <div class="readout">
-            <div><small class="mono">Key</small><b id="key">–</b></div>
-            <div><small class="mono">BPM</small><b id="bpm">–</b></div>
-            <div><small class="mono">Bar</small><b><span id="bar">–</span> <span class="of" id="bars"></span></b></div>
-            <div><small class="mono">Phrase</small><b><span id="phrase">–</span> <span class="of" id="phrases"></span></b></div>
-          </div>
-
-          <div class="meter-row">
-            <div class="pips" id="pips" aria-hidden="true" title="Bars of this phrase"></div>
-            <div class="beats" id="beats" aria-hidden="true" title="Beats of this bar"></div>
-          </div>
-          <div class="strip" id="strip" aria-hidden="true" title="The track in phrases: mix-in, body, mix-out"></div>
-          <p class="transition mono" id="transition" aria-live="polite" hidden></p>
-          <div class="decks" aria-label="Decks">
-            <div class="deck-card" id="deck-0">
-              <div class="dc-head mono"><b>Deck A</b><span class="dc-track"></span><span class="dc-tag"></span></div>
-              <div class="dc-meta mono dim"></div>
-              <div class="roles mono" aria-label="Parts sounding on deck A"></div>
-            </div>
-            <div class="deck-card" id="deck-1">
-              <div class="dc-head mono"><b>Deck B</b><span class="dc-track"></span><span class="dc-tag"></span></div>
-              <div class="dc-meta mono dim"></div>
-              <div class="roles mono" aria-label="Parts sounding on deck B"></div>
-            </div>
-          </div>
-
-          <div class="transport">
-            <button id="play" class="play" type="button" aria-label="Play"><span id="play-glyph" aria-hidden="true">▶</span></button>
-            <button id="skip" class="skip mono" type="button" title="Next track, on the next phrase (N)">Next track ▸▸</button>
-            <span class="skip-note mono dim" id="skip-note" aria-live="polite"></span>
-          </div>
-        </section>
-
-        <aside class="desk" aria-label="Mixer">
-          <h2 class="mono" id="sound-h">Sound</h2>
-          <div class="engines" id="engines" role="radiogroup" aria-labelledby="sound-h"></div>
-          <p class="dim small" id="engine-desc"></p>
-          <label class="fader mono">Master <input id="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume" /></label>
-        </aside>
-
-        <section class="tracklist" aria-labelledby="tracks-h">
-          <h2 class="mono" id="tracks-h">Tracklist</h2>
-          <div class="tl-head mono dim" aria-hidden="true"><span>Time</span><span>#</span><span>Style</span><span>Key</span><span>BPM</span></div>
-          <ol class="tracks" id="tracks"></ol>
-          <p class="dim small" id="tracks-empty">Tracks appear here as the set plays.</p>
-        </section>
-      </main>
-
-      <footer class="foot">
-        <p>
-          Every track is composed as it plays, from the same seeded arranger as
-          <a href="https://mindless-midi.trurl.systems/">Mindless Midi</a>. Each one comes in drums first, then bass, then the rest, and goes out
-          the same way; the next starts on the phrase, in a compatible key, within a few percent of the tempo. The same set name always
-          plays the same set, and a link lands on the same track and bar.
-        </p>
-        <p class="mono dim">Space plays · N next track</p>
-        <p class="dim small" id="credits" hidden></p>
+      <footer class="credits">
+        <p id="credit-styles">Every track is composed in this tab as it plays.</p>
+        <p id="credit-samples" hidden></p>
+        <p>Claudia is an open character by <a href="https://claudia.gallery/">anabology (claudia.gallery)</a>. Booth cam video generated with Grok Imagine (AI-generated).</p>
         <!-- @BUILD@ -->
       </footer>
     </div>

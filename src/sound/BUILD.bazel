@@ -230,8 +230,24 @@ ts_test(
     ],
 )
 
+ts_test(
+    name = "electro_test",
+    size = "medium",
+    src = "electro.test.ts",
+    data = [
+        "//styles:claudia",
+        "//styles/electro:corpus",
+    ],
+    deps = [
+        ":sound",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)
+
 # Her fourth style (Carbon): the corpus, its breakbeat kit and patches measured,
-# a set over all four styles, and a track through the worker.
+# a set over the styles of the pack, and a track through the worker.
 ts_test(
     name = "big_beat_test",
     size = "medium",
@@ -245,6 +261,22 @@ ts_test(
     deps = [
         ":sound",
         ":worker",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)
+
+ts_test(
+    name = "big_beat_razor_breaks_test",
+    size = "medium",
+    src = "big_beat_razor_breaks.test.ts",
+    data = [
+        "//styles:claudia",
+        "//styles/big_beat_razor_breaks:corpus",
+    ],
+    deps = [
+        ":sound",
         "//src/corpus",
         "//src/engine",
         "//src/theory",

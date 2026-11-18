@@ -13,6 +13,7 @@ ts_lib(
     deps = [
         ":booth",
         ":director",
+        ":hud",
         "//src/app:player",
         "//src/corpus",
         "//src/engine",
@@ -70,6 +71,27 @@ ts_lib(
     deps = ["//src/theory"],
 )
 
+# The HUD's pure parts: the deck lanes and set names.
+ts_lib(
+    name = "hud",
+    srcs = [
+        "lanes.ts",
+        "set_name.ts",
+    ],
+    deps = ["//src/engine"],
+)
+
+ts_test(
+    name = "lanes_test",
+    src = "lanes.test.ts",
+    data = ["//styles:claudia"],
+    deps = [
+        ":hud",
+        "//src/corpus",
+        "//src/engine",
+    ],
+)
+
 ts_test(
     name = "director_test",
     src = "director.test.ts",
@@ -123,8 +145,10 @@ stamp_build_info(
 # What every page of hers needs. Her pack is served as styles.json and its
 # samples as samples/, where the pages and the Player look for them.
 SITE_FILES = glob(["clips/*"]) + [
+    "apple-touch-icon.png",
     "clips.json",
     "favicon.svg",
+    "social.png",
     "styles.css",
     "//src/app:fonts",
     "//src/sound:render_worker",

@@ -1,0 +1,60 @@
+<!doctype html>
+<!--
+  The link-preview card (1200x630) behind src/claudia/social.png: the booth cam's
+  "peak" still under a HUD in the page style, with the orange star from the
+  record label.
+  Link unfurlers want a raster image, so the PNG is checked in; regenerate it
+  after editing this file:
+
+    tools/social/render.sh
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>DJ Claudia card</title>
+    <style>
+      @font-face { font-family: "Inter Tight"; font-weight: 100 900; src: url("../../src/app/fonts/inter-tight-normal-100-900.woff2") format("woff2"); }
+      @font-face { font-family: "IBM Plex Mono"; font-weight: 600; src: url("../../src/app/fonts/ibm-plex-mono-normal-600.woff2") format("woff2"); }
+
+      /* The Bunker HUD's palette (src/claudia/styles.css), plus the label's star. */
+      :root { --bg: #0b0b0c; --text: #ededef; --violet: #b08cff; --violet-light: #c9b2ff; --live: #ff3b5c; --grey-1: #bdbdc3; --star: #ff7a1a; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body { width: 1200px; height: 630px; overflow: hidden; background: var(--bg); color: var(--text); position: relative; font-family: "Inter Tight", sans-serif; }
+      .cam { position: absolute; top: 0; bottom: 0; left: 360px; right: 0; background: url("../../src/claudia/clips/1918cab67f57f5476bcb854e5ca4a5f8569fb228281dffee0cf2e1bb7f446271.jpg") 50% 40% / cover no-repeat; }
+      .shade { position: absolute; top: 0; bottom: 0; left: 360px; right: 0; background: linear-gradient(90deg, var(--bg) 0%, rgba(11, 11, 12, 0) 26%), linear-gradient(0deg, rgba(11, 11, 12, 0.6) 0%, rgba(11, 11, 12, 0) 25%); }
+      .mono { font: 600 17px/1.4 "IBM Plex Mono", monospace; letter-spacing: 0.18em; text-transform: uppercase; }
+      .hud { position: absolute; left: 44px; top: 40px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+      .box { background: rgba(11, 11, 12, 0.84); }
+      .tag { display: flex; align-items: center; gap: 14px; padding: 11px 16px; }
+      .tag svg { flex: none; }
+      .now { border-left: 5px solid var(--violet); padding: 18px 30px 24px 22px; display: flex; flex-direction: column; gap: 12px; }
+      .now .meta { color: var(--violet-light); }
+      h1 { margin: 0; font-weight: 900; font-size: 112px; line-height: 0.86; letter-spacing: -0.035em; text-transform: uppercase; }
+      .line { margin: 0; padding: 13px 16px; max-width: 520px; font-size: 25px; line-height: 1.3; font-weight: 500; color: var(--grey-1); }
+      .strip { position: absolute; left: 44px; right: 44px; bottom: 34px; display: flex; justify-content: space-between; }
+      .strip > span { padding: 10px 16px; }
+      .onair { display: inline-flex; align-items: center; gap: 12px; }
+      .onair i { width: 11px; height: 11px; border-radius: 50%; background: var(--live); box-shadow: 0 0 12px var(--live); }
+    </style>
+  </head>
+  <body>
+    <div class="cam"></div>
+    <div class="shade"></div>
+    <div class="hud">
+      <div class="tag box mono">
+        <svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M16.00 5.40 L18.76 13.10 L26.94 13.35 L20.47 18.35 L22.76 26.20 L16.00 21.60 L9.24 26.20 L11.53 18.35 L5.06 13.35 L13.24 13.10 Z" fill="#ff7a1a" stroke="#ff7a1a" stroke-width="1.2" stroke-linejoin="round" /></svg>
+        djclaudia.trurl.systems
+      </div>
+      <div class="now box">
+        <span class="meta mono">Now playing · endless set</span>
+        <h1>DJ<br />Claudia</h1>
+      </div>
+      <p class="line box">Techno composed and mixed live in your browser. It never repeats.</p>
+    </div>
+    <div class="strip mono">
+      <span class="onair box"><i></i>Live</span>
+      <span class="box">Minimal · Berlin · Psych house</span>
+    </div>
+  </body>
+</html>

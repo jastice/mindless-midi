@@ -213,6 +213,27 @@ export function creditLines(credits: readonly PackCredit[], used: Iterable<strin
   return [...new Set(credits.filter((c) => want.has(c.pack)).map((c) => c.credit))];
 }
 
+/** A credit as a page links it: what it names, its licence, and where the licence terms were read. */
+export interface CreditEntry {
+  /** The attribution where the licence asks for one, else the pack's description. */
+  name: string;
+  licence: string;
+  source: string;
+}
+
+/** `creditLines` with the link: one per distinct credit, in order. */
+export function creditEntries(credits: readonly PackCredit[], used: Iterable<string>): CreditEntry[] {
+  const want = new Set(used);
+  const out = new Map<string, CreditEntry>();
+  for (const c of credits) {
+    if (!want.has(c.pack) || out.has(c.credit)) continue;
+    // The credit is "<name> (<licence>)" (see packCredit).
+    const name = c.credit.endsWith(` (${c.licence})`) ? c.credit.slice(0, -c.licence.length - 3) : (c.attribution ?? c.credit);
+    out.set(c.credit, { name, licence: c.licence, source: c.source });
+  }
+  return [...out.values()];
+}
+
 // --- Instruments --------------------------------------------------------------
 
 export const FONTS = ["MusyngKite", "FluidR3_GM"] as const;

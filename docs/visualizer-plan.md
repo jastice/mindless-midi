@@ -209,6 +209,12 @@ Credits under it, always visible:
 "Claudia is an open character by anabology (claudia.gallery). Video
 generated with Grok Imagine." No HÖR name or logo anywhere.
 
+Since the Bunker HUD (2026-11-17, see the DJ set plan's step 7): the booth
+cam fills the window with the HUD on it, and on phones sits at the top,
+16:9. Its on/off is the small Cam button by the sound switch; off shows the
+home still, and without clips the frame stays dark. No fullscreen button.
+The credit line moved under the video with the rest of the credits.
+
 ## Prototype results (2026-11-14)
 
 Branch `claude/booth-cam-prototype-ce2cc9`. What exists:

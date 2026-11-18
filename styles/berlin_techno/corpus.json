@@ -1,6 +1,70 @@
 {
   "title": "Berlin Techno",
   "description": "A kick with a rumble under it in a concrete room: one dark stab, a drone that barely moves, and a ride that arrives when the floor is full.",
+  "authors": [
+    "Claude Fable 5.2"
+  ],
+  "names": {
+    "patterns": [
+      "{head}{tail}",
+      "{phrase}"
+    ],
+    "lists": {
+      "head": [
+        "Beton",
+        "Schwarz",
+        "Kälte",
+        "Stahl",
+        "Rost",
+        "Asche",
+        "Nebel",
+        "Eisen",
+        "Schatten",
+        "Keller",
+        "Blei",
+        "Dunkel",
+        "Grau",
+        "Tief",
+        "Frost"
+      ],
+      "tail": [
+        "regen",
+        "licht",
+        "kammer",
+        "werk",
+        "halle",
+        "puls",
+        "strom",
+        "tunnel",
+        "wand",
+        "staub",
+        "raum",
+        "beben",
+        "schacht",
+        "feld"
+      ],
+      "phrase": [
+        "Kein Foto",
+        "Nach Vier",
+        "Ohne Licht",
+        "Sonntagmorgen",
+        "Letzte Schicht",
+        "Tür zu",
+        "Nur Bass",
+        "Kein Ausgang",
+        "Bis Sieben",
+        "Nebelmaschine",
+        "Stroboskop",
+        "Sechs Uhr",
+        "Fabrikhalle",
+        "Garderobe",
+        "Hinterhof",
+        "Spätschicht",
+        "Lärmschutz",
+        "Schlange stehen"
+      ]
+    }
+  },
   "tempo": {
     "min": 130,
     "max": 138

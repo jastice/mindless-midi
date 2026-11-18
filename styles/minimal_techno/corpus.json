@@ -1,6 +1,95 @@
 {
   "title": "Minimal Techno",
   "description": "A kick, an off-beat hat and one idea at a time: short loops that stay put while the room slowly fills and empties.",
+  "authors": [
+    "Claude Fable 5.2",
+    "Claude Opus 5.5"
+  ],
+  "names": {
+    "patterns": [
+      "{word} {num}",
+      "{adj} {noun}",
+      "{title}"
+    ],
+    "lists": {
+      "word": [
+        "Sinus",
+        "Pulse",
+        "Loop",
+        "Unit",
+        "Tone",
+        "Click",
+        "Step",
+        "Gate",
+        "Phase",
+        "Cell",
+        "Grain",
+        "Dot",
+        "Shift",
+        "Delay",
+        "Module",
+        "Signal",
+        "Trace",
+        "Node",
+        "Ratio",
+        "Index"
+      ],
+      "num": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "12",
+        "16"
+      ],
+      "adj": [
+        "Low",
+        "Thin",
+        "Dry",
+        "Flat",
+        "Half",
+        "Micro",
+        "Small",
+        "Short",
+        "Soft",
+        "Plain",
+        "Odd",
+        "Bare"
+      ],
+      "noun": [
+        "Grid",
+        "Matrix",
+        "Tone",
+        "Step",
+        "Line",
+        "Loop",
+        "Click",
+        "Space",
+        "Room",
+        "Motion",
+        "Figure",
+        "Pattern"
+      ],
+      "title": [
+        "Dot Matrix",
+        "Halbton",
+        "Zero Point",
+        "Minus",
+        "Offbeat Study",
+        "Closed Loop",
+        "Sine Study",
+        "Quiet Unit",
+        "Point Five",
+        "Sub Rosa",
+        "Rest",
+        "Repeat"
+      ]
+    }
+  },
   "tempo": {
     "min": 126,
     "max": 132

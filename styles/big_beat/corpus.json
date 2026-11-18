@@ -1,6 +1,21 @@
 {
   "title": "Big Beat",
   "description": "Breakbeat kicks and a cracking snare, a fuzzed-out bass riff, brass hits and a screaming acid hook that chop and stutter on the turn.",
+  "authors": [
+    "Carbon (Gemini 4)"
+  ],
+  "names": {
+    "patterns": [
+      "{adj} {noun}",
+      "Hands Up",
+      "Shake It Loose",
+      "Drop The Hammer"
+    ],
+    "lists": {
+      "adj": ["Fat", "Dirty", "Rowdy", "Greasy", "Loud", "Brass", "Funky", "Rude", "Wicked", "Heavy", "Mad", "Jumbo", "Sticky", "Hairy"],
+      "noun": ["Breaks", "Bongos", "Siren", "Clav", "Cowbell", "Organ", "Stomp", "Riot", "Rumble", "Wobble", "Swagger", "Skank"]
+    }
+  },
   "tempo": {
     "min": 112,
     "max": 128

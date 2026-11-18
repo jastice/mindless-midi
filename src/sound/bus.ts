@@ -170,6 +170,20 @@ Object.assign(PRESETS, {
     duck: { depth: { bass: 0.22, pad: 0.4, comp: 0.22, arp: 0.15, lead: 0.12 }, release: 0.16 },
     highpass: { lead: 220, arp: 160, comp: 180, pad: 220 },
   },
+  // Open Channel: a tight booth, a dotted-eighth slap on the voice and the stab, the 808 left dry.
+  electro: {
+    reverb: { seconds: 0.7, predelay: 0.01, bright: 0.45, send: { arp: 0.12, comp: 0.1, pad: 0.16, drums: 0.03 } },
+    delay: { beats: 0.75, feedback: 0.32, send: { arp: 0.22, comp: 0.16 } },
+    duck: { depth: { bass: 0.28, arp: 0.16, comp: 0.22, pad: 0.35 }, release: 0.14 },
+    highpass: { arp: 180, comp: 240, pad: 700 },
+  },
+  // Razor Breaks: a tight room and short echoes leave the chopped drums exposed.
+  big_beat_razor_breaks: {
+    reverb: { seconds: 0.65, predelay: 0.012, bright: 0.35, send: { arp: 0.08, comp: 0.12, pad: 0.18, drums: 0.035 } },
+    delay: { beats: 0.75, feedback: 0.28, send: { arp: 0.12, comp: 0.14 } },
+    duck: { depth: { bass: 0.22, arp: 0.18, comp: 0.25, pad: 0.4 }, release: 0.12 },
+    highpass: { arp: 200, comp: 280, pad: 600 },
+  },
 } satisfies Record<string, MixPreset>);
 
 const DEFAULT_PRESET: MixPreset = { reverb: { seconds: 1.8, predelay: 0.02, bright: 0.5, send: { lead: 0.2, pad: 0.3 } }, highpass: {} };

@@ -317,6 +317,14 @@ export class SetConductor implements BarSource {
     return true;
   }
 
+  /**
+   * How track `i` hands over to the next, planning it now if need be (which chooses the next track): for a page
+   * that shows a transition before the set reaches it. The plan is the one the set would make later.
+   */
+  planTransition(i: number): Transition {
+    return this.out(i);
+  }
+
   /** The `lift` the set's energy gives a track starting `seconds` in. */
   liftAt(seconds: number): number {
     const leg = this.legAt(seconds);
