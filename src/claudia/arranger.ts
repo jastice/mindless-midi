@@ -3,7 +3,9 @@
  * same set conductor, two decks, the booth cam), with the running order laid
  * out as slots: the two tracks just played, the one playing and the next five.
  * Drag a style into a scheduled slot and that track is that style; the set
- * chooses the tracks around it. Each track has a button to play it from its
+ * chooses the tracks around it. Drag a scheduled track to another scheduled
+ * slot to move it there: it keeps its music and name, and takes the key and
+ * tempo the set gives that slot. Each track has a button to play it from its
  * start, the arrow keys move a phrase at a time, and one button goes to the
  * deck transition. Under the transport, the two decks show what each holds and
  * which of its parts are playing. The booth cam sits in a small window beside it all.
@@ -17,7 +19,7 @@ import { DEFAULT_SET_OPTIONS, MIX_BARS, PHRASE_BARS, SetConductor, type TrackInf
 import type { Bar, TransitionType } from "../engine/types.js";
 import { randomSeed } from "../theory/seed.js";
 import { keyLabel } from "../theory/theory.js";
-import { type Spot, type TrackShape, formatPins, nextTransition, parsePins, slotIndices, stepPhrase, transitionBar } from "./arranger_model.js";
+import { type Pin, type Spot, type TrackShape, formatPins, moveTrack, nextTransition, parsePins, slotIndices, stepPhrase, transitionBar } from "./arranger_model.js";
 import { BoothCam } from "./booth.js";
 import type { ClipSet } from "./director.js";
 
@@ -30,7 +32,7 @@ const STAGE_LABEL = { in: "Mix-in", body: "Body", out: "Mix-out" };
 const ROLE_LABELS: Record<(typeof ROLES)[number], string> = { drums: "drums", bass: "bass", comp: "stab", pad: "pad", arp: "arp", counter: "counter", lead: "lead" };
 /** Drums first and lead last, for a style without parts. */
 const LIGHTS: readonly (typeof ROLES)[number][] = ["drums", "bass", "comp", "pad", "arp", "counter", "lead"];
-const HINT = "Drag or click a style onto a dashed slot.";
+const HINT = "Drag or click a style onto a dashed slot. Drag a dashed slot (or ⇅) to move that track.";
 /** The palette's chip for "let the set choose". */
 const AUTO = "auto";
 
@@ -105,7 +107,7 @@ async function main(): Promise<void> {
   const player = new Player(styles, {
     source: (pool, s, pieces) => {
       const c = new SetConductor(pool, s, { ...pieces, ...DEFAULT_SET_OPTIONS });
-      for (const [i, id] of pins) c.pin(i, id);
+      for (const [i, p] of pins) c.pin(i, p.style, p.from);
       return (conductor = c);
     },
     seed,
@@ -318,7 +320,7 @@ async function main(): Promise<void> {
       phrase(-1);
     } else if (e.key === "t" || e.key === "T") {
       toTransition();
-    } else if (e.key === "Escape" && armed) arm(null);
+    } else if (e.key === "Escape" && (armed || moving !== null)) arm(null);
   });
   if ("mediaSession" in navigator) {
     navigator.mediaSession.setActionHandler("play", () => void player.play());
@@ -332,6 +334,9 @@ async function main(): Promise<void> {
   /** The style picked up (dragged, or clicked to put in a slot next), or "auto". */
   let armed: string | null = null;
   let dragging: string | null = null;
+  /** The track picked up to move (its ⇅ clicked, a slot to click next), and the one being dragged. */
+  let moving: number | null = null;
+  let draggingSlot: number | null = null;
   const chips = new Map<string, HTMLButtonElement>();
   const addChip = (id: string, label: string, detail: string, color?: string) => {
     const chip = document.createElement("button");
@@ -349,11 +354,19 @@ async function main(): Promise<void> {
   };
   for (const s of styles) addChip(s.id, s.corpus.title, `${s.corpus.tempo.min}–${s.corpus.tempo.max}`, s.color);
   addChip(AUTO, "Auto", "set picks");
-  function arm(id: string | null): void {
+  /** Pick up a style (or put it down, null), or with `move` the track in that slot. */
+  function arm(id: string | null, move: number | null = null): void {
     armed = id;
+    moving = move;
     for (const [k, chip] of chips) chip.setAttribute("aria-pressed", String(k === id));
-    $("slots").classList.toggle("armed", id !== null);
-    $("order-hint").textContent = id === null ? HINT : `${id === AUTO ? "Auto" : styleOf.get(id)?.corpus.title}: click a dashed slot (Esc drops).`;
+    $("slots").classList.toggle("armed", id !== null || move !== null);
+    for (const li of $("slots").querySelectorAll<HTMLElement>(".slot")) li.classList.toggle("moving", Number(li.dataset.index) === move && move !== null);
+    $("order-hint").textContent =
+      move !== null
+        ? `Track ${move + 1}: click a dashed slot to move it there (Esc drops).`
+        : id === null
+          ? HINT
+          : `${id === AUTO ? "Auto" : styleOf.get(id)?.corpus.title}: click a dashed slot (Esc drops).`;
   }
   paletteEl.addEventListener("click", (e) => {
     const chip = (e.target as Element).closest<HTMLElement>(".chip");
@@ -381,19 +394,58 @@ async function main(): Promise<void> {
     if (i <= c.settled) return toast(`Track ${i + 1}: locked, mixes in too soon`);
     if (!c.pin(i, styleId)) return toast(`Track ${i + 1}: can't take that`);
     if (styleId === null) pins.delete(i);
-    else pins.set(i, styleId);
+    else pins.set(i, { style: styleId, from: i });
     refresh(true);
     persist();
     toast(styleId === null ? `Track ${i + 1}: auto` : `Track ${i + 1}: ${styleOf.get(styleId)?.corpus.title}`);
   }
   const apply = (i: number, id: string) => setSlot(i, id === AUTO ? null : id);
 
+  /** Why slot `i` can't be changed now, if it can't. */
+  function frozen(i: number): string | null {
+    if (i <= player.position().piece) return `Track ${i + 1}: already started`;
+    if (i <= cond().settled) return `Track ${i + 1}: locked, mixes in too soon`;
+    return null;
+  }
+  /** Move the track in slot `from` to slot `to`, the ones between shifting over; each keeps its music and name. */
+  function moveSlot(from: number, to: number): void {
+    if (from === to) return;
+    const no = frozen(Math.min(from, to));
+    if (no) return toast(no);
+    const c = cond();
+    const moves = moveTrack(from, to, (i): Pin => {
+      const t = c.trackInfo(i, false);
+      return { style: t.styleId, from: t.origin };
+    });
+    const name = titleOf(moves.get(to)!.from, moves.get(to)!.style);
+    for (const [i, p] of moves) {
+      if (!c.pin(i, p.style, p.from)) return toast(`Track ${i + 1}: can't take that`);
+      pins.set(i, p);
+    }
+    refresh(true);
+    persist();
+    toast(`${name}: track ${from + 1} → ${to + 1}`);
+  }
+
   const slotsEl = $("slots");
+  // A scheduled slot drags too: dropped on another, its track moves there.
+  slotsEl.addEventListener("dragstart", (e) => {
+    const li = (e.target as Element).closest<HTMLElement>(".slot.drop");
+    if (!li || !e.dataTransfer) return;
+    draggingSlot = Number(li.dataset.index);
+    e.dataTransfer.setData("text/plain", `slot:${draggingSlot}`);
+    e.dataTransfer.effectAllowed = "move";
+    li.classList.add("dragging");
+  });
+  slotsEl.addEventListener("dragend", () => {
+    draggingSlot = null;
+    for (const el of slotsEl.querySelectorAll(".slot.over, .slot.dragging")) el.classList.remove("over", "dragging");
+  });
   slotsEl.addEventListener("dragover", (e) => {
     const li = (e.target as Element).closest<HTMLElement>(".slot.drop");
-    if (!li || !dragging) return;
+    if (!li || (!dragging && draggingSlot === null) || Number(li.dataset.index) === draggingSlot) return;
     e.preventDefault();
-    if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
+    if (e.dataTransfer) e.dataTransfer.dropEffect = draggingSlot === null ? "copy" : "move";
     li.classList.add("over");
   });
   slotsEl.addEventListener("dragleave", (e) => {
@@ -405,9 +457,15 @@ async function main(): Promise<void> {
     if (!li) return;
     e.preventDefault();
     li.classList.remove("over");
-    const id = e.dataTransfer?.getData("text/plain") || dragging;
+    const to = Number(li.dataset.index);
+    if (draggingSlot !== null) {
+      const from = draggingSlot;
+      draggingSlot = null;
+      return moveSlot(from, to);
+    }
+    const id = dragging;
     dragging = null;
-    if (id) apply(Number(li.dataset.index), id);
+    if (id) apply(to, id);
   });
   slotsEl.addEventListener("click", (e) => {
     const target = e.target as Element;
@@ -417,9 +475,16 @@ async function main(): Promise<void> {
     const button = target.closest<HTMLElement>("button");
     if (button?.classList.contains("go")) return void playTrack(i);
     if (button?.classList.contains("clear")) return setSlot(i, null);
+    if (button?.classList.contains("move")) return arm(null, moving === i ? null : i);
     const ph = target.closest<HTMLElement>(".phrases i");
     if (ph) return jump({ piece: i, bar: Number(ph.dataset.phrase) * PHRASE_BARS, solo: false });
-    if (armed) {
+    if (moving !== null) {
+      const from = moving;
+      arm(null);
+      if (from === i) return;
+      if (li.classList.contains("drop")) moveSlot(from, i);
+      else toast(frozen(i) ?? `Track ${i + 1}: can't move there`);
+    } else if (armed) {
       if (li.classList.contains("drop")) {
         apply(i, armed);
         arm(null);
@@ -429,10 +494,10 @@ async function main(): Promise<void> {
 
   // --- The running order ----------------------------------------------------
   const keyOf = (t: TrackInfo) => keyLabel(t.key.tonic, t.key.mode);
-  /** A track's generated title, from its style's name theme and the set seed (as on the main page). */
-  const titleOf = (piece: number, styleId: string) => {
+  /** A track's generated title, from its style's name theme, the set seed and the slot its music is seeded from (as on the main page). */
+  const titleOf = (origin: number, styleId: string) => {
     const style = styleOf.get(styleId);
-    return style ? trackName(style, player.seed, piece) : `Track ${piece + 1}`;
+    return style ? trackName(style, player.seed, origin) : `Track ${origin + 1}`;
   };
   let slotsKey = "";
   function renderSlots(cur: number, liveTo: number): void {
@@ -451,7 +516,9 @@ async function main(): Promise<void> {
       const style = styleOf.get(t.styleId);
       const state = i < cur ? "past" : i === cur ? "cur" : "next";
       const locked = i > cur && i <= c.settled;
-      li.className = `slot ${state}${locked ? " locked" : ""}${state === "next" && !locked ? " drop" : ""}${i === liveTo ? " coming" : ""}${last ? " last" : ""}`;
+      const open = state === "next" && !locked;
+      li.className = `slot ${state}${locked ? " locked" : ""}${open ? " drop" : ""}${i === liveTo ? " coming" : ""}${last ? " last" : ""}${i === moving ? " moving" : ""}`;
+      li.draggable = open;
       li.style.setProperty("--c", style?.color ?? "var(--line)");
       li.innerHTML = `
         <div class="slot-main">
@@ -461,10 +528,11 @@ async function main(): Promise<void> {
           <span class="acts"></span>
         </div>`;
       li.querySelector(".no")!.textContent = String(i + 1).padStart(2, "0");
-      li.querySelector(".title")!.textContent = titleOf(i, t.styleId);
+      li.querySelector(".title")!.textContent = titleOf(t.origin, t.styleId);
       li.querySelector(".style")!.textContent = style?.corpus.title ?? t.styleId;
       const name = li.querySelector(".name")!;
-      if (t.pinned) name.insertAdjacentHTML("beforeend", `<span class="pinned" title="Picked by hand">Picked</span>`);
+      if (t.origin !== i) name.insertAdjacentHTML("beforeend", `<span class="pinned" title="Moved here from track ${t.origin + 1}">Moved</span>`);
+      else if (t.pinned) name.insertAdjacentHTML("beforeend", `<span class="pinned" title="Picked by hand">Picked</span>`);
       if (i === liveTo) name.insertAdjacentHTML("beforeend", `<span class="lock">Coming in</span>`);
       else if (locked) name.insertAdjacentHTML("beforeend", `<span class="lock" title="Too late to change">Locked</span>`);
       li.querySelector(".meta")!.textContent = `${keyOf(t)} · ${tempo(t.bpm)} bpm · ${clock(t.seconds)} · ${t.bars} bars`;
@@ -476,7 +544,17 @@ async function main(): Promise<void> {
       go.title = `Play track ${i + 1} from the top`;
       go.setAttribute("aria-label", go.title);
       acts.append(go);
-      if (t.pinned && state === "next" && !locked) {
+      if (open) {
+        const m = document.createElement("button");
+        m.type = "button";
+        m.className = "move";
+        m.textContent = "⇅";
+        m.title = `Move track ${i + 1}`;
+        m.setAttribute("aria-label", m.title);
+        m.setAttribute("aria-pressed", String(i === moving));
+        acts.append(m);
+      }
+      if (t.pinned && open) {
         const x = document.createElement("button");
         x.type = "button";
         x.className = "clear";
@@ -535,7 +613,7 @@ async function main(): Promise<void> {
     $("state").textContent = player.playing ? (player.seeking ? "Cueing" : "On air") : player.started ? "Paused" : "Standby";
     $("now-track").textContent = `Track ${pos.piece + 1}`;
     $("now-style").textContent = `${style?.corpus.title ?? t.styleId} · ${keyOf(t)}`;
-    $("now-name").textContent = titleOf(pos.piece, t.styleId);
+    $("now-name").textContent = titleOf(t.origin, t.styleId);
     const stage = mixStage(pos.bar, t.bars);
     const mix = $("mix");
     mix.textContent = STAGE_LABEL[stage];
@@ -564,7 +642,7 @@ async function main(): Promise<void> {
       el.classList.toggle("done", p < hereP);
       el.classList.toggle("here", p === hereP);
     });
-    document.title = `${player.playing ? "▶" : "❚❚"} ${titleOf(pos.piece, t.styleId)} · Arranger`;
+    document.title = `${player.playing ? "▶" : "❚❚"} ${titleOf(t.origin, t.styleId)} · Arranger`;
     persist();
   }
 
@@ -612,7 +690,7 @@ async function main(): Promise<void> {
       const i = own.info;
       const coming = t !== undefined && i.pieceIndex === t.to;
       deck.root.dataset.role = own === bar ? "" : coming ? "in" : "out";
-      deck.name.textContent = titleOf(i.pieceIndex, i.styleId);
+      deck.name.textContent = titleOf(cond().trackInfo(i.pieceIndex, false).origin, i.styleId);
       deck.tag.textContent = own === bar ? (bar.with ? "Low end" : "On air") : coming ? "Coming in" : "Going out";
       deck.meta.textContent = `${String(i.pieceIndex + 1).padStart(2, "0")} · ${i.styleTitle} · ${i.keyName} · ${tempo(own.bpm)} bpm`;
       const parts = styleOf.get(i.styleId)?.corpus.parts;
@@ -629,7 +707,7 @@ async function main(): Promise<void> {
     const pos = player.position();
     const tb = player.current();
     const liveTo = tb && tb.bar.info.pieceIndex === pos.piece && !player.seeking ? (tb.bar.transition?.to ?? -1) : -1;
-    const key = [player.seed, pos.piece, conductor.settled, formatPins(pins), armed, liveTo].join("|");
+    const key = [player.seed, pos.piece, conductor.settled, formatPins(pins), armed, moving, liveTo].join("|");
     if (force || key !== slotsKey) {
       slotsKey = key;
       renderSlots(pos.piece, liveTo);
@@ -657,7 +735,7 @@ async function main(): Promise<void> {
   refresh(true);
   persist();
 
-  Object.assign(window, { arranger: { player, booth, styles, pins, conductor: cond, setSlot, jump, playTrack, phrase, toTransition } });
+  Object.assign(window, { arranger: { player, booth, styles, pins, conductor: cond, setSlot, moveSlot, jump, playTrack, phrase, toTransition } });
 }
 
 main().catch((err: unknown) => {

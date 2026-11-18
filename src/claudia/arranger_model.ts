@@ -1,7 +1,7 @@
 /**
  * The manual arranger's rules, apart from the page: where the arrow keys and
  * the transition button take her, which slots the running order shows, and how
- * the hand-picked styles travel in a link. Pure, no DOM.
+ * the hand-picked styles and moved tracks travel in a link. Pure, no DOM.
  */
 import { PHRASE_BARS } from "../engine/set.js";
 
@@ -62,20 +62,43 @@ export function nextTransition(at: { piece: number; bar: number }, shape: (piece
   return { piece: at.piece + 1, bar: transitionBar(shape(at.piece + 1)), solo: false };
 }
 
-/** Hand-picked styles as they travel in a link: `3:berlin_techno,5:minimal_techno`, tracks counted from 1. */
-export function formatPins(pins: ReadonlyMap<number, string>): string {
+/** A slot set by hand: its style, and the track index its music is seeded from (its own, unless it was moved there). */
+export interface Pin {
+  style: string;
+  from: number;
+}
+
+/**
+ * Hand-picked slots as they travel in a link, tracks counted from 1: `3:berlin_techno,5:minimal_techno@4` (track 5
+ * is the Minimal Techno track that was track 4).
+ */
+export function formatPins(pins: ReadonlyMap<number, Pin>): string {
   return [...pins]
     .sort(([a], [b]) => a - b)
-    .map(([i, id]) => `${i + 1}:${id}`)
+    .map(([i, p]) => `${i + 1}:${p.style}${p.from === i ? "" : `@${p.from + 1}`}`)
     .join(",");
 }
 
 /** The inverse of `formatPins`; whatever does not parse is left out. */
-export function parsePins(text: string | null | undefined): Map<number, string> {
-  const pins = new Map<number, string>();
+export function parsePins(text: string | null | undefined): Map<number, Pin> {
+  const pins = new Map<number, Pin>();
   for (const part of (text ?? "").split(",")) {
-    const m = /^(\d{1,6}):([a-z0-9_]+)$/.exec(part.trim());
-    if (m && Number(m[1]) >= 1) pins.set(Number(m[1]) - 1, m[2]!);
+    const m = /^(\d{1,6}):([a-z0-9_]+)(?:@(\d{1,6}))?$/.exec(part.trim());
+    const from = Number(m?.[3] ?? m?.[1]);
+    if (m && Number(m[1]) >= 1 && from >= 1) pins.set(Number(m[1]) - 1, { style: m[2]!, from: from - 1 });
   }
   return pins;
+}
+
+/**
+ * Track `from` moved to slot `to`, the tracks between shifting one slot towards where it was: the pins that make it so,
+ * for every slot from the lower of the two to the higher. `at(i)` is what slot `i` holds now. Empty for no move.
+ */
+export function moveTrack(from: number, to: number, at: (i: number) => Pin): Map<number, Pin> {
+  const moves = new Map<number, Pin>();
+  if (from === to) return moves;
+  const step = to > from ? 1 : -1;
+  for (let i = from; i !== to; i += step) moves.set(i, at(i + step));
+  moves.set(to, at(from));
+  return new Map([...moves].sort(([a], [b]) => a - b));
 }

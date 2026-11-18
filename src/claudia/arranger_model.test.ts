@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import type { StyleBundle } from "../corpus/schema.js";
 import { PHRASE_BARS, SetConductor } from "../engine/set.js";
-import { AHEAD, PAST, formatPins, nextTransition, parsePins, slotIndices, stepPhrase, transitionBar } from "./arranger_model.js";
+import { AHEAD, PAST, formatPins, moveTrack, nextTransition, parsePins, slotIndices, stepPhrase, transitionBar } from "./arranger_model.js";
 
 const claudia = (JSON.parse(readFileSync("styles/claudia.json", "utf8")) as { styles: StyleBundle[] }).styles;
 
@@ -54,13 +54,24 @@ test("the next transition is this track's until it has begun, then the next trac
   assert.deepEqual(nextTransition({ piece: 1, bar: 20 }, shape), { piece: 1, bar: 56, solo: false });
 });
 
-test("pins travel as 1-based `track:style` pairs, and what does not parse is dropped", () => {
-  const pins = new Map([[4, "minimal_techno"], [2, "berlin_techno"]]);
-  assert.equal(formatPins(pins), "3:berlin_techno,5:minimal_techno");
-  assert.deepEqual([...parsePins("3:berlin_techno,5:minimal_techno")], [[2, "berlin_techno"], [4, "minimal_techno"]]);
-  assert.deepEqual([...parsePins("0:x,abc,2:,:y,7:Bad,8:ok_1")], [[7, "ok_1"]]);
+test("pins travel as 1-based `track:style` pairs, a moved track `@` where it came from, and what does not parse is dropped", () => {
+  const pin = (style: string, from: number) => ({ style, from });
+  const pins = new Map([[4, pin("minimal_techno", 4)], [2, pin("berlin_techno", 2)], [6, pin("big_beat", 3)]]);
+  assert.equal(formatPins(pins), "3:berlin_techno,5:minimal_techno,7:big_beat@4");
+  assert.deepEqual([...parsePins("3:berlin_techno,5:minimal_techno@2")], [[2, pin("berlin_techno", 2)], [4, pin("minimal_techno", 1)]]);
+  assert.deepEqual([...parsePins("0:x,abc,2:,:y,7:Bad,8:ok_1,9:ok@0,10:ok@x")], [[7, pin("ok_1", 7)]]);
   assert.equal(parsePins(null).size, 0);
   assert.equal(formatPins(parsePins(formatPins(pins))), formatPins(pins));
+});
+
+test("moveTrack: the moved track lands on its slot and the ones between shift a slot towards where it was", () => {
+  const at = (i: number) => ({ style: `s${i}`, from: i });
+  const names = (m: Map<number, { style: string }>) => [...m].map(([i, p]) => `${i}=${p.style}`);
+  assert.deepEqual(names(moveTrack(3, 5, at)), ["3=s4", "4=s5", "5=s3"]);
+  assert.deepEqual(names(moveTrack(5, 3, at)), ["3=s5", "4=s3", "5=s4"]);
+  assert.deepEqual(names(moveTrack(4, 5, at)), ["4=s5", "5=s4"]);
+  assert.equal(moveTrack(4, 4, at).size, 0);
+  assert.deepEqual(moveTrack(3, 4, at).get(4), { style: "s3", from: 3 }, "it keeps the slot its music is seeded from");
 });
 
 // The conductor behind it: a hand-picked style is the style of that track, the set chooses around it, and a track
@@ -100,6 +111,24 @@ test("pin: a slot takes the style it is given, the tracks after are chosen aroun
   c.pin(3, other);
   c.pin(5, other);
   assert.deepEqual(styles(again, 0, 8), styles(c, 0, 8));
+});
+
+test("pin with `from`: a moved track keeps its style and its music's seed, and the set fits key and tempo around it", () => {
+  const seed = "arranger-move";
+  const c = new SetConductor(claudia, seed);
+  const was = [2, 3, 4].map((i) => c.trackInfo(i, false));
+  for (const t of was) assert.equal(t.origin, t.index, "a track the set chose is seeded from its own slot");
+  for (const [i, p] of moveTrack(2, 4, (i) => ({ style: c.trackInfo(i, false).styleId, from: c.trackInfo(i, false).origin }))) assert.equal(c.pin(i, p.style, p.from), true);
+  const now = [2, 3, 4].map((i) => c.trackInfo(i));
+  assert.deepEqual(now.map((t) => [t.styleId, t.origin]), [[was[1]!.styleId, 3], [was[2]!.styleId, 4], [was[0]!.styleId, 2]]);
+  for (const t of now) assert.ok(t.out && t.bars % PHRASE_BARS === 0);
+  // The same moves on a fresh conductor give the same set.
+  const again = new SetConductor(claudia, seed);
+  again.pin(2, was[1]!.styleId, 3);
+  again.pin(3, was[2]!.styleId, 4);
+  again.pin(4, was[0]!.styleId, 2);
+  assert.deepEqual([2, 3, 4, 5].map((i) => again.trackInfo(i)), [2, 3, 4, 5].map((i) => c.trackInfo(i)));
+  assert.equal(c.pin(3, was[0]!.styleId, -1), false);
 });
 
 test("pin: tracks the bars depend on are settled, and seeking back opens the later ones again", () => {

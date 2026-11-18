@@ -84,6 +84,8 @@ const ROLES = Object.keys(CHANNELS) as Role[];
 /** What it took to start a track, so it can be started again exactly. */
 interface Track {
   style: StyleBundle;
+  /** The track index its piece is seeded from: its own, or where it was moved from (see `pin`). */
+  origin: number;
   bpm: number;
   key: Key;
   previousForm: string | undefined;
@@ -109,6 +111,8 @@ export interface TrackInfo extends TrackPlan {
   bars: number;
   /** Whether the style was set by `pin` rather than by the set. */
   pinned: boolean;
+  /** The track index its music (and so its name) is seeded from: `index`, unless it was moved here from another slot. */
+  origin: number;
   /** How it hands over to the next track (left out where `trackInfo` is asked not to look ahead). */
   out?: Transition;
 }
@@ -250,8 +254,8 @@ export class SetConductor implements BarSource {
   /** The set's legs so far, drawn as far as needed. */
   private readonly legs: Leg[] = [];
   private readonly wave: { period: number; phase: number };
-  /** Styles set by hand for a track: track index to style id. The set chooses the rest, around them. */
-  private readonly pins = new Map<number, string>();
+  /** Styles set by hand for a track: track index to style id and the index its music is seeded from. The set chooses the rest, around them. */
+  private readonly pins = new Map<number, { style: string; from: number }>();
   /** The last track that bars generated since the latest seek depend on (the playing one, and the next once a transition is looked up). */
   private reach = -1;
 
@@ -290,12 +294,12 @@ export class SetConductor implements BarSource {
     const out = handover ? this.out(i) : undefined;
     const t = this.track(i);
     if (!t.bars) this.pieceOf(i);
-    return { index: i, styleId: t.style.id, bpm: t.bpm, lift: t.lift, target: t.target, start: t.start, seconds: t.seconds, bars: t.bars, key: t.key, pinned: this.pins.has(i), ...(out && { out }) };
+    return { index: i, styleId: t.style.id, bpm: t.bpm, lift: t.lift, target: t.target, start: t.start, seconds: t.seconds, bars: t.bars, key: t.key, pinned: this.pins.has(i), origin: t.origin, ...(out && { out }) };
   }
 
   /** The style set for track `i` by `pin`, if any. */
   pinnedStyle(i: number): string | null {
-    return this.pins.get(i) ?? null;
+    return this.pins.get(i)?.style ?? null;
   }
 
   /** The last track whose bars have been generated, or looked ahead to for its hand-over: its choice is settled. -1 before any. */
@@ -304,15 +308,16 @@ export class SetConductor implements BarSource {
   }
 
   /**
-   * Set track `i` to play style `styleId` (null: let the set choose again). The tracks after it are chosen anew, around
-   * it. Refused (false) for a track the bars already generated depend on (see `settled`), for an unknown style, and for
-   * a style the set is not playing.
+   * Set track `i` to play style `styleId` (null: let the set choose again). `from` seeds its music as track `from`'s
+   * would be in that style, for a track moved from another slot: the same piece and name, in the key and tempo the set
+   * gives it here. The tracks after it are chosen anew, around it. Refused (false) for a track the bars already
+   * generated depend on (see `settled`), for an unknown style, and for a style the set is not playing.
    */
-  pin(i: number, styleId: string | null): boolean {
-    if (!Number.isInteger(i) || i < 0 || i <= this.reach) return false;
+  pin(i: number, styleId: string | null, from = i): boolean {
+    if (!Number.isInteger(i) || i < 0 || i <= this.reach || !Number.isInteger(from) || from < 0) return false;
     if (styleId !== null && !this.styles.some((s) => s.id === styleId)) return false;
     if (styleId === null) this.pins.delete(i);
-    else this.pins.set(i, styleId);
+    else this.pins.set(i, { style: styleId, from });
     this.forget(i);
     return true;
   }
@@ -559,7 +564,7 @@ export class SetConductor implements BarSource {
 
   private build(track: Track, i: number): Piece {
     const opts: PieceOptions = { ...this.opts, frame: "set", fixed: { bpm: track.bpm, tonic: track.key.tonic, mode: track.key.mode }, lift: track.lift };
-    return new Piece(track.style, `${this.seed}/track/${i}/${track.style.id}`, i, opts, track.previousForm);
+    return new Piece(track.style, `${this.seed}/track/${track.origin}/${track.style.id}`, i, opts, track.previousForm);
   }
 
   /** Track `i`, choosing it and any before it not yet chosen. */
@@ -628,7 +633,8 @@ export class SetConductor implements BarSource {
     const step = (bpm: number) =>
       before ? Math.min(Math.max(bpm, Math.ceil(before.bpm * (1 - MAX_TEMPO_STEP))), Math.floor(before.bpm * (1 + MAX_TEMPO_STEP))) : bpm;
     const within = (s: StyleBundle, bpm: number) => Math.min(Math.max(bpm, s.corpus.tempo.min), s.corpus.tempo.max);
-    const pinned = this.styles.find((s) => s.id === this.pins.get(i));
+    const pin = this.pins.get(i);
+    const pinned = this.styles.find((s) => s.id === pin?.style);
     let style: StyleBundle;
     let bpm: number;
     if (!before) {
@@ -646,7 +652,7 @@ export class SetConductor implements BarSource {
       if (this.chosen[k]!.style.id === style.id) previousForm = this.chosen[k]!.formId;
     }
     const lift = Math.round(this.liftAt(start) * 1000) / 1000;
-    return { style, bpm, key, previousForm, formId: "", lift, target, start, seconds: 0, bars: 0 };
+    return { style, origin: pinned ? pin!.from : i, bpm, key, previousForm, formId: "", lift, target, start, seconds: 0, bars: 0 };
   }
 }
 

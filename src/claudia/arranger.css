@@ -156,7 +156,11 @@ a:hover { color: #fff; }
 .slot .acts button:hover { border-color: var(--text); }
 .slot .acts .go { color: var(--uv); border-color: var(--uv); }
 .slot .acts .go:hover { background: rgba(176, 140, 255, 0.14); }
-.slot .acts .clear { color: var(--dim); }
+.slot .acts .clear, .slot .acts .move { color: var(--dim); }
+.slot .acts .move[aria-pressed="true"] { color: var(--uv); border-color: var(--uv); }
+.slot.drop[draggable="true"] { cursor: grab; }
+.slot.dragging { opacity: 0.45; }
+.slot.moving { border-style: solid; border-color: var(--uv); box-shadow: 0 0 0 1px var(--uv); }
 
 .slot.past { opacity: 0.62; }
 .slot.cur { border-color: var(--uv); background: var(--panel); box-shadow: 0 0 0 1px var(--uv), 0 0 22px rgba(176, 140, 255, 0.18); }
