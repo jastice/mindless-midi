@@ -1,0 +1,2680 @@
+{
+  "title": "Tokyo Fusion",
+  "description": "Sunlit 80s Japanese jazz fusion: sparkling electric piano, popping slap bass, singing synth brass and tenor sax over Royal Road major-ninth changes, from the Bayshore expressway to a tropical coast and a late-night Tokyo lounge.",
+  "authors": [
+    "Neon (Gemini 4)"
+  ],
+  "tempo": {
+    "min": 112,
+    "max": 126
+  },
+  "beatsPerBar": 4,
+  "swing": 0.16,
+  "swingUnit": "16th",
+  "humanize": 0.24,
+  "keys": [
+    {
+      "tonic": "F",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "Eb",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "Bb",
+      "mode": "ionian"
+    },
+    {
+      "tonic": "G",
+      "mode": "lydian"
+    },
+    {
+      "tonic": "C",
+      "mode": "ionian"
+    }
+  ],
+  "instruments": [
+    {
+      "role": "lead",
+      "name": "Fusion synth brass",
+      "program": 62,
+      "octave": 5,
+      "patch": "silk_brass",
+      "volume": 0.58,
+      "pan": 0.12
+    },
+    {
+      "role": "counter",
+      "name": "Breezy tenor sax",
+      "program": 66,
+      "octave": 4,
+      "patch": "velvet_sax",
+      "volume": 0.5,
+      "pan": -0.24
+    },
+    {
+      "role": "arp",
+      "name": "Chorus fusion guitar",
+      "program": 27,
+      "octave": 4,
+      "patch": "chorus_guitar",
+      "volume": 0.38,
+      "pan": 0.32
+    },
+    {
+      "role": "comp",
+      "name": "Sparkling FM Rhodes",
+      "program": 5,
+      "octave": 4,
+      "volume": 0.5,
+      "pan": -0.22
+    },
+    {
+      "role": "pad",
+      "name": "Horizon warm pad",
+      "program": 89,
+      "octave": 4,
+      "patch": "horizon_pad",
+      "volume": 0.28,
+      "pan": 0
+    },
+    {
+      "role": "bass",
+      "name": "Tokyo slap bass",
+      "program": 36,
+      "octave": 2,
+      "patch": "slap_fusion_bass",
+      "volume": 0.76,
+      "pan": 0
+    },
+    {
+      "role": "drums",
+      "name": "Studio fusion kit",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.58,
+      "pan": 0
+    }
+  ],
+  "patches": [
+    {
+      "id": "silk_brass",
+      "osc": {
+        "wave": "saw",
+        "voices": 2,
+        "detune": 8,
+        "spread": 0.32
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 580,
+        "q": 0.72,
+        "keytrack": 1.1,
+        "env": 1250,
+        "a": 0.045,
+        "d": 0.35,
+        "s": 0.42,
+        "r": 0.2
+      },
+      "amp": {
+        "a": 0.025,
+        "d": 0.22,
+        "s": 0.84,
+        "r": 0.18
+      },
+      "glide": 0.035,
+      "vibrato": {
+        "rate": 5.1,
+        "depth": 7,
+        "delay": 0.3
+      },
+      "hp": 150,
+      "level": 0.36
+    },
+    {
+      "id": "velvet_sax",
+      "osc": {
+        "wave": "pulse",
+        "pw": 0.42,
+        "voices": 1,
+        "detune": 0
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 520,
+        "q": 0.75,
+        "keytrack": 1.35,
+        "env": 780,
+        "a": 0.06,
+        "d": 0.34,
+        "s": 0.58,
+        "r": 0.16
+      },
+      "amp": {
+        "a": 0.045,
+        "d": 0.22,
+        "s": 0.88,
+        "r": 0.16
+      },
+      "glide": 0.045,
+      "vibrato": {
+        "rate": 5,
+        "depth": 11,
+        "delay": 0.28
+      },
+      "breath": 0.07,
+      "formants": [
+        {
+          "freq": 520,
+          "q": 2.2,
+          "gain": 0.42
+        },
+        {
+          "freq": 1120,
+          "q": 2.8,
+          "gain": 0.18
+        }
+      ],
+      "hp": 150,
+      "level": 0.4
+    },
+    {
+      "id": "chorus_guitar",
+      "osc": {
+        "wave": "tri",
+        "voices": 2,
+        "detune": 6,
+        "spread": 0.42,
+        "fm": {
+          "ratio": 2,
+          "amount": 0.7,
+          "decay": 0.055
+        }
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 900,
+        "q": 0.75,
+        "keytrack": 1.5,
+        "env": 1500,
+        "a": 0.003,
+        "d": 0.28,
+        "s": 0.25,
+        "r": 0.24
+      },
+      "amp": {
+        "a": 0.003,
+        "d": 0.65,
+        "s": 0.2,
+        "r": 0.22
+      },
+      "glide": 0.03,
+      "vibrato": {
+        "rate": 5.2,
+        "depth": 5,
+        "delay": 0.35
+      },
+      "hp": 170,
+      "level": 0.4
+    },
+    {
+      "id": "horizon_pad",
+      "osc": {
+        "wave": "pulse",
+        "pw": 0.48,
+        "voices": 3,
+        "detune": 10,
+        "spread": 0.78
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 520,
+        "q": 0.7,
+        "keytrack": 0.8,
+        "env": 420,
+        "a": 0.9,
+        "d": 1.4,
+        "s": 0.65,
+        "r": 1.2
+      },
+      "amp": {
+        "a": 0.75,
+        "d": 1,
+        "s": 0.9,
+        "r": 1.2
+      },
+      "mod": [
+        {
+          "target": "pw",
+          "shape": "sine",
+          "beats": 16,
+          "depth": 0.16
+        }
+      ],
+      "hp": 210,
+      "level": 0.18
+    },
+    {
+      "id": "slap_fusion_bass",
+      "osc": {
+        "wave": "tri",
+        "voices": 1,
+        "detune": 0,
+        "sub": 0.35,
+        "fm": {
+          "ratio": 2,
+          "amount": 1.1,
+          "decay": 0.04
+        }
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 260,
+        "q": 1.1,
+        "keytrack": 1.1,
+        "env": 1150,
+        "a": 0.002,
+        "d": 0.14,
+        "s": 0.1,
+        "r": 0.09
+      },
+      "amp": {
+        "a": 0.002,
+        "d": 0.26,
+        "s": 0.55,
+        "r": 0.09
+      },
+      "glide": 0.035,
+      "accent": {
+        "cutoff": 750,
+        "q": 0.7
+      },
+      "level": 0.5
+    },
+    {
+      "id": "finger_fusion_bass",
+      "osc": {
+        "wave": "tri",
+        "voices": 1,
+        "detune": 0,
+        "sub": 0.4,
+        "fm": {
+          "ratio": 2,
+          "amount": 0.55,
+          "decay": 0.055
+        }
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 240,
+        "q": 0.85,
+        "keytrack": 1,
+        "env": 620,
+        "a": 0.003,
+        "d": 0.18,
+        "s": 0.12,
+        "r": 0.1
+      },
+      "amp": {
+        "a": 0.003,
+        "d": 0.32,
+        "s": 0.62,
+        "r": 0.1
+      },
+      "glide": 0.035,
+      "level": 0.5
+    },
+    {
+      "id": "fretless_fusion_bass",
+      "osc": {
+        "wave": "tri",
+        "voices": 1,
+        "detune": 0,
+        "sub": 0.3,
+        "fm": {
+          "ratio": 2,
+          "amount": 0.45,
+          "decay": 0.14
+        }
+      },
+      "filter": {
+        "type": "low",
+        "cutoff": 230,
+        "q": 1.25,
+        "keytrack": 1.1,
+        "env": 480,
+        "a": 0.018,
+        "d": 0.36,
+        "s": 0.38,
+        "r": 0.14
+      },
+      "amp": {
+        "a": 0.014,
+        "d": 0.35,
+        "s": 0.72,
+        "r": 0.14
+      },
+      "glide": 0.065,
+      "vibrato": {
+        "rate": 4.8,
+        "depth": 8,
+        "delay": 0.32
+      },
+      "level": 0.5
+    }
+  ],
+  "synthKit": {
+    "kick": {
+      "f0": 145,
+      "f1": 52,
+      "sweep": 0.032,
+      "decay": 0.21,
+      "drive": 1.1,
+      "click": 0.16
+    },
+    "snare": {
+      "tone": 205,
+      "toneDecay": 0.06,
+      "noiseDecay": 0.13,
+      "noiseHp": 1900,
+      "mix": 0.54
+    },
+    "hatScale": 1.06,
+    "hatDecay": 0.026,
+    "toms": {
+      "low": 135,
+      "high": 215
+    },
+    "hat": {
+      "tone": 9000,
+      "q": 1,
+      "hp": 7000,
+      "decay": 0.018,
+      "open": 0.17,
+      "metal": 0.28
+    },
+    "clap": {
+      "tone": 1300,
+      "q": 1.8,
+      "bursts": 3,
+      "decay": 0.1
+    },
+    "ride": {
+      "hp": 5600,
+      "decay": 0.48,
+      "level": 0.28
+    }
+  },
+  "progressions": [
+    {
+      "id": "bayshore-vamp",
+      "mood": "sunlit fusion opening vamp",
+      "palette": "bayshore drive",
+      "chords": [
+        {
+          "symbol": "IVmaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 4
+        },
+        {
+          "symbol": "Imaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "ii9",
+          "beats": 2
+        },
+        {
+          "symbol": "V13",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "royal-road",
+      "mood": "euphoric Japanese Royal Road ninths",
+      "palette": "bayshore drive",
+      "chords": [
+        {
+          "symbol": "IVmaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "V13",
+          "beats": 4
+        },
+        {
+          "symbol": "iii7",
+          "beats": 4
+        },
+        {
+          "symbol": "vi9",
+          "beats": 4
+        },
+        {
+          "symbol": "ii9",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 2
+        },
+        {
+          "symbol": "V13",
+          "beats": 2
+        },
+        {
+          "symbol": "Imaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "bayshore-turnaround",
+      "mood": "gleaming city-pop secondary dominants and borrowed minor four",
+      "palette": "bayshore drive",
+      "chords": [
+        {
+          "symbol": "Imaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "III7",
+          "beats": 4
+        },
+        {
+          "symbol": "vi9",
+          "beats": 4
+        },
+        {
+          "symbol": "v7",
+          "beats": 2
+        },
+        {
+          "symbol": "I9",
+          "beats": 2
+        },
+        {
+          "symbol": "IVmaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "iv6",
+          "beats": 4
+        },
+        {
+          "symbol": "iii7",
+          "beats": 2
+        },
+        {
+          "symbol": "VI7b9",
+          "beats": 2
+        },
+        {
+          "symbol": "ii9",
+          "beats": 2
+        },
+        {
+          "symbol": "V13",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "expressway-bridge",
+      "mood": "heroic flat-six flat-seven fusion lift",
+      "palette": "bayshore drive",
+      "chords": [
+        {
+          "symbol": "bVImaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII9",
+          "beats": 4
+        },
+        {
+          "symbol": "Imaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "Imaj7#11",
+          "beats": 4
+        },
+        {
+          "symbol": "bVImaj7",
+          "beats": 4
+        },
+        {
+          "symbol": "bVII13",
+          "beats": 4
+        },
+        {
+          "symbol": "ii9",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "pacific-lydian",
+      "mood": "radiant Lydian coastal shimmer",
+      "palette": "pacific breeze",
+      "chords": [
+        {
+          "symbol": "Imaj7#11",
+          "beats": 4
+        },
+        {
+          "symbol": "II9",
+          "beats": 4
+        },
+        {
+          "symbol": "Imaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "II13",
+          "beats": 4
+        },
+        {
+          "symbol": "IVmaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "iii7",
+          "beats": 4
+        },
+        {
+          "symbol": "ii9",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "island-cruise",
+      "mood": "breezy suspended tropical fusion turnaround",
+      "palette": "pacific breeze",
+      "chords": [
+        {
+          "symbol": "I9sus4",
+          "beats": 4
+        },
+        {
+          "symbol": "bVIImaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "IVmaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 4
+        },
+        {
+          "symbol": "vi9",
+          "beats": 4
+        },
+        {
+          "symbol": "II9",
+          "beats": 4
+        },
+        {
+          "symbol": "ii9",
+          "beats": 2
+        },
+        {
+          "symbol": "iii7",
+          "beats": 2
+        },
+        {
+          "symbol": "IVmaj9",
+          "beats": 2
+        },
+        {
+          "symbol": "V13",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "coral-vamp",
+      "mood": "sunlit two-chord beach breeze",
+      "palette": "pacific breeze",
+      "chords": [
+        {
+          "symbol": "Imaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "II13",
+          "beats": 4
+        },
+        {
+          "symbol": "IVmaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "shinjuku-rain",
+      "mood": "silky midnight Dorian fusion groove",
+      "palette": "shinjuku midnight",
+      "chords": [
+        {
+          "symbol": "i9",
+          "beats": 4
+        },
+        {
+          "symbol": "i11",
+          "beats": 4
+        },
+        {
+          "symbol": "IV13",
+          "beats": 4
+        },
+        {
+          "symbol": "IV9",
+          "beats": 4
+        },
+        {
+          "symbol": "bVImaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 2
+        },
+        {
+          "symbol": "V7b9",
+          "beats": 2
+        },
+        {
+          "symbol": "i9",
+          "beats": 4
+        },
+        {
+          "symbol": "iiø7",
+          "beats": 2
+        },
+        {
+          "symbol": "V7#9",
+          "beats": 2
+        }
+      ]
+    },
+    {
+      "id": "rainy-overpass",
+      "mood": "floating relative-major neon reflection",
+      "palette": "shinjuku midnight",
+      "chords": [
+        {
+          "symbol": "bIIImaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "bVImaj7#11",
+          "beats": 4
+        },
+        {
+          "symbol": "ii9",
+          "beats": 4
+        },
+        {
+          "symbol": "V13",
+          "beats": 4
+        },
+        {
+          "symbol": "i9",
+          "beats": 4
+        },
+        {
+          "symbol": "IV13",
+          "beats": 4
+        },
+        {
+          "symbol": "bVImaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "V7b13",
+          "beats": 4
+        }
+      ]
+    },
+    {
+      "id": "midnight-vamp",
+      "mood": "velvet Dorian lounge intro",
+      "palette": "shinjuku midnight",
+      "chords": [
+        {
+          "symbol": "i9",
+          "beats": 4
+        },
+        {
+          "symbol": "IV13",
+          "beats": 4
+        },
+        {
+          "symbol": "bVImaj9",
+          "beats": 4
+        },
+        {
+          "symbol": "V9sus4",
+          "beats": 4
+        }
+      ]
+    }
+  ],
+  "motifs": [
+    {
+      "id": "bayshore-hook",
+      "role": "lead",
+      "anchor": "chord",
+      "palette": "bayshore drive",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.8
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.88
+        },
+        {
+          "t": 1.5,
+          "d": 1.25,
+          "deg": 6,
+          "v": 0.94,
+          "g": "slide"
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.78
+        },
+        {
+          "t": 3.5,
+          "d": 0.95,
+          "deg": 7,
+          "v": 0.92,
+          "g": "accent"
+        },
+        {
+          "t": 4.75,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.82
+        },
+        {
+          "t": 5.25,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.84
+        },
+        {
+          "t": 5.75,
+          "d": 1.5,
+          "deg": 2,
+          "v": 0.88
+        }
+      ]
+    },
+    {
+      "id": "skyline-soar",
+      "role": "lead",
+      "anchor": "key",
+      "palette": "bayshore drive",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.7,
+          "deg": 4,
+          "v": 0.86
+        },
+        {
+          "t": 0.75,
+          "d": 0.7,
+          "deg": 5,
+          "v": 0.82
+        },
+        {
+          "t": 1.5,
+          "d": 2,
+          "deg": 7,
+          "v": 0.94,
+          "g": "swell"
+        },
+        {
+          "t": 4,
+          "d": 0.45,
+          "deg": 8,
+          "v": 0.84
+        },
+        {
+          "t": 4.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.88
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.82
+        },
+        {
+          "t": 5.5,
+          "d": 1.75,
+          "deg": 4,
+          "v": 0.9,
+          "g": "slide"
+        }
+      ]
+    },
+    {
+      "id": "expressway-sprint",
+      "role": "lead",
+      "anchor": "chord",
+      "palette": "bayshore drive",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0.25,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.78
+        },
+        {
+          "t": 0.75,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.84
+        },
+        {
+          "t": 1.25,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.9
+        },
+        {
+          "t": 1.75,
+          "d": 0.7,
+          "deg": 8,
+          "v": 0.94,
+          "g": "slide"
+        },
+        {
+          "t": 2.75,
+          "d": 0.75,
+          "deg": 6,
+          "v": 0.86
+        },
+        {
+          "t": 4.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.88
+        },
+        {
+          "t": 5.5,
+          "d": 1.75,
+          "deg": 4,
+          "v": 0.9
+        }
+      ]
+    },
+    {
+      "id": "bayshore-sax-reply",
+      "role": "counter",
+      "anchor": "chord",
+      "palette": "bayshore drive",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.76
+        },
+        {
+          "t": 2.5,
+          "d": 1.2,
+          "deg": 4,
+          "v": 0.84,
+          "g": "slide"
+        },
+        {
+          "t": 5.5,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.74
+        },
+        {
+          "t": 6,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 6.5,
+          "d": 1.2,
+          "deg": 6,
+          "v": 0.86
+        }
+      ]
+    },
+    {
+      "id": "horn-punch-answer",
+      "role": "counter",
+      "anchor": "chord",
+      "palette": "bayshore drive",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.82,
+          "g": "accent"
+        },
+        {
+          "t": 2,
+          "d": 0.9,
+          "deg": 2,
+          "v": 0.78
+        },
+        {
+          "t": 5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.8
+        },
+        {
+          "t": 5.5,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.84
+        },
+        {
+          "t": 6,
+          "d": 1.4,
+          "deg": 7,
+          "v": 0.88,
+          "g": "slide"
+        }
+      ]
+    },
+    {
+      "id": "pacific-guitar-sing",
+      "role": "lead",
+      "anchor": "chord",
+      "palette": "pacific breeze",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.7,
+          "deg": 2,
+          "v": 0.84
+        },
+        {
+          "t": 0.75,
+          "d": 0.7,
+          "deg": 4,
+          "v": 0.88
+        },
+        {
+          "t": 1.5,
+          "d": 1.45,
+          "deg": 8,
+          "v": 0.95,
+          "g": "slide"
+        },
+        {
+          "t": 3.25,
+          "d": 0.6,
+          "deg": 6,
+          "v": 0.82
+        },
+        {
+          "t": 4.25,
+          "d": 0.5,
+          "deg": 4,
+          "v": 0.86
+        },
+        {
+          "t": 4.75,
+          "d": 0.7,
+          "deg": 5,
+          "v": 0.9
+        },
+        {
+          "t": 5.5,
+          "d": 1.85,
+          "deg": 4,
+          "v": 0.92
+        }
+      ]
+    },
+    {
+      "id": "lagoon-glide",
+      "role": "lead",
+      "anchor": "key",
+      "palette": "pacific breeze",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.8
+        },
+        {
+          "t": 1,
+          "d": 0.5,
+          "deg": 3,
+          "v": 0.86
+        },
+        {
+          "t": 1.5,
+          "d": 1.3,
+          "deg": 4,
+          "v": 0.92,
+          "g": "slide"
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.84
+        },
+        {
+          "t": 3.5,
+          "d": 1.3,
+          "deg": 7,
+          "v": 0.92
+        },
+        {
+          "t": 5.25,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.84
+        },
+        {
+          "t": 5.75,
+          "d": 1.6,
+          "deg": 4,
+          "v": 0.88
+        }
+      ]
+    },
+    {
+      "id": "ocean-flute-reply",
+      "role": "counter",
+      "anchor": "chord",
+      "palette": "pacific breeze",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.78
+        },
+        {
+          "t": 3,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.84
+        },
+        {
+          "t": 3.5,
+          "d": 1.25,
+          "deg": 8,
+          "v": 0.88,
+          "g": "slide"
+        },
+        {
+          "t": 6,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.8
+        },
+        {
+          "t": 6.5,
+          "d": 1.2,
+          "deg": 4,
+          "v": 0.84
+        }
+      ]
+    },
+    {
+      "id": "shinjuku-sax-theme",
+      "role": "lead",
+      "anchor": "chord",
+      "palette": "shinjuku midnight",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.9,
+          "deg": 6,
+          "v": 0.82,
+          "g": "slide"
+        },
+        {
+          "t": 1.5,
+          "d": 1.4,
+          "deg": 4,
+          "v": 0.88
+        },
+        {
+          "t": 3.25,
+          "d": 0.65,
+          "deg": 2,
+          "v": 0.76
+        },
+        {
+          "t": 4.25,
+          "d": 0.65,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 5,
+          "d": 0.5,
+          "deg": 5,
+          "v": 0.84
+        },
+        {
+          "t": 5.5,
+          "d": 2,
+          "deg": 6,
+          "v": 0.9,
+          "g": "swell"
+        }
+      ]
+    },
+    {
+      "id": "velvet-express",
+      "role": "lead",
+      "anchor": "chord",
+      "palette": "shinjuku midnight",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.2,
+          "deg": 8,
+          "v": 0.86
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.78
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 5,
+          "v": 0.8
+        },
+        {
+          "t": 2.5,
+          "d": 1.2,
+          "deg": 4,
+          "v": 0.88,
+          "g": "slide"
+        },
+        {
+          "t": 4.5,
+          "d": 0.45,
+          "deg": 2,
+          "v": 0.76
+        },
+        {
+          "t": 5,
+          "d": 0.7,
+          "deg": 4,
+          "v": 0.84
+        },
+        {
+          "t": 5.75,
+          "d": 1.75,
+          "deg": 2,
+          "v": 0.86
+        }
+      ]
+    },
+    {
+      "id": "glass-vibe-answer",
+      "role": "counter",
+      "anchor": "chord",
+      "palette": "shinjuku midnight",
+      "lengthBeats": 8,
+      "notes": [
+        {
+          "t": 2,
+          "d": 0.7,
+          "deg": 8,
+          "v": 0.76
+        },
+        {
+          "t": 2.75,
+          "d": 0.9,
+          "deg": 6,
+          "v": 0.8
+        },
+        {
+          "t": 5.5,
+          "d": 0.65,
+          "deg": 4,
+          "v": 0.74
+        },
+        {
+          "t": 6.25,
+          "d": 1.4,
+          "deg": 8,
+          "v": 0.82
+        }
+      ]
+    },
+    {
+      "id": "guitar-sparkle-16",
+      "role": "arp",
+      "anchor": "chord",
+      "palette": "bayshore drive",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.72
+        },
+        {
+          "t": 0.75,
+          "d": 0.35,
+          "deg": 6,
+          "v": 0.82
+        },
+        {
+          "t": 1.5,
+          "d": 0.3,
+          "deg": 8,
+          "v": 0.78
+        },
+        {
+          "t": 2.5,
+          "d": 0.4,
+          "deg": 9,
+          "v": 0.84
+        },
+        {
+          "t": 3.5,
+          "d": 0.35,
+          "deg": 6,
+          "v": 0.76
+        }
+      ]
+    },
+    {
+      "id": "guitar-sync-cell",
+      "role": "arp",
+      "anchor": "chord",
+      "palette": "bayshore drive",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.3,
+          "deg": 2,
+          "v": 0.76
+        },
+        {
+          "t": 0.75,
+          "d": 0.35,
+          "deg": 6,
+          "v": 0.82
+        },
+        {
+          "t": 1.5,
+          "d": 0.25,
+          "deg": 8,
+          "v": 0.74
+        },
+        {
+          "t": 2.75,
+          "d": 0.35,
+          "deg": 7,
+          "v": 0.82
+        },
+        {
+          "t": 3.5,
+          "d": 0.35,
+          "deg": 6,
+          "v": 0.76
+        }
+      ]
+    },
+    {
+      "id": "marimba-sun-weave",
+      "role": "arp",
+      "anchor": "chord",
+      "palette": "pacific breeze",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.3,
+          "deg": 2,
+          "v": 0.76
+        },
+        {
+          "t": 0.75,
+          "d": 0.35,
+          "deg": 6,
+          "v": 0.8
+        },
+        {
+          "t": 1.5,
+          "d": 0.35,
+          "deg": 8,
+          "v": 0.82
+        },
+        {
+          "t": 2.5,
+          "d": 0.35,
+          "deg": 6,
+          "v": 0.78
+        },
+        {
+          "t": 3.25,
+          "d": 0.35,
+          "deg": 4,
+          "v": 0.74
+        }
+      ]
+    },
+    {
+      "id": "marimba-cross-pulse",
+      "role": "arp",
+      "anchor": "chord",
+      "palette": "pacific breeze",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.35,
+          "deg": 4,
+          "v": 0.78
+        },
+        {
+          "t": 1.25,
+          "d": 0.35,
+          "deg": 8,
+          "v": 0.82
+        },
+        {
+          "t": 2,
+          "d": 0.35,
+          "deg": 6,
+          "v": 0.76
+        },
+        {
+          "t": 2.75,
+          "d": 0.35,
+          "deg": 9,
+          "v": 0.8
+        },
+        {
+          "t": 3.5,
+          "d": 0.35,
+          "deg": 4,
+          "v": 0.72
+        }
+      ]
+    },
+    {
+      "id": "lounge-guitar-chime",
+      "role": "arp",
+      "anchor": "chord",
+      "palette": "shinjuku midnight",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0.5,
+          "d": 0.5,
+          "deg": 6,
+          "v": 0.68
+        },
+        {
+          "t": 1.5,
+          "d": 0.55,
+          "deg": 8,
+          "v": 0.76
+        },
+        {
+          "t": 2.75,
+          "d": 0.45,
+          "deg": 9,
+          "v": 0.74
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.66
+        }
+      ]
+    },
+    {
+      "id": "lounge-guitar-drops",
+      "role": "arp",
+      "anchor": "chord",
+      "palette": "shinjuku midnight",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 8,
+          "v": 0.72
+        },
+        {
+          "t": 1.25,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.68
+        },
+        {
+          "t": 2.25,
+          "d": 0.55,
+          "deg": 4,
+          "v": 0.74
+        },
+        {
+          "t": 3.25,
+          "d": 0.55,
+          "deg": 8,
+          "v": 0.76
+        }
+      ]
+    },
+    {
+      "id": "slap-octave-bounce",
+      "role": "bass",
+      "anchor": "chord",
+      "palette": "bayshore drive",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.95,
+          "g": "accent"
+        },
+        {
+          "t": 0.75,
+          "d": 0.25,
+          "deg": 7,
+          "v": 0.88
+        },
+        {
+          "t": 1.5,
+          "d": 0.4,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 2,
+          "d": 0.3,
+          "deg": 0,
+          "v": 0.86
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.92,
+          "g": "accent"
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 6,
+          "v": 0.8
+        },
+        {
+          "t": 3.5,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.86,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "slap-expressway-pop",
+      "role": "bass",
+      "anchor": "chord",
+      "palette": "bayshore drive",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.94
+        },
+        {
+          "t": 0.5,
+          "d": 0.25,
+          "deg": 0,
+          "v": 0.74
+        },
+        {
+          "t": 0.75,
+          "d": 0.3,
+          "deg": 7,
+          "v": 0.9
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 6,
+          "v": 0.84,
+          "g": "slide"
+        },
+        {
+          "t": 2.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.9
+        },
+        {
+          "t": 3.25,
+          "d": 0.25,
+          "deg": 4,
+          "v": 0.78
+        },
+        {
+          "t": 3.5,
+          "d": 0.4,
+          "deg": 0,
+          "v": 0.88,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "pacific-finger-groove",
+      "role": "bass",
+      "anchor": "chord",
+      "palette": "pacific breeze",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.65,
+          "deg": 0,
+          "v": 0.92
+        },
+        {
+          "t": 0.75,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 1.5,
+          "d": 0.65,
+          "deg": 7,
+          "v": 0.88,
+          "g": "slide"
+        },
+        {
+          "t": 2.5,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.84
+        },
+        {
+          "t": 3,
+          "d": 0.4,
+          "deg": 2,
+          "v": 0.78
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.86,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "pacific-sync-walk",
+      "role": "bass",
+      "anchor": "chord",
+      "palette": "pacific breeze",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.5,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 1,
+          "d": 0.4,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 1.5,
+          "d": 0.45,
+          "deg": 5,
+          "v": 0.84
+        },
+        {
+          "t": 2,
+          "d": 0.45,
+          "deg": 7,
+          "v": 0.88
+        },
+        {
+          "t": 2.75,
+          "d": 0.45,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.86,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "fretless-midnight-sing",
+      "role": "bass",
+      "anchor": "chord",
+      "palette": "shinjuku midnight",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 1.35,
+          "deg": 0,
+          "v": 0.9
+        },
+        {
+          "t": 1.5,
+          "d": 0.75,
+          "deg": 4,
+          "v": 0.82,
+          "g": "slide"
+        },
+        {
+          "t": 2.5,
+          "d": 0.75,
+          "deg": 6,
+          "v": 0.86,
+          "g": "slide"
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "deg": 0,
+          "v": 0.82,
+          "approach": true
+        }
+      ]
+    },
+    {
+      "id": "fretless-velvet-pocket",
+      "role": "bass",
+      "anchor": "chord",
+      "palette": "shinjuku midnight",
+      "lengthBeats": 4,
+      "notes": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "deg": 0,
+          "v": 0.92
+        },
+        {
+          "t": 1.25,
+          "d": 0.6,
+          "deg": 7,
+          "v": 0.84,
+          "g": "slide"
+        },
+        {
+          "t": 2,
+          "d": 0.85,
+          "deg": 4,
+          "v": 0.82
+        },
+        {
+          "t": 3.25,
+          "d": 0.65,
+          "deg": 0,
+          "v": 0.84,
+          "approach": true
+        }
+      ]
+    }
+  ],
+  "comping": [
+    {
+      "id": "rhodes-fusion-push",
+      "role": "comp",
+      "voicing": "rootless",
+      "lengthBeats": 4,
+      "strum": 0.03,
+      "hits": [
+        {
+          "t": 0,
+          "d": 1.15,
+          "v": 0.82
+        },
+        {
+          "t": 1.5,
+          "d": 0.9,
+          "v": 0.78
+        },
+        {
+          "t": 2.75,
+          "d": 0.65,
+          "v": 0.72
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "v": 0.76
+        }
+      ]
+    },
+    {
+      "id": "rhodes-city-bounce",
+      "role": "comp",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0.035,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.7,
+          "v": 0.84
+        },
+        {
+          "t": 1.5,
+          "d": 1.2,
+          "v": 0.8
+        },
+        {
+          "t": 3.25,
+          "d": 0.65,
+          "v": 0.76
+        }
+      ]
+    },
+    {
+      "id": "rhodes-lounge-float",
+      "role": "comp",
+      "voicing": "rootless",
+      "palette": "shinjuku midnight",
+      "lengthBeats": 4,
+      "strum": 0.045,
+      "hits": [
+        {
+          "t": 0,
+          "d": 1.8,
+          "v": 0.78
+        },
+        {
+          "t": 2.5,
+          "d": 1.35,
+          "v": 0.74
+        }
+      ]
+    },
+    {
+      "id": "piano-breeze-comp",
+      "role": "comp",
+      "voicing": "open",
+      "palette": "pacific breeze",
+      "lengthBeats": 4,
+      "strum": 0.025,
+      "hits": [
+        {
+          "t": 0,
+          "d": 0.9,
+          "v": 0.8
+        },
+        {
+          "t": 1.5,
+          "d": 0.8,
+          "v": 0.76
+        },
+        {
+          "t": 2.5,
+          "d": 0.65,
+          "v": 0.74
+        },
+        {
+          "t": 3.5,
+          "d": 0.45,
+          "v": 0.7
+        }
+      ]
+    },
+    {
+      "id": "horizon-pad-hold",
+      "role": "pad",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0.04,
+      "hits": [
+        {
+          "t": 0,
+          "d": 3.9,
+          "v": 0.56
+        }
+      ]
+    },
+    {
+      "id": "horizon-pad-spread",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 4,
+      "strum": 0.05,
+      "hits": [
+        {
+          "t": 0,
+          "d": 3.9,
+          "v": 0.54
+        }
+      ]
+    }
+  ],
+  "drums": [
+    {
+      "id": "fusion-intro-pulse",
+      "kind": "groove",
+      "intensity": 0.35,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x.........x.....",
+        "snare": "",
+        "rim": "....x.......x...",
+        "clap": "",
+        "closedHat": "x.o.x.o.x.o.x.o.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "..o...o...o...o."
+      }
+    },
+    {
+      "id": "bayshore-pocket",
+      "kind": "groove",
+      "intensity": 0.65,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.....x...x.....",
+        "snare": "....X..o....X..o",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.x.x.x..x",
+        "openHat": "..............x.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "..o...o...o...o."
+      }
+    },
+    {
+      "id": "bayshore-chorus-drive",
+      "kind": "groove",
+      "intensity": 0.88,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.....x...X..o..",
+        "snare": "....X..o.o..X..o",
+        "rim": "",
+        "clap": "....x.......x...",
+        "closedHat": "....x.......x..x",
+        "openHat": "..............x.",
+        "ride": "x.o.x.o.x.o.x.o.",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "..o...o...o...o."
+      }
+    },
+    {
+      "id": "pacific-breeze-groove",
+      "kind": "groove",
+      "intensity": 0.6,
+      "palette": "pacific breeze",
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.....x...x...o.",
+        "snare": "....X....o..X...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.o.x.x.x.o.x..x",
+        "openHat": "..............o.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "o.x.o.x.o.x.o.x."
+      }
+    },
+    {
+      "id": "pacific-sun-chorus",
+      "kind": "groove",
+      "intensity": 0.85,
+      "palette": "pacific breeze",
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.....x...X...o.",
+        "snare": "....X..o....X..o",
+        "rim": "",
+        "clap": "",
+        "closedHat": "....x.......x..x",
+        "openHat": "..............x.",
+        "ride": "x..ox..ox..ox...",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "o.x.o.x.o.x.o.x."
+      }
+    },
+    {
+      "id": "shinjuku-rim-lounge",
+      "kind": "groove",
+      "intensity": 0.45,
+      "palette": "shinjuku midnight",
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x.....o...x.....",
+        "snare": "",
+        "rim": "....x.....o.x...",
+        "clap": "",
+        "closedHat": "....x.......x..x",
+        "openHat": "..............o.",
+        "ride": "x...x.o.x...x.o.",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "..o.......o....."
+      }
+    },
+    {
+      "id": "shinjuku-midnight-drive",
+      "kind": "groove",
+      "intensity": 0.78,
+      "palette": "shinjuku midnight",
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.....x...x..o..",
+        "snare": "....x..o....X...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "....x.......x..x",
+        "openHat": "..............x.",
+        "ride": "x..ox..ox..ox..o",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "..o...o...o...o."
+      }
+    },
+    {
+      "id": "studio-tom-cascade",
+      "kind": "fill",
+      "intensity": 0.75,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X.....x.......x.",
+        "snare": "....X..ox.x.....",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.x.x.x.........",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": ".............xX.",
+        "tomHigh": "...........xx...",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "snare-sync-turnaround",
+      "kind": "fill",
+      "intensity": 0.5,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "x.....x...x.....",
+        "snare": "....x....ox.o.X.",
+        "rim": "",
+        "clap": "",
+        "closedHat": "x.o.x.o.x.o.....",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "..............x.",
+        "tomHigh": "............x...",
+        "shaker": ""
+      }
+    }
+  ],
+  "forms": [
+    {
+      "id": "bayshore-expressway",
+      "palette": "bayshore drive",
+      "tempo": {
+        "min": 118,
+        "max": 128
+      },
+      "keys": [
+        {
+          "tonic": "F",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "Eb",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "Bb",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "G",
+          "mode": "lydian"
+        }
+      ],
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.38,
+          "roles": [
+            "comp",
+            "arp",
+            "bass",
+            "drums"
+          ],
+          "progression": "bayshore-vamp"
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.66,
+          "roles": [
+            "lead",
+            "comp",
+            "arp",
+            "bass",
+            "drums"
+          ],
+          "progression": "royal-road"
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.88,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "bayshore-turnaround"
+        },
+        {
+          "label": "bridge",
+          "bars": 8,
+          "intensity": 0.56,
+          "roles": [
+            "counter",
+            "comp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "expressway-bridge"
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.9,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "bayshore-turnaround"
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.44,
+          "roles": [
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "bayshore-vamp"
+        }
+      ]
+    },
+    {
+      "id": "rainbow-bridge",
+      "palette": "bayshore drive",
+      "tempo": {
+        "min": 114,
+        "max": 124
+      },
+      "keys": [
+        {
+          "tonic": "C",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "F",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "Eb",
+          "mode": "ionian"
+        }
+      ],
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.36,
+          "roles": [
+            "comp",
+            "bass",
+            "drums"
+          ],
+          "progression": "bayshore-vamp"
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.68,
+          "roles": [
+            "lead",
+            "comp",
+            "arp",
+            "bass",
+            "drums"
+          ],
+          "progression": "bayshore-turnaround"
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.88,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "royal-road"
+        },
+        {
+          "label": "break",
+          "bars": 8,
+          "intensity": 0.52,
+          "roles": [
+            "arp",
+            "comp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "expressway-bridge"
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.92,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "royal-road"
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.42,
+          "roles": [
+            "lead",
+            "comp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "bayshore-vamp"
+        }
+      ]
+    },
+    {
+      "id": "pacific-coast",
+      "palette": "pacific breeze",
+      "tempo": {
+        "min": 108,
+        "max": 118
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "lydian"
+        },
+        {
+          "tonic": "G",
+          "mode": "ionian"
+        },
+        {
+          "tonic": "C",
+          "mode": "lydian"
+        },
+        {
+          "tonic": "A",
+          "mode": "mixolydian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Clean fusion guitar",
+          "program": 27,
+          "octave": 5,
+          "patch": "chorus_guitar",
+          "volume": 0.66,
+          "pan": 0.14
+        },
+        {
+          "role": "counter",
+          "name": "Ocean flute",
+          "program": 73,
+          "octave": 5,
+          "volume": 0.42,
+          "pan": -0.26
+        },
+        {
+          "role": "arp",
+          "name": "Coral marimba",
+          "program": 12,
+          "octave": 5,
+          "volume": 0.36,
+          "pan": 0.3
+        },
+        {
+          "role": "comp",
+          "name": "Sunlit grand piano",
+          "program": 1,
+          "octave": 4,
+          "volume": 0.46,
+          "pan": -0.2
+        },
+        {
+          "role": "pad",
+          "name": "Warm horizon pad",
+          "program": 89,
+          "octave": 4,
+          "patch": "horizon_pad",
+          "volume": 0.28,
+          "pan": 0
+        },
+        {
+          "role": "bass",
+          "name": "Finger fusion bass",
+          "program": 33,
+          "octave": 2,
+          "patch": "finger_fusion_bass",
+          "volume": 0.72,
+          "pan": 0
+        }
+      ],
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.4,
+          "roles": [
+            "comp",
+            "arp",
+            "bass",
+            "drums"
+          ],
+          "progression": "coral-vamp"
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.64,
+          "roles": [
+            "lead",
+            "comp",
+            "arp",
+            "bass",
+            "drums"
+          ],
+          "progression": "pacific-lydian"
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.84,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "island-cruise"
+        },
+        {
+          "label": "breeze",
+          "bars": 8,
+          "intensity": 0.52,
+          "roles": [
+            "counter",
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "pacific-lydian"
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.86,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "island-cruise"
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.42,
+          "roles": [
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "coral-vamp"
+        }
+      ]
+    },
+    {
+      "id": "shinjuku-lounge",
+      "palette": "shinjuku midnight",
+      "tempo": {
+        "min": 94,
+        "max": 104
+      },
+      "keys": [
+        {
+          "tonic": "D",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "G",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "A",
+          "mode": "dorian"
+        },
+        {
+          "tonic": "C",
+          "mode": "dorian"
+        }
+      ],
+      "instruments": [
+        {
+          "role": "lead",
+          "name": "Midnight tenor sax",
+          "program": 66,
+          "octave": 4,
+          "patch": "velvet_sax",
+          "volume": 0.6,
+          "pan": 0.14
+        },
+        {
+          "role": "counter",
+          "name": "Glass vibraphone",
+          "program": 11,
+          "octave": 5,
+          "volume": 0.46,
+          "pan": -0.24
+        },
+        {
+          "role": "arp",
+          "name": "Lounge jazz guitar",
+          "program": 27,
+          "octave": 4,
+          "patch": "chorus_guitar",
+          "volume": 0.34,
+          "pan": 0.28
+        },
+        {
+          "role": "comp",
+          "name": "Velvet Rhodes",
+          "program": 5,
+          "octave": 4,
+          "volume": 0.52,
+          "pan": -0.18
+        },
+        {
+          "role": "pad",
+          "name": "Neon mist pad",
+          "program": 89,
+          "octave": 4,
+          "patch": "horizon_pad",
+          "volume": 0.28,
+          "pan": 0
+        },
+        {
+          "role": "bass",
+          "name": "Singing fretless bass",
+          "program": 35,
+          "octave": 2,
+          "patch": "fretless_fusion_bass",
+          "volume": 0.76,
+          "pan": 0
+        }
+      ],
+      "sections": [
+        {
+          "label": "intro",
+          "bars": 4,
+          "intensity": 0.36,
+          "roles": [
+            "comp",
+            "arp",
+            "bass",
+            "drums"
+          ],
+          "progression": "midnight-vamp"
+        },
+        {
+          "label": "A",
+          "bars": 8,
+          "intensity": 0.56,
+          "roles": [
+            "lead",
+            "comp",
+            "bass",
+            "drums"
+          ],
+          "progression": "shinjuku-rain"
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.78,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "rainy-overpass"
+        },
+        {
+          "label": "interlude",
+          "bars": 8,
+          "intensity": 0.46,
+          "roles": [
+            "counter",
+            "comp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "shinjuku-rain"
+        },
+        {
+          "label": "B",
+          "bars": 8,
+          "intensity": 0.8,
+          "roles": [
+            "lead",
+            "counter",
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "rainy-overpass"
+        },
+        {
+          "label": "outro",
+          "bars": 4,
+          "intensity": 0.38,
+          "roles": [
+            "comp",
+            "arp",
+            "pad",
+            "bass",
+            "drums"
+          ],
+          "progression": "midnight-vamp"
+        }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.56,
+    "low": 60,
+    "high": 83,
+    "phraseBars": 4,
+    "stepwise": 0.66,
+    "restProbability": 0.16,
+    "ornament": 0.14
+  }
+}

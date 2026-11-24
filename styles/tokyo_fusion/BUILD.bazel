@@ -1,0 +1,52 @@
+load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+# Crisp 80s Japanese studio fusion kit: punchy acoustic kick/snare/toms, tight hats, LM-2 stick/clap/ride/cabasa.
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": {"default": "@samples//danigb-samples/sample-pi-drums:drum_bass_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_bass_soft"},
+        "38": {"default": "@samples//danigb-samples/sample-pi-drums:drum_snare_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_snare_soft"},
+        "37": "@samples//danigb-samples/lm-2:stick-h",
+        "39": "@samples//danigb-samples/lm-2:clap",
+        "42": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_closed",
+        "46": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_open",
+        "51": "@samples//danigb-samples/lm-2:ride",
+        "49": {"default": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_cymbal_soft"},
+        "45": {"default": "@samples//danigb-samples/sample-pi-drums:drum_tom_lo_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_tom_lo_soft"},
+        "50": {"default": "@samples//danigb-samples/sample-pi-drums:drum_tom_hi_hard", "soft": "@samples//danigb-samples/sample-pi-drums:drum_tom_hi_soft"},
+        "70": "@samples//danigb-samples/lm-2:cabasa",
+    },
+)
+
+music_style(
+    name = "style",
+    bank = 68,
+    brief = "brief.md",
+    color = "#00b8d9",
+    corpus = "corpus.json",
+    kit = ":kit",
+    packs = [
+        "@samples//danigb-samples/splendid-grand-piano",
+        "@samples//danigb-samples/vcsl-marimba",
+        "@samples//danigb-samples/vcsl-tenor-saxophone-vibrato",
+        "@samples//danigb-samples/vcsl-vibraphone-soft-mallets",
+        "@samples//danigb-samples/wurlitzer-ep200",
+        "@samples//gleitz-musyngkite/electric-bass-finger",
+        "@samples//gleitz-musyngkite/electric-guitar-clean",
+        "@samples//gleitz-musyngkite/flute",
+        "@samples//gleitz-musyngkite/fretless-bass",
+        "@samples//gleitz-musyngkite/slap-bass-1",
+        "@samples//gleitz-musyngkite/pad-2-warm",
+        "@samples//gleitz-musyngkite/synth-brass-1",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# For JS tests that read the raw corpus from runfiles.
+copy_to_bin(
+    name = "corpus",
+    srcs = ["corpus.json"],
+    visibility = ["//visibility:public"],
+)

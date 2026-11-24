@@ -1,0 +1,65 @@
+load("@bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//bazel:music.bzl", "music_style")
+load("//bazel:samples.bzl", "sample_kit")
+
+# Hybrid club kit: Detroit TR-909 kick for tight low-end punch, paired with
+# velocity-layered LinnDrum LM-2 snares, clap (for build rolls), hats,
+# sidestick, pitched toms, tambourine and crash.
+sample_kit(
+    name = "kit",
+    hits = {
+        "36": {
+            "default": "@samples//danigb-sampled/tr909-detroit:kick",
+            "soft": "@samples//danigb-sampled/tr909-detroit:kick-short",
+        },
+        "38": {
+            "default": "@samples//danigb-samples/lm-2:snare-m",
+            "hard": "@samples//danigb-samples/lm-2:snare-h",
+            "soft": "@samples//danigb-samples/lm-2:snare-l",
+        },
+        "37": {
+            "default": "@samples//danigb-samples/lm-2:stick-h",
+            "soft": "@samples//danigb-samples/lm-2:stick-m",
+        },
+        "39": "@samples//danigb-samples/lm-2:clap",
+        "42": {
+            "default": "@samples//danigb-samples/lm-2:hhclosed",
+            "soft": "@samples//danigb-samples/lm-2:hhclosed-short",
+        },
+        "46": "@samples//danigb-samples/lm-2:hhopen",
+        "49": "@samples//danigb-samples/lm-2:crash",
+        "45": {
+            "default": "@samples//danigb-samples/lm-2:tom-l",
+            "soft": "@samples//danigb-samples/lm-2:tom-ll",
+        },
+        "50": {
+            "default": "@samples//danigb-samples/lm-2:tom-h",
+            "soft": "@samples//danigb-samples/lm-2:tom-hh",
+        },
+        "70": "@samples//danigb-samples/lm-2:tambourine",
+    },
+)
+
+music_style(
+    name = "style",
+    bank = 68,
+    brief = "brief.md",
+    color = "#ff2e97",
+    corpus = "corpus.json",
+    kit = ":kit",
+    packs = [
+        "@samples//gleitz-musyngkite/lead-1-square",
+        "@samples//gleitz-musyngkite/lead-2-sawtooth",
+        "@samples//gleitz-musyngkite/pad-2-warm",
+        "@samples//gleitz-musyngkite/pad-3-polysynth",
+        "@samples//gleitz-musyngkite/synth-bass-1",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# For JS tests that read the raw corpus from runfiles.
+copy_to_bin(
+    name = "corpus",
+    srcs = ["corpus.json"],
+    visibility = ["//visibility:public"],
+)

@@ -40,6 +40,7 @@ ts_test(
         "//styles/big_beat:corpus",
         "//styles/big_beat_razor_breaks:corpus",
         "//styles/electro:corpus",
+        "//styles/french_electro:corpus",
         "//styles/minimal_techno:corpus",
         "//styles/psychedelic_house:corpus",
     ],

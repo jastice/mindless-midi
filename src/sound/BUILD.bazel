@@ -282,3 +282,24 @@ ts_test(
         "//src/theory",
     ],
 )
+
+# French Electro (Neon): corpus, hybrid 909/LinnDrum kit and seven synth patches
+# measured, seven-style set travel, and a whole track through the worker.
+ts_test(
+    name = "french_electro_test",
+    size = "medium",
+    src = "french_electro.test.ts",
+    data = [
+        ":worker",
+        "//:node_modules/libadlmidi-js",
+        "//styles:claudia",
+        "//styles/french_electro:corpus",
+    ],
+    deps = [
+        ":sound",
+        ":worker",
+        "//src/corpus",
+        "//src/engine",
+        "//src/theory",
+    ],
+)

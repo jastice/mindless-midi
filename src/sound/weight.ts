@@ -49,6 +49,10 @@ const TIERS: Record<string, Weight> = {
   big_beat_razor_breaks: { ...HARD, kickDrive: 1.6, bassDrive: 1.2, crush: 0.42, thump: 1.5 },
   // The 808 is the track: a long sub, the bass tucked under it, the kit left mostly dry.
   electro: { ...HARD, kickDrive: 1.7, bassDrive: 1.3, crush: 0.24, thump: 1.4 },
+  // French Electro: slammed four-on-the-floor punch, driven slap bass and snappy parallel drum glue.
+  french_electro: { ...HARD, kickDrive: 2.2, bassDrive: 1.7, crush: 0.32, thump: 1.8 },
+  // Tokyo Fusion: warm, clean 80s studio kit and smooth articulate fusion bass (no harsh overdrive).
+  tokyo_fusion: { ...SOFT, kickDrive: 0.75, bassDrive: 0.55, crush: 0.12, thump: 1.2 },
   jazz_trio: SOFT, minimalist: SOFT, baroque: SOFT, celtic: SOFT, musette: SOFT, midnight_platform: SOFT, bossa_nova: SOFT,
 };
 

@@ -197,11 +197,15 @@ const GOLDEN: Record<string, string> = {
   "synthwave/samples/weighted": "e9c35f15cd8886ad:0.0360,0.0361,0.0302,0.0271,0.0305,0.0303,0.0315,0.0269",
   "jazz_trio/samples/plain": "61cf36df163a2fc8:0.0178,0.0170,0.0195,0.0205,0.0198,0.0181,0.0205,0.0197",
   "jazz_trio/samples/weighted": "61cf36df163a2fc8:0.0162,0.0162,0.0240,0.0234,0.0226,0.0202,0.0224,0.0217",
+  "tokyo_fusion/synth/plain": "368f8870cf7baec7:0.0240,0.0245,0.0231,0.0304,0.0261,0.0241,0.0235,0.0239",
+  "tokyo_fusion/synth/weighted": "368f8870cf7baec7:0.0201,0.0243,0.0234,0.0335,0.0336,0.0328,0.0325,0.0319",
 };
 
 test("the worker streams what it did for every shipped style, plain and weighted, synth and samples", async () => {
   const got: Record<string, string> = {};
-  for (const style of styles) {
+  const original = styles.slice(0, 22);
+  const added = styles.slice(22);
+  for (const style of original) {
     got[`${style.id}/synth/plain`] = await run(style, "synth", false, 10);
     got[`${style.id}/synth/weighted`] = await run(style, "synth", true, 10);
   }
@@ -209,6 +213,10 @@ test("the worker streams what it did for every shipped style, plain and weighted
     const style = styles.find((s) => s.id === id)!;
     got[`${id}/samples/plain`] = await run(style, "samples", false, 10);
     got[`${id}/samples/weighted`] = await run(style, "samples", true, 10);
+  }
+  for (const style of added) {
+    got[`${style.id}/synth/plain`] = await run(style, "synth", false, 10);
+    got[`${style.id}/synth/weighted`] = await run(style, "synth", true, 10);
   }
   if (process.env.PRINT_GOLDEN) console.log(JSON.stringify(got, null, 2));
   assertClose(got, GOLDEN);

@@ -23,6 +23,7 @@ STYLES = [
     "midnight_platform",
     "courtyard_nine",
     "low_log",
+    "tokyo_fusion",
 ]
 
 style_pack(
@@ -64,6 +65,7 @@ CLAUDIA_STYLES = [
     "big_beat",
     "big_beat_razor_breaks",
     "electro",
+    "french_electro",
 ]
 
 style_pack(

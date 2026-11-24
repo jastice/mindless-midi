@@ -5,13 +5,13 @@ Vibes, Retro Games, Lo-fi Hip Hop, Jazz Piano Trio, Minimalist Piano, Monkey
 Island Vibes, Electro Swing, Synthwave, Bossa Nova, 70s Funk, Spaghetti
 Western, Celtic Tavern, Café Musette, Liquid Drum & Bass, Castlevania Vibes,
 16-bit JRPG, Mirrorball Disco, Baroque Court, Orbital Glass, Midnight Platform,
-Courtyard Nine, Low Log) and it plays forever, never repeating, without streaming anything: every note
+Courtyard Nine, Low Log, Tokyo Fusion) and it plays forever, never repeating, without streaming anything: every note
 is arranged and synthesized live in the
 page.
 
 **Live:** https://mindless-midi.trurl.systems/ (the old GitHub Pages address redirects here)
 
-- **LLM-seeded.** Claude, Astra, and Grok author each style's checked-in *corpus*: chord
+- **LLM-seeded.** Claude, Astra, Grok, and Neon author each style's checked-in *corpus*: chord
   progressions, motifs, bass and arpeggio ostinatos, comping rhythms, drum
   grooves, song forms, instrumentation. The corpora are checked in, so builds
   are hermetic and need no API key.
@@ -172,7 +172,7 @@ re-calibrates loudness), listen, commit.
 
 The original eighteen corpora were written by Claude (Opus 5.5) directly
 during development. Astra added Orbital Glass and Midnight Platform. Grok added
-Courtyard Nine and Low Log. Running
+Courtyard Nine and Low Log. Neon added Tokyo Fusion. Running
 the generation tool replaces the selected corpus with an API-generated one.
 
 ### Adding a style

@@ -159,12 +159,18 @@ const GOLDEN: Record<string, string> = {
   "low_log/expressive/g2": "c35eede4e9cdea89",
   "low_log/short/g1": "1b0cccdf10627c69",
   "low_log/short/g2": "3fd9c5748f0b855a",
-  "pool/plain": "e1d6c947844046c2",
+  "tokyo_fusion/plain/g1": "6e252320c4639ddc",
+  "tokyo_fusion/plain/g2": "b6fc11cf77f53af5",
+  "tokyo_fusion/expressive/g1": "a06c4db96befbe47",
+  "tokyo_fusion/expressive/g2": "e2863317a16631ad",
+  "tokyo_fusion/short/g1": "97ac277990893815",
+  "tokyo_fusion/short/g2": "e2fc6ccf0e0d83f9",
+  "pool/plain": "3c797205c02cbdb1",
   "seek/plain": "042bb0749a7c1d4b",
-  "pool/expressive": "b244c422b5759212",
+  "pool/expressive": "2cb0c8a90741e868",
   "seek/expressive": "7067e9de633217ae",
-  "pool/short": "28664d27097bdc53",
-  "seek/short": "437412a33bf27821",
+  "pool/short": "8ead6da80e0789ec",
+  "seek/short": "321d35eae90955a5",
 };
 
 test("default pieces are bit for bit what they were", () => {

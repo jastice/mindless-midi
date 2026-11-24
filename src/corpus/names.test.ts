@@ -7,7 +7,7 @@ import { MAX_NAME_LENGTH, MIN_NAMES, validateCorpus } from "./validate.js";
 
 const corpus = (id: string) => JSON.parse(readFileSync(`styles/${id}/corpus.json`, "utf8")) as StyleCorpus;
 const style = (id: string) => ({ id, corpus: corpus(id) });
-const THEMED = ["minimal_techno", "berlin_techno", "psychedelic_house", "big_beat", "big_beat_razor_breaks", "electro"];
+const THEMED = ["minimal_techno", "berlin_techno", "psychedelic_house", "big_beat", "big_beat_razor_breaks", "electro", "french_electro"];
 
 test("a theme numbers every combination of its patterns", () => {
   const theme = { patterns: ["{a} {n}", "Fixed"], lists: { a: ["Dot", "Grid"], n: ["1", "2", "3"] } };
@@ -51,6 +51,7 @@ test("each style titles from its own theme", () => {
   for (const want of ["Betonregen", "Schwarzlicht", "Kein Foto", "Kältekammer"]) assert.ok(titles.berlin_techno!.has(want), want);
   for (const want of ["Slow Bloom", "Lilac Hours", "Morning Tide", "Sun Through Smoke"]) assert.ok(titles.psychedelic_house!.has(want), want);
   for (const want of ["Open Channel", "Talk Back", "Don't Panic", "On Air"]) assert.ok(titles.electro!.has(want), want);
+  for (const want of ["Nuit Blanche", "Paris 07", "Boulevard Nocturne", "Coup de Flash", "Sous Tension"]) assert.ok(titles.french_electro!.has(want), want);
 });
 
 test("a style without a theme is titled by its title and the track's number", () => {

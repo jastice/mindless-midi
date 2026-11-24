@@ -15,7 +15,7 @@ sources:
 
 Endless background music in a browser tab. A listener picks one or more
 [styles](./concepts/styles-and-corpora.md) (Lo-fi Hip Hop, Metroid Vibes, Jazz
-Piano Trio, Baroque Court and so on, 22 in all) and the page plays forever
+Piano Trio, Baroque Court and so on, 23 in all) and the page plays forever
 without repeating and without streaming audio: every note is arranged and
 synthesized in the page.[^readme] Live at https://mindless-midi.trurl.systems/.
 
@@ -23,8 +23,8 @@ synthesized in the page.[^readme] Live at https://mindless-midi.trurl.systems/.
 
 1. **LLM-seeded material.** Each style has a checked-in *corpus*
    (`styles/<id>/corpus.json`): chord progressions, motifs, ostinatos, comping
-   rhythms, drum grooves, song forms, instrumentation. Claude, Astra and Grok
-   wrote them from a prose brief. Because they are checked in, builds are
+   rhythms, drum grooves, song forms, instrumentation. Claude, Astra, Grok and
+   Neon wrote them from a prose brief. Because they are checked in, builds are
    hermetic and need no API key. See [styles and corpora](./concepts/styles-and-corpora.md).
 2. **Algorithmic arrangement.** In the browser, a seeded arranger
    ([engine](./modules/engine.md)) picks key, tempo and form for each piece,

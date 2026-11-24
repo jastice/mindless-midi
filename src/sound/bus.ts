@@ -146,6 +146,14 @@ Object.assign(PRESETS, {
     reverb: { seconds: 1.35, predelay: 0.018, bright: 0.35, send: { lead: 0.22, counter: 0.18, comp: 0.12, bass: 0.04, drums: 0.06 } },
     highpass: { lead: 140, counter: 130, comp: 100 },
   },
+  // Tokyo Fusion: warm glossy 80s studio plate, subtle dotted-eighth shimmer, chorused keys/guitar/pad, clean tight low end.
+  tokyo_fusion: {
+    reverb: { seconds: 1.85, predelay: 0.022, bright: 0.5, send: { lead: 0.28, counter: 0.26, arp: 0.24, comp: 0.2, pad: 0.38, drums: 0.09 } },
+    delay: { beats: 0.75, feedback: 0.26, send: { lead: 0.14, counter: 0.12, arp: 0.12 } },
+    chorus: ["pad", "comp", "arp"],
+    duck: { depth: { pad: 0.22, comp: 0.1 }, release: 0.18 },
+    highpass: { lead: 160, counter: 140, arp: 180, comp: 140, pad: 200 },
+  },
   // DJ Claudia. A dark room: dotted-eighth echoes on the stab and the bleep, everything breathing with the kick.
   minimal_techno: {
     reverb: { seconds: 2.4, predelay: 0.02, bright: 0.35, send: { arp: 0.22, comp: 0.3, pad: 0.4, drums: 0.05 } },
@@ -183,6 +191,14 @@ Object.assign(PRESETS, {
     delay: { beats: 0.75, feedback: 0.28, send: { arp: 0.12, comp: 0.14 } },
     duck: { depth: { bass: 0.22, arp: 0.18, comp: 0.25, pad: 0.4 }, release: 0.12 },
     highpass: { arp: 200, comp: 280, pad: 600 },
+  },
+  // French Electro: tight bright club room, dotted-eighth ping-pong shimmer, chorused chords and hard French-touch sidechain pump.
+  french_electro: {
+    reverb: { seconds: 1.7, predelay: 0.018, bright: 0.62, send: { lead: 0.28, arp: 0.22, comp: 0.26, pad: 0.4, drums: 0.09 } },
+    delay: { beats: 0.75, feedback: 0.38, send: { lead: 0.24, arp: 0.26, comp: 0.2 } },
+    chorus: ["pad", "comp"],
+    duck: { depth: { bass: 0.36, pad: 0.62, comp: 0.48, arp: 0.28, lead: 0.22 }, release: 0.17 },
+    highpass: { lead: 240, arp: 200, comp: 220, pad: 220 },
   },
 } satisfies Record<string, MixPreset>);
 

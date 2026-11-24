@@ -1,0 +1,1434 @@
+{
+  "title": "French Electro",
+  "description": "Slammed four-on-the-floor punch, a slapping overdriven octave bass, pumping supersaw chords and vocoder-choir stabs that tear open into a neon lead.",
+  "authors": ["Neon (Gemini 4)"],
+  "names": {
+    "patterns": [
+      "{fem} {adjf}",
+      "{masc} {adjm}",
+      "{lieu} {an}",
+      "Coup de Flash",
+      "Autoroute",
+      "Périphérique",
+      "Discothèque",
+      "Dernier Métro",
+      "Sans Retour",
+      "Sous Tension",
+      "Plein Phare",
+      "Minuit Pile",
+      "Rue de Nuit",
+      "Feu Rouge",
+      "Haute Tension",
+      "À Contresens",
+      "Court-Circuit",
+      "Faux Départ",
+      "Rive Gauche"
+    ],
+    "lists": {
+      "fem": [
+        "Nuit",
+        "Lumière",
+        "Vitesse",
+        "Onde",
+        "Fièvre",
+        "Flamme",
+        "Ombre",
+        "Ligne",
+        "Pluie",
+        "Salle",
+        "Foule",
+        "Scène"
+      ],
+      "adjf": [
+        "Blanche",
+        "Électrique",
+        "Noire",
+        "Rouge",
+        "Bleue",
+        "Froide",
+        "Folle",
+        "Douce",
+        "Haute",
+        "Vive"
+      ],
+      "masc": [
+        "Boulevard",
+        "Mirage",
+        "Métro",
+        "Phare",
+        "Éclair",
+        "Laser",
+        "Disque",
+        "Virage",
+        "Reflet",
+        "Néon"
+      ],
+      "adjm": [
+        "Nocturne",
+        "Électrique",
+        "Magnétique",
+        "Solaire",
+        "Sombre",
+        "Rouge",
+        "Bleu",
+        "Froid"
+      ],
+      "lieu": [
+        "Paris",
+        "Pigalle",
+        "Bastille",
+        "Montmartre",
+        "Châtelet",
+        "Belleville",
+        "Odéon",
+        "Versailles"
+      ],
+      "an": ["79", "81", "84", "86", "97", "07"]
+    }
+  },
+  "tempo": { "min": 122, "max": 130 },
+  "beatsPerBar": 4,
+  "swing": 0.08,
+  "swingUnit": "16th",
+  "humanize": 0.025,
+  "keys": [
+    { "tonic": "A", "mode": "aeolian" },
+    { "tonic": "E", "mode": "aeolian" },
+    { "tonic": "D", "mode": "aeolian" },
+    { "tonic": "B", "mode": "aeolian" },
+    { "tonic": "G", "mode": "aeolian" },
+    { "tonic": "F#", "mode": "aeolian" },
+    { "tonic": "C", "mode": "aeolian" }
+  ],
+  "instruments": [
+    {
+      "role": "bass",
+      "name": "Slap electro bass",
+      "program": 38,
+      "octave": 2,
+      "patch": "slap_bass",
+      "volume": 0.78,
+      "pan": 0
+    },
+    {
+      "role": "arp",
+      "name": "Glass FM arp",
+      "program": 80,
+      "octave": 4,
+      "patch": "neon_arp",
+      "volume": 0.3,
+      "pan": 0.18
+    },
+    {
+      "role": "comp",
+      "name": "Supersaw stabs",
+      "program": 90,
+      "octave": 4,
+      "patch": "super_stab",
+      "volume": 0.32,
+      "pan": -0.14
+    },
+    {
+      "role": "pad",
+      "name": "Juno PWM pad",
+      "program": 89,
+      "octave": 4,
+      "patch": "pwm_pad",
+      "volume": 0.24,
+      "pan": 0.08
+    },
+    {
+      "role": "lead",
+      "name": "Neon synth lead",
+      "program": 81,
+      "octave": 5,
+      "patch": "neon_lead",
+      "volume": 0.26,
+      "pan": -0.06
+    },
+    {
+      "role": "drums",
+      "name": "909 / LinnDrum hybrid",
+      "program": 0,
+      "octave": 3,
+      "volume": 0.82,
+      "pan": 0
+    }
+  ],
+  "progressions": [
+    {
+      "id": "vamp_lock",
+      "mood": "tonic minor seventh anchor for clean DJ mixes",
+      "chords": [
+        { "symbol": "i7", "beats": 24 },
+        { "symbol": "bVII", "beats": 8 }
+      ]
+    },
+    {
+      "id": "vamp_sus",
+      "mood": "suspended open fourth vamp for DJ mix zones",
+      "chords": [
+        { "symbol": "i7sus4", "beats": 24 },
+        { "symbol": "bVII5", "beats": 8 }
+      ]
+    },
+    {
+      "id": "paris_lift",
+      "mood": "classic Parisian minor lift from home to flat six and seven",
+      "chords": [
+        { "symbol": "i7", "beats": 8 },
+        { "symbol": "bVI", "beats": 4 },
+        { "symbol": "bVII", "beats": 4 }
+      ]
+    },
+    {
+      "id": "neon_drive",
+      "mood": "descending minor ninth electro-disco walk",
+      "chords": [
+        { "symbol": "i9", "beats": 4 },
+        { "symbol": "bVII", "beats": 4 },
+        { "symbol": "bVI", "beats": 4 },
+        { "symbol": "v7", "beats": 4 }
+      ]
+    },
+    {
+      "id": "midnight_walk",
+      "mood": "lush French-touch climb through relative major and four",
+      "chords": [
+        { "symbol": "i7", "beats": 4 },
+        { "symbol": "bIIImaj7", "beats": 4 },
+        { "symbol": "iv7", "beats": 4 },
+        { "symbol": "bVII", "beats": 4 }
+      ]
+    },
+    {
+      "id": "euphoria",
+      "mood": "hands-in-the-air peak starting on the major flat six",
+      "chords": [
+        { "symbol": "bVImaj7", "beats": 4 },
+        { "symbol": "bVII", "beats": 4 },
+        { "symbol": "i7", "beats": 4 },
+        { "symbol": "bIII", "beats": 4 }
+      ]
+    },
+    {
+      "id": "glass_rush",
+      "mood": "wide stadium-electro four-chord surge",
+      "chords": [
+        { "symbol": "i7", "beats": 4 },
+        { "symbol": "bVI", "beats": 4 },
+        { "symbol": "bIII", "beats": 4 },
+        { "symbol": "bVII", "beats": 4 }
+      ]
+    },
+    {
+      "id": "dark_disco",
+      "mood": "tight minor turnaround into the downbeat",
+      "chords": [
+        { "symbol": "i7", "beats": 8 },
+        { "symbol": "iv7", "beats": 4 },
+        { "symbol": "bVI", "beats": 2 },
+        { "symbol": "bVII", "beats": 2 }
+      ]
+    },
+    {
+      "id": "suspend_rise",
+      "mood": "hovering breakdown harmony leaning into the drop",
+      "chords": [
+        { "symbol": "bVImaj7", "beats": 8 },
+        { "symbol": "bVII", "beats": 4 },
+        { "symbol": "i7sus4", "beats": 4 }
+      ]
+    }
+  ],
+  "motifs": [
+    {
+      "id": "paris_octave",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.5, "deg": 0, "v": 0.96, "g": "accent" },
+        { "t": 0.5, "d": 0.5, "deg": 7, "v": 0.84, "g": "slide" },
+        { "t": 1, "d": 0.5, "deg": 0, "v": 0.9 },
+        { "t": 1.5, "d": 0.5, "deg": 7, "v": 0.82 },
+        { "t": 2, "d": 0.5, "deg": 0, "v": 0.94, "g": "accent" },
+        { "t": 2.5, "d": 0.5, "deg": 7, "v": 0.84, "g": "slide" },
+        { "t": 3, "d": 0.5, "deg": 6, "v": 0.86 },
+        { "t": 3.5, "d": 0.5, "deg": 4, "v": 0.88 }
+      ]
+    },
+    {
+      "id": "daft_funk",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.75, "deg": 0, "v": 0.98, "g": "accent" },
+        { "t": 0.75, "d": 0.25, "deg": 0, "v": 0.78 },
+        { "t": 1, "d": 0.5, "deg": 4, "v": 0.86 },
+        { "t": 1.5, "d": 0.5, "deg": 7, "v": 0.9, "g": "slide" },
+        { "t": 2, "d": 0.75, "deg": 0, "v": 0.92 },
+        { "t": 2.75, "d": 0.5, "deg": 6, "v": 0.84 },
+        { "t": 3.25, "d": 0.75, "deg": 4, "v": 0.86, "g": "slide" },
+        { "t": 4, "d": 0.75, "deg": 0, "v": 0.96, "g": "accent" },
+        { "t": 4.75, "d": 0.25, "deg": 2, "v": 0.8 },
+        { "t": 5, "d": 0.5, "deg": 4, "v": 0.88 },
+        { "t": 5.5, "d": 0.5, "deg": 7, "v": 0.92, "g": "slide" },
+        { "t": 6, "d": 0.75, "deg": 0, "v": 0.9 },
+        { "t": 6.75, "d": 0.75, "deg": -1, "v": 0.84 },
+        { "t": 7.5, "d": 0.5, "deg": 0, "v": 0.9, "approach": true }
+      ]
+    },
+    {
+      "id": "justice_grind",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.5, "deg": 0, "v": 0.9 },
+        { "t": 0.5, "d": 0.5, "deg": 0, "v": 0.98, "g": "accent" },
+        { "t": 1, "d": 0.5, "deg": 0, "v": 0.86 },
+        { "t": 1.5, "d": 0.5, "deg": 7, "v": 0.94, "g": "slide" },
+        { "t": 2, "d": 0.5, "deg": 0, "v": 0.88 },
+        { "t": 2.5, "d": 0.5, "deg": 4, "v": 0.96, "g": "accent" },
+        { "t": 3, "d": 0.5, "deg": 6, "v": 0.86 },
+        { "t": 3.5, "d": 0.5, "deg": 7, "v": 0.92, "g": "slide" }
+      ]
+    },
+    {
+      "id": "velvet_bounce",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.75, "deg": 0, "v": 0.96, "g": "accent" },
+        { "t": 0.75, "d": 0.5, "deg": 7, "v": 0.86, "g": "slide" },
+        { "t": 1.25, "d": 0.5, "deg": 4, "v": 0.82 },
+        { "t": 1.75, "d": 0.75, "deg": 0, "v": 0.9 },
+        { "t": 2.5, "d": 0.5, "deg": 2, "v": 0.84 },
+        { "t": 3, "d": 0.5, "deg": 4, "v": 0.88 },
+        { "t": 3.5, "d": 0.5, "deg": 0, "v": 0.86 },
+        { "t": 4, "d": 0.75, "deg": 0, "v": 0.95, "g": "accent" },
+        { "t": 4.75, "d": 0.5, "deg": 7, "v": 0.88, "g": "slide" },
+        { "t": 5.25, "d": 0.5, "deg": 6, "v": 0.82 },
+        { "t": 5.75, "d": 0.75, "deg": 4, "v": 0.9 },
+        { "t": 6.5, "d": 0.75, "deg": -1, "v": 0.86 },
+        { "t": 7.25, "d": 0.75, "deg": 0, "v": 0.92, "g": "slide" }
+      ]
+    },
+    {
+      "id": "motor_drive",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.5, "deg": 0, "v": 0.94, "g": "accent" },
+        { "t": 0.5, "d": 0.25, "deg": 0, "v": 0.78 },
+        { "t": 0.75, "d": 0.5, "deg": 7, "v": 0.88, "g": "slide" },
+        { "t": 1.25, "d": 0.75, "deg": 0, "v": 0.86 },
+        { "t": 2, "d": 0.5, "deg": 4, "v": 0.92, "g": "accent" },
+        { "t": 2.5, "d": 0.5, "deg": 7, "v": 0.86, "g": "slide" },
+        { "t": 3, "d": 0.5, "deg": 6, "v": 0.84 },
+        { "t": 3.5, "d": 0.5, "deg": 4, "v": 0.88 }
+      ]
+    },
+    {
+      "id": "slap_hook",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 1.0, "deg": 0, "v": 0.98, "g": "accent" },
+        { "t": 1, "d": 0.5, "deg": 0, "v": 0.84 },
+        { "t": 1.5, "d": 0.5, "deg": 4, "v": 0.9 },
+        { "t": 2, "d": 0.5, "deg": 6, "v": 0.86 },
+        { "t": 2.5, "d": 0.5, "deg": 7, "v": 0.94, "g": "slide" },
+        { "t": 3, "d": 0.5, "deg": 4, "v": 0.84 },
+        { "t": 3.5, "d": 0.5, "deg": 2, "v": 0.86 },
+        { "t": 4, "d": 1.0, "deg": 0, "v": 0.96, "g": "accent" },
+        { "t": 5, "d": 0.5, "deg": 7, "v": 0.88, "g": "slide" },
+        { "t": 5.5, "d": 0.5, "deg": 6, "v": 0.84 },
+        { "t": 6, "d": 0.75, "deg": 4, "v": 0.9 },
+        { "t": 6.75, "d": 0.75, "deg": 0, "v": 0.86 },
+        { "t": 7.5, "d": 0.5, "deg": 0, "v": 0.9, "approach": true }
+      ]
+    },
+    {
+      "id": "sub_roller",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.75, "deg": 0, "v": 0.95, "g": "accent" },
+        { "t": 0.75, "d": 0.75, "deg": 7, "v": 0.86, "g": "slide" },
+        { "t": 1.5, "d": 0.5, "deg": 0, "v": 0.9 },
+        { "t": 2, "d": 0.75, "deg": 0, "v": 0.94, "g": "accent" },
+        { "t": 2.75, "d": 0.5, "deg": 4, "v": 0.86 },
+        { "t": 3.25, "d": 0.75, "deg": 6, "v": 0.88, "g": "slide" }
+      ]
+    },
+    {
+      "id": "neon_strut",
+      "role": "bass",
+      "anchor": "chord",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.5, "deg": 0, "v": 0.96, "g": "accent" },
+        { "t": 0.5, "d": 0.75, "deg": 0, "v": 0.86 },
+        { "t": 1.25, "d": 0.5, "deg": 7, "v": 0.9, "g": "slide" },
+        { "t": 1.75, "d": 0.75, "deg": 4, "v": 0.86 },
+        { "t": 2.5, "d": 0.5, "deg": 0, "v": 0.92, "g": "accent" },
+        { "t": 3, "d": 0.5, "deg": 4, "v": 0.84 },
+        { "t": 3.5, "d": 0.5, "deg": 6, "v": 0.88 },
+        { "t": 4, "d": 0.5, "deg": 0, "v": 0.96, "g": "accent" },
+        { "t": 4.5, "d": 0.75, "deg": 0, "v": 0.84 },
+        { "t": 5.25, "d": 0.5, "deg": 7, "v": 0.9, "g": "slide" },
+        { "t": 5.75, "d": 0.75, "deg": 6, "v": 0.84 },
+        { "t": 6.5, "d": 0.5, "deg": 4, "v": 0.9 },
+        { "t": 7, "d": 0.5, "deg": 2, "v": 0.84 },
+        { "t": 7.5, "d": 0.5, "deg": 0, "v": 0.9, "approach": true }
+      ]
+    },
+    {
+      "id": "prism_sixteenths",
+      "role": "arp",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.25, "deg": 0, "v": 0.88 },
+        { "t": 0.5, "d": 0.25, "deg": 4, "v": 0.76 },
+        { "t": 0.75, "d": 0.25, "deg": 7, "v": 0.92 },
+        { "t": 1.5, "d": 0.25, "deg": 4, "v": 0.74 },
+        { "t": 2, "d": 0.25, "deg": 3, "v": 0.84 },
+        { "t": 2.5, "d": 0.25, "deg": 4, "v": 0.78 },
+        { "t": 3.25, "d": 0.25, "deg": 7, "v": 0.9 },
+        { "t": 3.75, "d": 0.22, "deg": 4, "v": 0.72 }
+      ]
+    },
+    {
+      "id": "glass_cascade",
+      "role": "arp",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.25, "deg": 7, "v": 0.92 },
+        { "t": 0.5, "d": 0.25, "deg": 4, "v": 0.78 },
+        { "t": 1, "d": 0.25, "deg": 3, "v": 0.72 },
+        { "t": 1.75, "d": 0.25, "deg": 0, "v": 0.86 },
+        { "t": 2.5, "d": 0.25, "deg": 4, "v": 0.8 },
+        { "t": 3.25, "d": 0.25, "deg": 7, "v": 0.88 },
+        { "t": 4.5, "d": 0.25, "deg": 0, "v": 0.84 },
+        { "t": 5, "d": 0.25, "deg": 3, "v": 0.76 },
+        { "t": 5.5, "d": 0.25, "deg": 4, "v": 0.86 },
+        { "t": 6.25, "d": 0.25, "deg": 7, "v": 0.94 },
+        { "t": 7.5, "d": 0.25, "deg": 4, "v": 0.74 }
+      ]
+    },
+    {
+      "id": "metro_pulse",
+      "role": "arp",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0.25, "d": 0.22, "deg": 0, "v": 0.82 },
+        { "t": 0.75, "d": 0.25, "deg": 4, "v": 0.9 },
+        { "t": 1.5, "d": 0.25, "deg": 7, "v": 0.92 },
+        { "t": 2.25, "d": 0.22, "deg": 3, "v": 0.78 },
+        { "t": 2.75, "d": 0.25, "deg": 4, "v": 0.88 },
+        { "t": 3.5, "d": 0.25, "deg": 7, "v": 0.84 }
+      ]
+    },
+    {
+      "id": "orbit_three",
+      "role": "arp",
+      "anchor": "key",
+      "lengthBeats": 12,
+      "notes": [
+        { "t": 0, "d": 0.25, "deg": 0, "v": 0.9 },
+        { "t": 0.75, "d": 0.25, "deg": 4, "v": 0.8 },
+        { "t": 1.5, "d": 0.25, "deg": 7, "v": 0.92 },
+        { "t": 2.5, "d": 0.25, "deg": 3, "v": 0.76 },
+        { "t": 3.5, "d": 0.25, "deg": 4, "v": 0.84 },
+        { "t": 4.75, "d": 0.25, "deg": 7, "v": 0.9 },
+        { "t": 5.5, "d": 0.25, "deg": 4, "v": 0.74 },
+        { "t": 6.5, "d": 0.25, "deg": 0, "v": 0.88 },
+        { "t": 7.75, "d": 0.25, "deg": 3, "v": 0.78 },
+        { "t": 8.5, "d": 0.25, "deg": 4, "v": 0.86 },
+        { "t": 9.5, "d": 0.25, "deg": 7, "v": 0.92 },
+        { "t": 10.75, "d": 0.25, "deg": 4, "v": 0.76 },
+        { "t": 11.5, "d": 0.25, "deg": 0, "v": 0.84 }
+      ]
+    },
+    {
+      "id": "laser_skip",
+      "role": "arp",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.22, "deg": 0, "v": 0.9 },
+        { "t": 0.75, "d": 0.22, "deg": 4, "v": 0.82 },
+        { "t": 1.5, "d": 0.22, "deg": 7, "v": 0.92 },
+        { "t": 2.25, "d": 0.22, "deg": 4, "v": 0.76 },
+        { "t": 3, "d": 0.22, "deg": 3, "v": 0.84 },
+        { "t": 4.5, "d": 0.22, "deg": 0, "v": 0.88 },
+        { "t": 5.25, "d": 0.22, "deg": 4, "v": 0.8 },
+        { "t": 6, "d": 0.22, "deg": 7, "v": 0.94 },
+        { "t": 6.75, "d": 0.22, "deg": 3, "v": 0.74 },
+        { "t": 7.5, "d": 0.22, "deg": 4, "v": 0.84 }
+      ]
+    },
+    {
+      "id": "neon_chime",
+      "role": "arp",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0.5, "d": 0.25, "deg": 4, "v": 0.86 },
+        { "t": 1.25, "d": 0.25, "deg": 7, "v": 0.94 },
+        { "t": 2.25, "d": 0.25, "deg": 3, "v": 0.78 },
+        { "t": 3, "d": 0.25, "deg": 7, "v": 0.9 },
+        { "t": 3.5, "d": 0.25, "deg": 0, "v": 0.82 }
+      ]
+    },
+    {
+      "id": "da_bite",
+      "role": "arp",
+      "anchor": "chord",
+      "material": "acid",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.25, "deg": 0, "v": 0.96, "g": "accent" },
+        { "t": 0.25, "d": 0.25, "deg": 7, "v": 0.86, "g": "slide" },
+        { "t": 0.75, "d": 0.25, "deg": 6, "v": 0.82 },
+        { "t": 1.25, "d": 0.25, "deg": 4, "v": 0.9, "g": "accent" },
+        { "t": 1.5, "d": 0.25, "deg": 2, "v": 0.8, "g": "slide" },
+        { "t": 2.25, "d": 0.25, "deg": 0, "v": 0.94, "g": "accent" },
+        { "t": 2.75, "d": 0.25, "deg": 4, "v": 0.84 },
+        { "t": 3, "d": 0.5, "deg": 7, "v": 0.92, "g": "slide" }
+      ]
+    },
+    {
+      "id": "wire_crawl",
+      "role": "arp",
+      "anchor": "chord",
+      "material": "acid",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.25, "deg": 0, "v": 0.92, "g": "accent" },
+        { "t": 0.5, "d": 0.25, "deg": 2, "v": 0.78 },
+        { "t": 0.75, "d": 0.25, "deg": 4, "v": 0.86, "g": "slide" },
+        { "t": 1.5, "d": 0.25, "deg": 6, "v": 0.88 },
+        { "t": 1.75, "d": 0.5, "deg": 7, "v": 0.95, "g": "slide" },
+        { "t": 2.75, "d": 0.25, "deg": 4, "v": 0.82 },
+        { "t": 3.5, "d": 0.25, "deg": 2, "v": 0.86 },
+        { "t": 4, "d": 0.25, "deg": 0, "v": 0.94, "g": "accent" },
+        { "t": 4.75, "d": 0.25, "deg": 4, "v": 0.82 },
+        { "t": 5, "d": 0.5, "deg": 6, "v": 0.9, "g": "slide" },
+        { "t": 6, "d": 0.25, "deg": 7, "v": 0.96, "g": "accent" },
+        { "t": 6.5, "d": 0.25, "deg": 4, "v": 0.84 },
+        { "t": 6.75, "d": 0.5, "deg": 0, "v": 0.88, "g": "slide" }
+      ]
+    },
+    {
+      "id": "chrome_bark",
+      "role": "arp",
+      "anchor": "chord",
+      "material": "acid",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0.25, "d": 0.25, "deg": 0, "v": 0.86 },
+        { "t": 0.5, "d": 0.5, "deg": 7, "v": 0.94, "g": "slide" },
+        { "t": 1.5, "d": 0.25, "deg": 4, "v": 0.96, "g": "accent" },
+        { "t": 2, "d": 0.25, "deg": 2, "v": 0.82 },
+        { "t": 2.5, "d": 0.25, "deg": 6, "v": 0.98, "g": "accent" },
+        { "t": 2.75, "d": 0.5, "deg": 7, "v": 0.88, "g": "slide" },
+        { "t": 3.5, "d": 0.25, "deg": 4, "v": 0.84 }
+      ]
+    },
+    {
+      "id": "paris_squelch",
+      "role": "arp",
+      "anchor": "chord",
+      "material": "acid",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.5, "deg": 0, "v": 0.95, "g": "accent" },
+        { "t": 0.5, "d": 0.25, "deg": 2, "v": 0.84, "g": "slide" },
+        { "t": 1.25, "d": 0.25, "deg": 4, "v": 0.88 },
+        { "t": 1.5, "d": 0.5, "deg": 7, "v": 0.92, "g": "slide" },
+        { "t": 2.5, "d": 0.25, "deg": 6, "v": 0.82 },
+        { "t": 3, "d": 0.5, "deg": 4, "v": 0.9, "g": "accent" },
+        { "t": 4.5, "d": 0.25, "deg": 0, "v": 0.86 },
+        { "t": 5, "d": 0.25, "deg": 4, "v": 0.94, "g": "accent" },
+        { "t": 5.25, "d": 0.5, "deg": 7, "v": 0.9, "g": "slide" },
+        { "t": 6.25, "d": 0.25, "deg": 6, "v": 0.86 },
+        { "t": 6.5, "d": 0.5, "deg": 4, "v": 0.88, "g": "slide" },
+        { "t": 7.5, "d": 0.25, "deg": 2, "v": 0.84 }
+      ]
+    },
+    {
+      "id": "voltage_hook",
+      "role": "arp",
+      "anchor": "chord",
+      "material": "acid",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0.5, "d": 0.25, "deg": 0, "v": 0.92, "g": "accent" },
+        { "t": 0.75, "d": 0.25, "deg": 7, "v": 0.86, "g": "slide" },
+        { "t": 1.5, "d": 0.25, "deg": 4, "v": 0.9 },
+        { "t": 1.75, "d": 0.25, "deg": 6, "v": 0.88, "g": "slide" },
+        { "t": 2.5, "d": 0.25, "deg": 7, "v": 0.96, "g": "accent" },
+        { "t": 3.25, "d": 0.25, "deg": 4, "v": 0.84 },
+        { "t": 3.5, "d": 0.25, "deg": 0, "v": 0.88, "g": "slide" }
+      ]
+    },
+    {
+      "id": "tunnel_bend",
+      "role": "arp",
+      "anchor": "chord",
+      "material": "acid",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.5, "deg": 0, "v": 0.94, "g": "accent" },
+        { "t": 0.5, "d": 0.5, "deg": 7, "v": 0.9, "g": "slide" },
+        { "t": 1.5, "d": 0.5, "deg": 6, "v": 0.86 },
+        { "t": 2, "d": 0.5, "deg": 4, "v": 0.88, "g": "slide" },
+        { "t": 3, "d": 0.5, "deg": 2, "v": 0.84 },
+        { "t": 3.5, "d": 0.5, "deg": 0, "v": 0.9, "g": "slide" },
+        { "t": 4.5, "d": 0.5, "deg": 4, "v": 0.95, "g": "accent" },
+        { "t": 5, "d": 0.5, "deg": 7, "v": 0.92, "g": "slide" },
+        { "t": 6, "d": 0.5, "deg": 6, "v": 0.86 },
+        { "t": 7, "d": 0.75, "deg": 4, "v": 0.88 }
+      ]
+    },
+    {
+      "id": "neon_anthem",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.5, "deg": 0, "v": 0.92, "g": "accent" },
+        { "t": 0.5, "d": 1.5, "deg": 4, "v": 0.96, "g": "slide" },
+        { "t": 2.5, "d": 0.5, "deg": 6, "v": 0.88 },
+        { "t": 3, "d": 1.0, "deg": 7, "v": 0.98, "g": "slide" },
+        { "t": 4.5, "d": 0.5, "deg": 6, "v": 0.86 },
+        { "t": 5, "d": 0.5, "deg": 4, "v": 0.88 },
+        { "t": 5.5, "d": 1.5, "deg": 2, "v": 0.9, "g": "slide" }
+      ]
+    },
+    {
+      "id": "aerodynamic_arc",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.5, "deg": 0, "v": 0.9 },
+        { "t": 0.5, "d": 0.5, "deg": 2, "v": 0.84 },
+        { "t": 1, "d": 0.5, "deg": 4, "v": 0.92, "g": "accent" },
+        { "t": 1.5, "d": 1.0, "deg": 7, "v": 0.98, "g": "slide" },
+        { "t": 3, "d": 0.5, "deg": 6, "v": 0.86 },
+        { "t": 3.5, "d": 0.5, "deg": 4, "v": 0.88 },
+        { "t": 4, "d": 1.0, "deg": 2, "v": 0.92, "g": "accent" },
+        { "t": 5.5, "d": 0.5, "deg": 4, "v": 0.86 },
+        { "t": 6, "d": 1.5, "deg": 0, "v": 0.94, "g": "slide" }
+      ]
+    },
+    {
+      "id": "phantom_cry",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.75, "deg": 7, "v": 0.98, "g": "accent" },
+        { "t": 0.75, "d": 0.75, "deg": 6, "v": 0.88, "g": "slide" },
+        { "t": 1.5, "d": 0.5, "deg": 4, "v": 0.86 },
+        { "t": 2, "d": 1.5, "deg": 2, "v": 0.92, "g": "slide" }
+      ]
+    },
+    {
+      "id": "starlight_call",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 0.75, "deg": 4, "v": 0.94, "g": "accent" },
+        { "t": 0.75, "d": 0.75, "deg": 7, "v": 0.96, "g": "slide" },
+        { "t": 1.5, "d": 1.0, "deg": 6, "v": 0.88 },
+        { "t": 3.5, "d": 0.5, "deg": 4, "v": 0.86 },
+        { "t": 4, "d": 1.0, "deg": 7, "v": 0.98, "g": "accent" },
+        { "t": 5, "d": 0.5, "deg": 6, "v": 0.86 },
+        { "t": 5.5, "d": 1.5, "deg": 4, "v": 0.92, "g": "slide" }
+      ]
+    },
+    {
+      "id": "turbo_glide",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 4,
+      "notes": [
+        { "t": 0, "d": 0.5, "deg": 0, "v": 0.9 },
+        { "t": 0.5, "d": 0.5, "deg": 2, "v": 0.86 },
+        { "t": 1, "d": 0.5, "deg": 4, "v": 0.94, "g": "accent" },
+        { "t": 1.5, "d": 1.75, "deg": 7, "v": 0.98, "g": "slide" }
+      ]
+    },
+    {
+      "id": "afterglow_line",
+      "role": "lead",
+      "anchor": "key",
+      "lengthBeats": 8,
+      "notes": [
+        { "t": 0, "d": 1.5, "deg": 4, "v": 0.94, "g": "accent" },
+        { "t": 1.5, "d": 0.5, "deg": 3, "v": 0.84 },
+        { "t": 2, "d": 1.0, "deg": 2, "v": 0.88 },
+        { "t": 3, "d": 0.75, "deg": 0, "v": 0.86 },
+        { "t": 4.5, "d": 0.5, "deg": 4, "v": 0.92, "g": "accent" },
+        { "t": 5, "d": 2.0, "deg": 7, "v": 0.98, "g": "slide" }
+      ]
+    }
+  ],
+  "comping": [
+    {
+      "id": "french_pump",
+      "role": "comp",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        { "t": 0, "d": 0.35, "v": 0.92 },
+        { "t": 0.75, "d": 0.3, "v": 0.78 },
+        { "t": 1.5, "d": 0.45, "v": 0.88 },
+        { "t": 2.5, "d": 0.35, "v": 0.84 },
+        { "t": 3.25, "d": 0.35, "v": 0.8 }
+      ]
+    },
+    {
+      "id": "disco_chop",
+      "role": "comp",
+      "voicing": "rootless",
+      "lengthBeats": 8,
+      "strum": 0.015,
+      "hits": [
+        { "t": 0, "d": 0.38, "v": 0.94 },
+        { "t": 0.75, "d": 0.32, "v": 0.76 },
+        { "t": 1.5, "d": 0.42, "v": 0.88 },
+        { "t": 3, "d": 0.4, "v": 0.82 },
+        { "t": 4, "d": 0.38, "v": 0.92 },
+        { "t": 4.75, "d": 0.32, "v": 0.78 },
+        { "t": 5.5, "d": 0.42, "v": 0.9 },
+        { "t": 6.5, "d": 0.35, "v": 0.82 },
+        { "t": 7.25, "d": 0.38, "v": 0.86 }
+      ]
+    },
+    {
+      "id": "anthem_swell",
+      "role": "comp",
+      "voicing": "spread",
+      "lengthBeats": 8,
+      "strum": 0.025,
+      "hits": [
+        { "t": 0, "d": 1.75, "v": 0.88 },
+        { "t": 2, "d": 1.5, "v": 0.82 },
+        { "t": 4, "d": 1.75, "v": 0.9 },
+        { "t": 6, "d": 1.5, "v": 0.84 }
+      ]
+    },
+    {
+      "id": "offbeat_flash",
+      "role": "comp",
+      "voicing": "open",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        { "t": 0.5, "d": 0.32, "v": 0.88 },
+        { "t": 1.5, "d": 0.32, "v": 0.84 },
+        { "t": 2.5, "d": 0.32, "v": 0.9 },
+        { "t": 3.5, "d": 0.32, "v": 0.82 }
+      ]
+    },
+    {
+      "id": "stutter_stab",
+      "role": "comp",
+      "voicing": "triad",
+      "lengthBeats": 8,
+      "strum": 0,
+      "hits": [
+        { "t": 0, "d": 0.25, "v": 0.94 },
+        { "t": 0.5, "d": 0.35, "v": 0.82 },
+        { "t": 1.5, "d": 0.45, "v": 0.9 },
+        { "t": 4, "d": 0.25, "v": 0.92 },
+        { "t": 4.5, "d": 0.35, "v": 0.8 },
+        { "t": 5.25, "d": 0.35, "v": 0.86 },
+        { "t": 6.5, "d": 0.45, "v": 0.88 }
+      ]
+    },
+    {
+      "id": "robot_call",
+      "role": "comp",
+      "voicing": "open",
+      "material": "vocoder",
+      "lengthBeats": 8,
+      "strum": 0.015,
+      "hits": [
+        { "t": 0, "d": 0.75, "v": 0.9 },
+        { "t": 1.5, "d": 0.5, "v": 0.8 },
+        { "t": 4, "d": 1.0, "v": 0.92 },
+        { "t": 6.5, "d": 0.65, "v": 0.84 }
+      ]
+    },
+    {
+      "id": "choir_answer",
+      "role": "comp",
+      "voicing": "spread",
+      "material": "vocoder",
+      "lengthBeats": 8,
+      "strum": 0.02,
+      "hits": [
+        { "t": 0.5, "d": 1.25, "v": 0.86 },
+        { "t": 4.5, "d": 1.5, "v": 0.9 }
+      ]
+    },
+    {
+      "id": "vox_chop",
+      "role": "comp",
+      "voicing": "triad",
+      "material": "vocoder",
+      "lengthBeats": 4,
+      "strum": 0,
+      "hits": [
+        { "t": 0, "d": 0.35, "v": 0.92 },
+        { "t": 1.5, "d": 0.4, "v": 0.84 },
+        { "t": 2.75, "d": 0.45, "v": 0.88 }
+      ]
+    },
+    {
+      "id": "cathedral_vox",
+      "role": "comp",
+      "voicing": "spread",
+      "material": "vocoder",
+      "lengthBeats": 16,
+      "strum": 0.03,
+      "hits": [
+        { "t": 0, "d": 3.0, "v": 0.88 },
+        { "t": 8, "d": 2.5, "v": 0.9 },
+        { "t": 14, "d": 1.5, "v": 0.82 }
+      ]
+    },
+    {
+      "id": "juno_bed",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 16,
+      "strum": 0.03,
+      "hits": [
+        { "t": 0, "d": 7.75, "v": 0.72 },
+        { "t": 8, "d": 7.75, "v": 0.74 }
+      ]
+    },
+    {
+      "id": "velvet_bar",
+      "role": "pad",
+      "voicing": "open",
+      "lengthBeats": 8,
+      "strum": 0.02,
+      "hits": [
+        { "t": 0, "d": 3.8, "v": 0.7 },
+        { "t": 4, "d": 3.8, "v": 0.72 }
+      ]
+    },
+    {
+      "id": "horizon_hold",
+      "role": "pad",
+      "voicing": "rootless",
+      "lengthBeats": 8,
+      "strum": 0.04,
+      "hits": [{ "t": 0, "d": 7.75, "v": 0.72 }]
+    },
+    {
+      "id": "breathe_pad",
+      "role": "pad",
+      "voicing": "spread",
+      "lengthBeats": 16,
+      "strum": 0.02,
+      "hits": [
+        { "t": 0, "d": 6.0, "v": 0.7 },
+        { "t": 8, "d": 6.5, "v": 0.74 }
+      ]
+    }
+  ],
+  "drums": [
+    {
+      "id": "pulse_open",
+      "kind": "groove",
+      "intensity": 0.25,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "....X.......X...",
+        "rim": "",
+        "clap": "",
+        "closedHat": "..x...x...x...x.",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "paris_pocket",
+      "kind": "groove",
+      "intensity": 0.42,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "....X.......X..o",
+        "rim": "...x.......x....",
+        "clap": "",
+        "closedHat": "o.x.o.x.o.x.o.x.",
+        "openHat": "......x.......x.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "club_glide",
+      "kind": "groove",
+      "intensity": 0.56,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "....X..o....X...",
+        "rim": "..o...x...o...x.",
+        "clap": "",
+        "closedHat": "x.Xox.Xox.Xox.Xo",
+        "openHat": "..x...x...x...x.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "x.X.x.X.x.X.x.X."
+      }
+    },
+    {
+      "id": "disco_slam",
+      "kind": "groove",
+      "intensity": 0.7,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "....X..o....X..o",
+        "rim": "...x..o....x..x.",
+        "clap": "",
+        "closedHat": "xoxXxoxXxoxXxoxX",
+        "openHat": "..x...X...x...X.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "oxXoxxXoxxXoxxXo"
+      }
+    },
+    {
+      "id": "electro_gallop",
+      "kind": "groove",
+      "intensity": 0.82,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X..o",
+        "snare": "....X..o..o.X.o.",
+        "rim": ".x....x..x....x.",
+        "clap": "",
+        "closedHat": "XoxxXoxxXoxxXoxx",
+        "openHat": "..X...x...X...x.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "xXXoxXXoxXXoxXXo"
+      }
+    },
+    {
+      "id": "peak_laser",
+      "kind": "groove",
+      "intensity": 0.94,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "....X..o....X.o.",
+        "rim": "....x..x....x.x.",
+        "clap": "",
+        "closedHat": "XoxXXoxXXoxXXoxX",
+        "openHat": "..X...X...X...X.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "XxXXxXXxXxXXxXXx"
+      }
+    },
+    {
+      "id": "warehouse_surge",
+      "kind": "groove",
+      "intensity": 0.98,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X..o",
+        "snare": "....X..o..o.X..o",
+        "rim": "...x..x....x..x.",
+        "clap": "",
+        "closedHat": "XoxXXoxXXoxXXoxX",
+        "openHat": "..X...X...X...X.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "XxXXxXXxXxXXxXXx"
+      }
+    },
+    {
+      "id": "snare_flam_fill",
+      "kind": "fill",
+      "intensity": 0.65,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X.......",
+        "snare": "....X.....x.Xxxx",
+        "rim": "...x....x.......",
+        "clap": "",
+        "closedHat": "x.X.x.X.x.......",
+        "openHat": "..x...x.........",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": "x.X.x.X........."
+      }
+    },
+    {
+      "id": "stop_drop_fill",
+      "kind": "fill",
+      "intensity": 0.85,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X.......",
+        "snare": "....X...X..X....",
+        "rim": "........x..x....",
+        "clap": "",
+        "closedHat": "xoxXxoxXx.......",
+        "openHat": "..X...X.........",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "linn_turn_fill",
+      "kind": "fill",
+      "intensity": 0.92,
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "X...X...X...X...",
+        "snare": "....X....x.xX.XX",
+        "rim": "..........x.x...",
+        "clap": "",
+        "closedHat": "XoxXXoxX........",
+        "openHat": "..X...X.......X.",
+        "ride": "",
+        "crash": "",
+        "tomLow": "",
+        "tomHigh": "",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "simmons_bounce",
+      "kind": "groove",
+      "intensity": 0.5,
+      "material": "toms",
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": ".............x..",
+        "tomHigh": "..........x.....",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "simmons_disco",
+      "kind": "groove",
+      "intensity": 0.72,
+      "material": "toms",
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "......o.......x.",
+        "tomHigh": "...o......x.o...",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "simmons_drive",
+      "kind": "groove",
+      "intensity": 0.92,
+      "material": "toms",
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": ".......x......X.",
+        "tomHigh": ".....x....X.x...",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "simmons_cascade",
+      "kind": "fill",
+      "intensity": 0.75,
+      "material": "toms",
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "............XXxX",
+        "tomHigh": "........XXxx....",
+        "shaker": ""
+      }
+    },
+    {
+      "id": "simmons_roll",
+      "kind": "fill",
+      "intensity": 0.92,
+      "material": "toms",
+      "stepsPerBeat": 4,
+      "lanes": {
+        "kick": "",
+        "snare": "",
+        "rim": "",
+        "clap": "",
+        "closedHat": "",
+        "openHat": "",
+        "ride": "",
+        "crash": "",
+        "tomLow": "..........x.X.XX",
+        "tomHigh": "......x.X.x.....",
+        "shaker": ""
+      }
+    }
+  ],
+  "forms": [
+    {
+      "id": "paris_anthem",
+      "sections": [
+        { "label": "in", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_lock" },
+        { "label": "a", "bars": 32, "intensity": 0.5, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "paris_lift" },
+        { "label": "break", "bars": 16, "intensity": 0.45, "roles": ["pad", "arp", "comp"], "progression": "suspend_rise" },
+        { "label": "peak", "bars": 32, "intensity": 0.92, "roles": ["drums", "bass", "arp", "comp", "lead", "pad"], "progression": "euphoria" },
+        { "label": "b", "bars": 32, "intensity": 0.74, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "paris_lift" },
+        { "label": "out", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_lock" }
+      ]
+    },
+    {
+      "id": "neon_run",
+      "sections": [
+        { "label": "in", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_sus" },
+        { "label": "a", "bars": 32, "intensity": 0.52, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "neon_drive" },
+        { "label": "break", "bars": 16, "intensity": 0.44, "roles": ["pad", "arp", "comp"], "progression": "vamp_sus" },
+        { "label": "peak", "bars": 32, "intensity": 0.94, "roles": ["drums", "bass", "arp", "comp", "lead", "pad"], "progression": "glass_rush" },
+        { "label": "b", "bars": 16, "intensity": 0.76, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "neon_drive" },
+        { "label": "out", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_sus" }
+      ]
+    },
+    {
+      "id": "midnight_tunnel",
+      "sections": [
+        { "label": "in", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_lock" },
+        { "label": "a", "bars": 16, "intensity": 0.5, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "midnight_walk" },
+        { "label": "b", "bars": 32, "intensity": 0.84, "roles": ["drums", "bass", "arp", "comp", "lead", "pad"], "progression": "dark_disco" },
+        { "label": "break", "bars": 16, "intensity": 0.46, "roles": ["pad", "arp", "comp"], "progression": "suspend_rise" },
+        { "label": "peak", "bars": 32, "intensity": 0.95, "roles": ["drums", "bass", "arp", "comp", "lead", "pad"], "progression": "euphoria" },
+        { "label": "c", "bars": 16, "intensity": 0.74, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "midnight_walk" },
+        { "label": "out", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_lock" }
+      ]
+    },
+    {
+      "id": "double_drop",
+      "sections": [
+        { "label": "in", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_lock" },
+        { "label": "a", "bars": 16, "intensity": 0.52, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "paris_lift" },
+        { "label": "peak", "bars": 32, "intensity": 0.9, "roles": ["drums", "bass", "arp", "comp", "lead", "pad"], "progression": "glass_rush" },
+        { "label": "break", "bars": 16, "intensity": 0.44, "roles": ["pad", "arp", "comp"], "progression": "suspend_rise" },
+        { "label": "peak2", "bars": 32, "intensity": 0.96, "roles": ["drums", "bass", "arp", "comp", "lead", "pad"], "progression": "euphoria" },
+        { "label": "b", "bars": 32, "intensity": 0.76, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "dark_disco" },
+        { "label": "out", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_lock" }
+      ]
+    },
+    {
+      "id": "velvet_voltage",
+      "sections": [
+        { "label": "in", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_sus" },
+        { "label": "a", "bars": 32, "intensity": 0.48, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "midnight_walk" },
+        { "label": "b", "bars": 16, "intensity": 0.74, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "dark_disco" },
+        { "label": "break", "bars": 16, "intensity": 0.45, "roles": ["pad", "arp", "comp"], "progression": "suspend_rise" },
+        { "label": "peak", "bars": 32, "intensity": 0.92, "roles": ["drums", "bass", "arp", "comp", "lead", "pad"], "progression": "neon_drive" },
+        { "label": "c", "bars": 16, "intensity": 0.74, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "paris_lift" },
+        { "label": "out", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_sus" }
+      ]
+    },
+    {
+      "id": "glass_tower",
+      "sections": [
+        { "label": "in", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_lock" },
+        { "label": "a", "bars": 32, "intensity": 0.52, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "dark_disco" },
+        { "label": "break", "bars": 16, "intensity": 0.42, "roles": ["pad", "arp", "comp"], "progression": "suspend_rise" },
+        { "label": "peak", "bars": 32, "intensity": 0.94, "roles": ["drums", "bass", "arp", "comp", "lead", "pad"], "progression": "euphoria" },
+        { "label": "b", "bars": 16, "intensity": 0.76, "roles": ["drums", "bass", "arp", "comp", "pad"], "progression": "glass_rush" },
+        { "label": "out", "bars": 16, "intensity": 0.3, "roles": ["drums", "bass", "arp"], "progression": "vamp_lock" }
+      ]
+    }
+  ],
+  "melody": {
+    "density": 0.42,
+    "low": 60,
+    "high": 81,
+    "phraseBars": 4,
+    "stepwise": 0.58,
+    "restProbability": 0.32,
+    "ornament": 0.06
+  },
+  "patches": [
+    {
+      "id": "slap_bass",
+      "osc": { "wave": "saw", "voices": 1, "detune": 0, "sub": 0.72 },
+      "filter": { "type": "low", "cutoff": 145, "q": 2.4, "keytrack": 0.55, "env": 2600, "a": 0.002, "d": 0.14, "s": 0.22, "r": 0.05 },
+      "amp": { "a": 0.002, "d": 0.12, "s": 0.85, "r": 0.045 },
+      "drive": 2.1,
+      "glide": 0.042,
+      "accent": { "cutoff": 2600, "q": 2.2 },
+      "mod": [{ "target": "cutoff", "shape": "sine", "beats": 32, "depth": 0.38 }],
+      "level": 0.44
+    },
+    {
+      "id": "neon_arp",
+      "osc": {
+        "wave": "sine",
+        "voices": 2,
+        "detune": 8,
+        "spread": 0.52,
+        "fm": { "ratio": 2, "amount": 1.9, "decay": 0.1 }
+      },
+      "filter": { "type": "low", "cutoff": 1150, "q": 1.3, "keytrack": 1.15, "env": 2400, "a": 0.002, "d": 0.12, "s": 0.14, "r": 0.09 },
+      "amp": { "a": 0.002, "d": 0.15, "s": 0.16, "r": 0.1 },
+      "hp": 280,
+      "mod": [
+        { "target": "cutoff", "shape": "sine", "beats": 12, "depth": 0.65 },
+        { "target": "pan", "shape": "sine", "beats": 6, "depth": 0.42 }
+      ],
+      "level": 0.4
+    },
+    {
+      "id": "acid_saw",
+      "osc": { "wave": "saw", "voices": 1, "detune": 0 },
+      "filter": { "type": "low", "cutoff": 280, "q": 5.8, "keytrack": 0.7, "env": 2400, "a": 0.002, "d": 0.12, "s": 0.1, "r": 0.04 },
+      "amp": { "a": 0.002, "d": 0.14, "s": 0.4, "r": 0.04 },
+      "drive": 2.0,
+      "hp": 380,
+      "glide": 0.055,
+      "accent": { "cutoff": 4200, "q": 3.4 },
+      "mod": [{ "target": "cutoff", "shape": "sine", "beats": 24, "depth": 0.85 }],
+      "level": 0.3
+    },
+    {
+      "id": "super_stab",
+      "osc": { "wave": "saw", "voices": 5, "detune": 16, "spread": 0.85 },
+      "filter": { "type": "low", "cutoff": 820, "q": 1.3, "keytrack": 0.75, "env": 3200, "a": 0.004, "d": 0.24, "s": 0.28, "r": 0.16 },
+      "amp": { "a": 0.004, "d": 0.28, "s": 0.58, "r": 0.16 },
+      "drive": 0.65,
+      "hp": 260,
+      "mod": [
+        { "target": "cutoff", "shape": "sine", "beats": 16, "depth": 0.75 },
+        { "target": "width", "shape": "sine", "beats": 12, "depth": 0.35 }
+      ],
+      "level": 0.26
+    },
+    {
+      "id": "vocoder_choir",
+      "osc": { "wave": "pulse", "pw": 0.35, "voices": 3, "detune": 11, "spread": 0.88 },
+      "filter": { "type": "low", "cutoff": 1150, "q": 2.0, "keytrack": 0.4, "env": 900, "a": 0.008, "d": 0.18, "s": 0.45, "r": 0.16 },
+      "amp": { "a": 0.006, "d": 0.25, "s": 0.7, "r": 0.15 },
+      "formants": [
+        { "freq": 720, "q": 7.0, "gain": 0.7 },
+        { "freq": 1350, "q": 8.0, "gain": 0.65 },
+        { "freq": 2600, "q": 8.5, "gain": 0.45 }
+      ],
+      "hp": 580,
+      "mod": [
+        { "target": "pw", "shape": "sine", "beats": 4, "depth": 0.18 },
+        { "target": "cutoff", "shape": "sine", "beats": 8, "depth": 0.55 }
+      ],
+      "level": 0.1
+    },
+    {
+      "id": "neon_lead",
+      "osc": { "wave": "saw", "voices": 3, "detune": 13, "spread": 0.65, "sub": 0.35 },
+      "filter": { "type": "low", "cutoff": 1100, "q": 1.8, "keytrack": 1.0, "env": 2400, "a": 0.005, "d": 0.2, "s": 0.42, "r": 0.14 },
+      "amp": { "a": 0.005, "d": 0.18, "s": 0.82, "r": 0.16 },
+      "drive": 0.9,
+      "hp": 280,
+      "glide": 0.06,
+      "accent": { "cutoff": 2200, "q": 1.6 },
+      "vibrato": { "rate": 5.4, "depth": 8, "delay": 0.25 },
+      "level": 0.32
+    },
+    {
+      "id": "pwm_pad",
+      "osc": { "wave": "pulse", "pw": 0.45, "voices": 4, "detune": 13, "spread": 0.85 },
+      "filter": { "type": "low", "cutoff": 720, "q": 1.1, "keytrack": 0.6, "env": 1400, "a": 0.55, "d": 1.2, "s": 0.5, "r": 0.8 },
+      "amp": { "a": 0.45, "d": 0.8, "s": 0.78, "r": 0.9 },
+      "hp": 240,
+      "mod": [
+        { "target": "pw", "shape": "sine", "beats": 8, "depth": 0.32 },
+        { "target": "cutoff", "shape": "sine", "beats": 32, "depth": 0.75 }
+      ],
+      "level": 0.15
+    }
+  ],
+  "parts": [
+    { "id": "kick", "role": "drums", "lanes": ["kick"], "enters": 0 },
+    { "id": "hat", "role": "drums", "lanes": ["closedHat"], "enters": 0.05 },
+    { "id": "snare", "role": "drums", "lanes": ["snare"], "enters": 0.12 },
+    { "id": "open", "role": "drums", "lanes": ["openHat", "crash"], "enters": 0.3, "group": "noise" },
+    { "id": "shaker", "role": "drums", "lanes": ["shaker"], "enters": 0.38, "group": "noise" },
+    { "id": "rim", "role": "drums", "lanes": ["rim"], "enters": 0.35, "group": "perc" },
+    { "id": "toms", "role": "drums", "lanes": ["tomLow", "tomHigh"], "material": "toms", "enters": 0.38, "group": "perc" },
+    { "id": "roll", "role": "drums", "lanes": ["clap"], "roll": true },
+    { "id": "bass", "role": "bass", "patch": "slap_bass", "enters": 0 },
+    { "id": "arp", "role": "arp", "patch": "neon_arp", "enters": 0.1, "group": "line" },
+    { "id": "acid", "role": "arp", "patch": "acid_saw", "material": "acid", "octave": 3, "volume": 0.3, "enters": 0.4, "group": "line" },
+    { "id": "stab", "role": "comp", "patch": "super_stab", "enters": 0.28, "group": "line" },
+    { "id": "vocoder", "role": "comp", "patch": "vocoder_choir", "material": "vocoder", "volume": 0.3, "enters": 0.36, "group": "line" },
+    { "id": "lead", "role": "lead", "patch": "neon_lead", "enters": 0.32, "group": "line" },
+    { "id": "pad", "role": "pad", "patch": "pwm_pad", "enters": 0.15 }
+  ],
+  "arrangement": {
+    "change": 0.56,
+    "swap": 0.42,
+    "drop": 0.85,
+    "most": 9,
+    "groups": { "line": 3, "perc": 2, "noise": 2 },
+    "thin": 0.35,
+    "evolve": 0.18
+  },
+  "moves": {
+    "sweep": 0.55,
+    "drift": 0.55,
+    "build": 1,
+    "long": 0.65,
+    "stutter": 0.16,
+    "throw": 0.45
+  },
+  "synthKit": {
+    "kick": {
+      "f0": 215,
+      "f1": 48,
+      "sweep": 0.024,
+      "decay": 0.13,
+      "drive": 2.4,
+      "click": 0.45,
+      "sub": { "level": 0.5, "decay": 0.1 }
+    },
+    "snare": {
+      "tone": 190,
+      "toneDecay": 0.085,
+      "noiseDecay": 0.16,
+      "noiseHp": 950,
+      "mix": 0.54
+    },
+    "hatScale": 1.08,
+    "hatDecay": 0.032,
+    "hat": {
+      "tone": 9200,
+      "q": 1.15,
+      "hp": 6800,
+      "decay": 0.026,
+      "open": 0.21,
+      "metal": 0.65
+    },
+    "clap": {
+      "tone": 1350,
+      "q": 1.6,
+      "bursts": 2,
+      "decay": 0.075
+    },
+    "toms": { "low": 110, "high": 165 },
+    "perc": [
+      {
+        "lane": "rim",
+        "freq": 880,
+        "bend": 14,
+        "sweep": 0.012,
+        "decay": 0.05,
+        "tuned": true,
+        "fm": { "ratio": 2.41, "amount": 2.0 },
+        "noise": 0.38,
+        "pan": -0.18,
+        "level": 0.56
+      },
+      {
+        "lane": "tomLow",
+        "freq": 110,
+        "bend": 10,
+        "sweep": 0.042,
+        "decay": 0.18,
+        "tuned": true,
+        "noise": 0.12,
+        "pan": -0.28,
+        "level": 0.65
+      },
+      {
+        "lane": "tomHigh",
+        "freq": 165,
+        "bend": 11,
+        "sweep": 0.038,
+        "decay": 0.15,
+        "tuned": true,
+        "noise": 0.14,
+        "pan": 0.28,
+        "level": 0.62
+      }
+    ]
+  }
+}

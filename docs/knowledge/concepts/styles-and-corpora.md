@@ -41,7 +41,7 @@ them into the `styles.json` the app fetches, `style_samples` (see
 
 The original eighteen corpora were written by Claude (Opus 5.5) during
 development; Astra added Orbital Glass and Midnight Platform; Grok added
-Courtyard Nine and Low Log.[^readme]
+Courtyard Nine and Low Log; Neon added Tokyo Fusion.[^readme]
 
 # Catalog
 
@@ -69,6 +69,7 @@ Courtyard Nine and Low Log.[^readme]
 | `midnight_platform` | Midnight Platform (5/4 as 3+2 jazz quintet) | 68 |
 | `courtyard_nine` | Courtyard Nine (9/8 aksak 2+2+2+3, double harmonic) | 68 |
 | `low_log` | Low Log (4/4, the tune is in the bass) | 68 |
+| `tokyo_fusion` | Tokyo Fusion (80s Japanese jazz fusion, 3 coastal-to-midnight scenes) | 68 |
 
 Some forms are *areas* (e.g. Metroid's Crateria, Brinstar, Norfair) with their
 own tempo, keys and instrument swaps, using material tagged with the same
