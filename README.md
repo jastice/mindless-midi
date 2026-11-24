@@ -190,10 +190,11 @@ the generation tool replaces the selected corpus with an API-generated one.
 ## Deploying
 
 The workflow in `.github/workflows/pages.yml` runs `bazel test //...` and
-`bazel build --config=stamp //site` on every push to `main` or `prod/mindless` and every PR. From `prod/mindless` it
-publishes only a small redirect (`.github/pages-redirect/`) to GitHub Pages,
-which forwards old links, with their path and session query, to Cloudflare.
-This needs **Settings → Pages → Source: GitHub Actions**.
+`bazel build --config=stamp //site` on every push to `main` and every PR.
+`.github/workflows/pages-redirect.yml` publishes only a small redirect
+(`.github/pages-redirect/`) to GitHub Pages when that directory changes (or via
+manual dispatch), forwarding old links, with their path and session query, to
+Cloudflare. This needs **Settings → Pages → Source: GitHub Actions**.
 
 `.github/workflows/cloudflare.yml` deploys the real site: it builds `//site`
 and publishes to Cloudflare Pages (production from a push to the `prod` branch, a preview URL per
