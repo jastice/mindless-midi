@@ -15,7 +15,8 @@ Open Knowledge Format skill, as `@okf_skill`, which was used to write this
 knowledge base).
 
 The root `BUILD.bazel` declares an `agent_profile` named `dev_profile` with
-the skills, and one `agent_runner` per agent:
+the skills (including the repo-local `//skills:compose-style` guide for writing
+DJ Claudia and Mindless Midi styles), and one `agent_runner` per agent:
 
 | Target | Installs into |
 | --- | --- |

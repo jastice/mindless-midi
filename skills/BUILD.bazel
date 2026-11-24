@@ -1,0 +1,9 @@
+load("@rules_agents//rules_agents:defs.bzl", "agent_skill")
+
+package(default_visibility = ["//visibility:public"])
+
+agent_skill(
+    name = "compose-style",
+    root = "compose-style",
+    srcs = glob(["compose-style/**"], exclude_directories = 1),
+)
